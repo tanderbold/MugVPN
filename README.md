@@ -5,7 +5,7 @@
 <p align="center"><b>A free macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time.</b></p>
 
 [![Build](https://img.shields.io/github/actions/workflow/status/tanderbold/MugVPN/macos.yml?branch=main&label=build)](https://github.com/tanderbold/MugVPN/actions/workflows/macos.yml)
-[![Licence](https://img.shields.io/github/license/tanderbold/MugVPN?label=licence)](LICENSE)
+[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](#requirements)
 [![Apple silicon and Intel](https://img.shields.io/badge/Apple%20silicon-%2B%20Intel-blue)](#requirements)
 [![openvpn 2.7](https://img.shields.io/badge/openvpn-2.7-orange)](#how-it-works)
