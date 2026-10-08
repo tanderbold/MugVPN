@@ -454,11 +454,10 @@ public final class HelperCore {
                 return b <= bits && TunnelState.overlap6(a, "\(net)/\(bits)")
             }
         }
-        /// A name for a private network (.internal, .lan, .home.arpa...) or under an allowed domain.
+        /// A domain an administrator listed (or under one). Private names too: one mDNSResponder
+        /// asks for every user, so a resolver cannot be kept to its owner.
         func allows(domain: String) -> Bool {
             let d = domain.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
-            if let last = d.split(separator: ".").last, TunnelState.privateSingleLabels.contains(String(last)) { return true }
-            if d == "home.arpa" || d.hasSuffix(".home.arpa") { return true }
             return domains.contains { a in
                 let a = a.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
                 return d == a || d.hasSuffix("." + a)
@@ -591,6 +590,13 @@ public final class HelperCore {
             // once openvpn listens (the app of an administrator can take over).
             if persistent { scheduleManagement(id, after: 0.5) }
         } catch {
+            // Nothing of a run that could not start properly stays: its openvpn, its id's processes.
+            if let c = connections.removeValue(forKey: id) {
+                c.exited = true
+                c.process.signal(SIGKILL)
+                if let sid = c.serviceID { system.killProcesses(uids: sid...sid) }
+            }
+            passwords[id] = nil
             system.remove(dir)
             throw error
         }
@@ -752,10 +758,8 @@ public final class HelperCore {
             c.tunnel = before
             throw error
         }
-        // On disk before it counts: a change the helper could not undo after a crash is undone now.
-        do {
-            try saveTunnel(c)
-        } catch {
+        /// Take back what this request did.
+        func undoRequest() {
             for r in c.tunnel.cleanup() where !before.cleanup().contains(r) { remove(r, others: others) }
             if c.tunnel.dnsApplied, !before.dnsApplied, let dev = c.tunnel.device { system.restoreDNS(device: dev) }
             if let dev = c.tunnel.device, dev != before.device {
@@ -764,9 +768,22 @@ public final class HelperCore {
             }
             if let fd = reply.fd { system.closeDescriptor(fd) }
             c.tunnel = before
+            try? saveTunnel(c)
+        }
+        // On disk before it counts: a change the helper could not undo after a crash is undone now.
+        do {
+            try saveTunnel(c)
+        } catch {
+            undoRequest()
             throw HelperCoreError.message("the helper could not record the change: \(error)")
         }
-        refreshProtection()
+        // A standard user's tunnel takes traffic only while PF keeps it to its owner.
+        let isolated = refreshProtection()
+        if c.restricted, !isolated, ["ROUTE", "ROUTE6", "IFCONFIG", "IFCONFIG6"].contains(kind) {
+            undoRequest()
+            refreshProtection()
+            throw HelperCoreError.message("the tunnel cannot be isolated to its user (PF): not set")
+        }
         return reply
     }
 
@@ -847,7 +864,11 @@ public final class HelperCore {
             try runAll(cmds)
         case "ROUTE":
             let added = try c.tunnel.route(message, gateway: system.defaultGateway())
-            // A standard user: private networks, and public ones an administrator lists.
+            // A standard user: private networks, and public ones an administrator lists; no host
+            // around the tunnels (via the Mac's gateway, it would leave another user's tunnel).
+            if !c.mayRouteAll, added.contains(where: { !$0.intoTunnel }) {
+                throw HelperCoreError.message("\(kind) \(message): \(policy)")
+            }
             if !c.mayRouteAll {
                 for r in added {
                     guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
@@ -880,6 +901,8 @@ public final class HelperCore {
             if fullElsewhere, c.tunnel.outsideHosts.count > HelperCore.hostsBesideFullTunnel {
                 throw HelperCoreError.message("another user's tunnel takes all traffic: no more host routes around it")
             }
+            // On disk before the change: after a crash the helper knows what it may have done.
+            try record(c)
             for (i, r) in added.enumerated() where !system.runNetwork(r.add) {
                 // Already there from another of our connections (the same server): shared.
                 if !r.intoTunnel, others.contains(where: { $0.routes.contains(r) }) { continue }
@@ -900,6 +923,7 @@ public final class HelperCore {
             if !c.mayRouteAll, !c.allowed.allows6(r.net, bits: Int(r.mask) ?? 0) {
                 throw HelperCoreError.message("\(kind) \(message): \(policy)")
             }
+            try record(c)
             if !system.runNetwork(r.add) { throw HelperCoreError.message("route failed") }
         case "ROUTEDEL":
             for r in try c.tunnel.deleteRoute(message, gateway: system.defaultGateway()) { remove(r, others: others) }
@@ -925,9 +949,10 @@ public final class HelperCore {
             if let d = plan.matchDomains.first(where: { m in theirDomains.contains { norm(m) == norm($0) || norm(m).hasSuffix("." + norm($0)) } }) {
                 throw HelperCoreError.message("DNS for \(d): another user's tunnel answers for it")
             }
-            guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
             c.tunnel.dnsApplied = true
             c.tunnel.dnsDomains = plan.matchDomains
+            try record(c)
+            guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
         case "DNSDOWN":
             if c.tunnel.dnsApplied, let dev = c.tunnel.device { system.restoreDNS(device: dev) }
             c.tunnel.dnsApplied = false
@@ -989,6 +1014,10 @@ public final class HelperCore {
     private func undo(_ t: TunnelState, others: [TunnelState]) {
         t.cleanup().forEach { remove($0, others: others) }
         if t.dnsApplied, let dev = t.device { system.restoreDNS(device: dev) }
+    }
+
+    private func record(_ c: Connection) throws {
+        do { try saveTunnel(c) } catch { throw HelperCoreError.message("the helper could not record the change: \(error)") }
     }
 
     private func saveTunnel(_ c: Connection) throws {
@@ -1099,7 +1128,9 @@ public final class HelperCore {
 
     /// Recompute what PF must enforce from the helper's own knowledge; apply it if it
     /// changed, or if PF no longer holds it (pfctl -d, a flushed anchor).
-    public func refreshProtection() {
+    /// - Returns: whether PF now holds what it must (a failure is tried again later).
+    @discardableResult
+    public func refreshProtection() -> Bool {
         var s = ProtectionState()
         var changedArming = false
         for c in connections.values {
@@ -1131,6 +1162,7 @@ public final class HelperCore {
             // Remembered only once pfctl took it: a failure is tried again on the next look.
             appliedPF = system.applyPF(anchor) ? anchor : "\u{0}"
         }
+        if locksDirty { saveLocks() }
         // Tunnels come up and change routes after start, and PF can be changed under us:
         // look again while protection is asked for or in force.
         if connections.values.contains(where: { $0.protection.any }) || !anchor.isEmpty, !refreshPending {
@@ -1140,6 +1172,7 @@ public final class HelperCore {
                 self?.refreshProtection()
             }
         }
+        return appliedPF == anchor
     }
 
     /// Names of the blocks in force (everyone may see why a user's traffic is blocked).
@@ -1165,9 +1198,16 @@ public final class HelperCore {
 
     private var locksPath: String { paths.supportDir + "/locks.json" }
 
+    /// A kill switch armed only in memory would not survive the helper: written again until it is.
+    private var locksDirty = false
     private func saveLocks() {
-        if locks.isEmpty { system.remove(locksPath); return }
-        if let d = try? JSONEncoder().encode(locks) { try? system.writeFile(locksPath, d, mode: 0o600) }
+        if locks.isEmpty { system.remove(locksPath); locksDirty = false; return }
+        do {
+            try system.writeFile(locksPath, try JSONEncoder().encode(locks), mode: 0o600)
+            locksDirty = false
+        } catch {
+            locksDirty = true
+        }
     }
 
     /// At start: blocks a previous helper left (only from a file root alone could

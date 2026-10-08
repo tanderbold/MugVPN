@@ -95,7 +95,9 @@ final class FakeSystem: HelperSystem {
         releasedDevices.append(name)
         heldDevices.removeAll { $0 == name }
     }
+    var onCommand: ([String]) -> Void = { _ in }
     func runNetwork(_ command: [String]) -> Bool {
+        onCommand(command)
         commands.append(command)
         guard !commandFails else { return false }
         if command.count > 3, command[0] == "route" {

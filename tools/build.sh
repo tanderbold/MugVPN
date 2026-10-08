@@ -85,7 +85,10 @@ pin() {
     echo "$req"
 }
 cp "$OUT/openvpn/openvpn" "$OUT/stage/openvpn"
-codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} ${TEAM:+--timestamp} --force --options runtime --identifier com.mugvpn.openvpn -s "$SIGN_ID" "$OUT/stage/openvpn"
+# openvpn is pinned by its code hash: without a Developer ID it needs no certificate (ad hoc),
+# so checking it depends on nothing but the hash.
+OPENVPN_SIGN_ID="-"; [ -n "$TEAM" ] && OPENVPN_SIGN_ID="$SIGN_ID"
+codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} ${TEAM:+--timestamp} --force --options runtime --identifier com.mugvpn.openvpn -s "$OPENVPN_SIGN_ID" "$OUT/stage/openvpn"
 OPENVPN_REQ=$(pin "$OUT/stage/openvpn")
 
 # The helper trusts only what is pinned here: openvpn by its code directory

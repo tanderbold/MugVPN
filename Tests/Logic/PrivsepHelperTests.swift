@@ -104,6 +104,8 @@ func registerPrivsepHelperTests() {
         // Under privilege separation the owner's app forwards the requests: the helper checks them.
         let sys = FakeSystem()
         sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.internal"]}"#.utf8), mode: 0o644)
         let h = makeHelper(sys)
         let (id, _) = try h.start(bundle: psBundle(), uid: 502)
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
@@ -347,8 +349,9 @@ func registerPrivsepHelperTests() {
         expect(!sys.routeTable.contains(["route", "-n", "add", "-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]))
         expectEqual(sys.routesDeleted, [], "nothing from NEW's log")
     }
-    test("PS-21", "a standard user's split DNS: private names, or the domains an administrator lists") {
-        // A resolver for a domain is the whole Mac's: bank.example in one user's tunnel would answer for everyone.
+    test("PS-21", "a standard user's split DNS: only the domains an administrator lists") {
+        // A resolver for a domain is the whole Mac's, asked by one mDNSResponder for every user:
+        // no isolation is possible, private names (corp.internal) included.
         let sys = FakeSystem()
         sys.admins = []
         let h = makeHelper(sys)
@@ -360,14 +363,14 @@ func registerPrivsepHelperTests() {
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
         }
-        for ok in ["corp.internal", "lan", "printer.home.arpa"] { try dns(ok) }
-        for bad in ["bank.example", "example.com", "office.local"] {
+        for bad in ["bank.example", "example.com", "office.local", "corp.internal", "lan", "printer.home.arpa"] {
             expectThrows(bad, matching: "administrator") { try dns(bad) }
         }
         try sys.makeDirectory("/L", mode: 0o755)
-        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.example.com"]}"#.utf8), mode: 0o644)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.example.com", "corp.internal"]}"#.utf8), mode: 0o644)
         try dns("corp.example.com")
         try dns("eu.corp.example.com")
+        try dns("corp.internal")
         expectThrows("not listed", matching: "administrator") { try dns("example.com") }
     }
     test("PS-22", "no tunnel takes part of another user's networks, whichever came first") {
@@ -476,6 +479,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-28", "split DNS: not a domain another user's tunnel answers for (audit 4: M2)") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // both may set DNS: what is tested is the overlap between users
         let h = makeHelper(sys)
         func dns(_ uid: UInt32, _ dev: String, _ domain: String) throws {
             let (id, _) = try h.start(bundle: psBundle(), uid: uid)
@@ -545,8 +549,7 @@ func registerPrivsepHelperTests() {
         expectThrows("not recorded", matching: "record") {
             _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1")
         }
-        expect(sys.commands.contains(["route", "-n", "delete", "-net", "10.20.0.0", "-netmask", "255.255.0.0", "-interface", "utun5"]),
-               "undone: \(sys.commands)")
+        expect(!sys.commands.contains { $0.contains("10.20.0.0") && $0.contains("add") }, "not even started: \(sys.commands)")
     }
     test("PS-33", "DNS a tunnel cannot have as asked (DoT, other port, DNSSEC) is not set as plain DNS (ext. audit: 5)") {
         let sys = FakeSystem()
@@ -579,5 +582,53 @@ func registerPrivsepHelperTests() {
         expect(sys.commands.contains(["ifconfig", "utun5", "inet6", "fd00:8::2", "delete"]))
         expect(sys.commands.contains(["ifconfig", "utun5", "down"]))
         expectEqual(sys.releasedDevices, ["utun5"])
+    }
+    test("PS-35", "a standard user routes no host around the tunnel (via the Mac's gateway) unless allowed all traffic (ext. audit 2: P1)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        for host in ["10.0.0.5 255.255.255.255 192.168.64.1", "10.0.0.6 255.255.255.255 192.168.64.1 dev en0"] {
+            expectThrows(host, matching: "administrator") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: host) }
+        }
+    }
+    test("PS-36", "a standard user's route stands only while PF keeps it to that user (ext. audit 2: P2)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        sys.pfApplyFails = true
+        sys.pfIntactAnswer = false   // PF switched off under us, and it cannot be put back
+        sys.commands = []
+        expectThrows("no isolation, no route", matching: "isolat") {
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1")
+        }
+        expect(sys.commands.contains(["route", "-n", "delete", "-net", "10.20.0.0", "-netmask", "255.255.0.0", "-interface", "utun5"]),
+               "taken away again: \(sys.commands)")
+    }
+    test("PS-37", "a run whose first record cannot be written leaves nothing running (ext. audit 2: P2)") {
+        let sys = FakeSystem()
+        sys.failWrites = ["state.json"]
+        let h = makeHelper(sys)
+        expectThrows("not started") { _ = try h.start(bundle: psBundle(), uid: 501) }
+        expect(h.isEmpty, "no connection kept")
+        expectEqual(sys.launched.first?.process.signals, [SIGKILL])
+        expectEqual(sys.killedUIDs, [HelperCore.serviceIDBase...HelperCore.serviceIDBase])
+    }
+    test("PS-38", "what the helper is about to change is on disk before it changes it (ext. audit 2: P3)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        var recorded = false
+        sys.onCommand = { cmd in
+            if cmd.contains("10.20.0.0") {
+                recorded = String(decoding: sys.files["/L/run/ID1/state.json"]?.data ?? Data(), as: UTF8.self).contains("10.20.0.0")
+            }
+        }
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1")
+        expect(recorded, "the record names the route before route add runs")
     }
 }
