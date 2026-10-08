@@ -101,6 +101,13 @@ public final class ProfileDownloader {
     }
 
     /// No leading dots (a hidden folder), no separators, at most 64 characters.
+    /// "name.ovpn" -> "name", the same on every macOS (Foundation's deletingPathExtension
+    /// treats names such as "...ovpn" differently from one version to the next).
+    static func withoutExtension(_ s: String) -> String {
+        guard let dot = s.lastIndex(of: "."), dot != s.startIndex else { return s }
+        return String(s[..<dot])
+    }
+
     public static func plainName(_ s: String) -> String {
         let odd = CharacterSet.controlCharacters.union(.newlines).union(CharacterSet(charactersIn: "/:\\"))
             .union(CharacterSet(charactersIn: "\u{200E}\u{200F}\u{202A}\u{202B}\u{202C}\u{202D}\u{202E}\u{2066}\u{2067}\u{2068}\u{2069}"))
@@ -112,13 +119,13 @@ public final class ProfileDownloader {
     private func name(_ disposition: String?, _ source: ImportSource, _ url: URL) -> String {
         if let d = disposition, let r = d.range(of: "filename=") {
             let raw = d[r.upperBound...].split(separator: ";")[0].trimmingCharacters(in: CharacterSet(charactersIn: "\" "))
-            let base = ProfileDownloader.plainName(((raw as NSString).lastPathComponent as NSString).deletingPathExtension)
+            let base = ProfileDownloader.plainName(ProfileDownloader.withoutExtension((raw as NSString).lastPathComponent))
             if !base.isEmpty { return base }
         }
         switch source {
         case .accessServer: return url.host ?? "profile"
         case .url:
-            let raw = (url.lastPathComponent as NSString).deletingPathExtension
+            let raw = url.lastPathComponent == "/" ? "/" : ProfileDownloader.withoutExtension(url.lastPathComponent)
             let base = raw == "/" ? "" : ProfileDownloader.plainName(raw)
             return base.isEmpty ? (url.host ?? "profile") : base
         }
