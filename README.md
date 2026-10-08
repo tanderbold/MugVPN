@@ -35,7 +35,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 <p><img src="docs/screenshots/connections-general.png" alt="The Connections window: list of connections and the General tab with servers" width="49%"> <img src="docs/screenshots/connections-options.png" alt="The Options tab: DNS mode, split DNS, kill switch and leak protection" width="49%"></p>
 
 **Protection**
-- **Kill switch**: if a connection that carries all traffic drops unexpectedly, your TCP and UDP traffic outside the VPN stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper.
+- **Kill switch** (per connection, off by default): if a connection that carries all traffic drops unexpectedly, your TCP and UDP traffic outside the VPN stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper.
 - **Leak protection** while a connection carries all traffic: no IPv6 and no DNS outside the VPN; the local network can be allowed.
 - **Leak check** after connecting and on every network change: warns if the default route, a public network (as a rogue DHCP server would push — TunnelVision) or the DNS goes around the tunnel.
 
@@ -46,9 +46,10 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - Coloured live log with a light/dark switch, View Log in Console; notifications.
 - Reconnects at once after sleep and on network changes; optional disconnect on sleep.
 - Persistent connections that an administrator puts in `config-auto` start at boot, before anyone logs in.
-- Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root.
+- Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root;
+  variables a server pushes (`echo setenv NAME value`) reach them as `PUSHED_NAME`.
 - Command line: `MugVPN --command connect|disconnect|reconnect <profile>` and more.
-- 23 languages, VoiceOver labels, light and dark appearance, a complete uninstaller.
+- 23 languages, VoiceOver labels, light and dark appearance, an uninstaller.
 
 <p><img src="docs/screenshots/connections-auth.png" alt="The Authentication tab: certificates embedded in the profile" width="49%"> <img src="docs/screenshots/status-dark.png" alt="The status window in the dark appearance" width="49%"></p>
 
@@ -59,8 +60,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - **Profiles are checked** before they run: options that would run programs or load code are
   refused, with the line that caused it.
 - **Passwords** stay in your login Keychain, per connection.
-- Built test-first, with integration tests in virtual machines against real OpenVPN servers, and
-  reviewed in repeated security audits.
+- Built test-first, with integration tests in virtual machines against real OpenVPN servers.
 
 Found a security problem? Please report it privately through
 [GitHub's security advisories](https://github.com/tanderbold/MugVPN/security/advisories/new) rather than an issue.
@@ -78,11 +78,12 @@ allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN ope
 
 The first build makes a code-signing certificate of your own, kept in
 `~/Library/Application Support/MugVPN Build`; MugVPN's helper then works only with an app signed
-with it. Install the build as an administrator.
+with it, so it trusts what runs as your account (the uninstaller leaves that folder; delete it when
+you no longer build MugVPN). Install the build as an administrator.
 
 **Macs with standard users.** Routes and DNS are the whole Mac's, so by default a standard
 (non-administrator) user's connections reach only private networks (10/8, 172.16/12, 192.168/16,
-100.64/10, fd00::/8) and answer only for private names (`.internal`, `.lan`, `.local`, `.home.arpa`…).
+100.64/10, fc00::/7) and answer only for private names (`.internal`, `.lan`, `.home.arpa`…).
 An administrator can allow more in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 
 ```json
@@ -168,9 +169,9 @@ Nothing in the integration or interface tests touches the Mac you run them from.
 
 MugVPN is under the [MIT License](LICENSE).
 
-The app bundle also contains openvpn (GPLv2), OpenSSL (Apache 2.0), LZ4 (BSD 2-Clause), LZO (GPLv2)
-and openvpn's macOS DNS script (BSD 2-Clause), each under its own license, built from the official
-releases listed with their full license texts in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
+The app bundle also contains openvpn (GPLv2, with MugVPN's patch in `tools/`), OpenSSL (Apache 2.0),
+LZ4 (BSD 2-Clause) and LZO (GPLv2), each under its own license, built from the official releases
+listed with their full license texts in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
 MugVPN runs openvpn as a separate program.
 
 "OpenVPN" is a trademark of OpenVPN Inc. MugVPN is not affiliated with or endorsed by OpenVPN Inc.;

@@ -20,7 +20,7 @@ export GIT_CEILING_DIRECTORIES="$ROOT/build"
 # DNS), but the path it names stays one only root could ever write to.
 DNS_UPDOWN="/Library/Application Support/MugVPN/libexec/dns-updown"
 # OpenSSL compiles in where it looks for openssl.cnf, providers and engines,
-# and openvpn (as root) loads that config at start. They must point where no
+# and openvpn loads that config at start. They must point where no
 # one but root can ever put a file: under /var/empty, which stays empty.
 SSL_ROOT=/var/empty/mugvpn-openssl
 

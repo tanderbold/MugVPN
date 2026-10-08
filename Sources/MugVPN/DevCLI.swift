@@ -3,6 +3,8 @@ import MugVPNAppCore
 import MugVPNCore
 import ServiceManagement
 
+#if MUGVPN_TESTING
+
 // The developer command line: drives the helper directly, so the
 // integration tests (Tests/Integration) can check tunnels over ssh in the
 // stand VM without the interface. `MugVPN register|status|connect|...`.
@@ -228,3 +230,4 @@ default:
 }
 exit(0)
 }
+#endif

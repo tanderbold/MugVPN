@@ -11,6 +11,8 @@ func log(_ s: String) {
     FileHandle.standardError.write(Data("[helper] \(s)\n".utf8))
 }
 
+// A socket whose other end is gone gives an error, never a signal that ends the helper.
+signal(SIGPIPE, SIG_IGN)
 let queue = DispatchQueue(label: "mugvpn.helper")
 let system = RealSystem(queue: queue)
 let core = HelperCore(system: system)

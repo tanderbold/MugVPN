@@ -106,6 +106,18 @@ public enum LeakCheck {
         }
     }
 
+    /// Public IPv6 networks (2000::/3) routed via a router outside the tunnels: an RA's
+    /// route information, as TunnelVision does with DHCP. (On-link networks are the LAN.)
+    public static func ipv6Bypass(netstat: String, tunnels: Set<String>) -> [LeakFinding] {
+        netstat.components(separatedBy: "\n").compactMap { line in
+            let f = line.split(whereSeparator: { $0 == " " || $0 == "\t" }).map(String.init)
+            guard f.count >= 4, f[0] != "default", f[0].contains("/"), !f[1].hasPrefix("link#"),
+                  let first = f[0].first, first == "2" || first == "3",
+                  !tunnels.contains(f[3]), f[3] != "lo0" else { return nil }
+            return .bypass(f[0], f[3])
+        }
+    }
+
     public static func ipv6Findings(defaults: [String], tunnels: Set<String>, blocked: Bool) -> [LeakFinding] {
         guard !blocked else { return [] }
         return defaults.filter { !tunnels.contains($0) && $0 != "lo0" }.map { .ipv6Outside($0) }
@@ -129,10 +141,12 @@ public enum LeakCheck {
     }
 
     /// Not private, link-local, loopback, CGNAT, multicast or reserved.
-    static func isPublic(_ net: UInt32, _ prefix: Int) -> Bool {
+    public static func isPublic(_ net: UInt32, _ prefix: Int) -> Bool {
+        // Private, shared, link-local, loopback, multicast, reserved, and the special-use
+        // ranges of RFC 6890 (IETF protocols, documentation, benchmarking).
         let reserved: [(UInt32, Int)] = [(0x0A00_0000, 8), (0xAC10_0000, 12), (0xC0A8_0000, 16), (0xA9FE_0000, 16),
                                          (0x7F00_0000, 8), (0x6440_0000, 10), (0xE000_0000, 4), (0xF000_0000, 4),
-                                         (0, 8)]
+                                         (0, 8), (0xC000_0000, 24), (0xC000_0200, 24), (0xC612_0000, 15)]
         return !reserved.contains { (base, len) in
             prefix >= len && (net >> UInt32(32 - len)) == (base >> UInt32(32 - len))
         }

@@ -80,6 +80,7 @@ public final class ManagementConnection {
             close(fd)
             throw POSIXError(.init(rawValue: e) ?? .EIO)
         }
+        setNoSigPipe(fd)
         if let password {
             // openvpn prompts "ENTER PASSWORD:" without a newline, then answers SUCCESS.
             try send(password)
@@ -124,6 +125,8 @@ public final class ManagementConnection {
                 buffer.removeSubrange(buffer.startIndex..<buffer.startIndex + prompt.count)
                 return "ENTER PASSWORD:"
             }
+            // A line is short: an endless one is not kept in memory.
+            if buffer.count > 1 << 16 { throw POSIXError(.EMSGSIZE) }
             var chunk = [UInt8](repeating: 0, count: 4096)
             let n = read(fd, &chunk, chunk.count)
             if n == 0 { return buffer.isEmpty ? nil : String(decoding: buffer.removeAllAndReturn(), as: UTF8.self) }
@@ -134,6 +137,21 @@ public final class ManagementConnection {
             buffer.append(contentsOf: chunk[0..<n])
         }
     }
+}
+
+/// A socket that does not kill its process with SIGPIPE when the other end is gone.
+public func setNoSigPipe(_ fd: Int32) {
+    var one: Int32 = 1
+    _ = setsockopt(fd, SOL_SOCKET, SO_NOSIGPIPE, &one, socklen_t(MemoryLayout<Int32>.size))
+}
+
+/// Who is at the other end of a Unix socket: its process and user.
+public func socketPeer(_ fd: Int32) -> (pid: pid_t, uid: uid_t)? {
+    var pid: pid_t = 0
+    var len = socklen_t(MemoryLayout<pid_t>.size)
+    var uid: uid_t = 0, gid: gid_t = 0
+    guard getsockopt(fd, SOL_LOCAL, LOCAL_PEERPID, &pid, &len) == 0, getpeereid(fd, &uid, &gid) == 0 else { return nil }
+    return (pid, uid)
 }
 
 /// `data` and the descriptor in one message (SCM_RIGHTS), as openvpn's

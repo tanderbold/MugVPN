@@ -168,7 +168,7 @@ func registerPrivsepHelperTests() {
         try bringUp(sys, h, b, uid: 501, device: "utun6", routes: ["10.0.0.0 255.0.0.0 10.8.0.1"])
         sys.commands = []
         sys.launched[0].process.onExit(.signaled(9))
-        expect(!sys.commands.contains { $0.contains("delete") }, "nothing of B's: \(sys.commands)")
+        expect(!sys.commands.contains { $0.first == "route" && $0.contains("delete") }, "nothing of B's: \(sys.commands)")
         expect(sys.routeTable.contains(["route", "-n", "add", "-net", "10.0.0.0", "-netmask", "255.0.0.0", "-interface", "utun6"]))
         // A reconnect: what the old utun still has goes before the new one is used.
         let (c, _) = try h.start(bundle: psBundle(), uid: 501)
@@ -360,8 +360,8 @@ func registerPrivsepHelperTests() {
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
         }
-        for ok in ["corp.internal", "lan", "printer.home.arpa", "office.local"] { try dns(ok) }
-        for bad in ["bank.example", "example.com"] {
+        for ok in ["corp.internal", "lan", "printer.home.arpa"] { try dns(ok) }
+        for bad in ["bank.example", "example.com", "office.local"] {
             expectThrows(bad, matching: "administrator") { try dns(bad) }
         }
         try sys.makeDirectory("/L", mode: 0o755)
@@ -379,17 +379,19 @@ func registerPrivsepHelperTests() {
         let (b, _) = try h.start(bundle: psBundle(), uid: 502)
         sys.utunName = "utun6"
         _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
-        // B's own network inside A's: B's address is set, but no route to it that would take A's traffic.
-        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
-        expect(!sys.routeTable.contains { $0.contains("utun6") }, "no route of B's into A's network")
-        for narrower in ["10.0.0.0 255.0.0.0 10.9.0.1", "10.0.0.0 255.128.0.0 10.9.0.1", "10.20.0.0 255.255.0.0 10.9.0.1"] {
+        // B's own address inside A's network: A's traffic to it would stay on the Mac.
+        expectThrows("in A's network", matching: "another") {
+            _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        }
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "172.16.9.2 255.255.255.0 1500 subnet")
+        for narrower in ["10.0.0.0 255.0.0.0 172.16.9.1", "10.0.0.0 255.128.0.0 172.16.9.1", "10.20.0.0 255.255.0.0 172.16.9.1"] {
             expectThrows(narrower, matching: "another") { _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: narrower) }
         }
         // Wider takes only what A's more specific route does not: A keeps its networks.
-        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "8.0.0.0 248.0.0.0 10.9.0.1")
-        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "192.168.50.0 255.255.255.0 10.9.0.1")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "8.0.0.0 248.0.0.0 172.16.9.1")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "192.168.50.0 255.255.255.0 172.16.9.1")
         // def1 is "everything else", not a network of its own; the same user's tunnels are the user's business.
-        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "0.0.0.0 128.0.0.0 10.9.0.1")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "0.0.0.0 128.0.0.0 172.16.9.1")
         let (c, _) = try h.start(bundle: psBundle(), uid: 501)
         sys.utunName = "utun7"
         _ = try h.tunnelRequest(id: c, uid: 501, kind: "OPENTUN", message: "tun")
@@ -441,5 +443,141 @@ func registerPrivsepHelperTests() {
         expectThrows("DNS again at once", matching: "soon") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSUP", message: "utun5") }
         sys.clock += 2
         _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSUP", message: "utun5")
+    }
+    test("PS-26", "a tunnel's own addresses: not the Mac's networks, not another user's (audit 4: H1)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        sys.utunName = "utun6"
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
+        for bad in ["192.168.64.1 255.255.255.0 1500 subnet", "10.9.0.2 192.168.64.1 1500 net30",
+                    "10.9.0.2 10.8.0.1 1500 net30", "10.20.0.5 255.255.255.0 1500 subnet"] {
+            expectThrows(bad, matching: "network") { _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: bad) }
+        }
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+    }
+    test("PS-27", "IPv6 routes: not inside another user's networks or the Mac's (audit 4: H3)") {
+        let sys = FakeSystem()
+        sys.localIPv6 = ["fd99::/64"]
+        let h = makeHelper(sys)
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "IFCONFIG6", message: "fd00:8::2/64 1500")
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "ROUTE6", message: "fd00:20::/48 utun7")
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        sys.utunName = "utun8"
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
+        for bad in ["fd00:8::/65 utun8", "fd00:20:0:1::/64 utun8", "fd99::/80 utun8"] {
+            expectThrows(bad, matching: "network") { _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE6", message: bad) }
+        }
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE6", message: "fd00:30::/48 utun8")
+    }
+    test("PS-28", "split DNS: not a domain another user's tunnel answers for (audit 4: M2)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        func dns(_ uid: UInt32, _ dev: String, _ domain: String) throws {
+            let (id, _) = try h.start(bundle: psBundle(), uid: uid)
+            sys.utunName = dev
+            _ = try h.tunnelRequest(id: id, uid: uid, kind: "OPENTUN", message: "tun")
+            _ = try h.tunnelRequest(id: id, uid: uid, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
+            _ = try h.tunnelRequest(id: id, uid: uid, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
+            _ = try h.tunnelRequest(id: id, uid: uid, kind: "DNSUP", message: dev)
+        }
+        try dns(501, "utun5", "corp.internal")
+        for taken in ["corp.internal", "eu.corp.internal"] {
+            expectThrows(taken, matching: "another") { try dns(502, "utun6", taken) }
+        }
+        try dns(502, "utun7", "lab.internal")
+        try dns(501, "utun9", "x.corp.internal")  // the same user's
+    }
+    test("PS-29", "a standard user's tunnel carries that user's traffic only (audit 4: H2)") {
+        let sys = FakeSystem()
+        sys.admins = [501]
+        let h = makeHelper(sys)
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, b, uid: 502, device: "utun6", routes: ["10.30.0.0 255.255.0.0 10.8.0.1"])
+        let anchor = sys.pf.last ?? ""
+        expect(anchor.contains("pass out quick on utun6 proto { tcp udp } user { 502 65 }"), anchor)
+        expect(anchor.contains("block return out quick on utun6 proto { tcp udp } all"), anchor)
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["10.40.0.0 255.255.0.0 10.8.0.1"])
+        expect(!(sys.pf.last ?? "").contains("on utun5 proto"), "an administrator's tunnel is the whole Mac's")
+    }
+    test("PS-30", "the ration is per user, not per connection (audit 4: M4)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var refused = 0
+        for _ in 0..<4 {
+            let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+            for _ in 0..<(HelperCore.requestBurst / 2) {
+                if (try? h.tunnelRequest(id: id, uid: 501, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")) == nil { refused += 1 }
+            }
+        }
+        expect(refused >= HelperCore.requestBurst, "\(refused)")
+    }
+    test("PS-31", "an administrator's attach is not beaten by a pending reconnect of the helper (audit 4: L4)") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/auto", mode: 0o755)
+        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o600)
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        sys.channelFails = true
+        sys.fireTimers()              // not listening yet: a retry in 1 s is pending
+        let id = h.list(uid: 0)[0].id
+        sys.channelFails = false
+        let stale = sys.timers
+        sys.timers = []
+        _ = h.releaseManagement(id: id, uid: 501)
+        stale.forEach { $0.f() }
+        expectEqual(sys.channels.count, 0, "the older retry does not take the slot meant for the app")
+        sys.fireTimers()
+        expectEqual(sys.channels.count, 1, "the helper queues up after the app's turn")
+    }
+    test("PS-32", "what the helper did is on disk before it counts: a record it cannot write undoes the change (ext. audit: 3)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        sys.failWrites = ["state.json"]
+        sys.commands = []
+        expectThrows("not recorded", matching: "record") {
+            _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1")
+        }
+        expect(sys.commands.contains(["route", "-n", "delete", "-net", "10.20.0.0", "-netmask", "255.255.0.0", "-interface", "utun5"]),
+               "undone: \(sys.commands)")
+    }
+    test("PS-33", "DNS a tunnel cannot have as asked (DoT, other port, DNSSEC) is not set as plain DNS (ext. audit: 5)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "OPENTUN", message: "tun")
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_server_1_transport=DoT", "dns_server_2_address_1=10.8.0.54",
+                  "dns_server_1_resolve_domain_1=a.internal", "dns_server_2_resolve_domain_1=b.internal"] {
+            _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSVAR", message: v)
+        }
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSUP", message: "utun7")
+        expectEqual(sys.dnsSet.last?.servers, ["10.8.0.54"], "the first server it can use plainly")
+        let (j, _) = try h.start(bundle: psBundle(), uid: 501)
+        sys.utunName = "utun8"
+        _ = try h.tunnelRequest(id: j, uid: 501, kind: "OPENTUN", message: "tun")
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_server_1_port_1=853"] {
+            _ = try h.tunnelRequest(id: j, uid: 501, kind: "DNSVAR", message: v)
+        }
+        expectThrows("none it can use", matching: "DNS") { _ = try h.tunnelRequest(id: j, uid: 501, kind: "DNSUP", message: "utun8") }
+    }
+    test("PS-34", "a utun given back is taken down first: no address or route of it stays (audit 4: M3)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "IFCONFIG6", message: "fd00:8::2/64 1500")
+        sys.commands = []
+        sys.launched[0].process.onExit(.signaled(9))
+        expect(sys.commands.contains(["ifconfig", "utun5", "inet", "10.8.0.2", "delete"]), "\(sys.commands)")
+        expect(sys.commands.contains(["ifconfig", "utun5", "inet6", "fd00:8::2", "delete"]))
+        expect(sys.commands.contains(["ifconfig", "utun5", "down"]))
+        expectEqual(sys.releasedDevices, ["utun5"])
     }
 }

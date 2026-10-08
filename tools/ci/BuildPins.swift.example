@@ -1,6 +1,5 @@
 // Placeholder for CI compiles only. tools/build.sh generates the real
-// BuildPins.swift with the pinned openvpn code hashes, the DNS script's
-// SHA-256 and the XPC client requirement.
+// BuildPins.swift with the pinned openvpn code hash and the XPC client requirement.
 enum BuildPins {
     static let openvpnRequirement = "cdhash H\"0000000000000000000000000000000000000000\""
     static let clientRequirement = "identifier \"com.mugvpn.app\" and anchor apple generic"

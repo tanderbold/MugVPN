@@ -98,7 +98,7 @@ def _variant(mac, name, extra, base="stand-a"):
 def test_int22_user_nobody_refused(vpn, mac):
     path = _variant(mac, "stand-a-nobody", "user nobody\\ngroup nogroup\\npersist-tun\\n")
     r, cid = vpn.connect(path, wait=False)
-    assert cid is None and "does not drop privileges" in r.stderr, r.stdout + r.stderr
+    assert cid is None and "without root already" in r.stderr, r.stdout + r.stderr
 
 
 def test_int23_auth_user_pass_file(vpn, mac):

@@ -112,13 +112,19 @@ public struct TunnelState: Equatable, Sendable, Codable {
     public var subnetRoute: TunnelRoute?
     /// Its IPv6 network ("prefix/bits"), once set.
     public var net6: String?
+    /// Its own IPv4 address, once set.
+    public var local: UInt32?
+    /// Domains its DNS answers for while applied (split DNS).
+    public var dnsDomains: [String] = []
+    /// Gateways inside the tunnel its routes named (the server's side).
+    public var gateways: [UInt32] = []
 
     /// A connection with more routes than this is not a VPN profile but an attack on the helper.
     public static let maxRoutes = 512
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6 }
+    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways }
 
     /// A record of an older helper lacks newer fields: it still counts.
     public init(from decoder: Decoder) throws {
@@ -132,6 +138,9 @@ public struct TunnelState: Equatable, Sendable, Codable {
         opened = (try? c.decodeIfPresent([String].self, forKey: .opened)) ?? device.map { [$0] } ?? []
         subnetRoute = try? c.decodeIfPresent(TunnelRoute.self, forKey: .subnetRoute)
         net6 = try? c.decodeIfPresent(String.self, forKey: .net6)
+        local = try? c.decodeIfPresent(UInt32.self, forKey: .local)
+        dnsDomains = (try? c.decodeIfPresent([String].self, forKey: .dnsDomains)) ?? []
+        gateways = (try? c.decodeIfPresent([UInt32].self, forKey: .gateways)) ?? []
     }
 
     /// Routes of the current device that cover everything (def1's halves, or a default).
@@ -168,6 +177,22 @@ public struct TunnelState: Equatable, Sendable, Codable {
         return nets
     }
 
+    /// Networks its routes send into the tunnel (not its own network: that may be anyone's default).
+    public var routedNetworks: [IPv4Net] {
+        routes.filter { $0.kind == .tunnel && $0.via == device }.compactMap { r in
+            guard let n = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
+                  let p = TunnelState.prefix(ofMask: m), p >= 8 else { return nil }
+            return IPv4Net(address: n, prefix: p)
+        }
+    }
+
+    /// Addresses on the server's side it uses: its peer, its routes' gateways, its DNS servers.
+    public var serverAddresses: [UInt32] {
+        var a = gateways + (peer.map { [$0] } ?? [])
+        a += dnsVars.filter { $0.key.contains("_address_") }.compactMap { TunnelState.ipv4(Substring($0.value)) }
+        return a
+    }
+
     /// Hosts it routes outside the tunnel, via the Mac's gateway or interface.
     public var outsideHosts: [UInt32] {
         routes.filter { $0.kind == .host || $0.kind == .onLink }.compactMap { TunnelState.ipv4(Substring($0.net)) }
@@ -194,7 +219,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
         return (p == 0 ? 0 : UInt32.max << UInt32(32 - p)) == m ? p : nil
     }
 
-    static func text(_ a: UInt32) -> String { "\(a >> 24).\((a >> 16) & 255).\((a >> 8) & 255).\(a & 255)" }
+    public static func text(_ a: UInt32) -> String { "\(a >> 24).\((a >> 16) & 255).\((a >> 8) & 255).\(a & 255)" }
 
     static let privateBlocks = [IPv4Net(address: 0x0A00_0000, prefix: 8), IPv4Net(address: 0xAC10_0000, prefix: 12),
                                 IPv4Net(address: 0xC0A8_0000, prefix: 16), IPv4Net(address: 0x6440_0000, prefix: 10)]
@@ -236,6 +261,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
         guard f.count == 4, let local = TunnelState.ipv4(f[0]), let second = TunnelState.ipv4(f[1]),
               let mtu = Int(f[2]), (576...9000).contains(mtu) else { throw TunnelRequestError("bad IFCONFIG \(msg)") }
         guard TunnelState.isPrivate(local) else { throw TunnelRequestError("a tunnel address must be private") }
+        self.local = local
         switch f[3] {
         case "subnet":
             guard let p = TunnelState.prefix(ofMask: second), (8...30).contains(p) else {
@@ -293,6 +319,10 @@ public struct TunnelState: Equatable, Sendable, Codable {
     /// ROUTE "network netmask gateway [dev iface]": what to add (now remembered).
     public mutating func route(_ msg: String, gateway sys: DefaultGateway?) throws -> [TunnelRoute] {
         let new = try parseRoute(msg, gateway: sys).filter { !routes.contains($0) }
+        let f = msg.split(separator: " ")
+        if new.contains(where: \.intoTunnel), f.count >= 3, let gw = TunnelState.ipv4(f[2]), !gateways.contains(gw) {
+            gateways.append(gw)
+        }
         guard routes.count + new.count <= TunnelState.maxRoutes else {
             throw TunnelRequestError("more than \(TunnelState.maxRoutes) routes")
         }
@@ -388,7 +418,8 @@ public struct TunnelState: Equatable, Sendable, Codable {
     // MARK: - DNS
 
     /// One-label names for private networks (RFC 6762, ICANN's .internal, common practice).
-    static let privateSingleLabels: Set<String> = ["internal", "lan", "local", "home", "corp", "intranet", "private", "localdomain"]
+    /// (Not "local": that is multicast DNS, every user's.)
+    static let privateSingleLabels: Set<String> = ["internal", "lan", "home", "corp", "intranet", "private", "localdomain"]
 
     static func isDomain(_ s: String) -> Bool {
         let name = s.hasSuffix(".") ? String(s.dropLast()) : s
@@ -430,12 +461,22 @@ public struct TunnelState: Equatable, Sendable, Codable {
             dnsVars.filter { $0.key.hasPrefix(prefix) }
                 .sorted { Int($0.key.dropFirst(prefix.count)) ?? 0 < Int($1.key.dropFirst(prefix.count)) ?? 0 }.map(\.value)
         }
-        // The first server openvpn names (by priority number).
+        // The first server openvpn names (by priority number) that can be used as plain DNS:
+        // DNS over TLS/HTTPS, another port or DNSSEC asked for is not quietly made plain.
         let serverIDs = Set(dnsVars.keys.compactMap { k -> Int? in
             guard k.hasPrefix("dns_server_"), k.contains("_address_") else { return nil }
             return Int(k.dropFirst("dns_server_".count).prefix { $0.isNumber })
         })
-        guard let first = serverIDs.min() else { throw TunnelRequestError("no DNS server") }
+        func plain(_ n: Int) -> Bool {
+            let transport = dnsVars["dns_server_\(n)_transport"]?.lowercased() ?? "plain"
+            let dnssec = dnsVars["dns_server_\(n)_dnssec"]?.lowercased() ?? "no"
+            let ports = dnsVars.filter { $0.key.hasPrefix("dns_server_\(n)_port_") }.map(\.value)
+            return transport == "plain" && (dnssec == "no" || dnssec == "optional") && ports.allSatisfy { $0 == "53" }
+        }
+        guard let first = serverIDs.sorted().first(where: plain) else {
+            throw TunnelRequestError(serverIDs.isEmpty ? "no DNS server"
+                                     : "no DNS server MugVPN can set as asked (DNS over TLS/HTTPS, another port or DNSSEC)")
+        }
         let servers = indexed("dns_server_\(first)_address_")
         var match = indexed("dns_server_\(first)_resolve_domain_")
         let search = indexed("dns_search_domain_")

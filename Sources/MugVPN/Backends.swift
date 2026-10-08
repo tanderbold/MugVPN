@@ -83,6 +83,8 @@ final class XPCHelperClient: HelperClient {
 
 /// A management socket; reads on a background queue, delivers on main.
 final class UnixSocketLink: ManagementLink {
+    /// The ids the helper runs openvpn as (HelperCore.serviceIDBase, serviceIDCount).
+    static let serviceIDs: ClosedRange<uid_t> = 470_000_000...(470_000_000 + 4095)
     private let fd: Int32
     private let source: DispatchSourceRead
 
@@ -98,6 +100,9 @@ final class UnixSocketLink: ManagementLink {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { connect(sock, $0, socklen_t(MemoryLayout<sockaddr_un>.size)) }
         }
         guard rc == 0 else { Darwin.close(sock); return nil }
+        // openvpn of MugVPN's (one of its own ids), not whatever a path was made to lead to.
+        setNoSigPipe(sock)
+        guard let peer = socketPeer(sock), (UnixSocketLink.serviceIDs).contains(peer.uid) else { Darwin.close(sock); return nil }
         fd = sock
         source = DispatchSource.makeReadSource(fileDescriptor: sock, queue: .global())
         source.setEventHandler { [source] in
@@ -273,8 +278,14 @@ final class DiskBundleReader: ProfileBundleReader {
 
 enum HelperState: String { case enabled, requiresApproval, notRegistered }
 
+extension HelperSetup {
+    var isTestDouble: Bool { false }
+}
+
 protocol HelperSetup: AnyObject {
     var state: HelperState { get }
+    /// The test mode's stand-in (a testing build only).
+    var isTestDouble: Bool { get }
     func register()
     func openLoginItems()
     func unregister()

@@ -167,16 +167,17 @@ func registerAppLogicTests() {
         let env = ScriptRunner.environment(profile: profile, directives: d, pushed: [("SERVER_VAR", "x")],
                                            localIP: "10.8.0.2", localIPv6: "")
         expectEqual(env["CORP_SITE"], "berlin")
-        expectEqual(env["SERVER_VAR"], "x")
+        expectEqual(env["PUSHED_SERVER_VAR"], "x", "what a server sends comes under a name of its own")
+        expect(env["SERVER_VAR"] == nil)
         expectEqual(env["config"], "office.ovpn")
         expectEqual(env["profile"], "office")
         expectEqual(env["ifconfig_local"], "10.8.0.2")
         expect(env["opt"] == nil && env["FORWARD_COMPATIBLE"] == "1")
         let unsafe = ScriptRunner.environment(profile: profile, directives: [], pushed: [("PATH", "/evil"), ("DYLD_INSERT_LIBRARIES", "x"), ("ok_name", "1"), ("bad-name", "2")],
                                               localIP: "", localIPv6: "")
-        expect(unsafe["PATH"] == nil && unsafe["DYLD_INSERT_LIBRARIES"] == nil && unsafe["bad-name"] == nil,
+        expect(unsafe["PATH"] == nil && unsafe["DYLD_INSERT_LIBRARIES"] == nil && unsafe["PUSHED_bad-name"] == nil,
                "the server cannot set PATH, DYLD_*, or odd names")
-        expectEqual(unsafe["ok_name"], "1")
+        expectEqual(unsafe["PUSHED_ok_name"], "1")
     }
     test("SCR-06", "no variable that changes how a shell or program runs") {
         // SHELLOPTS=xtrace with PS4='$(...)' runs code in any /bin/sh script.
@@ -226,7 +227,11 @@ func registerAppLogicTests() {
                       ("GNUPGHOME", "/tmp"), ("XDG_CONFIG_HOME", "/tmp"), ("LUA_INIT", "x"), ("PHPRC", "/tmp"),
                       ("LESSOPEN", "|x"), ("TCLLIBPATH", "/tmp"), ("SITE", "office")]
         let env = ScriptRunner.environment(profile: p, directives: [], pushed: pushed, localIP: "", localIPv6: "")
-        expectEqual(env.keys.filter { !["config", "profile"].contains($0) }.sorted(), ["SITE"])
+        let names = env.keys.filter { !["config", "profile"].contains($0) }
+        expect(names.allSatisfy { $0.hasPrefix("PUSHED_") }, "\(names.sorted())")
+        expectEqual(env["PUSHED_SITE"], "office")
+        let many = ScriptRunner.environment(profile: p, directives: [], pushed: (0..<500).map { ("V\($0)", "x") }, localIP: "", localIPv6: "")
+        expect(many.count <= ScriptRunner.maxPushed + 4, "bounded: \(many.count)")
     }
     test("SCR-05", "outcomes") {
         expectEqual(ScriptRunner.outcome(.pre, .exited(0)), .proceed)

@@ -110,7 +110,8 @@ def test_ui10_server_messages(app):
     assert app.control(w, "title_text")["value"] == "Notice"
     assert "Maintenance tonight" in app.control(w, "text")["value"]
     app.feed("stand-a", ">ECHO:1,msg Saved", ">ECHO:1,msg-notify Heads up")
-    wait_for(lambda: {"title": "Heads up", "text": "Saved"} in app.call("notifications")["items"], 5, "a notification")
+    wait_for(lambda: {"title": "stand-a: Heads up", "text": "Saved"} in app.call("notifications")["items"], 5,
+             "a notification, under its profile's name")
 
 
 def test_ui10b_confirm_and_string_requests(app):

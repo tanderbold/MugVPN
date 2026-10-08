@@ -220,10 +220,10 @@ def test_int43_openvpn_is_sandboxed(vpn, mac):
         "lib.sandbox_check.restype = ctypes.c_int",
         "lib.sandbox_check.argtypes = [ctypes.c_int, ctypes.c_char_p, ctypes.c_int]",
         "for pid in map(int, sys.argv[1:]):",
-        "    print(lib.sandbox_check(pid, None, 0), lib.sandbox_check(pid, b'process-fork', 0))",
+        "    print(*[lib.sandbox_check(pid, op, 0) for op in (None, b'process-fork', b'job-creation', b'mach-register')])",
     ])
     out = mac.out(f"sudo /usr/bin/python3 -c {shlex.quote(probe)} {pid} $$").split()
-    assert out == ["1", "1", "0", "0"], f"openvpn sandboxed, fork denied; the probe's own shell not: {out}"
+    assert out == ["1"] * 4 + ["0"] * 4, f"openvpn sandboxed: no fork, no launchd jobs, no services of its own; the probe's shell free: {out}"
     # The sandbox's write rule, seen from outside: openvpn could not create its tmp files elsewhere.
     log = mac.out(f"sudo grep -c 'tmp-dir' '{run}/openvpn.log' || true").strip()
     assert log == "0", "no tmp-dir error: it writes where it may"

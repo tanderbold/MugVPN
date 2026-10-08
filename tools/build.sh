@@ -29,7 +29,8 @@ fi
 
 # Without a Developer ID: a signing certificate of this Mac's own, made once, in a keychain
 # only its user can read. The helper then accepts only an app signed with it: anyone can
-# sign a program "com.mugvpn.app" ad hoc, nobody else holds this key.
+# sign a program "com.mugvpn.app" ad hoc, but other users do not hold this key. (Programs
+# running as the user who builds can use it: a self-built copy trusts that user's account.)
 # (MUGVPN_ADHOC=1: plain ad-hoc signing, for development only.)
 LOCAL_LEAF=""
 KEYCHAIN_ARGS=()
@@ -37,9 +38,15 @@ if [ "$SIGN_ID" = "-" ] && [ "${MUGVPN_ADHOC:-}" != 1 ]; then
     KDIR="$HOME/Library/Application Support/MugVPN Build"
     KC="$KDIR/signing.keychain-db"
     mkdir -p "$KDIR"; chmod 700 "$KDIR"
+    # One build at a time: two would race over the user's keychain search list.
+    if ! shlock -f "$KDIR/build.pid" -p $$; then
+        echo "another MugVPN build is signing; try again when it is done" >&2; exit 1
+    fi
+    # A first build that stopped half-way: start over.
+    if [ -f "$KC" ] && [ ! -f "$KDIR/certificate.der" ]; then rm -f "$KC" "$KDIR/keychain-password"; fi
     if [ ! -f "$KC" ]; then
         echo "==> a local signing certificate for MugVPN (once, in $KDIR)"
-        tmp=$(mktemp -d); trap 'rm -rf "$tmp"' EXIT
+        tmp=$(mktemp -d); trap 'rm -rf "$tmp"; [ -f "$KDIR/certificate.der" ] || rm -f "$KC" "$KDIR/keychain-password"' EXIT
         printf '[req]\ndistinguished_name=dn\nx509_extensions=ext\nprompt=no\n[dn]\nCN=MugVPN Local Signing\n[ext]\nkeyUsage=critical,digitalSignature\nextendedKeyUsage=critical,codeSigning\nbasicConstraints=critical,CA:false\n' > "$tmp/cert.cnf"
         /usr/bin/openssl req -x509 -newkey rsa:2048 -nodes -keyout "$tmp/key.pem" -out "$tmp/cert.pem" -days 3650 -config "$tmp/cert.cnf" 2>/dev/null
         (umask 077; /usr/bin/openssl rand -hex 24 > "$KDIR/keychain-password")
@@ -58,8 +65,9 @@ if [ "$SIGN_ID" = "-" ] && [ "${MUGVPN_ADHOC:-}" != 1 ]; then
     SIGN_ID=$(echo "$LOCAL_LEAF" | tr a-f A-F)
     # codesign finds a key only in the user's keychain search list: added for this build only.
     SEARCH=()
-    while IFS= read -r k; do k="${k#"${k%%[![:space:]]*}"}"; k="${k%\"}"; k="${k#\"}"; [ -n "$k" ] && SEARCH+=("$k"); done < <(security list-keychains -d user)
-    restore_search() { security list-keychains -d user -s ${SEARCH[@]+"${SEARCH[@]}"}; }
+    # (Without the signing keychain itself, should an earlier build have been killed mid-way.)
+    while IFS= read -r k; do k="${k#"${k%%[![:space:]]*}"}"; k="${k%\"}"; k="${k#\"}"; [ -n "$k" ] && [ "$k" != "$KC" ] && SEARCH+=("$k"); done < <(security list-keychains -d user)
+    restore_search() { security list-keychains -d user -s ${SEARCH[@]+"${SEARCH[@]}"}; security lock-keychain "$KC" 2>/dev/null || true; }
     trap restore_search EXIT
     security list-keychains -d user -s ${SEARCH[@]+"${SEARCH[@]}"} "$KC"
     KEYCHAIN_ARGS=(--keychain "$KC")
@@ -77,7 +85,7 @@ pin() {
     echo "$req"
 }
 cp "$OUT/openvpn/openvpn" "$OUT/stage/openvpn"
-codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} --force --options runtime --identifier com.mugvpn.openvpn -s "$SIGN_ID" "$OUT/stage/openvpn"
+codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} ${TEAM:+--timestamp} --force --options runtime --identifier com.mugvpn.openvpn -s "$SIGN_ID" "$OUT/stage/openvpn"
 OPENVPN_REQ=$(pin "$OUT/stage/openvpn")
 
 # The helper trusts only what is pinned here: openvpn by its code directory
@@ -139,8 +147,8 @@ if [ "${MUGVPN_TESTING:-}" = 1 ]; then echo "E2E socket and developer subcommand
 cp Resources/com.mugvpn.helper.plist "$APP/Contents/Library/LaunchDaemons/"
 
 echo "==> sign"
-codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} --force --options runtime --identifier com.mugvpn.helper -s "$SIGN_ID" "$APP/Contents/MacOS/MugVPNHelper"
-codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} --force --options runtime --identifier com.mugvpn.app -s "$SIGN_ID" "$APP"
+codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} ${TEAM:+--timestamp} --force --options runtime --identifier com.mugvpn.helper -s "$SIGN_ID" "$APP/Contents/MacOS/MugVPNHelper"
+codesign ${KEYCHAIN_ARGS[@]+"${KEYCHAIN_ARGS[@]}"} ${TEAM:+--timestamp} --force --options runtime --identifier com.mugvpn.app -s "$SIGN_ID" "$APP"
 # Checked as it will be used: without the signing keychain in the search list.
 if [ -n "$LOCAL_LEAF" ]; then restore_search; trap - EXIT; fi
 codesign --verify --deep --strict "$APP"

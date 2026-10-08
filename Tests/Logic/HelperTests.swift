@@ -21,12 +21,15 @@ final class FakeChannel: ManagementChannel {
     let onClose: () -> Void
     var sent: [(line: String, fd: Int32?)] = []
     var closed = false
+    /// The other end stopped taking lines.
+    var stalled = false
     init(path: String, onLine: @escaping (String) -> Void, onClose: @escaping () -> Void) {
         self.path = path
         self.onLine = onLine
         self.onClose = onClose
     }
     func send(_ line: String, passing fd: Int32?) -> Bool {
+        if stalled { return false }
         sent.append((line, fd))
         return true
     }
@@ -61,7 +64,7 @@ final class FakeSystem: HelperSystem {
     var channelFails = false
     var closedFDs: [Int32] = []
     func closeDescriptor(_ fd: Int32) { closedFDs.append(fd) }
-    func connectManagement(_ path: String, onLine: @escaping (String) -> Void,
+    func connectManagement(_ path: String, peer pid: Int32, onLine: @escaping (String) -> Void,
                            onClose: @escaping () -> Void) -> ManagementChannel? {
         if channelFails { return nil }
         let c = FakeChannel(path: path, onLine: onLine, onClose: onClose)
@@ -71,6 +74,11 @@ final class FakeSystem: HelperSystem {
     var utunName = "utun7"
     /// IPv6 networks of the Mac's own interfaces.
     var localIPv6: [String] = []
+    /// IPv4 networks of the Mac's own interfaces (the stand's LAN by default).
+    var localIPv4: [String] = ["192.168.64.0/24"]
+    func localIPv4Networks() -> [String] { localIPv4 }
+    /// Writes that fail (disk full...), by path suffix.
+    var failWrites: Set<String> = []
     func localIPv6Networks() -> [String] { localIPv6 }
     var clock: TimeInterval = 1000
     func now() -> TimeInterval { clock }
@@ -140,7 +148,10 @@ final class FakeSystem: HelperSystem {
         guard dirs[path] == nil else { throw CocoaError(.fileWriteFileExists) }
         dirs[path] = mode
     }
-    func writeFile(_ path: String, _ data: Data, mode: UInt16) throws { files[path] = (data, mode) }
+    func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
+        if failWrites.contains(where: { path.hasSuffix($0) }) { throw CocoaError(.fileWriteOutOfSpace) }
+        files[path] = (data, mode)
+    }
     func readFile(_ path: String) -> Data? { files[path]?.data }
     func readTail(_ path: String, maxBytes: Int) -> Data? { files[path].map { $0.data.suffix(maxBytes) } }
     func readFrom(_ path: String, offset: UInt64, maxBytes: Int) -> Data? {
@@ -173,8 +184,11 @@ final class FakeSystem: HelperSystem {
         if failMoves.contains(to) { throw CocoaError(.fileWriteNoPermission) }
         move(from, to)
     }
+    /// Modes set with setOwner (directories included).
+    var modes: [String: UInt16] = [:]
     func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) {
         owners[path] = (uid, gid)
+        modes[path] = mode
         if let f = files[path] { files[path] = (f.data, mode) }
     }
     func exists(_ path: String) -> Bool {
@@ -202,7 +216,7 @@ final class FakeSystem: HelperSystem {
     func isAdmin(uid: UInt32) -> Bool { admins.contains(uid) }
     func fileInfo(_ path: String) -> FileInfo? {
         guard files[path] != nil || dirs[path] != nil || links.contains(path) else { return nil }
-        let i = infos[path] ?? (0, 0o755)
+        let i = infos[path] ?? (0, files[path]?.mode ?? 0o755)
         let kind: FileInfo.Kind = links.contains(path) ? .link : dirs[path] != nil ? .directory : .regular
         return FileInfo(owner: i.owner, mode: i.mode, kind: kind)
     }
@@ -512,6 +526,17 @@ func registerHelperTests() {
                                        files: ["ca.crt": Data(testCA.utf8)]), uid: 501)
         expect(!sys.launched[1].args.contains("--remote-cert-tls"), "its own check is kept")
     }
+    test("HLP-32", "kept logs of one user are bounded") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        for i in 0..<(HelperCore.keptLogsPerUser + 5) {
+            let (id, _) = try h.start(bundle: bundle("p\(i)"), uid: 501)
+            try sys.writeFile("/L/run/\(id)/openvpn.log", Data("log".utf8), mode: 0o600)
+            sys.launched.last!.process.onExit(.exited(0))
+        }
+        let kept = sys.files.keys.filter { $0.hasPrefix("/Logs/") && $0.hasSuffix(".501.log") }
+        expectEqual(kept.count, HelperCore.keptLogsPerUser)
+    }
     test("HLP-02", "run directory contents") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
@@ -719,7 +744,7 @@ func registerLogTrustTests() {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         if sys.dirs["/L/auto"] == nil { try sys.makeDirectory("/L/auto", mode: 0o755) }
-        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o644)
+        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o600)
         h.startPersistentProfiles()
         let real = h.list(uid: 501).first { $0.persistent }!
         let seen = h.list(uid: 502).first { $0.persistent }!
@@ -760,7 +785,7 @@ func registerLogTrustTests() {
 
 private func autoProfile(_ sys: FakeSystem, _ name: String, _ text: String = "client\ndev tun\nremote a 1194\n") throws {
     if sys.dirs["/L/auto"] == nil { try sys.makeDirectory("/L/auto", mode: 0o755) }
-    try sys.writeFile("/L/auto/\(name).ovpn", Data(text.utf8), mode: 0o644)
+    try sys.writeFile("/L/auto/\(name).ovpn", Data(text.utf8), mode: 0o600)
 }
 
 func registerPersistentHelperTests() {
@@ -794,7 +819,7 @@ func registerPersistentHelperTests() {
         let sys = FakeSystem()
         try autoProfile(sys, "good", "client\ndev tun\nca keys/ca.crt\n")
         try sys.makeDirectory("/L/auto/keys", mode: 0o755)
-        try sys.writeFile("/L/auto/keys/ca.crt", Data(testCA.utf8), mode: 0o644)
+        try sys.writeFile("/L/auto/keys/ca.crt", Data(testCA.utf8), mode: 0o600)
         try autoProfile(sys, "abs", "client\ndev tun\nca /etc/ssl/x.crt\n")
         try autoProfile(sys, "up", "client\ndev tun\nca ../run/x\n")
         try autoProfile(sys, "evil", "client\ndev tun\nup /bin/sh\n")
@@ -915,12 +940,43 @@ func registerPersistentHelperTests() {
         sys.fireTimers()
         expectEqual(sys.channels.count, 2, "no connection to a tunnel that is gone")
     }
+    test("PER-16", "a persistent profile and its files are root's to read too (keys inside)") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        sys.files["/L/auto/site.ovpn"]!.mode = 0o644
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        expect(h.isEmpty, "a profile everyone can read is refused")
+        sys.files["/L/auto/site.ovpn"]!.mode = 0o600
+        h.startPersistentProfiles()
+        expectEqual(h.list(uid: 0).count, 1)
+    }
+    test("PER-17", "a persistent tunnel's management socket: administrators only") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        let id = h.list(uid: 0)[0].id
+        expectEqual(sys.owners["/L/run/\(id)/sock"]?.gid, 80, "group admin")
+        expectEqual(sys.modes["/L/run/\(id)/sock"], 0o750, "nobody else reaches the socket")
+    }
+    test("PER-18", "a persistent openvpn that stops taking answers is let go of and stopped, not waited for") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        sys.fireTimers()
+        sys.channels[0].stalled = true
+        sys.channels[0].onLine(">NEED-OK:Need 'DNSDOWN' confirmation MSG:utun7")
+        expect(sys.channels[0].closed)
+        expectEqual(sys.launched[0].process.signals, [SIGTERM], "its connection ends")
+    }
     test("PER-11", "config-auto: root-owned regular files only") {
         func setup(_ tweak: (FakeSystem) throws -> Void) throws -> HelperCore {
             let sys = FakeSystem()
             try autoProfile(sys, "site", "client\ndev tun\nca keys/ca.crt\n")
             try sys.makeDirectory("/L/auto/keys", mode: 0o755)
-            try sys.writeFile("/L/auto/keys/ca.crt", Data(testCA.utf8), mode: 0o644)
+            try sys.writeFile("/L/auto/keys/ca.crt", Data(testCA.utf8), mode: 0o600)
             try tweak(sys)
             let h = makeHelper(sys)
             h.startPersistentProfiles()
@@ -972,7 +1028,7 @@ func registerUninstallHelperTests() {
         try sys.makeDirectory("/L/config", mode: 0o755)
         try sys.writeFile("/L/config/corp.ovpn", Data(), mode: 0o644)
         try sys.makeDirectory("/L/auto", mode: 0o755)
-        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o644)
+        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o600)
         try sys.makeDirectory("/Logs", mode: 0o755)
         try sys.writeFile("/Logs/x.log", Data(), mode: 0o644)
         try sys.writeFile("/LD/com.mugvpn.helper.plist", Data(), mode: 0o644)

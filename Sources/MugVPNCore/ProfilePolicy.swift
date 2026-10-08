@@ -40,7 +40,7 @@ public enum ProfilePolicy {
         case "remote-cert-tls": return a.first == "server"
         case "remote-cert-eku":
             return ["tls web server authentication", "serverauth", "1.3.6.1.5.5.7.3.1"].contains(a.first ?? "")
-        case "verify-x509-name": return !(a.first ?? "").isEmpty
+        case "verify-x509-name": return !(a.first ?? "").isEmpty && (a.count < 2 || a[1] != "name-prefix")
         case "peer-fingerprint":
             // A SHA-256 fingerprint (32 hex bytes), or the inline list of them.
             if d.inline != nil { return true }
@@ -55,7 +55,7 @@ public enum ProfilePolicy {
         // "?NAME": optional, used when this openvpn has it (and it has these).
         let n = (name.hasPrefix("?") ? String(name.dropFirst()) : name).uppercased()
         let prefixes = ["BF-", "DES-", "DESX", "DES3", "CAST", "RC2", "RC4", "RC5", "SEED", "IDEA", "MD4", "MD5"]
-        return n == "DES" || n == "BF" || prefixes.contains { n.hasPrefix($0) }
+        return n == "DES" || n == "BF" || prefixes.contains { n.hasPrefix($0) } || n.contains("MD5") || n.contains("MD4")
     }
 
     struct FileUse { var key: String; var kind: String }
@@ -132,8 +132,8 @@ public enum ProfilePolicy {
         "daemon": "detaches from the helper", "syslog": "detaches logging from the helper",
         "capath": "reads a directory", "mode": "server mode", "server": "server mode",
         "server-bridge": "server mode", "dev-node": "names a device node",
-        "user": "MugVPN does not drop privileges (the DNS script would trust a file the unprivileged openvpn wrote)",
-        "group": "MugVPN does not drop privileges (the DNS script would trust a file the unprivileged openvpn wrote)",
+        "user": "MugVPN runs openvpn without root already, under an id of its own",
+        "group": "MugVPN runs openvpn without root already, under an id of its own",
         "mlock": "locks memory as root",
         "suppress-timestamps": "MugVPN reads openvpn's log with its timestamps",
         "machine-readable-output": "MugVPN reads openvpn's log with its timestamps",
@@ -152,7 +152,10 @@ public enum ProfilePolicy {
         for u in uses where !(kinds[u.key] ?? []).contains(u.kind) { kinds[u.key, default: []].append(u.kind) }
         var r = Result(directives: out, files: files, dropped: dropped)
         let names = Set(out.map(\.name))
-        r.needsServerCheck = (names.contains("ca") || names.contains("pkcs12")) && !out.contains(where: ProfilePolicy.checksServer)
+        // openvpn uses the last remote-cert-tls: only that one counts.
+        let lastTLS = out.last { $0.name == "remote-cert-tls" }
+        let checks = out.filter { $0.name != "remote-cert-tls" } + (lastTLS.map { [$0] } ?? [])
+        r.needsServerCheck = (names.contains("ca") || names.contains("pkcs12")) && !checks.contains(where: ProfilePolicy.checksServer)
         r.fileKinds = kinds
         return r
 

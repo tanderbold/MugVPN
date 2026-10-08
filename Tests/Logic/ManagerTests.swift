@@ -35,9 +35,10 @@ final class FakeHelperClient: HelperClient {
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply(running) }
     var released: [String] = []
+    var releaseError: String?
     func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) {
         released.append(id)
-        reply(nil)
+        reply(releaseError)
     }
     var tunnelRequests: [(id: String, kind: String, message: String)] = []
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void) {
@@ -134,6 +135,39 @@ final class ManagerHarness {
 }
 
 func registerManagerTests() {
+    test("MAN-22", "quitting is not held up by a connection that goes another way, nor for ever") {
+        let h = ManagerHarness()
+        h.transport.failures = 1000          // its management socket never answers
+        h.m.connect(h.a)
+        var done = 0
+        h.m.appQuitting { done += 1 }
+        h.scheduler.drain(limit: 1000)
+        expectEqual(done, 1, "it gave up on the socket: nothing left to wait for")
+        let k = ManagerHarness()
+        k.m.connect(k.a)
+        var later = 0
+        k.m.appQuitting { later += 1 }      // its openvpn never ends
+        k.scheduler.drain(limit: 1000)
+        expectEqual(later, 1, "not for ever: a deadline")
+        k.scheduler.drain(limit: 1000)
+        expectEqual(later, 1, "once")
+    }
+    test("MAN-21", "a persistent tunnel the app cannot attach to is left running") {
+        let h = ManagerHarness()
+        let site = Profile(name: "site", path: "/L/config-auto/site.ovpn", source: .persistent, folder: "")
+        h.m.profiles = [site]
+        h.helper.running = [ConnectionInfo(id: "P1", name: "site", pid: 1, managementSocket: "/run/P1/m.sock", ownerUID: 0, persistent: true)]
+        h.transport.failures = 1000
+        h.m.connect(site)
+        h.scheduler.drain(limit: 500)
+        expectEqual(h.helper.stops, [], "never stopped: it is the Mac's, not this app's")
+        expect(h.m.lastError[site.id] != nil)
+        h.helper.releaseError = "only an administrator can attach to a persistent connection"
+        h.transport.failures = 0
+        h.m.connect(site)
+        expectEqual(h.transport.links.count, 0, "not attached when the helper says no")
+        expect(h.m.lastError[site.id]?.contains("administrator") == true)
+    }
     test("MAN-20", "attaching to a persistent tunnel: the helper lets go of its management first; its tunnel requests go to the helper") {
         let h = ManagerHarness()
         let site = Profile(name: "site", path: "/L/config-auto/site.ovpn", source: .persistent, folder: "")
@@ -343,7 +377,7 @@ func registerScriptManagerTests() {
         h.link()?.push(">STATE:1700000000,CONNECTED,SUCCESS,10.8.0.2,1.2.3.4,1194,,\n")
         expectEqual(h.scripts.runs.map(\.plan.path), ["/cfg/a_up.sh"])
         expectEqual(h.scripts.runs.first?.env["ifconfig_local"], "10.8.0.2")
-        expectEqual(h.scripts.runs.first?.env["SITE"], "berlin")
+        expectEqual(h.scripts.runs.first?.env["PUSHED_SITE"], "berlin")
         h.scripts.finish(.exited(1))
         expectEqual(h.m.active["/cfg/a.ovpn"]?.controller.status, .connected(ip: "10.8.0.2", ipv6: "", withErrors: true))
         h.link()?.push(">STATE:1700000001,RECONNECTING,ping-restart,,,,,\n>STATE:1700000002,CONNECTED,SUCCESS,10.8.0.2,1.2.3.4,1194,,\n")

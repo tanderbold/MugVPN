@@ -20,11 +20,11 @@ openvpn's license, GPL-2.0) to run without root and ask MugVPN's helper for its 
   https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
 Changes made by MugVPN: besides that patch, openvpn is configured so that its default
 DNS script is "/Library/Application Support/MugVPN/libexec/dns-updown" (a build setting,
-no source change). The complete
-corresponding source of the GPL components (the archives above and MugVPN's
-patches) is published at https://github.com/tanderbold/MugVPN; on request (open an
-issue there) it is also available from the MugVPN authors for three years from
-the date of distribution.
+no source change). MugVPN's patches and build
+scripts are published at https://github.com/tanderbold/MugVPN, the archives at the
+official addresses above (their SHA-256 pinned in tools/build-openvpn.sh). On request
+(open an issue there) the complete corresponding source of the GPL components is also
+available from the MugVPN authors for three years from the date of distribution.
 
 "OpenVPN" is a trademark of OpenVPN Inc. MugVPN is not affiliated with or endorsed
 by OpenVPN Inc.

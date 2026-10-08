@@ -1,7 +1,7 @@
 # MugVPN E2E socket
 
 Interface tests (layer U of the test plan) drive the real app through a socket it
-opens only when started with `MUGVPN_E2E=1`. The app then also:
+opens only in a testing build (`MUGVPN_TESTING=1 tools/build.sh`) started with `MUGVPN_E2E=1`. The app then also:
 
 - keeps its settings in the `com.mugvpn.app.e2e` defaults domain and its
   profiles under `$MUGVPN_E2E_HOME` (never the user's own),

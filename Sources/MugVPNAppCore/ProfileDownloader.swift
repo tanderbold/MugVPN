@@ -108,6 +108,13 @@ public final class ProfileDownloader {
         return String(s[..<dot])
     }
 
+    /// A path as it may be shown: no line breaks, control or text-direction characters.
+    public static func visible(_ s: String) -> String {
+        let odd = CharacterSet.controlCharacters.union(.newlines)
+            .union(CharacterSet(charactersIn: "\u{200E}\u{200F}\u{202A}\u{202B}\u{202C}\u{202D}\u{202E}\u{2066}\u{2067}\u{2068}\u{2069}"))
+        return String(String.UnicodeScalarView(s.unicodeScalars.map { odd.contains($0) ? "?" : $0 }))
+    }
+
     public static func plainName(_ s: String) -> String {
         let odd = CharacterSet.controlCharacters.union(.newlines).union(CharacterSet(charactersIn: "/:\\"))
             .union(CharacterSet(charactersIn: "\u{200E}\u{200F}\u{202A}\u{202B}\u{202C}\u{202D}\u{202E}\u{2066}\u{2067}\u{2068}\u{2069}"))

@@ -9,7 +9,7 @@ AUTO = "/Library/Application Support/MugVPN/config-auto"
 @pytest.fixture
 def persistent_site(mac, vpn):
     mac.run(f"sudo mkdir -p '{AUTO}' && sudo cp /Users/tester/stand/stand-a.ovpn '{AUTO}/site.ovpn' "
-            f"&& sudo chown -R root:wheel '{AUTO}' && sudo chmod 755 '{AUTO}'", check=True)
+            f"&& sudo chown -R root:wheel '{AUTO}' && sudo chmod 755 '{AUTO}' && sudo chmod 600 '{AUTO}/site.ovpn'", check=True)
     yield
     mac.run(f"sudo rm -rf '{AUTO}'", check=True)
     mac.run("pkill -x MugVPN; true")

@@ -16,29 +16,15 @@ let testingBuild = false
 #endif
 
 let rawArgs = Array(CommandLine.arguments.dropFirst())
-if testingBuild, let first = rawArgs.first, devCommands.contains(first) { runDevCLI(rawArgs) }
+#if MUGVPN_TESTING
+if let first = rawArgs.first, devCommands.contains(first) { runDevCLI(rawArgs) }
+#endif
 
-let commandNotification = Notification.Name("com.mugvpn.command")
-let commandAck = Notification.Name("com.mugvpn.command.ack")
-
-/// Hand a --command to the running app. It may still be starting, so the
-/// command is posted again until the app confirms it (by token), up to 10 s.
+/// Hand a --command to the running app (through its own user's socket).
 func sendCommand(_ args: [String]) -> Int32 {
-    let token = UUID().uuidString
-    let center = DistributedNotificationCenter.default()
-    var acked = false
-    let observer = center.addObserver(forName: commandAck, object: nil, queue: .main) { n in
-        if n.userInfo?["token"] as? String == token { acked = true }
-    }
-    let deadline = Date().addingTimeInterval(10)
-    while !acked && Date() < deadline {
-        center.postNotificationName(commandNotification, object: nil, userInfo: ["args": args, "token": token],
-                                    deliverImmediately: true)
-        RunLoop.main.run(until: Date().addingTimeInterval(0.3))
-    }
-    center.removeObserver(observer)
-    if !acked { FileHandle.standardError.write(Data("MugVPN is running but did not answer\n".utf8)) }
-    return acked ? 0 : 1
+    if CommandChannel.send(args) { return 0 }
+    FileHandle.standardError.write(Data("MugVPN is running but did not answer\n".utf8))
+    return 1
 }
 let env = ProcessInfo.processInfo.environment
 let e2e = testingBuild && env["MUGVPN_E2E"] == "1"
@@ -94,7 +80,9 @@ default:
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var controller: AppController!
+    #if MUGVPN_TESTING
     var e2eServer: E2EServer?
+    #endif
 
     func applicationDidFinishLaunching(_ note: Notification) {
         let home = FileManager.default.homeDirectoryForCurrentUser.path
@@ -111,8 +99,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             guard let id = c.helperID else { return "" }
             return (try? String(contentsOfFile: "\(MugVPNIDs.runDir)/\(id)/openvpn.log", encoding: .utf8)) ?? ""
         }
+        #if MUGVPN_TESTING
         var backend: E2EBackend?
+        #endif
         if e2e {
+            #if MUGVPN_TESTING
             // Screenshots in either appearance, whatever the VM's own is.
             switch env["MUGVPN_E2E_APPEARANCE"] {
             case "Light": NSApp.appearance = NSAppearance(named: .aqua)
@@ -145,6 +136,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                     return (try? String(contentsOfFile: "\(MugVPNIDs.runDir)/\(id)/openvpn.log", encoding: .utf8)) ?? ""
                 }
             }
+            #else
+            fatalError("no test mode in this build")
+            #endif
         } else {
             services = RealServices()
             helper = XPCHelperClient()
@@ -175,6 +169,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         manager.persistentMode = { settingsStore.settings.persistentConnections }
         controller.logText = logText
         controller.options = ProfileOptionsStore(backend: DefaultsBackend(defaults: defaults))
+        #if MUGVPN_TESTING
         if e2e, env["MUGVPN_E2E_BACKEND"] != "real", let h = env["MUGVPN_E2E_HOME"] {
             controller.runDir = h + "/run"
             controller.probe = FakeNetworkProbe() // no routing table until a test sets one (fake_network)
@@ -184,7 +179,11 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             e2eServer?.app = controller
             e2eServer?.start()
         }
-        DistributedNotificationCenter.default().addObserver(self, selector: #selector(command(_:)), name: commandNotification, object: nil)
+        #endif
+        commandServer = CommandChannel.Server { [weak self] args in
+            self?.handle(CommandLineRequest.parse(["--command"] + args))
+        }
+        commandServer?.start()
         if !e2e { watchSystem() }
         manager.appStarted()
         handle(startRequest)
@@ -215,21 +214,13 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         pathMonitor.start(queue: .global())
     }
 
+    /// Files handed to the app ("Open With", a double click, `open -a`): each asked about,
+    /// as any program can hand files over.
     func application(_ application: NSApplication, open urls: [URL]) {
-        controller?.importFiles(urls.map(\.path))
+        for u in urls { controller?.confirmImport(u.path) }
     }
 
-    private var seenTokens: Set<String> = []
-
-    @objc func command(_ n: Notification) {
-        guard let args = n.userInfo?["args"] as? [String], let token = n.userInfo?["token"] as? String else { return }
-        DistributedNotificationCenter.default().postNotificationName(commandAck, object: nil, userInfo: ["token": token],
-                                                                     deliverImmediately: true)
-        // The sender repeats until it sees the answer: act on each command once.
-        guard seenTokens.insert(token).inserted else { return }
-        if seenTokens.count > 64 { seenTokens = [token] } // a sender repeats for 10 s at most
-        handle(CommandLineRequest.parse(["--command"] + args))
-    }
+    private var commandServer: CommandChannel.Server?
 
     func handle(_ r: CommandLineRequest) {
         let m = controller.manager

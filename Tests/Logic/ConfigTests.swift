@@ -354,6 +354,14 @@ func registerPolicyTests() {
         }
         expect(!(try checked("client\nremote a")).needsServerCheck, "no CA named: nothing to check against")
     }
+    test("POL-41", "the server check that counts is the one openvpn uses (the last), and a whole name") {
+        expect(try checked("client\nremote a\nca ca.crt\nremote-cert-tls server\nremote-cert-tls client", files: ["ca.crt"]).needsServerCheck)
+        expect(!(try checked("client\nremote a\nca ca.crt\nremote-cert-tls client\nremote-cert-tls server", files: ["ca.crt"]).needsServerCheck))
+        expect(try checked("client\nremote a\nca ca.crt\nverify-x509-name vpn name-prefix", files: ["ca.crt"]).needsServerCheck)
+        for bad in ["auth RSA-MD5", "auth ssl3-md5", "auth md5-sha1"] {
+            expectThrows(bad) { _ = try checked("client\nremote a\n" + bad) }
+        }
+    }
     test("POL-40", "no broken or legacy ciphers (SWEET32 and the like)") {
         for bad in ["cipher BF-CBC", "cipher DES-EDE3-CBC", "data-ciphers AES-256-GCM:DES-CBC", "data-ciphers-fallback BF-CBC",
                     "cipher CAST5-CBC", "cipher RC2-CBC", "cipher DESX-CBC", "cipher SEED-CBC", "cipher IDEA-CBC", "auth MD5",

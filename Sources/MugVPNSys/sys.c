@@ -42,8 +42,9 @@ pid_t mugvpn_spawn_as(const char *path, char *const argv[], char *const envp[], 
     if (setuid(0) == 0 || getuid() != uid || geteuid() != uid || getgid() != gid || getegid() != gid) _exit(126);
     if (chdir(cwd) != 0) _exit(126);
     // A process of its own, no more (it forks nothing); no core dumps; a bounded log.
-    struct rlimit one = { 1, 1 }, no_core = { 0, 0 }, log_size = { 256 << 20, 256 << 20 };
-    if (setrlimit(RLIMIT_NPROC, &one) != 0 || setrlimit(RLIMIT_CORE, &no_core) != 0 || setrlimit(RLIMIT_FSIZE, &log_size) != 0)
+    struct rlimit one = { 1, 1 }, no_core = { 0, 0 }, log_size = { 32 << 20, 32 << 20 }, files = { 1024, 1024 };
+    if (setrlimit(RLIMIT_NPROC, &one) != 0 || setrlimit(RLIMIT_CORE, &no_core) != 0 || setrlimit(RLIMIT_FSIZE, &log_size) != 0
+        || setrlimit(RLIMIT_NOFILE, &files) != 0)
         _exit(126);
     if (dup2(null_fd, 0) < 0 || dup2(log_fd, 1) < 0 || dup2(log_fd, 2) < 0) _exit(126);
     for (int fd = 3; fd < max_fd; fd++) close(fd);
@@ -77,10 +78,13 @@ fail:
 
 int mugvpn_kill_uid(uid_t uid) {
     if (uid == 0) return -1;
+    int max_fd = getdtablesize();
     pid_t pid = fork();
     if (pid < 0) return -1;
     if (pid == 0) {
-        if (setgid((gid_t)uid) != 0 || setuid(uid) != 0 || setuid(0) == 0) _exit(2);
+        // Nothing of the helper's (its utun copies, sockets) goes along as the target id.
+        for (int fd = 3; fd < max_fd; fd++) close(fd);
+        if (setgroups(0, NULL) != 0 || setgid((gid_t)uid) != 0 || setuid(uid) != 0 || setuid(0) == 0) _exit(2);
         // kill(-1) from this id: every process of it but this one. Again until none answers
         // (the killed stay zombies until launchd reaps them, and they answer meanwhile).
         for (int i = 0; i < 500; i++) {
@@ -89,7 +93,15 @@ int mugvpn_kill_uid(uid_t uid) {
         }
         _exit(1);
     }
+    // The target id could stop the child: never waited for more than a few seconds.
     int status = 0;
+    for (int i = 0; i < 600; i++) {
+        pid_t r = waitpid(pid, &status, WNOHANG);
+        if (r == pid) return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+        if (r < 0 && errno != EINTR) return -1;
+        usleep(10000);
+    }
+    kill(pid, SIGKILL);
     while (waitpid(pid, &status, 0) < 0 && errno == EINTR) {}
-    return WIFEXITED(status) ? WEXITSTATUS(status) : -1;
+    return -1;
 }

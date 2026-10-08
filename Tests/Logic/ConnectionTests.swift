@@ -242,11 +242,11 @@ func registerConnectionTests() {
         h.line(">ECHO:1,msg Part one,")
         h.line(">ECHO:1,msg-n  part two")
         h.line(">ECHO:1,msg-window Notice")
-        expectEqual(h.ui.messages.map(\.title), ["Notice"])
+        expectEqual(h.ui.messages.map(\.title), ["Notice"], "its window names the profile")
         expectEqual(h.ui.messages.map(\.text), ["Part one, part two\n"])
         h.line(">ECHO:1,msg Short")
         h.line(">ECHO:1,msg-notify Heads up")
-        expectEqual(h.ui.notes.map(\.title), ["Heads up"])
+        expectEqual(h.ui.notes.map(\.title), ["office: Heads up"])
         expectEqual(h.ui.notes.map(\.text), ["Short"])
         h.secrets.set("office", .password, "x")
         h.line(">ECHO:1,forget-passwords")
@@ -300,6 +300,40 @@ func registerConnectionTests() {
         expectEqual(h.ui.opened, [])
         h.line(">INFOMSG:WEB_AUTH::https://sso.example.com/login")
         expectEqual(h.ui.opened, ["https://sso.example.com/login"])
+    }
+    test("CON-33", "pushed variables: bounded, and gone with a reconnect") {
+        let h = Harness()
+        for i in 0..<200 { h.line(">ECHO:1,setenv V\(i) x") }
+        expect(h.c.pushedEnvironment.count <= ScriptRunner.maxPushed)
+        h.line(">STATE:1,RECONNECTING,ping-restart,,,,,")
+        expectEqual(h.c.pushedEnvironment.count, 0)
+    }
+    test("CON-34", "a server's messages: under its profile's name, and not in a flood") {
+        let h = Harness()
+        var now = Date(timeIntervalSince1970: 1_000_000)
+        ConnectionController.clock = { now }
+        defer { ConnectionController.clock = Date.init }
+        h.line(">ECHO:1,msg Your account is locked", ">ECHO:1,msg-notify Internet blocked")
+        expectEqual(h.ui.notes.map(\.title), ["office: Internet blocked"])
+        for i in 0..<6 { h.line(">ECHO:2,msg A\(i)", ">ECHO:2,msg-window W\(i)") }
+        expectEqual(h.ui.messages.map(\.title), ["W0", "W1", "W2"], "a few in a while, not a flood")
+        now += 31
+        h.line(">ECHO:4,msg C", ">ECHO:4,msg-window W9")
+        expectEqual(h.ui.messages.count, 4)
+        for i in 0..<2000 { ConnectionController.shownMessages["k\(i)"] = now }
+        h.line(">ECHO:5,msg D", ">ECHO:5,msg-window W4")
+        expect(ConnectionController.shownMessages.count <= ConnectionController.maxShownMessages + 1)
+    }
+    test("CON-35", "web sign-in pages: not opened again and again") {
+        let h = Harness()
+        var now = Date(timeIntervalSince1970: 1_000_000)
+        ConnectionController.clock = { now }
+        defer { ConnectionController.clock = Date.init }
+        for i in 0..<6 { h.line(">INFOMSG:WEB_AUTH::https://sso.example.com/\(i)") }
+        expectEqual(h.ui.opened.count, 3, "a few in a while, not a flood")
+        now += 31
+        h.line(">INFOMSG:WEB_AUTH::https://sso.example.com/c")
+        expectEqual(h.ui.opened.count, 4)
     }
     test("CON-30", "openvpn's tunnel requests go to the helper, never to the user") {
         let h = Harness()

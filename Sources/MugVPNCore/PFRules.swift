@@ -24,10 +24,21 @@ public struct ProtectionState: Equatable, Sendable {
     public var blockIPv6 = false
     /// While a tunnel takes all traffic: DNS (port 53) outside the tunnels is blocked.
     public var dnsOnlyTunnels = false
+    /// Tunnels of standard users: only their owner's sockets (and the system resolver's,
+    /// for the owner's own domains) send into them; nobody else's traffic can be taken.
+    public var ownTraffic: [OwnTunnel] = []
+    public struct OwnTunnel: Equatable, Sendable {
+        public var device: String
+        public var owner: UInt32
+        public init(device: String, owner: UInt32) {
+            self.device = device
+            self.owner = owner
+        }
+    }
 
     public init() {}
 
-    public var isEmpty: Bool { locks.isEmpty && !blockIPv6 && !dnsOnlyTunnels }
+    public var isEmpty: Bool { locks.isEmpty && !blockIPv6 && !dnsOnlyTunnels && ownTraffic.isEmpty }
 }
 
 /// PF rules for MugVPN's anchor. Built only from validated values: interface
@@ -45,6 +56,11 @@ public enum PFRules {
         let locks = s.locks.filter { $0.owner != 0 && $0.owner != UInt32.max }
         if locks.contains(where: \.allowLAN) { r.append("table <mugvpn_lan> const { \(lan.joined(separator: " ")) }") }
         r.append("pass out quick on lo0 all")
+        // mDNSResponder (_mdnsresponder, 65) asks the owner's DNS servers for the owner's domains.
+        for t in s.ownTraffic where isUtun(t.device) && t.owner != 0 && t.owner != UInt32.max {
+            r.append("pass out quick on \(t.device) proto { tcp udp } user { \(t.owner) 65 }")
+            r.append("block return out quick on \(t.device) proto { tcp udp } all")
+        }
         let tunnels = Array(Set(s.tunnels.filter(isUtun))).sorted()
         if !tunnels.isEmpty { r.append("pass out quick on { \(tunnels.joined(separator: " ")) } all") }
         if s.dnsOnlyTunnels { r.append("block return out quick proto { tcp udp } to any port 53") }

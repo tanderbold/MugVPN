@@ -20,9 +20,30 @@ final class RealSystem: HelperSystem {
                                attributes: rootOwned.merging([.posixPermissions: mode]) { $1 })
     }
 
+    /// All or nothing, and on disk when it returns: a temporary file, synced, renamed over.
     func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
-        guard fm.createFile(atPath: path, contents: data, attributes: rootOwned.merging([.posixPermissions: mode]) { $1 }) else {
-            throw CocoaError(.fileWriteUnknown, userInfo: [NSFilePathErrorKey: path])
+        let tmp = path + ".mugvpn-new"
+        unlink(tmp)
+        let fd = open(tmp, O_WRONLY | O_CREAT | O_EXCL | O_NOFOLLOW | O_CLOEXEC, mode_t(mode))
+        guard fd >= 0 else { throw POSIXError(POSIXErrorCode(rawValue: errno) ?? .EIO) }
+        var ok = fchown(fd, 0, 0) == 0 && fchmod(fd, mode_t(mode)) == 0
+        if ok {
+            ok = data.withUnsafeBytes { raw -> Bool in
+                var off = 0
+                while off < raw.count {
+                    let n = Darwin.write(fd, raw.baseAddress! + off, raw.count - off)
+                    if n <= 0 { return false }
+                    off += n
+                }
+                return true
+            }
+        }
+        ok = ok && fsync(fd) == 0
+        close(fd)
+        guard ok, rename(tmp, path) == 0 else {
+            let e = errno
+            unlink(tmp)
+            throw POSIXError(POSIXErrorCode(rawValue: e) ?? .EIO)
         }
     }
 
@@ -141,12 +162,28 @@ final class RealSystem: HelperSystem {
         func quoted(_ s: String) -> String {
             "\"" + s.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
         }
+        // Allowed: its network, reading system files and its own run folder, the few system
+        // services name lookups need. Not: other users' files, MugVPN's other runs, writing
+        // anywhere but its socket folder, starting anything (also through launchd), IPC,
+        // hardware, preferences.
         let profile = """
             (version 1)
             (allow default)
             (deny file-write* (require-not (require-any (subpath \(quoted(cwd + "/sock"))) (literal "/dev/null") (literal "/dev/dtracehelper"))))
+            (deny file-read* (subpath "/Users") (subpath "/Library/Application Support/MugVPN") (subpath "/Library/Keychains")
+                (subpath "/private/var/root") (subpath "/Library/Logs"))
+            (allow file-read* (subpath \(quoted(cwd))) (literal \(quoted(path))))
             (deny process-fork)
             (deny process-exec (require-not (literal \(quoted(path)))))
+            (deny job-creation)
+            (deny iokit-open)
+            (deny ipc-posix*)
+            (deny ipc-sysv*)
+            (deny user-preference-write)
+            (deny mach-register)
+            (deny mach-lookup (require-not (require-any \(HelperLookups.allowed.map { "(global-name \(quoted($0)))" }.joined(separator: " ")))))
+            (deny network-outbound (remote unix-socket (subpath "/Library/Application Support/MugVPN")))
+            (deny network-bind (local unix-socket (require-not (subpath \(quoted(cwd + "/sock"))))))
             """
         let full = ["/usr/bin/sandbox-exec", "-p", profile, path] + args
         let cArgs: [UnsafeMutablePointer<CChar>?] = full.map { strdup($0) } + [nil]
@@ -217,6 +254,24 @@ final class RealSystem: HelperSystem {
 
     func now() -> TimeInterval { ProcessInfo.processInfo.systemUptime }
 
+    /// "address/bits" of every IPv4 address on an interface that is not a utun or loopback.
+    func localIPv4Networks() -> [String] {
+        var list: UnsafeMutablePointer<ifaddrs>?
+        guard getifaddrs(&list) == 0, let first = list else { return [] }
+        defer { freeifaddrs(list) }
+        var nets: [String] = []
+        for p in sequence(first: first, next: { $0.pointee.ifa_next }) {
+            let ifa = p.pointee
+            let name = String(cString: ifa.ifa_name)
+            guard !name.hasPrefix("utun"), !name.hasPrefix("lo"), let addr = ifa.ifa_addr, addr.pointee.sa_family == UInt8(AF_INET),
+                  let mask = ifa.ifa_netmask else { continue }
+            let a = addr.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { UInt32(bigEndian: $0.pointee.sin_addr.s_addr) }
+            let m = mask.withMemoryRebound(to: sockaddr_in.self, capacity: 1) { UInt32(bigEndian: $0.pointee.sin_addr.s_addr) }
+            nets.append("\(TunnelState.text(a))/\(m.nonzeroBitCount)")
+        }
+        return nets
+    }
+
     /// "prefix/bits" of every IPv6 address on an interface that is not a utun, loopback or link-local.
     func localIPv6Networks() -> [String] {
         var list: UnsafeMutablePointer<ifaddrs>?
@@ -242,9 +297,9 @@ final class RealSystem: HelperSystem {
 
     func closeDescriptor(_ fd: Int32) { close(fd) }
 
-    func connectManagement(_ path: String, onLine: @escaping (String) -> Void,
+    func connectManagement(_ path: String, peer pid: Int32, onLine: @escaping (String) -> Void,
                            onClose: @escaping () -> Void) -> ManagementChannel? {
-        RealManagementChannel(path: path, queue: queue, onLine: onLine, onClose: onClose)
+        RealManagementChannel(path: path, peer: pid, queue: queue, onLine: onLine, onClose: onClose)
     }
 
     func interfaceExists(_ name: String) -> Bool { if_nametoindex(name) != 0 }
@@ -541,6 +596,14 @@ func executablePath(of pid: pid_t) -> String? {
     return n > 0 ? String(cString: buf) : nil
 }
 
+/// System services openvpn may look up in its sandbox: name and user lookups, DNS, logging.
+enum HelperLookups {
+    static let allowed = ["com.apple.system.opendirectoryd.libinfo", "com.apple.dnssd.service",
+                          "com.apple.system.notification_center", "com.apple.system.logger", "com.apple.logd",
+                          "com.apple.diagnosticd", "com.apple.SystemConfiguration.configd",
+                          "com.apple.system.DirectoryService.libinfo_v1"]
+}
+
 /// The helper's connection to a persistent tunnel's openvpn management socket. Reads on the
 /// helper's queue; a line at most 64 KB (what openvpn sends is short).
 final class RealManagementChannel: ManagementChannel {
@@ -549,10 +612,12 @@ final class RealManagementChannel: ManagementChannel {
     private var buffer = Data()
     private var closed = false
 
-    init?(path: String, queue: DispatchQueue, onLine: @escaping (String) -> Void, onClose: @escaping () -> Void) {
+    /// - peer: the openvpn it must be (a path can be made to lead elsewhere).
+    init?(path: String, peer pid: Int32, queue: DispatchQueue, onLine: @escaping (String) -> Void, onClose: @escaping () -> Void) {
         let sock = socket(AF_UNIX, SOCK_STREAM, 0)
         guard sock >= 0 else { return nil }
         _ = fcntl(sock, F_SETFD, FD_CLOEXEC)
+        setNoSigPipe(sock)
         var addr = sockaddr_un()
         addr.sun_family = sa_family_t(AF_UNIX)
         let bytes = Array(path.utf8)
@@ -561,13 +626,16 @@ final class RealManagementChannel: ManagementChannel {
         let rc = withUnsafePointer(to: &addr) {
             $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { connect(sock, $0, socklen_t(MemoryLayout<sockaddr_un>.size)) }
         }
-        guard rc == 0 else { Darwin.close(sock); return nil }
+        guard rc == 0, let who = socketPeer(sock), who.pid == pid else { Darwin.close(sock); return nil }
+        // Never blocks the helper's queue: an openvpn that stops reading is let go of.
+        _ = fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK)
         fd = sock
         source = DispatchSource.makeReadSource(fileDescriptor: sock, queue: queue)
         source.setEventHandler { [weak self] in
-            guard let self else { return }
+            guard let self, !self.closed else { return }
             var chunk = [UInt8](repeating: 0, count: 8192)
             let n = read(sock, &chunk, chunk.count)
+            if n < 0, errno == EAGAIN || errno == EINTR { return }
             guard n > 0 else {
                 self.close()
                 onClose()
@@ -575,25 +643,31 @@ final class RealManagementChannel: ManagementChannel {
             }
             self.buffer.append(contentsOf: chunk[0..<n])
             let prompt = Data("ENTER PASSWORD:".utf8)
-            while true {
-                if let nl = self.buffer.firstIndex(of: 0x0A) {
-                    var line = self.buffer[self.buffer.startIndex..<nl]
-                    self.buffer.removeSubrange(self.buffer.startIndex...nl)
+            var start = self.buffer.startIndex
+            while !self.closed {
+                if let nl = self.buffer[start...].firstIndex(of: 0x0A) {
+                    var line = self.buffer[start..<nl]
                     if line.last == 0x0D { line = line.dropLast() }
+                    start = self.buffer.index(after: nl)
                     onLine(String(decoding: line, as: UTF8.self))
-                } else if self.buffer.starts(with: prompt) {
-                    self.buffer.removeSubrange(self.buffer.startIndex..<self.buffer.startIndex + prompt.count)
+                } else if self.buffer[start...].starts(with: prompt) {
+                    start += prompt.count
                     onLine("ENTER PASSWORD:")
                 } else {
-                    if self.buffer.count > 65536 { self.buffer.removeAll() }
                     break
                 }
+            }
+            self.buffer = Data(self.buffer[start...])
+            if self.buffer.count > 65536 {
+                self.close()
+                onClose()
             }
         }
         source.setCancelHandler { Darwin.close(sock) }
         source.resume()
     }
 
+    /// Whole or not at all: a partial write means openvpn is not reading.
     @discardableResult func send(_ line: String, passing passed: Int32?) -> Bool {
         guard !closed else { return false }
         let data = Data((line + "\n").utf8)

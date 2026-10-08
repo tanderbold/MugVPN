@@ -235,6 +235,12 @@ func registerProfileTests() {
         let r = try store(fs).importProfile(at: "/D/a.ovpn", as: "evil\u{202E}gpj\nx")
         expectEqual(r.profile.name, "evil_gpj_x")
     }
+    test("PRF-22", "a profile names no other profile as a file; each file is read once") {
+        let fs = MemFS()
+        fs.add("/D/a.ovpn", "client\ndev tun\nremote x 1194\nca other.ovpn\n")
+        fs.add("/D/other.ovpn", "client\nremote y 1194\n")
+        expectThrows("a profile as a file", matching: "profile") { _ = try store(fs).importProfile(at: "/D/a.ovpn") }
+    }
     test("PRF-07", "import a Tunnelblick .tblk") {
         let fs = MemFS()
         fs.add("/D/Office.tblk/Contents/Resources/config.ovpn", "client\ndev tun\nremote o 1194\nca ca.crt\n")

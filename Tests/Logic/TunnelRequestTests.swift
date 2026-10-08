@@ -81,6 +81,14 @@ func registerTunnelRequestTests() {
             try t.dnsVar(good)
         }
     }
+    test("TUN-11", "a route taken away as openvpn added it: an on-link host route too (ext. audit: 4)") {
+        var t = tunnel()
+        _ = try t.ifconfig("10.8.0.2 255.255.255.0 1500 subnet")
+        let gw = DefaultGateway(address: "192.168.64.1", interface: "en0")
+        _ = try t.route("198.51.100.9 255.255.255.255 192.168.64.1 dev en0", gateway: gw)
+        expectEqual(try t.deleteRoute("198.51.100.9 255.255.255.255 192.168.64.1 dev en0", gateway: gw).map(\.kind), [.onLink])
+        expectEqual(t.routes.count, 0)
+    }
     test("TUN-07", "a tunnel's network lies wholly in private space") {
         for bad in ["192.168.1.5 255.0.0.0 1500 subnet", "172.16.0.2 255.0.0.0 1500 subnet", "100.64.0.5 255.128.0.0 1500 subnet"] {
             var x = tunnel()

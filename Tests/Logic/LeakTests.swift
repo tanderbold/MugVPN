@@ -96,6 +96,20 @@ func registerLeakTests() {
         expectEqual(LeakCheck.ipv6Findings(defaults: ["en0"], tunnels: ["utun4"], blocked: true), [], "PF blocks it")
         expectEqual(LeakCheck.ipv6Findings(defaults: ["utun4"], tunnels: ["utun4"], blocked: false), [])
     }
+    test("LEAK-09", "special-use IPv4 ranges are no leak; a public IPv6 network routed outside is") {
+        for (net, p) in [(0xC000_0000 as UInt32, 24), (0xC000_0200, 24), (0xC612_0000, 15)] {
+            expect(!LeakCheck.isPublic(net, p), "\(net)")
+        }
+        let netstat6 = """
+        Destination                             Gateway                                 Flags         Netif Expire
+        default                                 fe80::1%en0                             UGcg            en0
+        2001:db8:1::/64                         link#4                                  UCS             en0
+        2a00:1450::/32                          fe80::1%en0                             UGS             en0
+        fd00:5::/64                             fe80::1%en0                             UGS             en0
+        2001:db8:9::/48                         link#12                                 UCS           utun5
+        """
+        expectEqual(LeakCheck.ipv6Bypass(netstat: netstat6, tunnels: ["utun5"]), [.bypass("2a00:1450::/32", "en0")])
+    }
     test("LEAK-08", "the VPN server is the address openvpn connected to, not any host route") {
         let log = "2026-10-07 09:58:24 TCP/UDP: Preserving recently used remote address: [AF_INET]203.0.113.7:1194\n"
             + "2026-10-07 09:58:24 UDPv4 link remote: [AF_INET]203.0.113.7:1194\n"

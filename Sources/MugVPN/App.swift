@@ -312,6 +312,7 @@ final class AppController: NSObject, NSMenuDelegate {
             return LeakCheck.findings(routes: routes, tunnels: devices, dns: dns, servers: servers)
                 + LeakCheck.ipv6Findings(defaults: LeakCheck.ipv6Defaults(netstat: probe.netstat6()), tunnels: devices,
                                          blocked: ipv6Blocked)
+                + (ipv6Blocked ? [] : LeakCheck.ipv6Bypass(netstat: probe.netstat6(), tunnels: devices))
         }
         // One check at a time; an older result never replaces a newer one.
         leakGeneration += 1
@@ -478,7 +479,7 @@ final class AppController: NSObject, NSMenuDelegate {
     func connect(_ p: Profile) {
         let setup = services.helperSetup
         if setup.state == .notRegistered {
-            if HelperRegistration.problem(bundlePath: Bundle.main.bundlePath) != nil, !(setup is E2EBackend) {
+            if HelperRegistration.problem(bundlePath: Bundle.main.bundlePath) != nil, !setup.isTestDouble {
                 return showError(L("Move MugVPN to the Applications folder, open it from there and connect again."))
             }
             setup.register()
@@ -587,7 +588,7 @@ final class AppController: NSObject, NSMenuDelegate {
     /// An import another program asked for (`--command import`): the user says yes first.
     func confirmImport(_ path: String) {
         showForm(kind: "confirm", profile: "", title: L("Import"),
-                 views: [Form.label(L("A program asked MugVPN to import %@. Import it?", path), id: "prompt_text")],
+                 views: [Form.label(L("A program asked MugVPN to import %@. Import it?", ProfileDownloader.visible(path)), id: "prompt_text")],
                  okTitle: L("Import"), ok: { [weak self] _ in
             DispatchQueue.main.async { self?.importFiles([path]) }
             return true

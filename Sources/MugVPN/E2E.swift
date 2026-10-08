@@ -2,6 +2,8 @@ import AppKit
 import MugVPNAppCore
 import MugVPNCore
 
+#if MUGVPN_TESTING
+
 // E2E mode (MUGVPN_E2E=1): the interface tests' socket and a fake backend.
 // See Tests/UI/PROTOCOL.md. Nothing here runs in a normal launch.
 
@@ -24,6 +26,7 @@ final class FakeLink: ManagementLink {
 }
 
 final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
+    var isTestDouble: Bool { true }
     var starts: [String] = []
     var bundles: [String: [String: Any]] = [:]
     var stops: [String] = []
@@ -495,3 +498,4 @@ final class E2EServer {
                 "appearance": dark ? "darkAqua" : "aqua", "controls": controls]
     }
 }
+#endif

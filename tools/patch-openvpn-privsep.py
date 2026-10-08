@@ -59,6 +59,10 @@ open_tun(const char *dev, const char *dev_type, const char *dev_node, struct tun
 {
 #if defined(MUGVPN_MGMT_TUN)
     /* MugVPN: the root helper opens the utun and hands it over. */
+    if (!management)
+    {
+        msg(M_FATAL, "ERROR: MugVPN's openvpn needs its management interface");
+    }
     /* One received earlier and never used (0 is "none" here: never stdin). */
     if (management->connection.lastfdreceived > 2)
     {
@@ -190,7 +194,14 @@ patch("route.c", """#elif defined(TARGET_DARWIN)
         argv_printf(&argv, "%s delete -cloning -net %s -netmask %s -interface %s", ROUTE_PATH,""", """#elif defined(MUGVPN_MGMT_TUN)
     {
         char out[128];
-        snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
+        if (is_on_link(is_local_route, flags, rgi))
+        {
+            snprintf(out, sizeof(out), "%s %s %s dev %s", network, netmask, gateway, rgi->iface);
+        }
+        else
+        {
+            snprintf(out, sizeof(out), "%s %s %s", network, netmask, gateway);
+        }
         management_android_control(management, "ROUTEDEL", out);
     }
 
@@ -230,6 +241,12 @@ run_up_down_command(bool up, struct options *o, const struct tuntap *tt,
         setenv_dns_options(&o->dns_options, es);
         for (struct env_item *e = es->list; e; e = e->next)
         {
+            /* The request carries at most USER_PASS_LEN - 1 bytes: never a cut-off value. */
+            if (strlen(e->string) >= USER_PASS_LEN - 1)
+            {
+                msg(M_WARN, "MugVPN: DNS setting too long for the helper, left out: %.40s...", e->string);
+                continue;
+            }
             management_android_control(management, "DNSVAR", e->string);
         }
         management_android_control(management, up ? "DNSUP" : "DNSDOWN", tt->actual_name);

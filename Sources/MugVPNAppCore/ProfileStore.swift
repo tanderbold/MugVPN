@@ -155,7 +155,7 @@ public final class ProfileStore {
         let srcDir = (path as NSString).deletingLastPathComponent
 
         // Where each named file comes from and where it goes in the copy.
-        var plan: [(ref: String, from: String, to: String)] = []
+        var plan: [(ref: String, from: String, to: String, data: Data)] = []
         var used = Set<String>()
         var outside: [String] = []
         for ref in ProfilePolicy.referencedFiles(directives) {
@@ -163,6 +163,9 @@ public final class ProfileStore {
             // as the disk does (case, accents, width, compatibility forms: "\u{17F}h" is "sh" to it).
             let folded = (ref as NSString).lastPathComponent.precomposedStringWithCompatibilityMapping
                 .folding(options: [.caseInsensitive, .diacriticInsensitive, .widthInsensitive], locale: nil)
+            guard !folded.hasSuffix(".ovpn"), !folded.hasSuffix(".conf") else {
+                throw ProfileError("the profile names \(ref), another profile, as a file")
+            }
             guard !folded.hasSuffix(".sh") else {
                 throw ProfileError("the profile names \(ref), a script: MugVPN does not import scripts with a profile")
             }
@@ -178,7 +181,7 @@ public final class ProfileStore {
                 to = uniqueName((ref as NSString).lastPathComponent, used)
             }
             used.insert(to)
-            plan.append((ref, from, to))
+            plan.append((ref, from, to, data))
         }
         do {
             _ = try ProfilePolicy.check(directives, bundleFiles: Set(plan.map(\.ref)))
@@ -200,7 +203,7 @@ public final class ProfileStore {
         for f in plan {
             let dest = "\(dir)/\(f.to)"
             try makeDirectories((dest as NSString).deletingLastPathComponent)
-            try fs.write(dest, fs.read(f.from)!)
+            try fs.write(dest, f.data)  // what was checked, not a second read
         }
         let renamed = Dictionary(plan.filter { $0.ref != $0.to }.map { ($0.ref, $0.to) }, uniquingKeysWith: { a, _ in a })
         try fs.write("\(dir)/\(finalName).\(ext)", Data(rewrite(text, directives: directives, renamed: renamed).utf8))

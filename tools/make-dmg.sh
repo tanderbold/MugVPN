@@ -8,7 +8,8 @@ APP="$ROOT/build/MugVPN.app"
 [ ! -e "$APP/Contents/Resources/testing-build" ] || { echo "this is a testing build (MUGVPN_TESTING=1): build a release first" >&2; exit 1; }
 # A root helper from an ad-hoc build accepts any client named com.mugvpn.app: never package one,
 # nor one whose pinned client requirement is not anchored to Apple's certificate chain.
-grep -q 'anchor apple generic' "$(dirname "$0")/../Sources/MugVPNHelper/BuildPins.swift" || {
+# (In the helper that ships, not the source: what was compiled is what counts.)
+strings "$APP/Contents/MacOS/MugVPNHelper" | grep -q 'anchor apple generic' || {
     echo "the helper's client requirement is not anchored to a Developer ID: build with MUGVPN_SIGN_ID and MUGVPN_TEAM" >&2; exit 1; }
 if codesign -dv "$APP" 2>&1 | grep -q "Signature=adhoc"; then
     echo "ad-hoc signed: build with MUGVPN_SIGN_ID and MUGVPN_TEAM (Developer ID) to package" >&2; exit 1

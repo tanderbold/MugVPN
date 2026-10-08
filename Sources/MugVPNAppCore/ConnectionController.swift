@@ -94,6 +94,8 @@ public enum ConnectionStatus: Equatable, Sendable {
 /// send and what to ask; the caller owns the socket and the helper.
 public final class ConnectionController {
     public let profile: String
+    /// How messages are titled (the profile's name).
+    public var displayName: String
     /// Writes one management command. A command with a line break or NUL in it
     /// (from a server-supplied value) is dropped: it would be several commands.
     public var send: (String) -> Void {
@@ -154,6 +156,7 @@ public final class ConnectionController {
     public init(profile: String, ui: ConnectionUI, secrets: SecretStore, settings: ConnectionSettings = ConnectionSettings(),
                 systemProxy: @escaping (String) -> (host: String, port: Int)? = { _ in nil }) {
         self.profile = profile
+        self.displayName = profile
         self.ui = ui
         self.secrets = secrets
         self.settings = settings
@@ -276,6 +279,7 @@ public final class ConnectionController {
             connectedSince = Date(timeIntervalSince1970: TimeInterval(s.time))
             status = .connected(ip: s.localIP, ipv6: s.localIPv6, withErrors: s.description != "SUCCESS")
         case "RECONNECTING":
+            pushedEnvironment = []  // the server sends them again
             if status != .disconnecting { status = .reconnecting }
         case "EXITING":
             finished = true
@@ -370,17 +374,36 @@ public final class ConnectionController {
     nonisolated(unsafe) public static var shownMessages: [String: Date] = [:]
     nonisolated(unsafe) public static var clock: () -> Date = Date.init
 
-    /// Show a server's message unless the settings say otherwise.
-    private func shouldShow(_ title: String, _ text: String) -> Bool {
+    /// The most messages remembered for muting.
+    public static let maxShownMessages = 256
+    /// A server's windows, notifications and sign-in pages: at most a few in this many seconds.
+    public static let messageInterval: TimeInterval = 30
+    public static let messagesPerInterval = 3
+    private var recent: [String: [Date]] = [:]
+
+    /// Not a flood: a few of a kind in a while.
+    private func paced(_ kind: String) -> Bool {
+        let t = ConnectionController.clock()
+        let times = (recent[kind] ?? []).filter { t.timeIntervalSince($0) < ConnectionController.messageInterval }
+        guard times.count < ConnectionController.messagesPerInterval else { recent[kind] = times; return false }
+        recent[kind] = times + [t]
+        return true
+    }
+
+    /// Show a server's message unless the settings say otherwise (or a flood of them comes).
+    private func shouldShow(_ kind: String, _ title: String, _ text: String) -> Bool {
         guard !settings.ignoreServerMessages else { return false }
-        guard settings.muteHours > 0 else { return true }
+        if ConnectionController.shownMessages.count >= ConnectionController.maxShownMessages {
+            ConnectionController.shownMessages.removeAll()
+        }
+        guard settings.muteHours > 0 else { return paced(kind) }
         let key = profile + "\u{0}" + title + "\u{0}" + text
         let now = ConnectionController.clock()
         if let last = ConnectionController.shownMessages[key], now.timeIntervalSince(last) < Double(settings.muteHours) * 3600 {
             return false
         }
         ConnectionController.shownMessages[key] = now
-        return true
+        return paced(kind)
     }
 
     private func handleEcho(_ e: EchoMessage) {
@@ -391,10 +414,11 @@ public final class ConnectionController {
                 echoBuffer = String(echoBuffer.utf8.prefix(ConnectionController.maxMessageBytes)) ?? ""
             }
         case .window(let title):
-            if shouldShow(title, echoBuffer) { ui.showMessage(title: title, text: echoBuffer) }
+            // (Its window names the profile; a notification does not, so its title does.)
+            if shouldShow("window", title, echoBuffer) { ui.showMessage(title: title, text: echoBuffer) }
             echoBuffer = ""
         case .notify(let title):
-            if shouldShow(title, echoBuffer) { ui.notify(title: title, text: echoBuffer) }
+            if shouldShow("notify", title, echoBuffer) { ui.notify(title: "\(displayName): \(title)", text: echoBuffer) }
             echoBuffer = ""
         case .forgetPasswords: secrets.removeAll(profile)
         case .other(let text):
@@ -402,7 +426,7 @@ public final class ConnectionController {
             guard f.count == 3, f[0] == "setenv" else { break }
             if let i = pushedEnvironment.firstIndex(where: { $0.0 == f[1] }) {
                 pushedEnvironment[i].1 = f[2]
-            } else {
+            } else if pushedEnvironment.count < ScriptRunner.maxPushed {
                 pushedEnvironment.append((f[1], f[2]))
             }
         }
@@ -416,6 +440,7 @@ public final class ConnectionController {
                 return append("ignored a web authentication URL that is not https: \(url)")
             }
             status = .waitingForWebAuth
+            guard paced("webauth") else { return append("ignored another web authentication page so soon: \(url)") }
             ui.openURL(url)
         case .crText(let echo, _, let text):
             ui.askChallenge(text: text, echo: echo) { [weak self] r in

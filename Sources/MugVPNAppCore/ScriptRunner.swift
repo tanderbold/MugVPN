@@ -48,6 +48,9 @@ public enum ScriptRunner {
     /// Variables for the scripts: the profile's own `setenv`, what the server
     /// pushed (`echo setenv`), and the connection's details. A server cannot
     /// set variables that change how programs run (PATH, DYLD_*, ...).
+    /// The most variables a server may push for the scripts.
+    public static let maxPushed = 64
+
     public static func environment(profile: Profile, directives: [ConfigDirective], pushed: [(String, String)],
                                    localIP: String, localIPv6: String) -> [String: String] {
         var env: [String: String] = [:]
@@ -55,8 +58,10 @@ public enum ScriptRunner {
             && !protected(d.args[0]) {
             env[d.args[0]] = d.args[1]
         }
-        for (k, v) in pushed where safeName(k) && !protected(k) {
-            env[k] = v
+        // What a server sends comes under names of its own (PUSHED_NAME): no program reads
+        // those, so none can be steered to the server's hosts, keys or settings.
+        for (k, v) in pushed.prefix(maxPushed) where safeName(k) {
+            env["PUSHED_" + k] = v
         }
         env["config"] = (profile.path as NSString).lastPathComponent
         env["profile"] = profile.name

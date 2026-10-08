@@ -187,8 +187,12 @@ public final class ConnectionManager {
     /// openvpn takes one management client: the helper holds it while no app does.
     private func attachPersistent(_ c: ActiveConnection, socket: String) {
         guard let id = c.helperID else { return }
-        helper.releaseManagement(id) { [weak self, weak c] _ in
-            guard let self, let c else { return }
+        helper.releaseManagement(id) { [weak self, weak c] err in
+            guard let self, let c, self.active[c.profile.id] === c else { return }
+            if let err {
+                self.active[c.profile.id] = nil
+                return self.fail(c.profile.id, err)
+            }
             self.open(c, socket: socket, attempt: 1)
         }
     }
@@ -319,6 +323,17 @@ public final class ConnectionManager {
         guard !active.isEmpty else { return done() }
         quitDone = done
         disconnectAll()
+        // Not for ever: an openvpn that does not end is the helper's to stop.
+        scheduler.after(ConnectionManager.quitDeadline) { [weak self] in self?.quitIfDone(force: true) }
+    }
+
+    /// How long quitting waits for the connections to end.
+    public static let quitDeadline: TimeInterval = 20
+
+    private func quitIfDone(force: Bool = false) {
+        guard active.isEmpty || force, let done = quitDone else { return }
+        quitDone = nil
+        done()
     }
 
     // MARK: - plumbing
@@ -326,6 +341,7 @@ public final class ConnectionManager {
     private func makeConnection(_ p: Profile) -> ActiveConnection {
         let controller = ConnectionController(profile: p.secretsKey, ui: ui(p), secrets: secrets,
                                               settings: profileSettings?(p) ?? settings())
+        controller.displayName = p.displayName
         let c = ActiveConnection(profile: p, controller: controller)
         controller.send = { [weak c] cmd in
             guard let c else { return }
@@ -385,7 +401,8 @@ public final class ConnectionManager {
             return
         }
         guard attempt < ConnectionManager.socketAttempts else {
-            if let id = c.helperID { helper.stop(id) { _ in } }
+            // A persistent tunnel is the Mac's: left running, only not shown here.
+            if c.profile.source != .persistent, let id = c.helperID { helper.stop(id) { _ in } }
             active[c.profile.id] = nil
             return fail(c.profile.id, "cannot reach openvpn's management socket")
         }
@@ -403,10 +420,7 @@ public final class ConnectionManager {
         }
         onChange()
         if connectWhenEnded.remove(c.profile.id) != nil { connect(c.profile) }
-        if active.isEmpty, let done = quitDone {
-            quitDone = nil
-            done()
-        }
+        quitIfDone()
     }
 
     private func environment(_ c: ActiveConnection) -> [String: String] {
@@ -420,5 +434,6 @@ public final class ConnectionManager {
     private func fail(_ id: String, _ message: String) {
         lastError[id] = message
         onChange()
+        quitIfDone() // a connection that went this way is not waited for either
     }
 }
