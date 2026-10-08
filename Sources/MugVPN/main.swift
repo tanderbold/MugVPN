@@ -227,6 +227,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                                                                      deliverImmediately: true)
         // The sender repeats until it sees the answer: act on each command once.
         guard seenTokens.insert(token).inserted else { return }
+        if seenTokens.count > 64 { seenTokens = [token] } // a sender repeats for 10 s at most
         handle(CommandLineRequest.parse(["--command"] + args))
     }
 

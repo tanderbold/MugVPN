@@ -351,6 +351,8 @@ final class URLSessionFetcher: NSObject, HTTPFetcher, URLSessionDataDelegate {
     /// host a redirect points at.
     func urlSession(_ session: URLSession, task: URLSessionTask, willPerformHTTPRedirection response: HTTPURLResponse,
                     newRequest request: URLRequest, completionHandler: @escaping (URLRequest?) -> Void) {
+        // Only to https: a profile (and the credentials sent for it) never in clear.
+        guard request.url?.scheme?.lowercased() == "https" else { return completionHandler(nil) }
         var r = request
         let from = task.originalRequest?.url
         if r.url?.host?.lowercased() != from?.host?.lowercased() || r.url?.scheme != "https" || r.url?.port != from?.port {

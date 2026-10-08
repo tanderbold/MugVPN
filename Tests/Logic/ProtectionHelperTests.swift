@@ -129,6 +129,7 @@ func registerProtectionHelperTests() {
     }
     test("PROT-09", "protection is checked and put back; a failed apply is retried") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route all traffic (the policy is not what is tested here)
         let h = makeHelper(sys)
         _ = try upFull(sys, h)
         sys.launched[0].process.onExit(.exited(1))

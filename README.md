@@ -35,7 +35,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 <p><img src="docs/screenshots/connections-general.png" alt="The Connections window: list of connections and the General tab with servers" width="49%"> <img src="docs/screenshots/connections-options.png" alt="The Options tab: DNS mode, split DNS, kill switch and leak protection" width="49%"></p>
 
 **Protection**
-- **Kill switch**: if a connection that carries all traffic drops unexpectedly, the Mac's Internet stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper.
+- **Kill switch**: if a connection that carries all traffic drops unexpectedly, your TCP and UDP traffic outside the VPN stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper.
 - **Leak protection** while a connection carries all traffic: no IPv6 and no DNS outside the VPN; the local network can be allowed.
 - **Leak check** after connecting and on every network change: warns if the default route, a public network (as a rogue DHCP server would push — TunnelVision) or the DNS goes around the tunnel.
 
@@ -75,6 +75,21 @@ There is no signed release yet: MugVPN is waiting for an Apple Developer ID, and
 from an unsigned build is not something to install from a download. Build it from source (below),
 copy `build/MugVPN.app` to `/Applications` and open it. The first time you connect, macOS asks you to
 allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN opens that page for you.
+
+The first build makes a code-signing certificate of your own, kept in
+`~/Library/Application Support/MugVPN Build`; MugVPN's helper then works only with an app signed
+with it. Install the build as an administrator.
+
+**Macs with standard users.** By default a standard (non-administrator) user's connections may not
+send all of the Mac's traffic through a VPN or replace its DNS for all names; their own networks and
+domains work as usual. An administrator can allow it in
+`/Library/Application Support/MugVPN/policy.json` (owned by root):
+
+```json
+{ "usersMayRouteAllTraffic": true, "usersMayChangeDNS": true }
+```
+
+or for some users only: `{ "trustedUsers": ["alice"] }`.
 
 ## Profiles
 

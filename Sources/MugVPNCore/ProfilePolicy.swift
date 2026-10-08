@@ -26,6 +26,20 @@ public enum ProfilePolicy {
         public var dropped: [String]
         /// For each bundle file key: the directives that name it (what it must hold, for each).
         public var fileKinds: [String: [String]] = [:]
+        /// Certificates are checked (a CA is named) but nothing says the other end must be a
+        /// server: any certificate of that CA, a client's too, could pose as the server.
+        public var needsServerCheck = false
+    }
+
+    /// Options that make openvpn check that the other end is the server.
+    static let serverChecks: Set<String> = ["remote-cert-tls", "remote-cert-eku", "remote-cert-ku", "verify-x509-name",
+                                            "peer-fingerprint"]
+
+    /// Ciphers and digests broken or too weak for a tunnel (SWEET32, 64-bit blocks, MD5...).
+    static func isWeakAlgorithm(_ name: String) -> Bool {
+        let n = name.uppercased()
+        let prefixes = ["BF-", "DES-", "DESX", "DES3", "CAST", "RC2", "RC4", "RC5", "SEED", "IDEA", "MD4", "MD5"]
+        return n == "DES" || n == "BF" || prefixes.contains { n.hasPrefix($0) }
     }
 
     struct FileUse { var key: String; var kind: String }
@@ -121,6 +135,8 @@ public enum ProfilePolicy {
         var kinds: [String: [String]] = [:]
         for u in uses where !(kinds[u.key] ?? []).contains(u.kind) { kinds[u.key, default: []].append(u.kind) }
         var r = Result(directives: out, files: files, dropped: dropped)
+        let names = Set(out.map(\.name))
+        r.needsServerCheck = (names.contains("ca") || names.contains("pkcs12")) && names.isDisjoint(with: serverChecks)
         r.fileKinds = kinds
         return r
 
@@ -216,8 +232,12 @@ public enum ProfilePolicy {
                     throw refuse("the gateway must be vpn_gateway or net_gateway")
                 }
             case "cipher", "data-ciphers", "data-ciphers-fallback", "ncp-ciphers", "auth":
-                guard !d.args.joined(separator: ":").lowercased().split(separator: ":").contains("none") else {
+                let algorithms = d.args.joined(separator: ":").split(separator: ":").map(String.init)
+                guard !algorithms.map({ $0.lowercased() }).contains("none") else {
                     throw refuse("a tunnel without encryption or authentication")
+                }
+                if let weak = algorithms.first(where: ProfilePolicy.isWeakAlgorithm) {
+                    throw refuse("\(weak) is too weak")
                 }
             case "tls-version-min":
                 guard let v = d.args.first, v == "1.2" || v == "1.3" else { throw refuse("TLS below 1.2") }

@@ -100,11 +100,9 @@ func registerPrivsepHelperTests() {
         sys.launched[0].process.onExit(.exited(1))
         expect((sys.pf.last ?? "").contains("user 501"), "the kill switch fired from the helper's records")
     }
-    test("PS-07", "an administrator's policy holds for the requests too, not only for pushes") {
+    test("PS-07", "a standard user's requests: no routes for all traffic, no DNS for all names (split DNS is fine)") {
         // Under privilege separation the owner's app forwards the requests: the helper checks them.
         let sys = FakeSystem()
-        try sys.makeDirectory("/L", mode: 0o755)
-        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": false, "usersMayChangeDNS": false}"#.utf8), mode: 0o644)
         sys.admins = []
         let h = makeHelper(sys)
         let (id, _) = try h.start(bundle: psBundle(), uid: 502)
@@ -118,8 +116,12 @@ func registerPrivsepHelperTests() {
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2000::/3 utun7")
         }
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
-        expectThrows("DNS", matching: "administrator") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun7") }
+        expectThrows("DNS for all names", matching: "administrator") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun7") }
         expectEqual(sys.dnsSet.count, 0)
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.example.com")
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun7")
+        expectEqual(sys.dnsSet.map(\.split), [true], "its own domains")
     }
     test("PS-08", "a reconnect's new tunnel: the old one's DNS goes first") {
         let sys = FakeSystem()
@@ -309,6 +311,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-19", "host routes and other connections' networks: checked both ways; another's def1 is no network") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route all traffic (the policy is not what is tested here)
         let h = makeHelper(sys)
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
         try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["203.0.113.9 255.255.255.255 192.168.64.1"])
@@ -355,6 +358,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-22", "no tunnel takes part of another user's networks, whichever came first") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route all traffic (the policy is not what is tested here)
         let h = makeHelper(sys)
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
         try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["10.0.0.0 255.0.0.0 10.8.0.1"])

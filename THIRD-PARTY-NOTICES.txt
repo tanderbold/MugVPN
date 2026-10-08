@@ -4,7 +4,7 @@ MugVPN itself is under the MIT License (see LICENSE). The app bundle also contai
 the following programs and libraries, each under its own license. MugVPN runs
 openvpn as a separate program; it does not link to it.
 
-  openvpn 2.7.7      Contents/Helpers/openvpn,       GNU GPL version 2 (with OpenSSL and Apache-2.0 linking exceptions)
+  openvpn 2.7.8      Contents/Helpers/openvpn,       GNU GPL version 2 (with OpenSSL and Apache-2.0 linking exceptions)
                        Contents/Helpers/openvpn-root
   OpenSSL 3.5.9      linked into openvpn             Apache License 2.0
   LZ4 1.10.0             linked into openvpn             BSD 2-Clause
@@ -16,7 +16,7 @@ tools/build-openvpn.sh in MugVPN's source (which pins each archive's SHA-256).
 Contents/Helpers/openvpn-root and the libraries are unmodified. Contents/Helpers/openvpn
 is openvpn changed by tools/patch-openvpn-privsep.py (in MugVPN's source, under
 openvpn's license, GPL-2.0) to run without root and ask MugVPN's helper for its tunnel:
-  https://github.com/OpenVPN/openvpn/releases/download/v2.7.7/openvpn-2.7.7.tar.gz
+  https://github.com/OpenVPN/openvpn/releases/download/v2.7.8/openvpn-2.7.8.tar.gz
   https://github.com/openssl/openssl/releases/download/openssl-3.5.9/openssl-3.5.9.tar.gz
   https://github.com/lz4/lz4/releases/download/v1.10.0/lz4-1.10.0.tar.gz
   https://www.oberhumer.com/opensource/lzo/download/lzo-2.10.tar.gz
@@ -33,7 +33,7 @@ the date of distribution.
 by OpenVPN Inc.
 
 ================================================================================
-openvpn 2.7.7 — COPYING
+openvpn 2.7.8 — COPYING
 
 OpenVPN (TM) -- An Open Source VPN daemon
 
@@ -125,7 +125,7 @@ LZO linking exception:
   Markus F.X.J. Oberhumer
 
 ================================================================================
-openvpn 2.7.7 — GNU General Public License version 2 (COPYRIGHT.GPL)
+openvpn 2.7.8 — GNU General Public License version 2 (COPYRIGHT.GPL)
 
                     GNU GENERAL PUBLIC LICENSE
                        Version 2, June 1991
@@ -1019,7 +1019,7 @@ library.  If this is what you want to do, use the GNU Lesser General
 Public License instead of this License.
 
 ================================================================================
-dns-updown — macos-dns-updown.sh from openvpn 2.7.7 (BSD-2-Clause)
+dns-updown — macos-dns-updown.sh from openvpn 2.7.8 (BSD-2-Clause)
 
 Copyright (C) 2025-2026 OpenVPN Inc <sales@openvpn.net>
 SPDX-License-Identifier: BSD-2-Clause

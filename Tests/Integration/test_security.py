@@ -38,8 +38,10 @@ def test_int16_helper_refuses_forbidden_profiles(vpn, mac, line):
     assert cid is None and vpn.list() == {} and vpn.openvpn_processes() == []
 
 
-def test_int17_foreign_client_is_rejected(vpn, mac):
-    mac.run(f"cp {CLI} /tmp/Other && codesign -f -s - -i com.example.other /tmp/Other", check=True)
+@pytest.mark.parametrize("ident", ["com.example.other", "com.mugvpn.app"])
+def test_int17_foreign_client_is_rejected(vpn, mac, ident):
+    """Another program, even one signed ad hoc under MugVPN's own identifier, is refused."""
+    mac.run(f"cp {CLI} /tmp/Other && codesign -f -s - -i {ident} /tmp/Other", check=True)
     r = mac.run("/tmp/Other status --xpc")
     assert "helper version" not in r.stdout
     assert r.returncode != 0

@@ -407,10 +407,13 @@ public final class HelperCore {
         return !parts.isEmpty
     }
 
-    /// What an administrator allows standard users (policy.json, root's alone; absent: everything).
+    /// What an administrator allows standard users (policy.json, root's alone). Absent,
+    /// broken or not root's: neither all traffic nor DNS for all names (both are the whole Mac's).
     struct UserPolicy: Codable {
         var usersMayRouteAllTraffic: Bool?
         var usersMayChangeDNS: Bool?
+        /// Users (short names) allowed both, as administrators are.
+        var trustedUsers: [String]?
     }
 
     private func userPolicy() -> UserPolicy {
@@ -420,20 +423,21 @@ public final class HelperCore {
         return p
     }
 
-    /// For a standard user under the policy: what the profile may not say and the server may not push.
-    private func limits(for uid: UInt32, persistent: Bool) -> (forbidden: Set<String>, ignored: [String]) {
-        guard !persistent, uid != 0, !system.isAdmin(uid: uid) else { return ([], []) }
+    struct Limits {
+        var mayRouteAll = true
+        var mayChangeDNS = true
+        /// Pushes openvpn is told to ignore.
+        var ignored: [String] = []
+    }
+
+    /// For a standard user: whether routes for all traffic and DNS for all names are allowed.
+    private func limits(for uid: UInt32, persistent: Bool) -> Limits {
+        guard !persistent, uid != 0, !system.isAdmin(uid: uid) else { return Limits() }
         let p = userPolicy()
-        var forbidden = Set<String>(), ignored: [String] = []
-        if p.usersMayRouteAllTraffic == false {
-            forbidden.insert("redirect-gateway")
-            ignored.append("redirect-gateway")
-        }
-        if p.usersMayChangeDNS == false {
-            forbidden.formUnion(["dns", "dhcp-option"])
-            ignored += ["dns ", "dhcp-option"]
-        }
-        return (forbidden, ignored)
+        if let name = system.userName(uid: uid), p.trustedUsers?.contains(name) == true { return Limits() }
+        var l = Limits(mayRouteAll: p.usersMayRouteAllTraffic == true, mayChangeDNS: p.usersMayChangeDNS == true)
+        if !l.mayRouteAll { l.ignored.append("redirect-gateway") }
+        return l
     }
 
     private func launch(_ bundle: ProfileBundle, owner uid: UInt32, management: [String],
@@ -444,7 +448,7 @@ public final class HelperCore {
         func named(_ ds: [ConfigDirective]) -> [String] {
             ds.flatMap { d in d.name == "connection" ? named((try? ConfigParser.parse(d.inline ?? "")) ?? []) : [d.name] }
         }
-        if let n = named(checked.directives).first(where: limit.forbidden.contains) {
+        if !limit.mayRouteAll, let n = named(checked.directives).first(where: { $0 == "redirect-gateway" }) {
             throw HelperCoreError.message("\(n): an administrator does not let standard users change the whole Mac's routing or DNS")
         }
         for key in checked.files {
@@ -498,7 +502,9 @@ public final class HelperCore {
                                                                         access: management, hold: !persistent,
                                                                         extraIgnored: limit.ignored)
                                                 // In its sandbox it may write only there (openvpn checks its tmp-dir at start).
-                                                + (user == nil ? [] : ["--tmp-dir", dir + "/sock"]),
+                                                + (user == nil ? [] : ["--tmp-dir", dir + "/sock"])
+                                                // A profile that would take any certificate of its CA as the server.
+                                                + (checked.needsServerCheck ? ["--remote-cert-tls", "server"] : []),
                                             cwd: dir, logPath: dir + "/openvpn.log", user: user) { [weak self] kind in
                 self?.finished(id: id, kind: kind)
             }
@@ -508,8 +514,8 @@ public final class HelperCore {
             c.privsep = user != nil
             c.serviceID = user?.uid
             c.splitDNS = bundle.splitDNS
-            c.mayRouteAll = !limit.forbidden.contains("redirect-gateway")
-            c.mayChangeDNS = !limit.forbidden.contains("dns")
+            c.mayRouteAll = limit.mayRouteAll
+            c.mayChangeDNS = limit.mayChangeDNS
             connections[id] = c
             // From the start: after a crash, this run is undone from the record, never from
             // the log (an unprivileged openvpn writes that).
@@ -677,7 +683,7 @@ public final class HelperCore {
         if !c.mayRouteAll, ["ROUTE", "ROUTE6"].contains(kind), HelperCore.isWide(kind, message) {
             throw HelperCoreError.message("\(kind) \(message): \(policy)")
         }
-        if !c.mayChangeDNS, kind == "DNSUP" { throw HelperCoreError.message("DNS: \(policy)") }
+
         switch kind {
         case "OPENTUN":
             // Reconnects open a new one; many at once are not a reconnect.
@@ -772,6 +778,8 @@ public final class HelperCore {
             if let last = c.lastDNSUp, t - last < 1 { throw HelperCoreError.message("DNS changed too soon again") }
             c.lastDNSUp = t
             let plan = try c.tunnel.dnsPlan(device: message, splitMarker: c.splitDNS)
+            // Its own domains are its business; all names are everyone's on the Mac.
+            if !plan.split, !c.mayChangeDNS { throw HelperCoreError.message("DNS for all names: \(policy)") }
             guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
             c.tunnel.dnsApplied = true
         case "DNSDOWN":

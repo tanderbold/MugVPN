@@ -455,32 +455,48 @@ func registerHelperTests() {
                                            files: ["f": Data("user\npass\n".utf8)]), uid: 501)
         }
     }
-    test("HLP-29", "an administrator's policy for standard users: all traffic and the Mac's DNS") {
-        // Routes and DNS are the whole Mac's: an administrator may keep them from standard users.
+    test("HLP-29", "standard users: no route for all traffic, no DNS for all names, unless an administrator allows it") {
+        // Routes and DNS are the whole Mac's. Without a policy (or with a broken one) the answer is no.
         let sys = FakeSystem()
-        try sys.makeDirectory("/L", mode: 0o755)
-        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": false, "usersMayChangeDNS": false}"#.utf8), mode: 0o644)
-        let h = makeHelper(sys)
         sys.admins = []
+        let h = makeHelper(sys)
         expectThrows("redirect in the profile", matching: "administrator") {
             _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
         }
-        expectThrows("dns in the profile", matching: "administrator") {
-            _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\ndhcp-option DNS 1.1.1.1"), uid: 502)
-        }
-        _ = try h.start(bundle: bundle(), uid: 502)
+        _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\ndhcp-option DOMAIN corp.example.com"), uid: 502)
         let a = sys.launched.last!.args
         let ignored = a.indices.filter { a[$0] == "--pull-filter" && a[$0 + 1] == "ignore" }.map { a[$0 + 2] }
-        for f in ["redirect-gateway", "dns ", "dhcp-option"] { expect(ignored.contains(f), f) }
+        expect(ignored.contains("redirect-gateway"), "a server cannot push it either")
         expect(a.firstIndex(of: "--config")! > a.lastIndex(of: "--pull-filter")!, "before the profile")
-        // Administrators are not limited; a policy file that is not root's is ignored.
+        // Administrators are not limited.
         sys.admins = [501]
         _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 501)
-        let s2 = FakeSystem()
-        try s2.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": false}"#.utf8), mode: 0o644)
-        s2.infos["/L/policy.json"] = (502, 0o644)
-        s2.admins = []
-        _ = try makeHelper(s2).start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
+        // An administrator's policy: for everyone, or for named users; only a root-owned file counts.
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": true}"#.utf8), mode: 0o644)
+        _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
+        try sys.writeFile("/L/policy.json", Data(#"{"trustedUsers": ["tester2"]}"#.utf8), mode: 0o644)
+        _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
+        sys.infos["/L/policy.json"] = (502, 0o644)
+        expectThrows("a policy file that is not root's", matching: "administrator") {
+            _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
+        }
+        try sys.writeFile("/L/policy.json", Data("{broken".utf8), mode: 0o644)
+        sys.infos["/L/policy.json"] = nil
+        expectThrows("a broken policy", matching: "administrator") {
+            _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nredirect-gateway def1"), uid: 502)
+        }
+    }
+    test("HLP-31", "a profile that does not check the server's role gets remote-cert-tls server") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nca ca.crt", files: ["ca.crt": Data(testCA.utf8)]), uid: 501)
+        let a = sys.launched[0].args
+        expectEqual(a.firstIndex(of: "--remote-cert-tls").map { a[$0 + 1] }, "server")
+        expect(a.firstIndex(of: "--remote-cert-tls")! > a.firstIndex(of: "--config")!, "after the profile")
+        _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\nca ca.crt\nverify-x509-name vpn.example.com name",
+                                       files: ["ca.crt": Data(testCA.utf8)]), uid: 501)
+        expect(!sys.launched[1].args.contains("--remote-cert-tls"), "its own check is kept")
     }
     test("HLP-02", "run directory contents") {
         let sys = FakeSystem()

@@ -340,6 +340,24 @@ func registerPolicyTests() {
             expect((try? checked(ok)) != nil, ok)
         }
     }
+    test("POL-39", "a server is checked as a server: remote-cert-tls added when the profile names no check") {
+        expect(try checked("client\nremote a\nca ca.crt", files: ["ca.crt"]).needsServerCheck)
+        for check in ["remote-cert-tls server", "verify-x509-name vpn.example.com name", "remote-cert-eku \"TLS Web Server Authentication\"",
+                      "remote-cert-ku a0", "peer-fingerprint AB:CD"] {
+            expect(!(try checked("client\nremote a\nca ca.crt\n" + check, files: ["ca.crt"]).needsServerCheck), check)
+        }
+        expect(!(try checked("client\nremote a")).needsServerCheck, "no CA named: nothing to check against")
+    }
+    test("POL-40", "no broken or legacy ciphers (SWEET32 and the like)") {
+        for bad in ["cipher BF-CBC", "cipher DES-EDE3-CBC", "data-ciphers AES-256-GCM:DES-CBC", "data-ciphers-fallback BF-CBC",
+                    "cipher CAST5-CBC", "cipher RC2-CBC", "cipher DESX-CBC", "cipher SEED-CBC", "cipher IDEA-CBC", "auth MD5",
+                    "ncp-ciphers AES-128-GCM:BF-CBC"] {
+            expectThrows(bad) { _ = try checked("client\nremote a\n" + bad) }
+        }
+        for ok in ["cipher AES-256-CBC", "data-ciphers AES-256-GCM:CHACHA20-POLY1305", "auth SHA256", "auth SHA1"] {
+            expect((try? checked("client\nremote a\n" + ok)) != nil, ok)
+        }
+    }
     test("POL-38", "a file named twice is checked as everything it is named as") {
         let r = try checked("auth-user-pass f\nkey f", files: ["f"])
         expectEqual(Set(r.fileKinds["f"] ?? []), ["auth-user-pass", "key"])

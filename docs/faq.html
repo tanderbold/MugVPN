@@ -23,7 +23,7 @@
     {"@type": "Question", "name": "How does split DNS work with several VPNs?",
      "acceptedAnswer": {"@type": "Answer", "text": "Each connection's DNS answers only for the domains its server names (or the domains you list); other names resolve as before. Only one connection at a time can take all names."}},
     {"@type": "Question", "name": "Does MugVPN have a kill switch?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes, per connection. If a connection that carries all traffic drops unexpectedly, MugVPN blocks the Internet with the macOS packet filter until you reconnect or unblock it from the menu."}},
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes, per connection. If a connection that carries all traffic drops unexpectedly, MugVPN blocks your TCP and UDP traffic outside the VPN with the macOS packet filter until you reconnect or unblock it from the menu."}},
     {"@type": "Question", "name": "Can I import my Tunnelblick or Viscosity configurations?",
      "acceptedAnswer": {"@type": "Answer", "text": "Tunnelblick .tblk folders and standard .ovpn files (Viscosity exports them) import directly, with the keys and certificates they name."}},
     {"@type": "Question", "name": "Is MugVPN free?",
@@ -49,7 +49,7 @@
   <p>When a server names its domains (<code>dns … resolve-domains</code>, or with the per-connection switch also the old <code>dhcp-option DOMAIN</code>), only those names go to that VPN's DNS; everything else resolves as before. You can also set a connection's own DNS servers for domains you list. Several connections can each answer for their own domains; only one can take all names.</p></details>
 
   <details><summary>Does MugVPN have a kill switch? Does it stop DNS and IPv6 leaks?</summary>
-  <p>Yes. Per connection, a kill switch blocks the Internet (with the macOS packet filter, PF) if a connection that carries all traffic drops unexpectedly, until you reconnect it or choose <em>Unblock Internet</em> in the menu. While such a connection is up, IPv6 and DNS outside the VPN are blocked. After connecting, and on every network change, a leak check warns if the default route, a public network or DNS goes around the tunnel — including routes a rogue DHCP server pushes (TunnelVision).</p></details>
+  <p>Yes. Per connection, a kill switch blocks your TCP and UDP traffic outside the VPN (with the macOS packet filter, PF) if a connection that carries all traffic drops unexpectedly, until you reconnect it or choose <em>Unblock Internet</em> in the menu. While such a connection is up, IPv6 and DNS outside the VPN are blocked. After connecting, and on every network change, a leak check warns if the default route, a public network or DNS goes around the tunnel — including routes a rogue DHCP server pushes (TunnelVision).</p></details>
 
   <details><summary>How does MugVPN compare to Tunnelblick, Viscosity and OpenVPN Connect?</summary>
   <p>OpenVPN Connect on macOS keeps one connection at a time. Tunnelblick and Viscosity can run several; MugVPN is built around it: per-connection split DNS, conflict and leak warnings, a kill switch that works with several tunnels, and a window to create and edit connections. It is free and open source (MIT), and it imports Tunnelblick configurations and standard <code>.ovpn</code> files.</p></details>

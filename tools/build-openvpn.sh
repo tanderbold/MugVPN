@@ -25,13 +25,13 @@ DNS_UPDOWN="/Library/Application Support/MugVPN/libexec/dns-updown"
 SSL_ROOT=/var/empty/mugvpn-openssl
 
 # The SHA-256 pins were checked once against the projects' signatures (2026-10-07):
-#   openvpn-2.7.7.tar.gz.asc  good, OpenVPN security list key F554 A368 7412 CFFE BDEF E0A3 12F5 F7B4 2F2B 01E7
+#   openvpn-2.7.8.tar.gz.asc  good, OpenVPN security list key F554 A368 7412 CFFE BDEF E0A3 12F5 F7B4 2F2B 01E7
 #   openssl-3.5.9.tar.gz.asc  good, OpenSSL key B146 647E 45A7 B339 47AB 226B 2A2C 87D1 6169 2D40
 #                             (listed on https://openssl-library.org/source/)
 #   LZ4 and LZO publish no signatures: their SHA-256 pins are from the official release files.
 # A new version gets the same check before its pin changes.
-OPENVPN_VER=2.7.7
-OPENVPN_SHA=3ab8f48fd6c26d49ba2333a092433949afdb5c85c0e6a1ff265784fbc04a2463
+OPENVPN_VER=2.7.8
+OPENVPN_SHA=c070d1d2440b5a6fca6c2c68645c98cd492116ac36ef4f0946177115532c8e36
 OPENSSL_VER=3.5.9
 OPENSSL_SHA=603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a
 LZ4_VER=1.10.0
