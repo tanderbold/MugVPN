@@ -31,6 +31,8 @@ func registerLicenseTests() {
         expect(l.hasPrefix("MIT License"), "LICENSE starts with MIT License")
         expect(l.contains("Permission is hereby granted, free of charge"))
         expect(l.contains("Copyright (c)") && l.contains("MugVPN"))
+        // The standard text and nothing else, or GitHub does not recognise the license.
+        expect(l.hasSuffix("OTHER DEALINGS IN THE\nSOFTWARE.\n"), "nothing after the MIT text")
     }
     test("LIC-02", "third-party notices for everything bundled") {
         let n = read("THIRD-PARTY-NOTICES.txt")
