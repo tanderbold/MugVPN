@@ -503,8 +503,11 @@ func registerPrivsepHelperTests() {
         let (b, _) = try h.start(bundle: psBundle(), uid: 502)
         try bringUp(sys, h, b, uid: 502, device: "utun6", routes: ["10.30.0.0 255.255.0.0 10.8.0.1"])
         let anchor = sys.pf.last ?? ""
-        expect(anchor.contains("pass out quick on utun6 proto { tcp udp } user { 502 65 }"), anchor)
-        expect(anchor.contains("block return out quick on utun6 proto { tcp udp } all"), anchor)
+        expect(anchor.contains("pass out quick on utun6 proto { tcp udp } user 502"), anchor)
+        expect(!anchor.contains("user 65"), "no DNS of its own: the system resolver has no business there: \(anchor)")
+        expect(anchor.contains("pass out quick on utun6 proto { icmp icmp6 } all"), "ping still works")
+        expect(anchor.contains("block return out quick on utun6 proto { tcp udp } all") && anchor.contains("block drop out quick on utun6 all"),
+               "nobody else's TCP, UDP or other protocols: \(anchor)")
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
         try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["10.40.0.0 255.255.0.0 10.8.0.1"])
         expect(!(sys.pf.last ?? "").contains("on utun5 proto"), "an administrator's tunnel is the whole Mac's")
@@ -630,5 +633,72 @@ func registerPrivsepHelperTests() {
         }
         _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1")
         expect(recorded, "the record names the route before route add runs")
+    }
+    test("PS-39", "the system resolver reaches a standard user's tunnel only for its administrator-approved DNS (ext. audit 4: P1)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.internal"]}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        expect(!(sys.pf.last ?? "").contains("user 65"))
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_server_1_resolve_domain_1=corp.internal"] {
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: v)
+        }
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
+        let a = sys.pf.last ?? ""
+        expect(a.contains("pass out quick on utun5 proto { tcp udp } from any to { 10.8.0.53 } port 53 user 65"), a)
+    }
+    test("PS-40", "PF lost and not to be put back: standard users' tunnels stop (ext. audit 4: P2)") {
+        let sys = FakeSystem()
+        sys.admins = [501]
+        let h = makeHelper(sys)
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, b, uid: 502, device: "utun6", routes: ["10.30.0.0 255.255.0.0 10.8.0.1"])
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, a, uid: 501, device: "utun5", routes: [])
+        sys.pfIntactAnswer = false
+        sys.pfApplyFails = true
+        h.refreshProtection()
+        expectEqual(sys.launched[0].process.signals, [SIGTERM], "the standard user's tunnel is stopped")
+        expectEqual(sys.launched[1].process.signals, [], "an administrator's goes on")
+    }
+    test("PS-41", "an address set by a request that is taken back goes too (ext. audit 4: P2)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
+        sys.pfIntactAnswer = false
+        sys.pfApplyFails = true
+        expectThrows("not isolated", matching: "isolat") {
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "IFCONFIG", message: "10.8.0.2 255.255.255.0 1500 subnet")
+        }
+        expect(sys.commands.contains(["ifconfig", "utun7", "inet", "10.8.0.2", "delete"]), "\(sys.commands)")
+    }
+    test("PS-42", "a kill switch that cannot be recorded: no tunnel for all traffic (ext. audit 4: P2)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.protection = ProtectionOptions(killSwitch: true)
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["0.0.0.0 128.0.0.0 10.8.0.1"])
+        sys.failWrites = ["locks.json"]
+        sys.commands = []
+        expectThrows("the arming is not on disk", matching: "kill switch") {
+            _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "128.0.0.0 128.0.0.0 10.8.0.1")
+        }
+        expect(sys.commands.contains(["route", "-n", "delete", "-net", "128.0.0.0", "-netmask", "128.0.0.0", "-interface", "utun5"]))
+    }
+    test("PS-43", "a change that failed is not left in the record (ext. audit 4: P3)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        sys.commandFails = true
+        expectThrows("route add fails") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1") }
+        let saved = String(decoding: sys.files["/L/run/ID1/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(!saved.contains("10.20.0.0"), saved)
     }
 }

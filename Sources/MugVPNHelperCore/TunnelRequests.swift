@@ -118,13 +118,15 @@ public struct TunnelState: Equatable, Sendable, Codable {
     public var dnsDomains: [String] = []
     /// Gateways inside the tunnel its routes named (the server's side).
     public var gateways: [UInt32] = []
+    /// Servers its DNS asks while applied.
+    public var dnsServers: [String] = []
 
     /// A connection with more routes than this is not a VPN profile but an attack on the helper.
     public static let maxRoutes = 512
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways }
+    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways, dnsServers }
 
     /// A record of an older helper lacks newer fields: it still counts.
     public init(from decoder: Decoder) throws {
@@ -141,6 +143,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
         local = try? c.decodeIfPresent(UInt32.self, forKey: .local)
         dnsDomains = (try? c.decodeIfPresent([String].self, forKey: .dnsDomains)) ?? []
         gateways = (try? c.decodeIfPresent([UInt32].self, forKey: .gateways)) ?? []
+        dnsServers = (try? c.decodeIfPresent([String].self, forKey: .dnsServers)) ?? []
     }
 
     /// Routes of the current device that cover everything (def1's halves, or a default).

@@ -30,9 +30,12 @@ public struct ProtectionState: Equatable, Sendable {
     public struct OwnTunnel: Equatable, Sendable {
         public var device: String
         public var owner: UInt32
-        public init(device: String, owner: UInt32) {
+        /// Its DNS servers while its (administrator-approved) DNS is set: the system resolver may ask them.
+        public var dnsServers: [String]
+        public init(device: String, owner: UInt32, dnsServers: [String] = []) {
             self.device = device
             self.owner = owner
+            self.dnsServers = dnsServers
         }
     }
 
@@ -56,10 +59,16 @@ public enum PFRules {
         let locks = s.locks.filter { $0.owner != 0 && $0.owner != UInt32.max }
         if locks.contains(where: \.allowLAN) { r.append("table <mugvpn_lan> const { \(lan.joined(separator: " ")) }") }
         r.append("pass out quick on lo0 all")
-        // mDNSResponder (_mdnsresponder, 65) asks the owner's DNS servers for the owner's domains.
         for t in s.ownTraffic where isUtun(t.device) && t.owner != 0 && t.owner != UInt32.max {
-            r.append("pass out quick on \(t.device) proto { tcp udp } user { \(t.owner) 65 }")
+            r.append("pass out quick on \(t.device) proto { tcp udp } user \(t.owner)")
+            // The system resolver (mDNSResponder, 65) to the tunnel's own DNS servers, port 53 only.
+            let dns = t.dnsServers.filter(isAddress)
+            if !dns.isEmpty {
+                r.append("pass out quick on \(t.device) proto { tcp udp } from any to { \(dns.joined(separator: " ")) } port 53 user 65")
+            }
+            r.append("pass out quick on \(t.device) proto { icmp icmp6 } all")
             r.append("block return out quick on \(t.device) proto { tcp udp } all")
+            r.append("block drop out quick on \(t.device) all")
         }
         let tunnels = Array(Set(s.tunnels.filter(isUtun))).sorted()
         if !tunnels.isEmpty { r.append("pass out quick on { \(tunnels.joined(separator: " ")) } all") }
@@ -76,6 +85,11 @@ public enum PFRules {
                           : "block return out quick proto { tcp udp } all user \(owner)")
         }
         return r.joined(separator: "\n") + "\n"
+    }
+
+    static func isAddress(_ s: String) -> Bool {
+        var a4 = in_addr(), a6 = in6_addr()
+        return s.count <= 45 && (inet_pton(AF_INET, s, &a4) == 1 || inet_pton(AF_INET6, s, &a6) == 1)
     }
 
     static func isUtun(_ s: String) -> Bool {

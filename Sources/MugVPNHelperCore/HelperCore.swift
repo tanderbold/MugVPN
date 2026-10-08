@@ -749,18 +749,25 @@ public final class HelperCore {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         // All or nothing: a refused or failed request leaves the records as they were.
         let before = c.tunnel
+        let wasFullBefore = c.wasFull
         do {
             try carryOut(c, kind, message, others: others, reply: &reply)
-        } catch let e as TunnelRequestError {
-            c.tunnel = before
-            throw HelperCoreError.message(e.description)
         } catch {
+            // Nothing done: the record (written ahead) says so again.
             c.tunnel = before
+            try? saveTunnel(c)
+            if let e = error as? TunnelRequestError { throw HelperCoreError.message(e.description) }
             throw error
         }
         /// Take back what this request did.
         func undoRequest() {
             for r in c.tunnel.cleanup() where !before.cleanup().contains(r) { remove(r, others: others) }
+            if let dev = c.tunnel.device, dev == before.device {
+                if let a = c.tunnel.local, a != before.local { _ = system.runNetwork(["ifconfig", dev, "inet", TunnelState.text(a), "delete"]) }
+                if let n6 = c.tunnel.net6, n6 != before.net6, let a6 = n6.split(separator: "/").first {
+                    _ = system.runNetwork(["ifconfig", dev, "inet6", String(a6), "delete"])
+                }
+            }
             if c.tunnel.dnsApplied, !before.dnsApplied, let dev = c.tunnel.device { system.restoreDNS(device: dev) }
             if let dev = c.tunnel.device, dev != before.device {
                 takeDown(c.tunnel)
@@ -783,6 +790,15 @@ public final class HelperCore {
             undoRequest()
             refreshProtection()
             throw HelperCoreError.message("the tunnel cannot be isolated to its user (PF): not set")
+        }
+        // All traffic with a kill switch only once its arming is on disk (it must outlive a helper crash).
+        if c.protection.killSwitch, c.wasFull, !wasFullBefore, locksDirty {
+            let name = HelperCore.lockName(c.info.name)
+            locks.removeAll { $0.name == name && $0.owner == c.info.ownerUID && $0.armed }
+            c.wasFull = false
+            undoRequest()
+            refreshProtection()
+            throw HelperCoreError.message("the kill switch could not be recorded: not taking all traffic")
         }
         return reply
     }
@@ -951,6 +967,7 @@ public final class HelperCore {
             }
             c.tunnel.dnsApplied = true
             c.tunnel.dnsDomains = plan.matchDomains
+            c.tunnel.dnsServers = plan.servers
             try record(c)
             guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
         case "DNSDOWN":
@@ -1137,7 +1154,10 @@ public final class HelperCore {
             let full = c.tunnel.takesAllTraffic
             if let dev = c.tunnel.device {
                 s.tunnels.append(dev)
-                if c.restricted { s.ownTraffic.append(ProtectionState.OwnTunnel(device: dev, owner: c.info.ownerUID)) }
+                if c.restricted {
+                    s.ownTraffic.append(ProtectionState.OwnTunnel(device: dev, owner: c.info.ownerUID,
+                                                                  dnsServers: c.tunnel.dnsApplied ? c.tunnel.dnsServers : []))
+                }
             }
             guard c.protection.any else { continue }
             if full, !c.wasFull {
@@ -1163,6 +1183,10 @@ public final class HelperCore {
             appliedPF = system.applyPF(anchor) ? anchor : "\u{0}"
         }
         if locksDirty { saveLocks() }
+        // PF gone and not to be put back: standard users' tunnels would take others' traffic.
+        if appliedPF != anchor {
+            for c in connections.values where c.restricted && c.tunnel.device != nil && !c.stopping { terminate(c) }
+        }
         // Tunnels come up and change routes after start, and PF can be changed under us:
         // look again while protection is asked for or in force.
         if connections.values.contains(where: { $0.protection.any }) || !anchor.isEmpty, !refreshPending {
