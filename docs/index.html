@@ -1,0 +1,123 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MugVPN — several OpenVPN connections at once on macOS</title>
+<meta name="description" content="MugVPN is a free, open-source macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time, each with its own split DNS. Kill switch, leak protection, Tunnelblick import. Apple silicon and Intel.">
+<meta name="keywords" content="OpenVPN client for Mac, multiple VPN connections macOS, simultaneous VPN connections Mac, split DNS VPN macOS, Tunnelblick alternative, Viscosity alternative, OpenVPN Connect alternative, ovpn Mac, VPN kill switch Mac, open source VPN client macOS">
+<meta name="robots" content="index, follow, max-image-preview:large">
+<meta name="theme-color" content="#17110d">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MugVPN">
+<meta property="og:title" content="MugVPN — several OpenVPN connections at once on macOS">
+<meta property="og:description" content="A free, open-source macOS menu-bar client for OpenVPN profiles: several connections at once, split DNS per connection, kill switch, leak checks.">
+<meta property="og:image" content="https://tanderbold.github.io/MugVPN/social-preview.png">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:url" content="https://tanderbold.github.io/MugVPN/">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="MugVPN — several OpenVPN connections at once on macOS">
+<meta name="twitter:description" content="Free, open-source macOS menu-bar client for OpenVPN profiles. Several connections at once, split DNS, kill switch.">
+<meta name="twitter:image" content="https://tanderbold.github.io/MugVPN/social-preview.png">
+<link rel="icon" type="image/png" href="icon.png">
+<link rel="apple-touch-icon" href="icon.png">
+<link rel="canonical" href="https://tanderbold.github.io/MugVPN/">
+<link rel="alternate" type="text/plain" title="LLM summary" href="llms.txt">
+<script type="application/ld+json">
+{
+  "@context": "https://schema.org",
+  "@type": "SoftwareApplication",
+  "name": "MugVPN",
+  "alternateName": "MugVPN for Mac",
+  "operatingSystem": "macOS 13+",
+  "applicationCategory": "UtilitiesApplication",
+  "applicationSubCategory": "VPN client",
+  "description": "A free, open-source macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time, each with its own routes and split DNS. Kill switch, leak protection and leak checks, Tunnelblick and Access Server import, 23 languages.",
+  "featureList": [
+    "Several OpenVPN connections at the same time",
+    "Split DNS per connection",
+    "Kill switch and leak protection (IPv6, DNS) with the macOS packet filter",
+    "Leak check after connecting (default route, rogue routes, DNS)",
+    "Create and edit connections in a window, or as text",
+    "Import .ovpn, Tunnelblick .tblk, URL and OpenVPN Access Server profiles",
+    "openvpn runs without root",
+    "Passwords in the macOS Keychain",
+    "Persistent connections at boot"
+  ],
+  "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "isAccessibleForFree": true,
+  "license": "https://opensource.org/licenses/MIT",
+  "url": "https://tanderbold.github.io/MugVPN/",
+  "codeRepository": "https://github.com/tanderbold/MugVPN",
+  "programmingLanguage": "Swift",
+  "image": "https://tanderbold.github.io/MugVPN/social-preview.png",
+  "screenshot": [
+    "https://tanderbold.github.io/MugVPN/screenshots/menu.png",
+    "https://tanderbold.github.io/MugVPN/screenshots/status.png",
+    "https://tanderbold.github.io/MugVPN/screenshots/connections-general.png",
+    "https://tanderbold.github.io/MugVPN/screenshots/connections-options.png",
+    "https://tanderbold.github.io/MugVPN/screenshots/connections-auth.png",
+    "https://tanderbold.github.io/MugVPN/screenshots/status-dark.png"
+  ],
+  "sameAs": "https://github.com/tanderbold/MugVPN"
+}
+</script>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <img class="appicon" src="icon.png" alt="MugVPN app icon: a steaming mug with VPN written on it" width="128" height="128">
+  <h1>MugVPN</h1>
+  <p class="tagline">Several OpenVPN connections at once on your Mac — the office, a client and your home lab, each with its own tunnel and DNS.</p>
+  <p class="badges">
+    <span>◆ Free &amp; open source (MIT)</span>
+    <span>◆ Apple silicon + Intel</span>
+    <span>◆ macOS 13+</span>
+    <span>◆ 23 languages</span>
+  </p>
+  <p class="cta"><a href="https://github.com/tanderbold/MugVPN">Source on GitHub</a><a href="#build">Build it</a><a href="faq.html">FAQ</a></p>
+
+  <div class="shots">
+    <figure><img src="screenshots/menu.png" alt="The MugVPN menu with three VPN connections up at once" loading="lazy"><figcaption>Three connections up at once, each in its own submenu</figcaption></figure>
+    <figure><img src="screenshots/status.png" alt="Status window with address, traffic and a coloured openvpn log" loading="lazy"><figcaption>Status with a colour log</figcaption></figure>
+  </div>
+
+  <h2>Why MugVPN</h2>
+  <p>Most Mac VPN apps keep one OpenVPN connection at a time. MugVPN runs <strong>several simultaneous OpenVPN connections</strong> — each with its own <code>utun</code> interface, routes and <strong>split DNS</strong> — so names in each network resolve through its own VPN while the rest of your traffic goes as usual. It reads the standard <code>.ovpn</code> profiles your VPN provider or company gives you.</p>
+
+  <div class="grid">
+    <div class="card"><h3>Several connections at once</h3><p>Connect, disconnect and reconnect each on its own; warnings when two collide (both take all traffic, overlapping routes, DNS).</p></div>
+    <div class="card"><h3>Split DNS per connection</h3><p>Each VPN answers for its own domains. Your own DNS servers for a connection, for listed domains or all names.</p></div>
+    <div class="card"><h3>Kill switch</h3><p>If a connection that carries all traffic drops, the Internet stays blocked until you reconnect or unblock — enforced by the macOS packet filter.</p></div>
+    <div class="card"><h3>Leak protection &amp; leak check</h3><p>No IPv6 or DNS outside the VPN while it carries everything; warns if a route or DNS goes around the tunnel (TunnelVision).</p></div>
+    <div class="card"><h3>Connections window</h3><p>Create, edit, duplicate and delete connections in a form or as text: servers, certificates, keys, sign-in.</p></div>
+    <div class="card"><h3>Easy import</h3><p><code>.ovpn</code> files with their keys, Tunnelblick <code>.tblk</code> folders, profiles from a URL or an OpenVPN Access Server.</p></div>
+    <div class="card"><h3>Every way to sign in</h3><p>Passwords (in the Keychain), OTP challenges, web/SSO sign-in, PKCS#12 certificates, HTTP proxies.</p></div>
+    <div class="card"><h3>openvpn without root</h3><p>openvpn runs unprivileged; a small helper does what needs root, and checks what it is asked.</p></div>
+  </div>
+
+  <div class="shots">
+    <figure><img src="screenshots/connections-general.png" alt="The Connections window, General tab" loading="lazy"><figcaption>Connections: servers, sign-in and more</figcaption></figure>
+    <figure><img src="screenshots/connections-options.png" alt="Options tab with DNS mode, split DNS, kill switch and leak protection" loading="lazy"><figcaption>Per-connection DNS and protection</figcaption></figure>
+  </div>
+
+  <h2 id="build">Get it</h2>
+  <p>There is no signed download yet — MugVPN waits for an Apple Developer ID, and a VPN helper that runs as root should not come from an unsigned download. Building takes a few minutes and needs only the Xcode Command Line Tools:</p>
+  <pre><code>git clone https://github.com/tanderbold/MugVPN.git
+cd MugVPN
+tools/build-openvpn.sh             # openvpn 2.7 and its libraries, from pinned sources
+MUGVPN_ARCH=native tools/build.sh  # build/MugVPN.app
+cp -R build/MugVPN.app /Applications/</code></pre>
+  <p>On the first connection macOS asks you to allow MugVPN's helper in <em>System Settings › General › Login Items</em>.</p>
+
+  <h2>How it works</h2>
+  <p>The app (your rights) shows the menu and windows and keeps your profiles and passwords. Each <code>openvpn</code> runs without root; a small LaunchDaemon helper sets up the tunnels and cleans up after them. openvpn 2.7, OpenSSL 3.5, LZ4 and LZO are built from source into the app.</p>
+
+  <footer>
+    <p>MugVPN is free software under the MIT License. “OpenVPN” is a trademark of OpenVPN Inc.; MugVPN is not affiliated with or endorsed by OpenVPN Inc. and uses the name only to say which profiles it works with.</p>
+    <p><a href="https://github.com/tanderbold/MugVPN">GitHub</a> · <a href="https://github.com/tanderbold/MugVPN/issues">Issues</a> · <a href="https://github.com/tanderbold/MugVPN/discussions">Discussions</a> · <a href="faq.html">FAQ</a></p>
+  </footer>
+</main>
+</body>
+</html>

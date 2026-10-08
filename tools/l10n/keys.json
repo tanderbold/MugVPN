@@ -1,0 +1,620 @@
+[
+ {
+  "key": "%@ (set by your administrator)"
+ },
+ {
+  "key": "%@ and %@ both route %@"
+ },
+ {
+  "key": "%@ and %@ both route all traffic"
+ },
+ {
+  "key": "%@ copy"
+ },
+ {
+  "key": "%@ could not set its DNS: another tunnel already redirects all DNS"
+ },
+ {
+  "key": "%@ is not a domain name."
+ },
+ {
+  "key": "%@ is not a text file (PEM)."
+ },
+ {
+  "key": "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@"
+ },
+ {
+  "key": "A client for OpenVPN profiles that keeps several connections up at once. MIT License."
+ },
+ {
+  "key": "A program asked MugVPN to import %@. Import it?"
+ },
+ {
+  "key": "About MugVPN"
+ },
+ {
+  "key": "Add a connection"
+ },
+ {
+  "key": "Add at least one server."
+ },
+ {
+  "key": "Address:"
+ },
+ {
+  "key": "Advanced"
+ },
+ {
+  "key": "Append to the log instead of replacing it"
+ },
+ {
+  "key": "As in Settings"
+ },
+ {
+  "key": "Ask for a username and password"
+ },
+ {
+  "key": "Attach automatically"
+ },
+ {
+  "key": "Authentication"
+ },
+ {
+  "key": "Authentication failed"
+ },
+ {
+  "key": "Autologin profile (no password when connecting)"
+ },
+ {
+  "key": "Automatic"
+ },
+ {
+  "key": "Block IPv6 outside the VPN"
+ },
+ {
+  "key": "By folder"
+ },
+ {
+  "key": "CA certificate:"
+ },
+ {
+  "key": "Cancel"
+ },
+ {
+  "key": "Cannot check how DNS server %@ is reached"
+ },
+ {
+  "key": "Cannot import %@: %@"
+ },
+ {
+  "key": "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@"
+ },
+ {
+  "key": "Cannot import: %@"
+ },
+ {
+  "key": "Cannot uninstall: %@"
+ },
+ {
+  "key": "Certificate"
+ },
+ {
+  "key": "Certificate:"
+ },
+ {
+  "key": "Choose"
+ },
+ {
+  "key": "Choose the certificate for %@:"
+ },
+ {
+  "key": "Choose the server's CA certificate."
+ },
+ {
+  "key": "Clear Saved Passwords"
+ },
+ {
+  "key": "Configuration"
+ },
+ {
+  "key": "Connect"
+ },
+ {
+  "key": "Connect script (s):"
+ },
+ {
+  "key": "Connect silently"
+ },
+ {
+  "key": "Connect silently (no status window)"
+ },
+ {
+  "key": "Connect when MugVPN starts"
+ },
+ {
+  "key": "Connected (%@)"
+ },
+ {
+  "key": "Connected with errors (%@)"
+ },
+ {
+  "key": "Connected, %@"
+ },
+ {
+  "key": "Connected: changes apply the next time it connects."
+ },
+ {
+  "key": "Connecting"
+ },
+ {
+  "key": "Connecting (%@)"
+ },
+ {
+  "key": "Connecting to %@."
+ },
+ {
+  "key": "Connection Settings…"
+ },
+ {
+  "key": "Connection settings"
+ },
+ {
+  "key": "Connections"
+ },
+ {
+  "key": "Connections…"
+ },
+ {
+  "key": "Copy and Import"
+ },
+ {
+  "key": "DNS server %@ is not an IP address."
+ },
+ {
+  "key": "DNS server %@ is reached outside the VPN (through %@)"
+ },
+ {
+  "key": "DNS servers:"
+ },
+ {
+  "key": "DNS:"
+ },
+ {
+  "key": "Dark"
+ },
+ {
+  "key": "Delete"
+ },
+ {
+  "key": "Delete %@? Its files, settings and saved passwords are removed."
+ },
+ {
+  "key": "Delete the connection"
+ },
+ {
+  "key": "Discard"
+ },
+ {
+  "key": "Discard the changes to %@?"
+ },
+ {
+  "key": "Disconnect"
+ },
+ {
+  "key": "Disconnect %@ and quit? They connect again the next time MugVPN starts."
+ },
+ {
+  "key": "Disconnect %@ before renaming it."
+ },
+ {
+  "key": "Disconnect and Quit"
+ },
+ {
+  "key": "Disconnect script (s):"
+ },
+ {
+  "key": "Disconnect when the Mac sleeps, connect again on wake"
+ },
+ {
+  "key": "Disconnected"
+ },
+ {
+  "key": "Disconnecting"
+ },
+ {
+  "key": "Don't change DNS"
+ },
+ {
+  "key": "Duplicate"
+ },
+ {
+  "key": "Edit Config"
+ },
+ {
+  "key": "Embedded"
+ },
+ {
+  "key": "Enter at least one DNS server."
+ },
+ {
+  "key": "Enter at most 8 DNS servers."
+ },
+ {
+  "key": "Enter the proxy's address and a port from 1 to 65535."
+ },
+ {
+  "key": "Every time"
+ },
+ {
+  "key": "Flat"
+ },
+ {
+  "key": "From the VPN server"
+ },
+ {
+  "key": "General"
+ },
+ {
+  "key": "Hide"
+ },
+ {
+  "key": "IPv6 traffic goes around the VPN (through %@)"
+ },
+ {
+  "key": "If it drops unexpectedly, block the Internet until I reconnect"
+ },
+ {
+  "key": "Ignore messages from servers"
+ },
+ {
+  "key": "Import"
+ },
+ {
+  "key": "Import File…"
+ },
+ {
+  "key": "Import from Access Server"
+ },
+ {
+  "key": "Import from Access Server…"
+ },
+ {
+  "key": "Import from URL"
+ },
+ {
+  "key": "Import from URL…"
+ },
+ {
+  "key": "Imported"
+ },
+ {
+  "key": "Installed by an administrator: only its MugVPN options can be changed here."
+ },
+ {
+  "key": "Internet blocked: %@ dropped. Reconnect it or unblock."
+ },
+ {
+  "key": "Keep my profiles"
+ },
+ {
+  "key": "Later"
+ },
+ {
+  "key": "Light"
+ },
+ {
+  "key": "Line %@: %@"
+ },
+ {
+  "key": "List only"
+ },
+ {
+  "key": "Log theme:"
+ },
+ {
+  "key": "Manual"
+ },
+ {
+  "key": "Move MugVPN to the Applications folder, open it from there and connect again."
+ },
+ {
+  "key": "MugVPN"
+ },
+ {
+  "key": "MugVPN Settings"
+ },
+ {
+  "key": "MugVPN needs its helper to start tunnels."
+ },
+ {
+  "key": "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected."
+ },
+ {
+  "key": "MugVPN: %@"
+ },
+ {
+  "key": "Mute repeated messages (h):"
+ },
+ {
+  "key": "Name:"
+ },
+ {
+  "key": "Never"
+ },
+ {
+  "key": "New Connection"
+ },
+ {
+  "key": "New Connection…"
+ },
+ {
+  "key": "No log for %@ yet."
+ },
+ {
+  "key": "No profiles yet"
+ },
+ {
+  "key": "No proxy"
+ },
+ {
+  "key": "None"
+ },
+ {
+  "key": "Not all traffic goes through the VPN: the tunnel does not hold the default route"
+ },
+ {
+  "key": "Not imported (MugVPN does not run profile scripts as root): %@"
+ },
+ {
+  "key": "Notify when connected:"
+ },
+ {
+  "key": "OK"
+ },
+ {
+  "key": "Off"
+ },
+ {
+  "key": "One server per line: host port udp|tcp"
+ },
+ {
+  "key": "Only for domains:"
+ },
+ {
+  "key": "Open System Settings"
+ },
+ {
+  "key": "Open in Text Editor"
+ },
+ {
+  "key": "OpenVPN is a registered trademark of OpenVPN Inc."
+ },
+ {
+  "key": "Options"
+ },
+ {
+  "key": "Password:"
+ },
+ {
+  "key": "Persistent connections:"
+ },
+ {
+  "key": "Port:"
+ },
+ {
+  "key": "Pre-connect script (s):"
+ },
+ {
+  "key": "Private key:"
+ },
+ {
+  "key": "Profile menu:"
+ },
+ {
+  "key": "Proxy"
+ },
+ {
+  "key": "Proxy:"
+ },
+ {
+  "key": "Quit MugVPN"
+ },
+ {
+  "key": "Received:"
+ },
+ {
+  "key": "Reconnect"
+ },
+ {
+  "key": "Reconnecting"
+ },
+ {
+  "key": "Remove"
+ },
+ {
+  "key": "Response"
+ },
+ {
+  "key": "Revert"
+ },
+ {
+  "key": "Save"
+ },
+ {
+  "key": "Save password"
+ },
+ {
+  "key": "Saved:"
+ },
+ {
+  "key": "Send DNS only through the VPN"
+ },
+ {
+  "key": "Send all traffic through the VPN"
+ },
+ {
+  "key": "Sent:"
+ },
+ {
+  "key": "Server %@: %@"
+ },
+ {
+  "key": "Server:"
+ },
+ {
+  "key": "Servers"
+ },
+ {
+  "key": "Servers:"
+ },
+ {
+  "key": "Set by your administrator"
+ },
+ {
+  "key": "Settings…"
+ },
+ {
+  "key": "Several connections can each serve their own domains; only one at a time can take all names."
+ },
+ {
+  "key": "Show Status"
+ },
+ {
+  "key": "Show in Finder"
+ },
+ {
+  "key": "Show the status window"
+ },
+ {
+  "key": "Signing in needs a client certificate or a password."
+ },
+ {
+  "key": "Some settings are set by your administrator."
+ },
+ {
+  "key": "Split DNS by Domain: only the server's domains go to its DNS"
+ },
+ {
+  "key": "Stay connected"
+ },
+ {
+  "key": "TLS auth key:"
+ },
+ {
+  "key": "TLS crypt key:"
+ },
+ {
+  "key": "The client certificate needs its private key."
+ },
+ {
+  "key": "The configuration cannot be read: %@"
+ },
+ {
+  "key": "The first time"
+ },
+ {
+  "key": "The private key needs its client certificate."
+ },
+ {
+  "key": "The proxy for %@ needs a username and password."
+ },
+ {
+  "key": "These DNS servers"
+ },
+ {
+  "key": "Third-Party Notices"
+ },
+ {
+  "key": "This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced."
+ },
+ {
+  "key": "Traffic to %@ goes around the VPN (through %@)"
+ },
+ {
+  "key": "Turn on MugVPN in System Settings > General > Login Items, then connect again."
+ },
+ {
+  "key": "URL:"
+ },
+ {
+  "key": "Unblock Internet"
+ },
+ {
+  "key": "Uninstall"
+ },
+ {
+  "key": "Uninstall MugVPN"
+ },
+ {
+  "key": "Uninstall MugVPN…"
+ },
+ {
+  "key": "Use the system proxy settings"
+ },
+ {
+  "key": "Username:"
+ },
+ {
+  "key": "View Log"
+ },
+ {
+  "key": "Waiting for web authentication"
+ },
+ {
+  "key": "When all traffic goes through it:"
+ },
+ {
+  "key": "When the Mac sleeps:"
+ },
+ {
+  "key": "While MugVPN blocks the Internet, allow the local network"
+ },
+ {
+  "key": "While connecting:"
+ },
+ {
+  "key": "Wrong password"
+ },
+ {
+  "key": "cannot reach openvpn's management socket"
+ },
+ {
+  "key": "connected"
+ },
+ {
+  "key": "connecting"
+ },
+ {
+  "key": "empty: all names"
+ },
+ {
+  "key": "enter a host name or address"
+ },
+ {
+  "key": "not connected"
+ },
+ {
+  "key": "nothing"
+ },
+ {
+  "key": "passwords"
+ },
+ {
+  "key": "the connection ended unexpectedly"
+ },
+ {
+  "key": "the persistent connection is not running"
+ },
+ {
+  "key": "the port must be 1–65535"
+ },
+ {
+  "key": "the pre-connect script failed"
+ },
+ {
+  "key": "username %@"
+ },
+ {
+  "key": "write a server as: host port udp|tcp"
+ }
+]

@@ -1,0 +1,26 @@
+name: macOS
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  build-and-test:
+    runs-on: macos-15
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Logic tests (parsers, profile policy, helper and app decisions)
+        run: swift build --product MugVPNTests && .build/debug/MugVPNTests
+      - name: App and helper compile (release)
+        run: |
+          cp tools/ci/BuildPins.swift.example Sources/MugVPNHelper/BuildPins.swift
+          swift build -c release
+      - name: Translations are up to date
+        run: |
+          python3 tools/l10n/l10n.py build
+          git diff --exit-code -- Resources

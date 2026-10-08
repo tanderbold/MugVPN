@@ -1,0 +1,4 @@
+User-agent: *
+Allow: /
+
+Sitemap: https://tanderbold.github.io/MugVPN/sitemap.xml

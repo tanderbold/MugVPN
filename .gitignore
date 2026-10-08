@@ -1,0 +1,8 @@
+/build/
+/.build/
+/third_party/src/
+.DS_Store
+/Sources/MugVPNHelper/BuildPins.swift
+/.venv/
+/.build-*/
+__pycache__/

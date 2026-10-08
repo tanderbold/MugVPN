@@ -1,0 +1,342 @@
+[
+ {
+  "key": "%@ (set by your administrator)",
+  "context": "accessibility label of a locked setting; %@ = the setting's own label"
+ },
+ {
+  "key": "%@ and %@ both route %@",
+  "context": "warning in the menu and a notification; %@ = profile name, profile name, a network like 10.91.0.0/24"
+ },
+ {
+  "key": "%@ and %@ both route all traffic",
+  "context": "warning; two VPN profile names that both send ALL internet traffic through themselves"
+ },
+ {
+  "key": "%@ could not set its DNS: another tunnel already redirects all DNS",
+  "context": "warning; %@ = profile name"
+ },
+ {
+  "key": "About MugVPN",
+  "context": "menu item / window title"
+ },
+ {
+  "key": "Address:",
+  "context": "status window row label: the VPN IP address; also proxy address field label in settings"
+ },
+ {
+  "key": "Advanced",
+  "context": "settings section heading"
+ },
+ {
+  "key": "Append to the log instead of replacing it",
+  "context": "settings check box"
+ },
+ {
+  "key": "Attach automatically",
+  "context": "settings popup choice for persistent connections: the app connects to their control interface automatically"
+ },
+ {
+  "key": "Authentication failed",
+  "context": "error shown in the password dialog after a wrong username/password"
+ },
+ {
+  "key": "Autologin profile (no password when connecting)",
+  "context": "check box in 'Import from Access Server' window"
+ },
+ {
+  "key": "Automatic",
+  "context": "settings popup choice (profile menu layout: automatic)"
+ },
+ {
+  "key": "By folder",
+  "context": "settings popup choice (profile menu layout: nested by folder)"
+ },
+ {
+  "key": "Cannot import %@: %@",
+  "context": "error; %@ = file name, then the reason"
+ },
+ {
+  "key": "Cannot import: %@",
+  "context": "error; %@ = the reason"
+ },
+ {
+  "key": "Choose the certificate for %@:",
+  "context": "PKCS#11 certificate chooser heading; %@ = profile name"
+ },
+ {
+  "key": "Connect script (s):",
+  "context": "settings label; timeout in seconds for the script run after connecting"
+ },
+ {
+  "key": "Connect silently (no status window)",
+  "context": "settings check box"
+ },
+ {
+  "key": "Connected (%@)",
+  "context": "status text; %@ = IP address"
+ },
+ {
+  "key": "Connected with errors (%@)",
+  "context": "status text; %@ = IP address"
+ },
+ {
+  "key": "Connected, %@",
+  "context": "notification text after connecting; %@ = IP address"
+ },
+ {
+  "key": "Connecting (%@)",
+  "context": "status text; %@ = an OpenVPN internal state word like 'wait', 'auth' (keep it as given)"
+ },
+ {
+  "key": "Connecting to %@.",
+  "context": "heading of the username/password dialog; %@ = profile name"
+ },
+ {
+  "key": "Disconnect %@ and quit? They connect again the next time MugVPN starts.",
+  "context": "quit confirmation; %@ = comma-separated profile names"
+ },
+ {
+  "key": "Disconnect and Quit",
+  "context": "button"
+ },
+ {
+  "key": "Disconnect script (s):",
+  "context": "settings label; timeout in seconds for the script run before disconnecting"
+ },
+ {
+  "key": "Disconnect when the Mac sleeps, connect again on wake",
+  "context": "settings check box"
+ },
+ {
+  "key": "Disconnected",
+  "context": "status text"
+ },
+ {
+  "key": "Every time",
+  "context": "settings popup choice: notify when connected — every time"
+ },
+ {
+  "key": "Flat",
+  "context": "settings popup choice: profile menu layout — flat list"
+ },
+ {
+  "key": "General",
+  "context": "settings section heading"
+ },
+ {
+  "key": "Hide",
+  "context": "button in the status window (hides the window)"
+ },
+ {
+  "key": "Ignore messages from servers",
+  "context": "settings check box"
+ },
+ {
+  "key": "Import File…",
+  "context": "menu item (opens a file chooser)"
+ },
+ {
+  "key": "Import from Access Server",
+  "context": "window title"
+ },
+ {
+  "key": "Import from URL",
+  "context": "window title"
+ },
+ {
+  "key": "Imported",
+  "context": "title of a message after importing profiles"
+ },
+ {
+  "key": "Later",
+  "context": "button: dismiss for now"
+ },
+ {
+  "key": "List only",
+  "context": "settings popup choice for persistent connections: show them but do not connect to their control interface"
+ },
+ {
+  "key": "MugVPN",
+  "context": "the app's name; never translate"
+ },
+ {
+  "key": "MugVPN Settings",
+  "context": "settings window title; keep 'MugVPN'"
+ },
+ {
+  "key": "MugVPN needs its helper to start tunnels.",
+  "context": "heading; the helper is a background system component"
+ },
+ {
+  "key": "MugVPN: %@",
+  "context": "VoiceOver description of the menu bar icon; %@ = 'connected' / 'connecting' / 'not connected' (translated separately)"
+ },
+ {
+  "key": "Manual",
+  "context": "settings popup choice: manual proxy"
+ },
+ {
+  "key": "Mute repeated messages (h):",
+  "context": "settings label; hours during which a repeated server message is not shown again"
+ },
+ {
+  "key": "Never",
+  "context": "settings popup choice: notify when connected — never"
+ },
+ {
+  "key": "No profiles yet",
+  "context": "disabled menu item when there are no VPN profiles"
+ },
+ {
+  "key": "No proxy",
+  "context": "settings popup choice"
+ },
+ {
+  "key": "Not imported (MugVPN does not run profile scripts as root): %@",
+  "context": "message; %@ = list of script file names"
+ },
+ {
+  "key": "Notify when connected:",
+  "context": "settings label"
+ },
+ {
+  "key": "Off",
+  "context": "settings popup choice for persistent connections: off"
+ },
+ {
+  "key": "Open System Settings",
+  "context": "button; 'System Settings' is the macOS app — use its official name in the language"
+ },
+ {
+  "key": "OpenVPN is a registered trademark of OpenVPN Inc.",
+  "context": "About window; keep names as is"
+ },
+ {
+  "key": "Password:",
+  "context": "field label"
+ },
+ {
+  "key": "Persistent connections:",
+  "context": "settings label (connections started by the system at boot, like Windows' config-auto)"
+ },
+ {
+  "key": "Port:",
+  "context": "field label"
+ },
+ {
+  "key": "Pre-connect script (s):",
+  "context": "settings label; timeout in seconds for the script run before connecting"
+ },
+ {
+  "key": "Profile menu:",
+  "context": "settings label (how the profile list in the menu is laid out)"
+ },
+ {
+  "key": "Proxy",
+  "context": "settings section heading"
+ },
+ {
+  "key": "Proxy:",
+  "context": "settings label"
+ },
+ {
+  "key": "Quit MugVPN",
+  "context": "menu item / window title"
+ },
+ {
+  "key": "Received:",
+  "context": "status window label: bytes received"
+ },
+ {
+  "key": "Response",
+  "context": "placeholder in a field where the user types a one-time code / challenge response"
+ },
+ {
+  "key": "Save password",
+  "context": "check box"
+ },
+ {
+  "key": "Send only the domains the server names to its DNS (applies on the next connect)",
+  "context": "tooltip of the menu item 'Split DNS by Domain'"
+ },
+ {
+  "key": "Sent:",
+  "context": "status window label: bytes sent"
+ },
+ {
+  "key": "Server:",
+  "context": "field label (Access Server address)"
+ },
+ {
+  "key": "Set by your administrator",
+  "context": "tooltip of a locked setting"
+ },
+ {
+  "key": "Some settings are set by your administrator.",
+  "context": "note in settings"
+ },
+ {
+  "key": "Split DNS by Domain",
+  "context": "menu item (check mark): send only the server's own domains to the VPN's DNS"
+ },
+ {
+  "key": "The first time",
+  "context": "settings popup choice: notify when connected — the first time only"
+ },
+ {
+  "key": "The proxy for %@ needs a username and password.",
+  "context": "dialog heading; %@ = profile name"
+ },
+ {
+  "key": "Turn on MugVPN in System Settings > General > Login Items, then connect again.",
+  "context": "instruction; use the official localized macOS names of System Settings > General > Login Items (macOS 13+)"
+ },
+ {
+  "key": "URL:",
+  "context": "field label"
+ },
+ {
+  "key": "Use the system proxy settings",
+  "context": "settings popup choice"
+ },
+ {
+  "key": "Username:",
+  "context": "field label"
+ },
+ {
+  "key": "Waiting for web authentication",
+  "context": "status text while the user logs in in the web browser"
+ },
+ {
+  "key": "Wrong password",
+  "context": "error in the private key password dialog"
+ },
+ {
+  "key": "cannot reach openvpn's management socket",
+  "context": "error (lower case start, appended after 'ProfileName: ')"
+ },
+ {
+  "key": "connected",
+  "context": "VoiceOver state word, lower case"
+ },
+ {
+  "key": "connecting",
+  "context": "VoiceOver state word, lower case"
+ },
+ {
+  "key": "not connected",
+  "context": "VoiceOver state word, lower case"
+ },
+ {
+  "key": "the connection ended unexpectedly",
+  "context": "error (lower case start, appended after 'ProfileName: ')"
+ },
+ {
+  "key": "the persistent connection is not running",
+  "context": "error (lower case start, appended after 'ProfileName: ')"
+ },
+ {
+  "key": "the pre-connect script failed",
+  "context": "error (lower case start, appended after 'ProfileName: ')"
+ }
+]

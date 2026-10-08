@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>Label</key>
+	<string>com.mugvpn.helper</string>
+	<key>BundleProgram</key>
+	<string>Contents/MacOS/MugVPNHelper</string>
+	<key>MachServices</key>
+	<dict>
+		<key>com.mugvpn.helper</key>
+		<true/>
+	</dict>
+	<!-- At boot: persistent profiles (config-auto) come up before anyone logs in. -->
+	<key>RunAtLoad</key>
+	<true/>
+	<!-- After a crash, start again: the new helper stops stray openvpn and undoes what it left. -->
+	<key>KeepAlive</key>
+	<dict>
+		<key>SuccessfulExit</key>
+		<false/>
+	</dict>
+	<key>AssociatedBundleIdentifiers</key>
+	<array>
+		<string>com.mugvpn.app</string>
+	</array>
+	<key>StandardErrorPath</key>
+	<string>/Library/Logs/MugVPN/helper.log</string>
+</dict>
+</plist>

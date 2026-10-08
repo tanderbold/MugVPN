@@ -1,0 +1,20 @@
+# MugVPN
+
+> MugVPN is a free, open-source (MIT) macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time, each with its own tunnel (utun), routes and split DNS. macOS 13+, Apple silicon and Intel, 23 languages.
+
+## What it does
+- Several simultaneous OpenVPN connections (OpenVPN Connect on macOS allows one); conflict warnings when two connections collide.
+- Split DNS per connection; a connection's own DNS servers for listed domains or all names; "don't change DNS".
+- Kill switch per connection (macOS PF): if a connection carrying all traffic drops, the Internet stays blocked until reconnect or "Unblock Internet".
+- Leak protection while a connection carries all traffic: no IPv6 and no DNS outside the VPN; leak check warns about routes or DNS around the tunnel (TunnelVision).
+- Connections window: create, edit (form or text), duplicate, rename, delete; import .ovpn, Tunnelblick .tblk, URL, OpenVPN Access Server.
+- Sign-in: passwords in the Keychain, OTP challenges, web/SSO, PKCS#12, HTTP proxies. Persistent connections at boot. Command line control.
+
+## Security
+- openvpn runs without root: a small helper does what needs root after checking each request; profiles that would run programs or load code are refused.
+
+## Links
+- Source and README: https://github.com/tanderbold/MugVPN
+- FAQ: https://tanderbold.github.io/MugVPN/faq.html
+- Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh (no signed release yet)
+- License: MIT. "OpenVPN" is a trademark of OpenVPN Inc.; MugVPN is not affiliated with it.
