@@ -57,6 +57,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void) {
         reply(.failure(ProfileError("no tunnels in E2E mode")))
     }
+    func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) { reply(nil) }
     var uninstallRequests: [[String: Any]] = []
     func uninstall(keepProfiles: Bool, reply: @escaping (String?) -> Void) {
         uninstallRequests.append(["keepProfiles": keepProfiles])

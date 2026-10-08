@@ -31,13 +31,29 @@ public enum ProfilePolicy {
         public var needsServerCheck = false
     }
 
-    /// Options that make openvpn check that the other end is the server.
-    static let serverChecks: Set<String> = ["remote-cert-tls", "remote-cert-eku", "remote-cert-ku", "verify-x509-name",
-                                            "peer-fingerprint"]
+    /// Does this option make openvpn check that the other end is the server (not merely a
+    /// certificate of the same CA)? By its arguments, not its name: "remote-cert-tls client"
+    /// or a bare key usage do not.
+    static func checksServer(_ d: ConfigDirective) -> Bool {
+        let a = d.args.map { $0.lowercased() }
+        switch d.name {
+        case "remote-cert-tls": return a.first == "server"
+        case "remote-cert-eku":
+            return ["tls web server authentication", "serverauth", "1.3.6.1.5.5.7.3.1"].contains(a.first ?? "")
+        case "verify-x509-name": return !(a.first ?? "").isEmpty
+        case "peer-fingerprint":
+            // A SHA-256 fingerprint (32 hex bytes), or the inline list of them.
+            if d.inline != nil { return true }
+            let bytes = (a.first ?? "").split(separator: ":")
+            return bytes.count == 32 && bytes.allSatisfy { $0.count == 2 && $0.allSatisfy(\.isHexDigit) }
+        default: return false
+        }
+    }
 
     /// Ciphers and digests broken or too weak for a tunnel (SWEET32, 64-bit blocks, MD5...).
     static func isWeakAlgorithm(_ name: String) -> Bool {
-        let n = name.uppercased()
+        // "?NAME": optional, used when this openvpn has it (and it has these).
+        let n = (name.hasPrefix("?") ? String(name.dropFirst()) : name).uppercased()
         let prefixes = ["BF-", "DES-", "DESX", "DES3", "CAST", "RC2", "RC4", "RC5", "SEED", "IDEA", "MD4", "MD5"]
         return n == "DES" || n == "BF" || prefixes.contains { n.hasPrefix($0) }
     }
@@ -136,7 +152,7 @@ public enum ProfilePolicy {
         for u in uses where !(kinds[u.key] ?? []).contains(u.kind) { kinds[u.key, default: []].append(u.kind) }
         var r = Result(directives: out, files: files, dropped: dropped)
         let names = Set(out.map(\.name))
-        r.needsServerCheck = (names.contains("ca") || names.contains("pkcs12")) && names.isDisjoint(with: serverChecks)
+        r.needsServerCheck = (names.contains("ca") || names.contains("pkcs12")) && !out.contains(where: ProfilePolicy.checksServer)
         r.fileKinds = kinds
         return r
 

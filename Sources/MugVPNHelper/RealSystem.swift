@@ -240,6 +240,13 @@ final class RealSystem: HelperSystem {
         return nets
     }
 
+    func closeDescriptor(_ fd: Int32) { close(fd) }
+
+    func connectManagement(_ path: String, onLine: @escaping (String) -> Void,
+                           onClose: @escaping () -> Void) -> ManagementChannel? {
+        RealManagementChannel(path: path, queue: queue, onLine: onLine, onClose: onClose)
+    }
+
     func interfaceExists(_ name: String) -> Bool { if_nametoindex(name) != 0 }
 
     /// MugVPN's note in a DNS backup: which service it came from.
@@ -532,4 +539,71 @@ func executablePath(of pid: pid_t) -> String? {
     var buf = [CChar](repeating: 0, count: Int(MAXPATHLEN) * 4)
     let n = proc_pidpath(pid, &buf, UInt32(buf.count))
     return n > 0 ? String(cString: buf) : nil
+}
+
+/// The helper's connection to a persistent tunnel's openvpn management socket. Reads on the
+/// helper's queue; a line at most 64 KB (what openvpn sends is short).
+final class RealManagementChannel: ManagementChannel {
+    private let fd: Int32
+    private let source: DispatchSourceRead
+    private var buffer = Data()
+    private var closed = false
+
+    init?(path: String, queue: DispatchQueue, onLine: @escaping (String) -> Void, onClose: @escaping () -> Void) {
+        let sock = socket(AF_UNIX, SOCK_STREAM, 0)
+        guard sock >= 0 else { return nil }
+        _ = fcntl(sock, F_SETFD, FD_CLOEXEC)
+        var addr = sockaddr_un()
+        addr.sun_family = sa_family_t(AF_UNIX)
+        let bytes = Array(path.utf8)
+        guard bytes.count < MemoryLayout.size(ofValue: addr.sun_path) else { Darwin.close(sock); return nil }
+        withUnsafeMutableBytes(of: &addr.sun_path) { $0.copyBytes(from: bytes) }
+        let rc = withUnsafePointer(to: &addr) {
+            $0.withMemoryRebound(to: sockaddr.self, capacity: 1) { connect(sock, $0, socklen_t(MemoryLayout<sockaddr_un>.size)) }
+        }
+        guard rc == 0 else { Darwin.close(sock); return nil }
+        fd = sock
+        source = DispatchSource.makeReadSource(fileDescriptor: sock, queue: queue)
+        source.setEventHandler { [weak self] in
+            guard let self else { return }
+            var chunk = [UInt8](repeating: 0, count: 8192)
+            let n = read(sock, &chunk, chunk.count)
+            guard n > 0 else {
+                self.close()
+                onClose()
+                return
+            }
+            self.buffer.append(contentsOf: chunk[0..<n])
+            let prompt = Data("ENTER PASSWORD:".utf8)
+            while true {
+                if let nl = self.buffer.firstIndex(of: 0x0A) {
+                    var line = self.buffer[self.buffer.startIndex..<nl]
+                    self.buffer.removeSubrange(self.buffer.startIndex...nl)
+                    if line.last == 0x0D { line = line.dropLast() }
+                    onLine(String(decoding: line, as: UTF8.self))
+                } else if self.buffer.starts(with: prompt) {
+                    self.buffer.removeSubrange(self.buffer.startIndex..<self.buffer.startIndex + prompt.count)
+                    onLine("ENTER PASSWORD:")
+                } else {
+                    if self.buffer.count > 65536 { self.buffer.removeAll() }
+                    break
+                }
+            }
+        }
+        source.setCancelHandler { Darwin.close(sock) }
+        source.resume()
+    }
+
+    @discardableResult func send(_ line: String, passing passed: Int32?) -> Bool {
+        guard !closed else { return false }
+        let data = Data((line + "\n").utf8)
+        if let passed { return sendWithDescriptor(socket: fd, data, passing: passed) }
+        return data.withUnsafeBytes { Darwin.write(fd, $0.baseAddress, $0.count) } == data.count
+    }
+
+    func close() {
+        guard !closed else { return }
+        closed = true
+        source.cancel()
+    }
 }

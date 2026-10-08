@@ -59,6 +59,12 @@ final class XPCHelperClient: HelperClient {
         proxy({ reply("\($0.localizedDescription)") })?.unblock { err in DispatchQueue.main.async { reply(err) } }
     }
 
+    func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) {
+        proxy({ reply("\($0.localizedDescription)") })?.releaseManagement(connectionID: id) { err in
+            DispatchQueue.main.async { reply(err) }
+        }
+    }
+
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void) {
         proxy({ reply(.failure($0)) })?.tunnelRequest(connectionID: id, kind: kind, message: message) { fd, err in
             DispatchQueue.main.async {

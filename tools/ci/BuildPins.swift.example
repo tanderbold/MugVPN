@@ -3,7 +3,5 @@
 // SHA-256 and the XPC client requirement.
 enum BuildPins {
     static let openvpnRequirement = "cdhash H\"0000000000000000000000000000000000000000\""
-    static let openvpnRootRequirement = "cdhash H\"0000000000000000000000000000000000000000\""
-    static let dnsUpdownSHA256 = "0000000000000000000000000000000000000000000000000000000000000000"
     static let clientRequirement = "identifier \"com.mugvpn.app\" and anchor apple generic"
 }

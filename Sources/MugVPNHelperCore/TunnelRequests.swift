@@ -91,6 +91,12 @@ public struct TunnelRoute: Equatable, Sendable, Codable {
 }
 
 /// One connection's tunnel as the helper set it up.
+public extension TunnelState {
+    /// openvpn's requests (NEED-OK names) that only the helper answers.
+    static let requestNames: Set<String> = ["OPENTUN", "IFCONFIG", "IFCONFIG6", "ROUTE", "ROUTE6", "ROUTEDEL",
+                                            "ROUTE6DEL", "DNSVAR", "DNSUP", "DNSDOWN"]
+}
+
 public struct TunnelState: Equatable, Sendable, Codable {
     public var device: String?
     public var subnet: IPv4Net?

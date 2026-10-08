@@ -101,18 +101,6 @@ def test_int22_user_nobody_refused(vpn, mac):
     assert cid is None and "does not drop privileges" in r.stderr, r.stdout + r.stderr
 
 
-def test_int32_dns_lock_cannot_be_pinned(vpn, mac):
-    """The DNS script's lock (persistent profiles' root openvpn); user tunnels' DNS is the helper's."""
-    mac.run("echo 1 > /var/lock/openvpn-dns-updown.lock", check=True)
-    try:
-        vpn.connected("stand-b")
-        assert vpn.primary_dns() == ["10.82.0.1"], "DNS still set up"
-        vpn.disconnect_all()
-        assert vpn.primary_dns() == vpn.baseline_dns
-    finally:
-        mac.run("rm -f /var/lock/openvpn-dns-updown.lock")
-
-
 def test_int23_auth_user_pass_file(vpn, mac):
     mac.run("printf 'test\\nsecret\\n' > /Users/tester/stand/c-auth.txt", check=True)
     path = f"/Users/tester/stand/stand-c-file.ovpn"

@@ -343,15 +343,21 @@ func registerPolicyTests() {
     test("POL-39", "a server is checked as a server: remote-cert-tls added when the profile names no check") {
         expect(try checked("client\nremote a\nca ca.crt", files: ["ca.crt"]).needsServerCheck)
         for check in ["remote-cert-tls server", "verify-x509-name vpn.example.com name", "remote-cert-eku \"TLS Web Server Authentication\"",
-                      "remote-cert-ku a0", "peer-fingerprint AB:CD"] {
+                      "remote-cert-eku 1.3.6.1.5.5.7.3.1", "remote-cert-eku serverAuth",
+                      "peer-fingerprint " + Array(repeating: "AB", count: 32).joined(separator: ":")] {
             expect(!(try checked("client\nremote a\nca ca.crt\n" + check, files: ["ca.crt"]).needsServerCheck), check)
+        }
+        // Checks that do not make the other end a server: the role is still added.
+        for weak in ["remote-cert-tls client", "remote-cert-eku \"TLS Web Client Authentication\"", "remote-cert-ku a0",
+                     "peer-fingerprint AB:CD"] {
+            expect((try? checked("client\nremote a\nca ca.crt\n" + weak, files: ["ca.crt"]))?.needsServerCheck ?? true, weak)
         }
         expect(!(try checked("client\nremote a")).needsServerCheck, "no CA named: nothing to check against")
     }
     test("POL-40", "no broken or legacy ciphers (SWEET32 and the like)") {
         for bad in ["cipher BF-CBC", "cipher DES-EDE3-CBC", "data-ciphers AES-256-GCM:DES-CBC", "data-ciphers-fallback BF-CBC",
                     "cipher CAST5-CBC", "cipher RC2-CBC", "cipher DESX-CBC", "cipher SEED-CBC", "cipher IDEA-CBC", "auth MD5",
-                    "ncp-ciphers AES-128-GCM:BF-CBC"] {
+                    "ncp-ciphers AES-128-GCM:BF-CBC", "data-ciphers AES-256-GCM:?DES-EDE3-CBC", "data-ciphers ?bf-cbc"] {
             expectThrows(bad) { _ = try checked("client\nremote a\n" + bad) }
         }
         for ok in ["cipher AES-256-CBC", "data-ciphers AES-256-GCM:CHACHA20-POLY1305", "auth SHA256", "auth SHA1"] {

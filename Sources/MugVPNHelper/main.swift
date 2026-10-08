@@ -44,14 +44,6 @@ func checkSignature(_ requirement: String) -> (String) throws -> Void {
     }
 }
 
-func checkSHA256(_ expected: String) -> (String) throws -> Void {
-    return { path in
-        guard let data = FileManager.default.contents(atPath: path), HelperCore.sha256Hex(data) == expected else {
-            throw HelperCoreError.message("\(path) does not match its pinned hash")
-        }
-    }
-}
-
 final class Service: NSObject, MugVPNHelperProtocol {
     private var caller: UInt32 { NSXPCConnection.current()?.effectiveUserIdentifier ?? UInt32.max }
 
@@ -114,6 +106,11 @@ final class Service: NSObject, MugVPNHelperProtocol {
         queue.async { reply(core.unblock(uid: uid)) }
     }
 
+    func releaseManagement(connectionID: String, reply: @escaping (String?) -> Void) {
+        let uid = caller
+        queue.async { reply(core.releaseManagement(id: connectionID, uid: uid)) }
+    }
+
     func tunnelRequest(connectionID: String, kind: String, message: String,
                        reply: @escaping (FileHandle?, String?) -> Void) {
         let uid = caller
@@ -146,13 +143,8 @@ do {
         try HelperCore.installPinned(from: contentsDir.appendingPathComponent("Helpers/openvpn").path,
                                      to: HelperPaths.standard.openvpn, system: system,
                                      check: checkSignature(BuildPins.openvpnRequirement))
-        // The classic openvpn, as root: persistent profiles only.
-        try HelperCore.installPinned(from: contentsDir.appendingPathComponent("Helpers/openvpn-root").path,
-                                     to: HelperPaths.standard.openvpnRoot, system: system,
-                                     check: checkSignature(BuildPins.openvpnRootRequirement))
-        try HelperCore.installPinned(from: contentsDir.appendingPathComponent("Resources/dns-updown").path,
-                                     to: MugVPNIDs.libexecDir + "/dns-updown", system: system,
-                                     check: checkSHA256(BuildPins.dnsUpdownSHA256))
+        // What older versions installed and nothing runs any more.
+        for old in ["openvpn-root", "dns-updown"] { system.remove(MugVPNIDs.libexecDir + "/" + old) }
         try core.prepareRunDirectory()
         core.startPersistentProfiles()
     }

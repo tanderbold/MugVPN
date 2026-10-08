@@ -80,16 +80,23 @@ The first build makes a code-signing certificate of your own, kept in
 `~/Library/Application Support/MugVPN Build`; MugVPN's helper then works only with an app signed
 with it. Install the build as an administrator.
 
-**Macs with standard users.** By default a standard (non-administrator) user's connections may not
-send all of the Mac's traffic through a VPN or replace its DNS for all names; their own networks and
-domains work as usual. An administrator can allow it in
-`/Library/Application Support/MugVPN/policy.json` (owned by root):
+**Macs with standard users.** Routes and DNS are the whole Mac's, so by default a standard
+(non-administrator) user's connections reach only private networks (10/8, 172.16/12, 192.168/16,
+100.64/10, fd00::/8) and answer only for private names (`.internal`, `.lan`, `.local`, `.home.arpa`…).
+An administrator can allow more in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 
 ```json
-{ "usersMayRouteAllTraffic": true, "usersMayChangeDNS": true }
+{
+  "allowedNetworks": ["203.0.113.0/24", "2001:db8::/32"],
+  "allowedDomains": ["corp.example.com"],
+  "usersMayRouteAllTraffic": false,
+  "usersMayChangeDNS": false,
+  "trustedUsers": ["alice"]
+}
 ```
 
-or for some users only: `{ "trustedUsers": ["alice"] }`.
+`usersMayRouteAllTraffic` and `usersMayChangeDNS` allow all traffic and DNS for all names;
+`trustedUsers` are treated as administrators.
 
 ## Profiles
 

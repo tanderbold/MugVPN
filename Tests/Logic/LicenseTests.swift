@@ -41,7 +41,6 @@ func registerLicenseTests() {
             ("OpenSSL", pinned("OPENSSL"), ["Apache License", "Version 2.0", "openssl-\(pinned("OPENSSL")).tar.gz"]),
             ("LZ4", pinned("LZ4"), ["BSD 2-Clause", "lz4-\(pinned("LZ4")).tar.gz"]),
             ("LZO", pinned("LZO"), ["lzo-\(pinned("LZO")).tar.gz"]),
-            ("dns-updown", "", ["OpenVPN Inc", "BSD-2-Clause"]),
         ]
         for (name, ver, needles) in comps {
             expect(n.contains(name), "\(name) listed")

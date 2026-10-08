@@ -50,11 +50,9 @@ def test_int17_foreign_client_is_rejected(vpn, mac, ident):
 @pytest.fixture
 def restore_bundle(mac):
     """Put the bundle's files back and the helper on its feet after a tampering test."""
-    mac.run(f"cp {APP}/Contents/Helpers/openvpn /tmp/openvpn.orig && cp {APP}/Contents/Resources/dns-updown /tmp/dns-updown.orig",
-            check=True)
+    mac.run(f"cp {APP}/Contents/Helpers/openvpn /tmp/openvpn.orig", check=True)
     yield
-    mac.run(f"cp /tmp/openvpn.orig {APP}/Contents/Helpers/openvpn && cp /tmp/dns-updown.orig {APP}/Contents/Resources/dns-updown",
-            check=True)
+    mac.run(f"cp /tmp/openvpn.orig {APP}/Contents/Helpers/openvpn", check=True)
     mac.run("sudo launchctl kickstart -k system/com.mugvpn.helper")
     wait_for(lambda: "helper version" in mac.out(f"{CLI} status --xpc"), 30, "the helper to come back")
 
@@ -106,11 +104,6 @@ def test_int18c_openvpn_environment(vpn, mac):
     vpn.disconnect_all()
 
 
-def test_int19_tampered_dns_script(vpn, mac, restore_bundle):
-    mac.run(f"printf '\\n/usr/bin/true\\n' >> {APP}/Contents/Resources/dns-updown", check=True)
-    _helper_refuses_to_start(vpn, mac, "does not match its pinned hash")
-
-
 def test_int20_other_users_cannot_touch_my_tunnels(vpn, mac, second_user):
     a = vpn.connected("stand-a")
     assert vpn.list(as_user=second_user) == {}, "another user does not see it"
@@ -136,13 +129,6 @@ def test_int21_limits(vpn, mac):
             f"(cat /Users/tester/stand/stand-a.ovpn; echo 'extra-certs big.bin') > /Users/tester/stand/big.ovpn", check=True)
     r, cid = vpn.connect("/Users/tester/stand/big.ovpn", wait=False)
     assert cid is None and "too large" in r.stderr
-
-
-def test_int36_dns_script_has_a_fixed_path(vpn, mac):
-    """openvpn runs the DNS script as root with
-    no PATH; bash would then search /usr/local/bin and the current directory."""
-    script = "/Library/Application Support/MugVPN/libexec/dns-updown"
-    assert mac.out(f"sed -n 2p '{script}'").strip() == "PATH=/usr/bin:/bin:/usr/sbin:/sbin; export PATH # MugVPN"
 
 
 def test_int37_live_log_is_root_owned_and_readable(vpn, mac):
@@ -243,3 +229,13 @@ def test_int43_openvpn_is_sandboxed(vpn, mac):
     assert log == "0", "no tmp-dir error: it writes where it may"
     assert vpn.ping("10.91.0.1")
     vpn.disconnect_all()
+
+
+def test_int44_signature_holds_for_everyone(vpn, mac, second_user):
+    """The app's signature verifies without its signing keychain, as root and as any user,
+    and the helper answers both users over XPC."""
+    for who in ("", "sudo ", f"sudo -u {second_user} "):
+        r = mac.run(f"{who}codesign --verify --deep --strict {APP}")
+        assert r.returncode == 0, who + r.stdout + r.stderr
+    for who in ("", f"sudo -u {second_user} "):
+        assert "helper version" in mac.out(f"{who}{CLI} status --xpc"), who

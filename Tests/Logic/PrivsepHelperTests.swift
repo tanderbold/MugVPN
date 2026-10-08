@@ -119,7 +119,7 @@ func registerPrivsepHelperTests() {
         expectThrows("DNS for all names", matching: "administrator") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun7") }
         expectEqual(sys.dnsSet.count, 0)
         sys.clock += 5
-        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.example.com")
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.internal")
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun7")
         expectEqual(sys.dnsSet.map(\.split), [true], "its own domains")
     }
@@ -179,6 +179,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-11", "two connections to one server share its host route; the last one removes it") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route freely (the policy is not what is tested here)
         let h = makeHelper(sys)
         let server = "203.0.113.7 255.255.255.255 192.168.64.1"
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
@@ -197,6 +198,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-12", "no host route around another connection's tunnel") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route freely (the policy is not what is tested here)
         let h = makeHelper(sys)
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
         try bringUp(sys, h, a, uid: 501, device: "utun5", routes: ["203.0.113.0 255.255.255.0 10.8.0.1"])
@@ -206,27 +208,30 @@ func registerPrivsepHelperTests() {
             _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "203.0.113.9 255.255.255.255 192.168.64.1")
         }
     }
-    test("PS-13", "an administrator's limit counts all of a connection's routes") {
+    test("PS-13", "a standard user's routes: private networks only, public ones as an administrator allows") {
+        // The routing table is the whole Mac's: a public network routed into one user's tunnel takes everyone's traffic to it.
         let sys = FakeSystem()
-        try sys.makeDirectory("/L", mode: 0o755)
-        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": false}"#.utf8), mode: 0o644)
         sys.admins = []
         let h = makeHelper(sys)
         let (id, _) = try h.start(bundle: psBundle(), uid: 502)
-        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: ["1.0.0.0 255.0.0.0 10.8.0.1"])
-        expectThrows("a second public /8", matching: "administrator") {
-            _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: "2.0.0.0 255.0.0.0 10.8.0.1")
-        }
-        _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: "10.0.0.0 255.0.0.0 10.8.0.1")
-        _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2001:db8::/32 utun5")
-        expectThrows("wider IPv6", matching: "administrator") {
-            _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2001::/16 utun5")
-        }
-        for i in 1..<64 { _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2001:\(String(i, radix: 16))::/32 utun5") }
-        expectThrows("too many IPv6", matching: "administrator") {
-            _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2002::/32 utun5")
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1", "172.16.0.0 255.240.0.0 10.8.0.1",
+                                                                   "100.64.0.0 255.192.0.0 10.8.0.1"])
+        for pub in ["203.0.113.0 255.255.255.0 10.8.0.1", "1.0.0.0 255.0.0.0 10.8.0.1", "198.51.100.7 255.255.255.255 192.168.64.1"] {
+            expectThrows(pub, matching: "administrator") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: pub) }
         }
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "fd00:1::/48 utun5")
+        expectThrows("public IPv6", matching: "administrator") {
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE6", message: "2001:db8::/32 utun5")
+        }
+        // An administrator's list.
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedNetworks": ["203.0.113.0/24", "2001:db8::/32"]}"#.utf8), mode: 0o644)
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, b, uid: 502, device: "utun6", routes: ["203.0.113.0 255.255.255.0 10.8.0.1", "203.0.113.128 255.255.255.128 10.8.0.1"])
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE6", message: "2001:db8:5::/48 utun6")
+        expectThrows("wider than allowed", matching: "administrator") {
+            _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "203.0.112.0 255.255.254.0 10.8.0.1")
+        }
     }
     test("PS-14", "a failed request leaves no trace in the records") {
         let sys = FakeSystem()
@@ -342,19 +347,28 @@ func registerPrivsepHelperTests() {
         expect(!sys.routeTable.contains(["route", "-n", "add", "-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]))
         expectEqual(sys.routesDeleted, [], "nothing from NEW's log")
     }
-    test("PS-21", "an administrator's limits hold for all of a user's connections together") {
+    test("PS-21", "a standard user's split DNS: private names, or the domains an administrator lists") {
+        // A resolver for a domain is the whole Mac's: bank.example in one user's tunnel would answer for everyone.
         let sys = FakeSystem()
-        try sys.makeDirectory("/L", mode: 0o755)
-        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": false}"#.utf8), mode: 0o644)
         sys.admins = []
         let h = makeHelper(sys)
-        let (a, _) = try h.start(bundle: psBundle(), uid: 502)
-        try bringUp(sys, h, a, uid: 502, device: "utun5", routes: ["1.0.0.0 255.0.0.0 10.8.0.1"])
-        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
-        try bringUp(sys, h, b, uid: 502, device: "utun6", routes: [])
-        expectThrows("a second /8 in another connection", matching: "administrator") {
-            _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "2.0.0.0 255.0.0.0 10.8.0.1")
+        func dns(_ domain: String) throws {
+            let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+            sys.utunName = "utun\(sys.launched.count + 4)"
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
         }
+        for ok in ["corp.internal", "lan", "printer.home.arpa", "office.local"] { try dns(ok) }
+        for bad in ["bank.example", "example.com"] {
+            expectThrows(bad, matching: "administrator") { try dns(bad) }
+        }
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.example.com"]}"#.utf8), mode: 0o644)
+        try dns("corp.example.com")
+        try dns("eu.corp.example.com")
+        expectThrows("not listed", matching: "administrator") { try dns("example.com") }
     }
     test("PS-22", "no tunnel takes part of another user's networks, whichever came first") {
         let sys = FakeSystem()
@@ -401,6 +415,7 @@ func registerPrivsepHelperTests() {
     }
     test("PS-24", "while another user's tunnel takes all traffic, few host routes around it") {
         let sys = FakeSystem()
+        sys.admins = [501, 502]  // two users who may route freely (the policy is not what is tested here)
         let h = makeHelper(sys)
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
         try bringUp(sys, h, a, uid: 501, device: "utun5")

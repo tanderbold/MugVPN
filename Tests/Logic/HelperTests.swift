@@ -15,6 +15,24 @@ final class FakeProcess: HelperProcess {
     func signal(_ sig: Int32) { signals.append(sig) }
 }
 
+final class FakeChannel: ManagementChannel {
+    let path: String
+    let onLine: (String) -> Void
+    let onClose: () -> Void
+    var sent: [(line: String, fd: Int32?)] = []
+    var closed = false
+    init(path: String, onLine: @escaping (String) -> Void, onClose: @escaping () -> Void) {
+        self.path = path
+        self.onLine = onLine
+        self.onClose = onClose
+    }
+    func send(_ line: String, passing fd: Int32?) -> Bool {
+        sent.append((line, fd))
+        return true
+    }
+    func close() { closed = true }
+}
+
 final class FakeSystem: HelperSystem {
     var dirs: [String: UInt16] = [:]
     var files: [String: (data: Data, mode: UInt16)] = [:]
@@ -38,6 +56,18 @@ final class FakeSystem: HelperSystem {
     func interfaceExists(_ name: String) -> Bool { !closedDevices.contains(name) }
     var dnsSet: [DNSPlan] = []
     var gateway: DefaultGateway? = DefaultGateway(address: "192.168.64.1", interface: "en0")
+    /// Management connections the helper opened (persistent tunnels), in order.
+    var channels: [FakeChannel] = []
+    var channelFails = false
+    var closedFDs: [Int32] = []
+    func closeDescriptor(_ fd: Int32) { closedFDs.append(fd) }
+    func connectManagement(_ path: String, onLine: @escaping (String) -> Void,
+                           onClose: @escaping () -> Void) -> ManagementChannel? {
+        if channelFails { return nil }
+        let c = FakeChannel(path: path, onLine: onLine, onClose: onClose)
+        channels.append(c)
+        return c
+    }
     var utunName = "utun7"
     /// IPv6 networks of the Mac's own interfaces.
     var localIPv6: [String] = []
@@ -340,7 +370,7 @@ func registerCleanupTests() {
         try sys.makeDirectory("/L/run/OLD2", mode: 0o711)
         let h = makeHelper(sys)
         try h.prepareRunDirectory()
-        expectEqual(sys.strayKills, ["/L/libexec/openvpn", "/L/libexec/openvpn-root"], "stray openvpn killed first")
+        expectEqual(sys.strayKills, ["/L/libexec/openvpn", "/L/libexec/openvpn-root"], "stray openvpn (an older version's root one too) killed first")
         expectEqual(sys.dnsRestored, ["utun3"])
         expectEqual(sys.routesDeleted.count, 4)
         expect(sys.list("/L/run").isEmpty, "run directory emptied")
@@ -430,22 +460,6 @@ func registerHelperTests() {
                                        files: ["ca.crt": Data("-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n".utf8)]), uid: 501)
         _ = try h.start(bundle: bundle(config: "client\ndev tun\nremote a 1194\npkcs12 me.p12",
                                        files: ["me.p12": Data([0x30, 0x82, 0x01, 0x00])]), uid: 501)
-    }
-    test("HLP-27", "a default route openvpn deleted is put back after a crash") {
-        // redirect-gateway without def1 deletes the system default route.
-        // A persistent profile: its openvpn (root) sets up routes itself.
-        let sys = FakeSystem()
-        let h = makeHelper(sys)
-        try autoProfile(sys, "site")
-        h.startPersistentProfiles()
-        try sys.writeFile("/L/run/ID1/openvpn.log", Data("""
-            2026-10-06 05:46:44 Opened utun device utun5
-            2026-10-06 05:46:44 /sbin/route delete -net 0.0.0.0 192.168.64.1 0.0.0.0
-            2026-10-06 05:46:44 /sbin/route add -net 0.0.0.0 10.8.0.1 0.0.0.0
-
-            """.utf8), mode: 0o600)
-        sys.launched[0].process.onExit(.signaled(9))
-        expectEqual(sys.routesAdded, [["-net", "0.0.0.0", "192.168.64.1", "0.0.0.0"]])
     }
     test("HLP-28", "a bundle file named by two directives must suit both") {
         let sys = FakeSystem()
@@ -682,23 +696,6 @@ func registerHelperTests() {
         sys.failMoves = ["/L/libexec/openvpn"]
         expectThrows { try HelperCore.installPinned(from: "/App/openvpn", to: "/L/libexec/openvpn", system: sys) { _ in } }
     }
-    test("HLP-14", "unclean exit cleans up, clean exit does not (persistent: openvpn as root)") {
-        let sys = FakeSystem()
-        let h = makeHelper(sys)
-        try autoProfile(sys, "a")
-        try autoProfile(sys, "b")
-        h.startPersistentProfiles()
-        try sys.writeFile("/L/run/ID1/openvpn.log", Data(sampleLog(device: "utun5", server: "203.0.113.7").utf8), mode: 0o644)
-        try sys.writeFile("/L/run/ID2/openvpn.log", Data(sampleLog(device: "utun6", server: "203.0.113.7", net: 85).utf8), mode: 0o644)
-        sys.launched[0].process.onExit(.signaled(9))
-        expectEqual(sys.dnsRestored, ["utun5"])
-        expectEqual(sys.routesDeleted, [["-net", "10.84.0.0", "10.84.0.2", "255.255.255.0"],
-                                         ["-net", "0.0.0.0", "10.84.0.1", "128.0.0.0"],
-                                         ["-net", "128.0.0.0", "10.84.0.1", "128.0.0.0"]],
-                    "the server route the live connection also has is kept")
-        sys.launched[1].process.onExit(.exited(0))
-        expectEqual(sys.dnsRestored, ["utun5"], "clean exit: openvpn tore down itself")
-    }
 }
 
 func registerLogTrustTests() {
@@ -818,8 +815,8 @@ func registerPersistentHelperTests() {
         let args = sys.launched[0].args
         expect(!args.contains("--management-client-user") && !args.contains("--management-client-group"))
         guard let i = args.firstIndex(of: "--management") else { return expect(false, "\(args)") }
-        expectEqual(Array(args[(i + 1)...].prefix(3)), ["/L/run/\(info.id)/m.sock", "unix", "/L/run/\(info.id)/m.pw"])
-        expectEqual(sys.files["/L/run/\(info.id)/m.pw"]?.mode, 0o600)
+        expectEqual(Array(args[(i + 1)...].prefix(3)), ["/L/run/\(info.id)/sock/m.sock", "unix", "/L/run/\(info.id)/m.pw"])
+        expectEqual(sys.files["/L/run/\(info.id)/m.pw"]?.mode, 0o640, "its openvpn's group reads it, nobody else")
         expectEqual(String(decoding: sys.files["/L/run/\(info.id)/m.pw"]?.data ?? Data(), as: UTF8.self), "SECRET1\n")
         expect(!args.contains("--management-hold"), "nobody is there to release a hold at boot")
         _ = try h.start(bundle: bundle(), uid: 501)
@@ -854,6 +851,69 @@ func registerPersistentHelperTests() {
         expectEqual(h.list(uid: 502)[0].managementSocket, "")
         _ = try h.start(bundle: bundle("mine"), uid: 502)
         expect(!(h.list(uid: 502).first { $0.name == "mine" }?.managementSocket.isEmpty ?? true), "own tunnels keep it")
+    }
+    test("PER-12", "a persistent tunnel's openvpn runs without root too") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        expectEqual(sys.launched[0].path, "/L/libexec/openvpn")
+        expect((sys.launched[0].user?.uid ?? 0) >= HelperCore.serviceIDBase, "its own unprivileged id")
+    }
+    test("PER-13", "with nobody else attached, the helper is its management client and answers its tunnel requests") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        sys.fireTimers()
+        let id = h.list(uid: 0)[0].id
+        guard let ch = sys.channels.first else { return expect(false, "no management connection") }
+        expectEqual(ch.path, "/L/run/\(id)/sock/m.sock")
+        ch.onLine("ENTER PASSWORD:")
+        expectEqual(ch.sent.map(\.line), ["SECRET1"])
+        ch.onLine(">INFO:OpenVPN Management Interface Version 5 -- type 'help' for more info")
+        ch.onLine(">NEED-OK:Need 'OPENTUN' confirmation MSG:tun")
+        expectEqual(ch.sent.last?.line, "needok 'OPENTUN' ok")
+        expectEqual(ch.sent.last?.fd, 99, "the utun goes with the answer")
+        ch.onLine(">NEED-OK:Need 'ROUTE' confirmation MSG:198.51.100.0 255.255.255.0 192.168.64.1")
+        expectEqual(ch.sent.last?.line, "needok 'ROUTE' cancel", "checked like any other tunnel's")
+        ch.onLine(">NEED-OK:Need 'token-insertion-request' confirmation MSG:Insert the token")
+        expectEqual(ch.sent.count, 3, "anything else waits for an administrator's app")
+    }
+    test("PER-14", "an administrator's app takes the management connection over; the helper takes it back later") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        sys.fireTimers()
+        let id = h.list(uid: 0)[0].id
+        expectEqual(h.releaseManagement(id: id, uid: 502), "only an administrator can attach to a persistent connection")
+        expect(!sys.channels[0].closed)
+        expectEqual(h.releaseManagement(id: id, uid: 501), nil)
+        expect(sys.channels[0].closed, "the slot is free for the app")
+        sys.fireTimers()
+        expectEqual(sys.channels.count, 2, "queued again: it gets the slot when the app leaves")
+        // Its requests while the app is attached: the app forwards them, as an administrator.
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "OPENTUN", message: "tun")
+        expectThrows("a standard user", matching: "not your") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun") }
+    }
+    test("PER-15", "the helper's management connection comes back when openvpn drops it, and ends with the tunnel") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        sys.channelFails = true
+        sys.fireTimers()
+        sys.channelFails = false
+        sys.fireTimers()
+        expectEqual(sys.channels.count, 1, "tried again until openvpn listens")
+        sys.channels[0].onClose()
+        sys.fireTimers()
+        expectEqual(sys.channels.count, 2)
+        sys.launched[0].process.onExit(.exited(0))
+        expect(sys.channels[1].closed)
+        sys.fireTimers()
+        expectEqual(sys.channels.count, 2, "no connection to a tunnel that is gone")
     }
     test("PER-11", "config-auto: root-owned regular files only") {
         func setup(_ tweak: (FakeSystem) throws -> Void) throws -> HelperCore {

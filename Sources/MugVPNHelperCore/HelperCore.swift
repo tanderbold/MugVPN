@@ -43,6 +43,12 @@ public protocol HelperSystem: AnyObject {
     func interfaceExists(_ name: String) -> Bool
     /// Close the helper's own copy of a utun it handed out (its records are undone).
     func releaseDevice(_ name: String)
+    /// Close a descriptor the helper passed on (openvpn holds its own copy).
+    func closeDescriptor(_ fd: Int32)
+    /// Connect to an openvpn management socket (persistent tunnels); lines come back on the
+    /// helper's queue, "ENTER PASSWORD:" as a line of its own. nil if it does not answer.
+    func connectManagement(_ path: String, onLine: @escaping (String) -> Void,
+                           onClose: @escaping () -> Void) -> ManagementChannel?
     /// IPv6 networks ("prefix/bits") of the Mac's interfaces other than utun.
     func localIPv6Networks() -> [String]
     /// Seconds, for rationing requests.
@@ -66,6 +72,13 @@ public protocol HelperSystem: AnyObject {
     func isAdmin(uid: UInt32) -> Bool
     /// Owner, permission bits and type, without following a symbolic link; nil if nothing is there.
     func fileInfo(_ path: String) -> FileInfo?
+}
+
+/// The helper's own management connection to an openvpn.
+public protocol ManagementChannel: AnyObject {
+    /// A line, with a descriptor for openvpn when given; false if it was not sent.
+    @discardableResult func send(_ line: String, passing fd: Int32?) -> Bool
+    func close()
 }
 
 /// The account an unprivileged openvpn runs as.
@@ -114,8 +127,6 @@ public enum ExitKind: Equatable, Sendable {
 public struct HelperPaths: Sendable {
     /// openvpn built for privilege separation (asks for its tunnel).
     public var openvpn: String
-    /// openvpn that sets up its own tunnel, as root (persistent profiles).
-    public var openvpnRoot: String { openvpn + "-root" }
     public var runDir: String
     public var logsDir: String
     public var autoDir: String
@@ -179,20 +190,21 @@ public final class HelperCore {
         var protection = ProtectionOptions()
         /// It has taken all traffic (the kill switch applies to it).
         var wasFull = false
-        /// Its live log, read as it grows.
-        var follower = OpenVPNLogFacts.Follower()
-        /// openvpn runs unprivileged and asks the helper for its tunnel (user profiles).
-        var privsep = false
         var splitDNS = false
-        /// An administrator's policy for standard users, checked on its requests.
         /// The id its openvpn runs as (privilege separation).
         var serviceID: UInt32?
+        /// Persistent tunnels: the helper's management connection while no app holds it.
+        var channel: ManagementChannel?
+        var channelRetryPending = false
         /// Requests it may still make now (refilled over time), and its last DNSUP.
         var requestTokens = Double(HelperCore.requestBurst)
         var tokensAt: TimeInterval?
         var lastDNSUp: TimeInterval?
+        /// An administrator's policy for standard users, checked on its requests.
         var mayRouteAll = true
         var mayChangeDNS = true
+        /// Public networks and DNS domains an administrator allows its (standard) user.
+        var allowed = Allowances()
         /// What the helper set up for it: what it undoes.
         var tunnel = TunnelState()
         init(info: ConnectionInfo, process: HelperProcess, dir: String) {
@@ -302,7 +314,7 @@ public final class HelperCore {
         system.killProcesses(uids: HelperCore.serviceIDBase...(HelperCore.serviceIDBase + HelperCore.serviceIDCount - 1))
         if !leftovers.isEmpty {
             system.killStrayOpenVPN(path: paths.openvpn)
-            system.killStrayOpenVPN(path: paths.openvpnRoot)
+            system.killStrayOpenVPN(path: paths.openvpn + "-root") // an older version's
             for d in leftovers {
                 // A privilege-separated run: the helper's own record of what it did.
                 if let t = savedTunnel(in: paths.runDir + "/" + d) { undo(t, others: []); continue }
@@ -414,6 +426,38 @@ public final class HelperCore {
         var usersMayChangeDNS: Bool?
         /// Users (short names) allowed both, as administrators are.
         var trustedUsers: [String]?
+        /// Public networks ("203.0.113.0/24", "2001:db8::/32") standard users may route into a tunnel.
+        var allowedNetworks: [String]?
+        /// Domains (and their subdomains) standard users' tunnels may answer for.
+        var allowedDomains: [String]?
+    }
+
+    /// What a standard user may route and resolve beyond private networks and names.
+    struct Allowances {
+        var networks4: [IPv4Net] = []
+        var networks6: [String] = []
+        var domains: [String] = []
+
+        func allows(_ n: IPv4Net) -> Bool {
+            TunnelState.privateBlock(of: n) != nil || networks4.contains { $0.prefix <= n.prefix && $0.contains(n.address) }
+        }
+        func allows6(_ net: String, bits: Int) -> Bool {
+            if TunnelState.isULA(net), bits >= 7 { return true }
+            return networks6.contains { a in
+                guard let b = a.split(separator: "/").last.flatMap({ Int($0) }) else { return false }
+                return b <= bits && TunnelState.overlap6(a, "\(net)/\(bits)")
+            }
+        }
+        /// A name for a private network (.internal, .lan, .home.arpa...) or under an allowed domain.
+        func allows(domain: String) -> Bool {
+            let d = domain.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
+            if let last = d.split(separator: ".").last, TunnelState.privateSingleLabels.contains(String(last)) { return true }
+            if d == "home.arpa" || d.hasSuffix(".home.arpa") { return true }
+            return domains.contains { a in
+                let a = a.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
+                return d == a || d.hasSuffix("." + a)
+            }
+        }
     }
 
     private func userPolicy() -> UserPolicy {
@@ -426,6 +470,7 @@ public final class HelperCore {
     struct Limits {
         var mayRouteAll = true
         var mayChangeDNS = true
+        var allowed = Allowances()
         /// Pushes openvpn is told to ignore.
         var ignored: [String] = []
     }
@@ -436,6 +481,15 @@ public final class HelperCore {
         let p = userPolicy()
         if let name = system.userName(uid: uid), p.trustedUsers?.contains(name) == true { return Limits() }
         var l = Limits(mayRouteAll: p.usersMayRouteAllTraffic == true, mayChangeDNS: p.usersMayChangeDNS == true)
+        for n in p.allowedNetworks ?? [] {
+            let parts = n.split(separator: "/")
+            if parts.count == 2, let a = TunnelState.ipv4(parts[0]), let b = Int(parts[1]), (0...32).contains(b) {
+                l.allowed.networks4.append(IPv4Net(address: a, prefix: b))
+            } else if parts.count == 2, TunnelState.ipv6(parts[0]), let b = Int(parts[1]), (0...128).contains(b) {
+                l.allowed.networks6.append(n)
+            }
+        }
+        l.allowed.domains = (p.allowedDomains ?? []).filter { TunnelState.isDomain($0) }
         if !l.mayRouteAll { l.ignored.append("redirect-gateway") }
         return l
     }
@@ -459,9 +513,9 @@ public final class HelperCore {
             }
         }
 
-        // User profiles: openvpn runs as an unprivileged account and asks for what needs root
-        // (privilege separation). Persistent profiles (an administrator's) run as before.
-        let user: ServiceUser? = try persistent ? nil : {
+        // openvpn runs as an unprivileged id of its own and asks for what needs root
+        // (privilege separation): user profiles and persistent ones alike.
+        let user: ServiceUser? = try {
             let id = try allocateServiceID()
             return ServiceUser(name: "mugvpn-\(id)", uid: id, gid: id)
         }()
@@ -491,12 +545,13 @@ public final class HelperCore {
             if persistent {
                 password = newSecret()
                 try system.writeFile(dir + "/m.pw", Data((password! + "\n").utf8), mode: 0o600)
+                forOpenVPN(dir + "/m.pw")
             }
             if bundle.splitDNS {
                 // MugVPN's DNS script runs in this directory and looks for it.
                 try system.writeFile(dir + "/split-dns", Data(), mode: 0o600)
             }
-            let process = try system.launch(user == nil ? paths.openvpnRoot : paths.openvpn,
+            let process = try system.launch(paths.openvpn,
                                             HelperCore.openvpnArguments(config: config, dir: dir,
                                                                         socket: persistent ? [socket, "unix", dir + "/m.pw"] : [socket, "unix"],
                                                                         access: management, hold: !persistent,
@@ -511,17 +566,20 @@ public final class HelperCore {
             let info = ConnectionInfo(id: id, name: bundle.name, pid: process.pid, managementSocket: socket, ownerUID: uid,
                                       persistent: persistent)
             let c = Connection(info: info, process: process, dir: dir)
-            c.privsep = user != nil
             c.serviceID = user?.uid
             c.splitDNS = bundle.splitDNS
             c.mayRouteAll = limit.mayRouteAll
             c.mayChangeDNS = limit.mayChangeDNS
+            c.allowed = limit.allowed
             connections[id] = c
             // From the start: after a crash, this run is undone from the record, never from
             // the log (an unprivileged openvpn writes that).
-            if c.privsep { saveTunnel(c) }
+            saveTunnel(c)
             passwords[id] = password
             giveLog(dir + "/openvpn.log", to: info)
+            // A persistent tunnel has nobody to answer its requests at boot: the helper does,
+            // once openvpn listens (the app of an administrator can take over).
+            if persistent { scheduleManagement(id, after: 0.5) }
         } catch {
             system.remove(dir)
             throw error
@@ -593,12 +651,14 @@ public final class HelperCore {
         guard let c = connections.removeValue(forKey: id) else { return }
         passwords[id] = nil
         c.exited = true
+        c.channel?.close()
+        c.channel = nil
         let name = HelperCore.lockName(c.info.name)
         locks.removeAll { $0.name == name && $0.owner == c.info.ownerUID && $0.armed }
-        let tookAll = c.privsep ? c.tunnel.takesAllTraffic : takesAllTraffic(facts(in: c.dir))
+        let tookAll = c.tunnel.takesAllTraffic
         if let id = c.serviceID { system.killProcesses(uids: id...id) }
-        if c.privsep {
-            let others = connections.values.filter { $0 !== c && $0.privsep }.map(\.tunnel)
+        do {
+            let others = connections.values.filter { $0 !== c }.map(\.tunnel)
             undo(c.tunnel, others: others)
             release(c.tunnel, others: others)
         }
@@ -607,9 +667,6 @@ public final class HelperCore {
             addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN))
         }
         saveLocks()
-        if kind.needsCleanup && !c.privsep {
-            cleanUp(after: facts(in: c.dir), others: connections.values.filter { !$0.privsep }.map { facts(in: $0.dir) })
-        }
         let kept = paths.logsDir + "/" + HelperCore.logFileName(c.info.name, uid: c.info.ownerUID) + ".log"
         system.move(c.dir + "/openvpn.log", kept)
         giveLog(kept, to: c.info, live: false)
@@ -651,7 +708,8 @@ public final class HelperCore {
     public func tunnelRequest(id: String, uid: UInt32, kind: String, message: String) throws -> TunnelReply {
         // openvpn's teardown requests can come after it ended (it does not wait for answers once stopped).
         guard let c = connections[id] else { throw HelperCoreError.message(HelperCore.noSuchConnection) }
-        guard c.privsep, uid == 0 || uid == c.info.ownerUID else { throw HelperCoreError.message("not your connection") }
+        let allowed = uid == 0 || (c.info.persistent ? system.isAdmin(uid: uid) : uid == c.info.ownerUID)
+        guard allowed else { throw HelperCoreError.message("not your connection") }
         // Rationed: a flood from one connection does not hold the helper (and everyone else) up.
         let t = system.now()
         c.requestTokens = min(Double(HelperCore.requestBurst),
@@ -660,7 +718,7 @@ public final class HelperCore {
         guard c.requestTokens >= 1 else { throw HelperCoreError.message("too many requests") }
         c.requestTokens -= 1
         var reply = TunnelReply()
-        let others = connections.values.filter { $0 !== c && $0.privsep }.map(\.tunnel)
+        let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         // All or nothing: a refused or failed request leaves the records as they were.
         let before = c.tunnel
         do {
@@ -680,9 +738,6 @@ public final class HelperCore {
     private func carryOut(_ c: Connection, _ kind: String, _ message: String, others: [TunnelState],
                           reply: inout TunnelReply) throws {
         let policy = "an administrator does not let standard users change the whole Mac's routing or DNS"
-        if !c.mayRouteAll, ["ROUTE", "ROUTE6"].contains(kind), HelperCore.isWide(kind, message) {
-            throw HelperCoreError.message("\(kind) \(message): \(policy)")
-        }
 
         switch kind {
         case "OPENTUN":
@@ -718,6 +773,12 @@ public final class HelperCore {
             }
         case "IFCONFIG6":
             let cmds = try c.tunnel.ifconfig6(message)
+            if let mine = c.tunnel.net6, !c.mayRouteAll {
+                let p = mine.split(separator: "/")
+                if p.count == 2, !c.allowed.allows6(String(p[0]), bits: Int(p[1]) ?? 0) {
+                    throw HelperCoreError.message("IFCONFIG6 \(message): \(policy)")
+                }
+            }
             if let mine = c.tunnel.net6 {
                 if system.localIPv6Networks().contains(where: { TunnelState.overlap6($0, mine) }) {
                     throw HelperCoreError.message("\(mine) is a network of the Mac's own")
@@ -730,8 +791,14 @@ public final class HelperCore {
             try runAll(cmds)
         case "ROUTE":
             let added = try c.tunnel.route(message, gateway: system.defaultGateway())
-            if !c.mayRouteAll, ownerTotal(c, \.publicCoverage) > HelperCore.publicCoverageLimit {
-                throw HelperCoreError.message("\(kind) \(message): \(policy)")
+            // A standard user: private networks, and public ones an administrator lists.
+            if !c.mayRouteAll {
+                for r in added {
+                    guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
+                          let p = TunnelState.prefix(ofMask: m), c.allowed.allows(IPv4Net(address: a, prefix: p)) else {
+                        throw HelperCoreError.message("\(kind) \(message): \(policy)")
+                    }
+                }
             }
             // Between connections, whichever comes first: a host route via the Mac's gateway
             // must not cut into another's network, nor a network take another's host route.
@@ -753,7 +820,7 @@ public final class HelperCore {
                 }
             }
             // While another user's tunnel takes all traffic, a hole or two (its server), no more.
-            let fullElsewhere = connections.values.contains { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.privsep && $0.tunnel.takesAllTraffic }
+            let fullElsewhere = connections.values.contains { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.tunnel.takesAllTraffic }
             if fullElsewhere, c.tunnel.outsideHosts.count > HelperCore.hostsBesideFullTunnel {
                 throw HelperCoreError.message("another user's tunnel takes all traffic: no more host routes around it")
             }
@@ -765,7 +832,7 @@ public final class HelperCore {
             }
         case "ROUTE6":
             let r = try c.tunnel.route6(message)
-            if !c.mayRouteAll, ownerTotal(c, { UInt64($0.publicRoutes6.count) }) > UInt64(HelperCore.publicRoutes6Limit) {
+            if !c.mayRouteAll, !c.allowed.allows6(r.net, bits: Int(r.mask) ?? 0) {
                 throw HelperCoreError.message("\(kind) \(message): \(policy)")
             }
             if !system.runNetwork(r.add) { throw HelperCoreError.message("route failed") }
@@ -779,7 +846,13 @@ public final class HelperCore {
             c.lastDNSUp = t
             let plan = try c.tunnel.dnsPlan(device: message, splitMarker: c.splitDNS)
             // Its own domains are its business; all names are everyone's on the Mac.
-            if !plan.split, !c.mayChangeDNS { throw HelperCoreError.message("DNS for all names: \(policy)") }
+            if !c.mayChangeDNS {
+                // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.
+                if !plan.split { throw HelperCoreError.message("DNS for all names: \(policy)") }
+                if let d = plan.matchDomains.first(where: { !c.allowed.allows(domain: $0) }) {
+                    throw HelperCoreError.message("DNS for \(d): \(policy)")
+                }
+            }
             guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
             c.tunnel.dnsApplied = true
         case "DNSDOWN":
@@ -791,9 +864,6 @@ public final class HelperCore {
         }
     }
 
-    /// An administrator's limit for standard users: one /8 of the public IPv4 Internet, a few IPv6 networks.
-    public static let publicCoverageLimit: UInt64 = 1 << 24
-    public static let publicRoutes6Limit = 64
 
     /// Take a route away: only while it is there as added, not while another connection shares
     /// it, and never on a device that is another connection's now.
@@ -810,41 +880,16 @@ public final class HelperCore {
         }
     }
 
-    /// The sum over the owner's connections (an administrator's limits are per user).
-    private func ownerTotal(_ c: Connection, _ f: (TunnelState) -> UInt64) -> UInt64 {
-        connections.values.filter { $0.info.ownerUID == c.info.ownerUID && $0.privsep }.reduce(0) { $0 + f($1.tunnel) }
-    }
-
     /// The other connections' networks and outside host routes, persistent tunnels (root
     /// openvpn, their logs are root's) included.
     private func otherNetworks(than c: Connection, otherOwnersOnly: Bool) -> (nets: [IPv4Net], hosts: [UInt32]) {
         var nets: [IPv4Net] = [], hosts: [UInt32] = []
         for o in connections.values where o !== c {
-            if otherOwnersOnly, o.privsep, o.info.ownerUID == c.info.ownerUID { continue }
-            if o.privsep {
-                nets += o.tunnel.networks
-                hosts += o.tunnel.outsideHosts
-                continue
-            }
-            for r in liveFacts(o).routes where r.count == 4 && r[0] == "-net" {
-                guard let a = TunnelState.ipv4(Substring(r[1])), let m = TunnelState.ipv4(Substring(r[3])),
-                      let p = TunnelState.prefix(ofMask: m) else { continue }
-                if p == 32 { hosts.append(a) } else if p >= 8 { nets.append(IPv4Net(address: a, prefix: p)) }
-            }
+            if otherOwnersOnly, o.info.ownerUID == c.info.ownerUID { continue }
+            nets += o.tunnel.networks
+            hosts += o.tunnel.outsideHosts
         }
         return (nets, hosts)
-    }
-
-    /// Wider than /8 (IPv6 outside fc00::/7: /32): a route for much of the Internet, not for a network.
-    static func isWide(_ kind: String, _ message: String) -> Bool {
-        let f = message.split(separator: " ")
-        if kind == "ROUTE6" {
-            let a = f.first?.split(separator: "/") ?? []
-            guard a.count == 2, let bits = Int(a[1]) else { return true }
-            return TunnelState.isULA(String(a[0])) ? bits < 8 : bits < 32
-        }
-        guard f.count >= 2, let mask = TunnelState.ipv4(f[1]), let p = TunnelState.prefix(ofMask: mask) else { return true }
-        return p < 8
     }
 
     private func runAll(_ cmds: [[String]]) throws {
@@ -867,6 +912,66 @@ public final class HelperCore {
         let path = dir + "/state.json"
         guard let info = system.fileInfo(path), info.kind == .regular, info.rootOnly, let d = system.readFile(path) else { return nil }
         return try? JSONDecoder().decode(TunnelState.self, from: d)
+    }
+
+    // MARK: - persistent tunnels: the helper as their management client
+
+    private func scheduleManagement(_ id: String, after seconds: TimeInterval) {
+        guard let c = connections[id], c.info.persistent, !c.channelRetryPending else { return }
+        c.channelRetryPending = true
+        system.after(seconds) { [weak self] in
+            c.channelRetryPending = false
+            self?.connectManagement(id)
+        }
+    }
+
+    private func connectManagement(_ id: String) {
+        guard let c = connections[id], c.channel == nil, !c.exited else { return }
+        let ch = system.connectManagement(c.info.managementSocket, onLine: { [weak self] line in
+            self?.managementLine(id, line)
+        }, onClose: { [weak self, weak c] in
+            guard let self, let c, !c.exited else { return }
+            c.channel = nil
+            self.scheduleManagement(id, after: 2)
+        })
+        guard let ch else { return scheduleManagement(id, after: 1) } // not listening yet
+        c.channel = ch
+    }
+
+    private func managementLine(_ id: String, _ line: String) {
+        guard let c = connections[id], let ch = c.channel else { return }
+        if line.hasPrefix("ENTER PASSWORD:") {
+            if let pw = passwords[id] { ch.send(pw, passing: nil) }
+            return
+        }
+        // >NEED-OK:Need 'NAME' confirmation MSG:message
+        guard line.hasPrefix(">NEED-OK:Need '"), let close = line.dropFirst(15).firstIndex(of: "'") else { return }
+        let name = String(line[line.index(line.startIndex, offsetBy: 15)..<close])
+        guard TunnelState.requestNames.contains(name) else { return } // for an administrator's app
+        let rest = line[close...]
+        let message = rest.range(of: "MSG:").map { String(rest[$0.upperBound...]) } ?? ""
+        do {
+            let r = try tunnelRequest(id: id, uid: 0, kind: name, message: message)
+            if let fd = r.fd {
+                ch.send("needok '\(name)' ok", passing: fd)
+                system.closeDescriptor(fd)
+            } else {
+                ch.send("needok '\(name)' ok", passing: nil)
+            }
+        } catch {
+            ch.send("needok '\(name)' cancel", passing: nil)
+        }
+    }
+
+    /// An administrator's app attaches to a persistent tunnel: the helper lets go of the
+    /// management connection, then waits in line for it (openvpn takes one client at a time).
+    public func releaseManagement(id: String, uid: UInt32) -> String? {
+        guard let c = connections[id], c.info.persistent else { return HelperCore.noSuchConnection }
+        guard uid == 0 || system.isAdmin(uid: uid) else { return "only an administrator can attach to a persistent connection" }
+        c.channel?.close()
+        c.channel = nil
+        scheduleManagement(id, after: 3)
+        return nil
     }
 
     // MARK: - protection (PF)
@@ -894,13 +999,6 @@ public final class HelperCore {
         }
     }
 
-    /// What a running connection's log says, read as it grows (only a root-only log counts).
-    private func liveFacts(_ c: Connection) -> OpenVPNLogFacts {
-        let path = c.dir + "/openvpn.log"
-        guard let info = system.fileInfo(path), info.kind == .regular, info.rootOnly else { return c.follower.facts }
-        if let d = system.readFrom(path, offset: c.follower.offset, maxBytes: 1 << 20), !d.isEmpty { c.follower.feed(d) }
-        return c.follower.facts
-    }
 
     /// Recompute what PF must enforce from the helper's own knowledge; apply it if it
     /// changed, or if PF no longer holds it (pfctl -d, a flushed anchor).
@@ -908,16 +1006,8 @@ public final class HelperCore {
         var s = ProtectionState()
         var changedArming = false
         for c in connections.values {
-            let device: String?, full: Bool
-            if c.privsep {
-                device = c.tunnel.device
-                full = c.tunnel.takesAllTraffic
-            } else {
-                let f = liveFacts(c)
-                device = f.device
-                full = takesAllTraffic(f)
-            }
-            if let dev = device { s.tunnels.append(dev) }
+            let full = c.tunnel.takesAllTraffic
+            if let dev = c.tunnel.device { s.tunnels.append(dev) }
             guard c.protection.any else { continue }
             if full, !c.wasFull {
                 c.wasFull = true

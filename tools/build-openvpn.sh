@@ -16,8 +16,8 @@ MIN_MACOS=13.0
 JOBS="$(sysctl -n hw.ncpu)"
 # openvpn's build asks git for its version; it must not find MugVPN's own repository.
 export GIT_CEILING_DIRECTORIES="$ROOT/build"
-# openvpn runs this DNS script itself (as root, without --script-security 2),
-# so it must live where only root can write: the helper installs it there.
+# openvpn's default DNS script, compiled in. MugVPN's openvpn never runs it (the helper sets
+# DNS), but the path it names stays one only root could ever write to.
 DNS_UPDOWN="/Library/Application Support/MugVPN/libexec/dns-updown"
 # OpenSSL compiles in where it looks for openssl.cnf, providers and engines,
 # and openvpn (as root) loads that config at start. They must point where no
@@ -92,10 +92,9 @@ build_arch() {
     # Nothing root openvpn does not need: no plug-ins
     # (no code loaded from a path, whatever a profile says), no debug output
     # (key and packet dumps at verb 7+), no server-only or legacy features.
-    # Two builds: "privsep" (MugVPN's patch, -DMUGVPN_MGMT_TUN) runs without root and
-    # asks the helper for its tunnel; "classic" sets up its own, as root (persistent
-    # profiles only).
-    for flavour in privsep classic; do
+    # With MugVPN's patch (-DMUGVPN_MGMT_TUN): it runs without root and asks the helper
+    # for its tunnel, routes and DNS.
+    for flavour in privsep; do
         mkdir -p "$dir/$flavour"
         tar -xzf "$SRC/openvpn-$OPENVPN_VER.tar.gz" -C "$dir/$flavour"
         local extra=""
@@ -120,8 +119,8 @@ build_arch() {
 for a in "${ARCHES[@]}"; do build_arch "$a"; done
 
 mkdir -p "$OUT"
-for flavour in privsep classic; do
-    name=openvpn; [ "$flavour" = classic ] && name=openvpn-root
+for flavour in privsep; do
+    name=openvpn
     bins=(); for a in "${ARCHES[@]}"; do bins+=("$WORK/$a/$flavour/openvpn-$OPENVPN_VER/src/openvpn/openvpn"); done
     lipo -create "${bins[@]}" -output "$OUT/$name"
     # No path a user could write to may be compiled in (OpenSSL's config, modules, engines).
@@ -130,7 +129,7 @@ for flavour in privsep classic; do
     if grep -E '^(OPENSSLDIR|MODULESDIR|ENGINESDIR):' "$WORK/strings.txt" | grep -v "\"$SSL_ROOT"; then
         echo "$name names a directory outside $SSL_ROOT" >&2; exit 1
     fi
-    # The DNS script openvpn runs as root must be the root-only one (the Makefile edit took).
+    # The compiled-in DNS script path is the root-only one (the Makefile edit took).
     grep -qF "$DNS_UPDOWN" "$WORK/strings.txt" || { echo "$name does not name $DNS_UPDOWN" >&2; exit 1; }
     if grep -F "$ROOT" "$WORK/strings.txt"; then
         echo "$name names the build directory $ROOT" >&2; exit 1
@@ -139,9 +138,8 @@ done
 # The patch took: the privsep build asks for its tunnel.
 strings "$OUT/openvpn" > "$WORK/strings.txt"
 grep -qF "MugVPN's helper did not open a tunnel" "$WORK/strings.txt" || { echo "openvpn lacks MugVPN's privsep patch" >&2; exit 1; }
-"$ROOT/tools/patch-dns-updown.sh" "$WORK/${ARCHES[0]}/classic/openvpn-$OPENVPN_VER/distro/dns-scripts/macos-dns-updown.sh" "$OUT/dns-updown"
 # What this binary was built from: tools/build.sh rebuilds when it changes.
-cat "$ROOT/tools/build-openvpn.sh" "$ROOT/tools/patch-dns-updown.sh" "$ROOT/tools/patch-openvpn-privsep.py" | shasum -a 256 | cut -d' ' -f1 > "$OUT/stamp"
-echo "==> $OUT/openvpn, $OUT/openvpn-root"
+cat "$ROOT/tools/build-openvpn.sh" "$ROOT/tools/patch-openvpn-privsep.py" | shasum -a 256 | cut -d' ' -f1 > "$OUT/stamp"
+echo "==> $OUT/openvpn"
 "$OUT/openvpn" --version | head -1
 otool -L "$OUT/openvpn" | tail -n +2

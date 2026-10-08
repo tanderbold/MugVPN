@@ -50,6 +50,11 @@ public enum MugVPNIDs {
     /// - reply: (the new utun for OPENTUN, error text or nil).
     func tunnelRequest(connectionID: String, kind: String, message: String,
                        reply: @escaping (FileHandle?, String?) -> Void)
+
+    /// A persistent tunnel (administrators): the helper lets go of its management
+    /// connection so the app can attach, and takes it back when the app leaves.
+    /// - reply: error text or nil.
+    func releaseManagement(connectionID: String, reply: @escaping (String?) -> Void)
 }
 
 /// Which protection a connection asks for (the helper decides what that means).

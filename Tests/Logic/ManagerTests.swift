@@ -34,6 +34,11 @@ final class FakeHelperClient: HelperClient {
         reply(nil)
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply(running) }
+    var released: [String] = []
+    func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) {
+        released.append(id)
+        reply(nil)
+    }
     var tunnelRequests: [(id: String, kind: String, message: String)] = []
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void) {
         tunnelRequests.append((id, kind, message))
@@ -129,6 +134,18 @@ final class ManagerHarness {
 }
 
 func registerManagerTests() {
+    test("MAN-20", "attaching to a persistent tunnel: the helper lets go of its management first; its tunnel requests go to the helper") {
+        let h = ManagerHarness()
+        let site = Profile(name: "site", path: "/L/config-auto/site.ovpn", source: .persistent, folder: "")
+        h.m.profiles = [site]
+        h.helper.running = [ConnectionInfo(id: "P1", name: "site", pid: 1, managementSocket: "/run/P1/m.sock", ownerUID: 0, persistent: true)]
+        h.m.connect(site)
+        expectEqual(h.helper.released, ["P1"])
+        expectEqual(h.transport.attempts, ["/run/P1/m.sock"], "then the app connects")
+        let l = h.link("P1")!
+        l.push(">NEED-OK:Need 'ROUTE' confirmation MSG:10.20.0.0 255.255.0.0 10.8.0.1\r\n")
+        expectEqual(h.helper.tunnelRequests.map(\.id), ["P1"])
+    }
     test("MAN-19", "openvpn's tunnel requests go to the helper with the connection's id") {
         let h = ManagerHarness()
         h.m.connect(h.a)

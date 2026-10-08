@@ -14,6 +14,8 @@ public protocol HelperClient: AnyObject {
     func blocks(reply: @escaping ([String]) -> Void)
     /// Lift the blocks this user may lift; an error text or nil.
     func unblock(reply: @escaping (String?) -> Void)
+    /// A persistent tunnel: the helper lets go of its management connection for the app.
+    func releaseManagement(_ id: String, reply: @escaping (String?) -> Void)
     /// What an unprivileged openvpn asks for (privilege separation); the utun for OPENTUN.
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void)
 }
@@ -165,7 +167,7 @@ public final class ConnectionManager {
                 }
                 c.helperID = info.id
                 c.password = info.managementPassword
-                self.open(c, socket: info.managementSocket, attempt: 1)
+                self.attachPersistent(c, socket: info.managementSocket)
             }
         }
         helper.list { [weak self] running in
@@ -179,6 +181,15 @@ public final class ConnectionManager {
                     self.fail(profile.id, "\(e)")
                 }
             }
+        }
+    }
+
+    /// openvpn takes one management client: the helper holds it while no app does.
+    private func attachPersistent(_ c: ActiveConnection, socket: String) {
+        guard let id = c.helperID else { return }
+        helper.releaseManagement(id) { [weak self, weak c] _ in
+            guard let self, let c else { return }
+            self.open(c, socket: socket, attempt: 1)
         }
     }
 
@@ -271,7 +282,7 @@ public final class ConnectionManager {
                     c.helperID = info.id
                     c.password = info.managementPassword
                     self.active[p.id] = c
-                    self.open(c, socket: info.managementSocket, attempt: 1)
+                    self.attachPersistent(c, socket: info.managementSocket)
                     continue
                 }
                 guard let p = self.profiles.first(where: { $0.source != .persistent && $0.name == info.name }),
@@ -324,12 +335,9 @@ public final class ConnectionManager {
             guard let c, let link = c.link else { return false }
             return link.write(c.proto.command(cmd), passing: fd.fileDescriptor)
         }
-        // A persistent profile's openvpn is root's and asks for nothing.
-        if p.source != .persistent {
-            controller.tunnelRequest = { [weak self, weak c] kind, message, reply in
-                guard let self, let id = c?.helperID else { return reply(.failure(ProfileError("not connected"))) }
-                self.helper.tunnelRequest(id, kind: kind, message: message, reply: reply)
-            }
+        controller.tunnelRequest = { [weak self, weak c] kind, message, reply in
+            guard let self, let id = c?.helperID else { return reply(.failure(ProfileError("not connected"))) }
+            self.helper.tunnelRequest(id, kind: kind, message: message, reply: reply)
         }
         controller.onStop = { [weak self, weak c] in
             guard let self, let c else { return }
