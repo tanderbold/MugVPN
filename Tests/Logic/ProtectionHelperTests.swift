@@ -132,6 +132,39 @@ func registerProtectionHelperTests() {
         try makeHelper(sys).prepareRunDirectory()
         expect(lastAnchor(sys).contains("user 501"), "the first's arming was kept and fires: \(sys.files["/L/locks.json"].map { String(decoding: $0.data, as: UTF8.self) } ?? "none")")
     }
+    test("PROT-13", "same-named kill switches, one with the LAN allowed: the stricter holds (ext. audit 7: P2)") {
+        for laxFirst in [true, false] {
+            let sys = FakeSystem()
+            let h = makeHelper(sys)
+            _ = try upFull(sys, h, lan: laxFirst)
+            let (b, _) = try h.start(bundle: protectedBundle(lan: !laxFirst), uid: 501)
+            try bringUp(sys, h, b, uid: 501, device: "utun6")
+            // The helper dies with both up.
+            sys.pf = []
+            try makeHelper(sys).prepareRunDirectory()
+            expect(lastAnchor(sys).contains("all user 501"), "LAN closed (lax first: \(laxFirst)): \(lastAnchor(sys))")
+        }
+        // Fired ones merge the same way.
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try upFull(sys, h, lan: false)
+        let (b, _) = try h.start(bundle: protectedBundle(lan: true), uid: 501)
+        try bringUp(sys, h, b, uid: 501, device: "utun6")
+        sys.launched[0].process.onExit(.exited(1))
+        sys.launched[1].process.onExit(.exited(1))
+        expect(lastAnchor(sys).contains("all user 501"), lastAnchor(sys))
+        // The stricter one ends as asked: the arming follows the one still up.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        let a2 = try upFull(s2, h2, lan: true)
+        let (b2, _) = try h2.start(bundle: protectedBundle(lan: false), uid: 501)
+        try bringUp(s2, h2, b2, uid: 501, device: "utun6")
+        _ = h2.stop(id: b2, uid: 501)
+        s2.launched[1].process.onExit(.exited(0))
+        s2.pf = []
+        try makeHelper(s2).prepareRunDirectory()
+        expect(lastAnchor(s2).contains("to ! <mugvpn_lan> user 501"), "\(a2): \(lastAnchor(s2))")
+    }
     test("PROT-07", "connecting the same profile again lifts its block") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

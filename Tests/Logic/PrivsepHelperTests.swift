@@ -768,6 +768,20 @@ func registerPrivsepHelperTests() {
         sys.clock += 5
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
     }
+    test("PS-50", "a standard user allowed to change the Mac's DNS sets it again with the same server (ext. audit 7: P3)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayChangeDNS": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
+        sys.systemDNS = ["10.8.0.53"]   // the Mac's resolver now: its own, set for all names
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
+    }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

@@ -673,7 +673,7 @@ public final class HelperCore {
         c.channel?.close()
         c.channel = nil
         let name = HelperCore.lockName(c.info.name)
-        disarm(name, owner: c.info.ownerUID)
+        syncArming()
         let tookAll = c.tunnel.takesAllTraffic
         if let id = c.serviceID { system.killProcesses(uids: id...id) }
         do {
@@ -798,7 +798,7 @@ public final class HelperCore {
         // All traffic with a kill switch only once its arming is on disk (it must outlive a helper crash).
         if c.protection.killSwitch, c.wasFull, !wasFullBefore, locksDirty {
             c.wasFull = false
-            disarm(HelperCore.lockName(c.info.name), owner: c.info.ownerUID)
+            syncArming()
             undoRequest()
             refreshProtection()
             throw HelperCoreError.message("the kill switch could not be recorded: not taking all traffic")
@@ -978,11 +978,16 @@ public final class HelperCore {
             if c.restricted {
                 let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
                 let mine = c.tunnel.networks
-                guard let known = self.system.systemDNSServers(excluding: plan.device) else {
-                    throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
+                // (An administrator who lets users change the Mac's DNS lets them replace its resolvers too;
+                // their own, set for all names, is then the Mac's.)
+                var system = Set<UInt32>()
+                if !c.mayChangeDNS {
+                    guard let known = self.system.systemDNSServers(excluding: plan.device) else {
+                        throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
+                    }
+                    // As numbers: one address has more than one spelling.
+                    system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
                 }
-                // As numbers: one address has more than one spelling.
-                let system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
                 for srv in plan.servers {
                     guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
                           !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
@@ -1180,16 +1185,34 @@ public final class HelperCore {
         String(s.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }.map(Character.init).prefix(64))
     }
 
-    /// Take an arming back: not while another tunnel of that name and user takes all traffic with a kill switch.
-    private func disarm(_ name: String, owner: UInt32) {
-        let stillArmed = connections.values.contains {
-            !$0.exited && $0.protection.killSwitch && $0.wasFull && HelperCore.lockName($0.info.name) == name && $0.info.ownerUID == owner
+    /// Armings follow the tunnels up: one per name and user taking all traffic with a kill switch,
+    /// the LAN open only if every such tunnel allows it. - Returns: whether they changed.
+    @discardableResult
+    private func syncArming() -> Bool {
+        var want: [Lock] = []
+        for c in connections.values.sorted(by: { $0.info.id < $1.info.id })
+        where !c.exited && c.protection.killSwitch && c.wasFull {
+            let name = HelperCore.lockName(c.info.name)
+            if let i = want.firstIndex(where: { $0.name == name && $0.owner == c.info.ownerUID }) {
+                want[i].allowLAN = want[i].allowLAN && c.protection.allowLAN
+            } else {
+                want.append(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true))
+            }
         }
-        if !stillArmed { locks.removeAll { $0.name == name && $0.owner == owner && $0.armed } }
+        let have = locks.filter(\.armed)
+        guard Set(have.map { "\($0.owner)/\($0.allowLAN)/\($0.name)" }) != Set(want.map { "\($0.owner)/\($0.allowLAN)/\($0.name)" }) else { return false }
+        locks.removeAll(where: \.armed)
+        locks += want
+        return true
     }
 
     /// Armed and fired are kept apart: one tunnel of a name dropping leaves another's arming.
+    /// Blocks of one name merge to the stricter: the LAN stays open only if all of them allow it.
     private func addLock(_ l: Lock) {
+        var l = l
+        if let old = locks.first(where: { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed }) {
+            l.allowLAN = l.allowLAN && old.allowLAN
+        }
         locks.removeAll { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed }
         locks.append(l)
         // A user cannot pile blocks up: the oldest fired ones go (armings are bounded by connections).
@@ -1206,7 +1229,6 @@ public final class HelperCore {
     @discardableResult
     public func refreshProtection() -> Bool {
         var s = ProtectionState()
-        var changedArming = false
         for c in connections.values {
             let full = c.tunnel.takesAllTraffic
             if let dev = c.tunnel.device {
@@ -1218,20 +1240,13 @@ public final class HelperCore {
             }
             guard c.protection.any else { continue }
             if full, !c.wasFull { c.wasFull = true }
-            if c.wasFull, !c.exited, c.protection.killSwitch {
-                let name = HelperCore.lockName(c.info.name)
-                if !locks.contains(where: { $0.armed && $0.name == name && $0.owner == c.info.ownerUID }) {
-                    // Armed on disk: if the helper dies with the tunnel, the next one blocks.
-                    addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true))
-                    changedArming = true
-                }
-            }
             if full {
                 s.blockIPv6 = s.blockIPv6 || c.protection.blockIPv6
                 s.dnsOnlyTunnels = s.dnsOnlyTunnels || c.protection.dnsOnlyTunnel
             }
         }
-        if changedArming { saveLocks() }
+        // Armed on disk: if the helper dies with the tunnel, the next one blocks.
+        if syncArming() { saveLocks() }
         s.locks = locks.filter { !$0.armed }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN) }
         let anchor = PFRules.anchor(s)
         let broken = !anchor.isEmpty && anchor == appliedPF && !system.pfIntact(anchor)
