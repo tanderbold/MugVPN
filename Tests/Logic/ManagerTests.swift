@@ -263,6 +263,51 @@ func registerManagerTests() {
         o.m.appStarted()
         expect(!o.m.helperIsNewer)
     }
+    test("MAN-33", "a known older version without the restart call (0.1.0): asked a few times, then put in place by hand") {
+        let h = ManagerHarness()
+        h.helper.version = "0.1.0"
+        h.helper.restartUnsupported = true
+        h.m.appStarted()
+        expect(!h.m.helperNeedsManualUpdate, "not on the first silence")
+        h.scheduler.drain(limit: 20)
+        expect(h.m.helperNeedsManualUpdate, "the same old version every time: offered by hand")
+        expect(h.helper.restarts >= 2 && h.helper.restarts <= 4, "\(h.helper.restarts) tries")
+    }
+    test("MAN-34", "every start goes through the preflight (the app's certificate check): menus, CLI, auto-connect, wake") {
+        let h = ManagerHarness()
+        var asked: [String] = []
+        var finish: [() -> Void] = []
+        h.m.preflight = { p, done in asked.append(p.name); finish.append(done) }
+        h.m.connect(h.a)
+        h.m.connect(h.a)
+        expectEqual(asked, ["a"], "one check for both")
+        expect(h.helper.starts.isEmpty, "nothing starts before it is done")
+        expect(h.m.isPending(h.a.id))
+        finish.removeFirst()()
+        expectEqual(h.helper.starts.count, 1)
+        // A disconnect while checked: no start.
+        h.m.connect(h.b)
+        h.m.disconnect(h.b.id)
+        finish.removeFirst()()
+        expectEqual(h.helper.starts.count, 1)
+        // Disconnect all and quitting cancel too.
+        let q = ManagerHarness()
+        var qf: [() -> Void] = []
+        q.m.preflight = { _, done in qf.append(done) }
+        q.m.connect(q.a)
+        q.m.disconnectAll()
+        q.m.connect(q.b)
+        q.m.appQuitting {}
+        qf.forEach { $0() }
+        expect(q.helper.starts.isEmpty, "\(q.helper.starts.map(\.name))")
+        // Auto-connect at start goes the same way.
+        let s = ManagerHarness()
+        var sa: [String] = []
+        s.m.preflight = { p, done in sa.append(p.name); done() }
+        s.m.autoConnect = { $0.name == "a" }
+        s.m.appStarted()
+        expectEqual(sa, ["a"])
+    }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()
         h.helper.version = "0.0.9"

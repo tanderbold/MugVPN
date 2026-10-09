@@ -120,6 +120,9 @@ public final class ConnectionManager {
     /// The helper's version when it is not the app's (an update not yet taken by the running helper).
     public private(set) var helperVersionMismatch: String?
     private var helperRestartAsked = false
+    /// Restart calls an older helper did not answer although it answered its version.
+    private var silentRestarts = 0
+    public static let silentRestartsBeforeHand = 3
     /// An older helper that cannot start itself again: the user puts the new one in place (re-registering it).
     public private(set) var helperNeedsManualUpdate = false
     /// The next wait before asking a helper in use again.
@@ -215,6 +218,13 @@ public final class ConnectionManager {
                     guard let self else { return }
                     if let v {
                         self.helperRestartAsked = false
+                        // The same older version again: it has no restart call (0.1.0 answers version,
+                        // not restartIfIdle). A few tries (it may have been passing), then by hand.
+                        if v == self.helperVersionMismatch, ConnectionManager.isOlder(v, than: MugVPNIDs.helperVersion) {
+                            self.silentRestarts += 1
+                            if self.silentRestarts >= ConnectionManager.silentRestartsBeforeHand { return self.needsManualUpdate() }
+                            return self.retryLater { [weak self] in self?.restartOutdatedHelper() }
+                        }
                         return self.versionKnown(v)
                     }
                     self.helper.reachable { [weak self] up in
@@ -267,7 +277,30 @@ public final class ConnectionManager {
 
     // MARK: - commands
 
-    public func connect(_ profile: Profile) {
+    /// Asked before any start (the app checks the certificate: an expired one is said before openvpn is
+    /// refused); `done` once it is through. Every way of connecting comes here.
+    public var preflight: (Profile, @escaping () -> Void) -> Void = { _, done in done() }
+    private var pending = PendingStarts()
+    private var pendingThens: [String: [() -> Void]] = [:]
+    /// Asked for, its preflight not done yet.
+    public func isPending(_ id: String) -> Bool { pending.isPending(id) }
+
+    /// - then: once it was asked to start, or could not be, or was disconnected while checked.
+    public func connect(_ profile: Profile, then: @escaping () -> Void = {}) {
+        guard active[profile.id] == nil else { return then() }
+        pendingThens[profile.id, default: []].append(then)
+        // A second ask while the first is checked waits for the same check.
+        guard pending.begin(profile.id) else { return }
+        onChange()
+        preflight(profile) { [weak self] in
+            guard let self else { return }
+            if self.pending.finish(profile.id) == true { self.startConnection(profile) }
+            self.pendingThens.removeValue(forKey: profile.id)?.forEach { $0() }
+            self.onChange()
+        }
+    }
+
+    private func startConnection(_ profile: Profile) {
         guard active[profile.id] == nil else { return }
         lastError[profile.id] = nil
         if profile.source == .persistent { return connectPersistent(profile) }
@@ -358,6 +391,7 @@ public final class ConnectionManager {
     }
 
     public func disconnect(_ id: String) {
+        pending.cancel(id)
         active[id]?.controller.disconnect()
     }
 
@@ -366,6 +400,7 @@ public final class ConnectionManager {
     }
 
     public func disconnectAll() {
+        pending.cancelAll()
         active.values.forEach { $0.controller.disconnect() }
     }
 
@@ -454,6 +489,7 @@ public final class ConnectionManager {
 
     /// At quit: remember what is up, stop it, and call `done` when all ended.
     public func appQuitting(done: @escaping () -> Void) {
+        pending.cancelAll()
         // Persistent tunnels belong to the helper: detach, do not stop or remember them.
         for c in active.values where c.profile.source == .persistent {
             c.stopRequested = true

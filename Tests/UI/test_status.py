@@ -342,3 +342,53 @@ def test_ui65_newer_helper_asks_for_the_app_to_be_updated(home):
         wait_for(lambda: any("9.0.0" in n["text"] for n in a.call("notifications")["items"]), 5, "the notice")
         t = next(n["text"] for n in a.call("notifications")["items"] if "9.0.0" in n["text"])
         assert "update MugVPN" in t and "updated once" not in t, t
+
+
+
+LATE_P12 = """MIIEJAIBAzCCA9IGCSqGSIb3DQEHAaCCA8MEggO/MIIDuzCCAmoGCSqGSIb3DQEH
+BqCCAlswggJXAgEAMIICUAYJKoZIhvcNAQcBMF8GCSqGSIb3DQEFDTBSMDEGCSqG
+SIb3DQEFDDAkBBClD/qRDciW9hmAVrUOLn8AAgIIADAMBggqhkiG9w0CCQUAMB0G
+CWCGSAFlAwQBKgQQcgMw5DbHxI4biCwKcKklroCCAeAZ69vjbDR7/Avmoivaw2Wa
+6vrNaCgvH9NTvsxemMMVrpzUwG9LgdVDmXH3Y414DJEJfwU2L/zeU9QnRsoGInvO
++bJDnLzrg+w93N8hpA4EUT4MPjThHxEm/o48km1+jEmtcvSAGCMcnNxGp49tbkd2
+PDUYrwVY0G7o+0e0HB8ijJIyJn8lSNN1qNSGF1O0UlC7StBsyTNSFiIApcc5P1lD
+cUTSTQGOJNKZ3Qf0AsHEZAWQsLOUy0tdv/tE3ToqogLuTU3ZmK1ZnSRPxNU8mWc5
+w6bGJDuMpmhUx6YaYgjtq3FkPdU+MzGKmtgqd8ZB67y5kMPBvlntX8Ju1Y9VQKzt
+BeA1/GOfpr5Lt4CuaMNigVZzVGZ7Fe42ES1jsUim36VRQ6m8jlVgmbYXGv6b8lf1
+y9difPM031DyvkCwJDdHMLbfkVLlXB1KMNeuoos0rjIbL4F6C70G0HZ3tg+k/pGE
+aVJuhR0gmxtYvFliY2vM2PtHvxYL7KcMRgRrlPm7F+bqIdCFdmdxBB4hMrjVER06
+ghjVAu9fM7ko+6fBkMnyrySINxWs6ZBTgHjnGW2ex8jeNJ2JGVEk44i6waIRu70o
+rm5jsCv7P6Us23I+fuY1+gWHLOPsmWg+wBOeFTQcrrowggFJBgkqhkiG9w0BBwGg
+ggE6BIIBNjCCATIwggEuBgsqhkiG9w0BDAoBAqCB9zCB9DBfBgkqhkiG9w0BBQ0w
+UjAxBgkqhkiG9w0BBQwwJAQQFEPrHQkTrwfz3/3VXIUlMQICCAAwDAYIKoZIhvcN
+AgkFADAdBglghkgBZQMEASoEEMo7bjhry9GXznLmVQ9nlpYEgZC+DDm1jz11Cvuc
+meT/HinTm4dK3cneZNoLIXj8IjCyRjkSEnb25IP6ia3Hwz7w6vLwbLj1rPy9TJa0
+VP4HtZONyV9UvM2UsM+PIRrIVAyFOegYpi/wUCT8NosuVy7VS3sl2eS4hwWHwvW4
+8+KteAfg3HUoqHD+j7Dd7M1qtFQGMRPi07IZXCdX95Zey2iS8V0xJTAjBgkqhkiG
+9w0BCRUxFgQUzWAEca/48LWmPiHOs+NwkiU4U2cwSTAxMA0GCWCGSAFlAwQCAQUA
+BCCuG2krAtgAMYGmR6vfPI3NBUCdlyzow9nppF1u04GjPwQQuG0B8bdsVjrFJ1dM
+Ny9AvAICCAA="""
+
+
+def test_ui66_connect_waits_for_a_check_already_running(home, tmp_path):
+    """A check started when the key password was typed is still running (slow here): connecting
+    again waits for its result instead of starting at once."""
+    import time
+    slow = tmp_path / "openssl"
+    slow.write_text('#!/bin/sh\nsleep 3\nexec /usr/bin/openssl "$@"\n')
+    slow.chmod(0o755)
+    with launched(home, env_extra={"MUGVPN_E2E_OPENSSL": str(slow)}) as a:
+        a.add_profile("late", MINIMAL + "<pkcs12>\n" + LATE_P12 + "\n</pkcs12>\n")
+        a.click("late", "Connect")
+        wait_for(lambda: a.call("fake_helper")["starts"].count("late") == 1, 10, "the first start")
+        a.feed("late", ">PASSWORD:Need 'Private Key' password")
+        w = a.window("secret")
+        a.set(w, "password", "pw")
+        a.press(w, "ok")                                 # a check with this password starts (3 s)
+        a.feed("late", ">STATE:1700000001,EXITING,SIGTERM,,,,,")
+        a.call("fake_close", profile="late")
+        wait_for(lambda: "late" not in a.call("status")["tooltip"], 5, "gone")
+        a.click("late", "Connect")
+        time.sleep(0.5)
+        assert a.call("fake_helper")["starts"].count("late") == 1, "waits for the check running"
+        wait_for(lambda: a.call("fake_helper")["starts"].count("late") == 2, 10, "then starts")

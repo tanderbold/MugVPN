@@ -228,6 +228,11 @@ final class AppController: NSObject, NSMenuDelegate {
 
     private func wireOptions() {
         manager.splitDNS = { [weak self] p in self?.options.options(p.id).splitDNS ?? false }
+        // Before any start, whichever way it comes (menu, command line, auto-connect, wake): the certificate.
+        manager.preflight = { [weak self] p, done in
+            guard let self else { return done() }
+            self.warnCertificate(p, then: done)
+        }
         // A PKCS#12's key password as typed: its end can be read now.
         manager.onKeyPassword = { [weak self] p, pw in self?.warnCertificate(p, password: pw) }
         manager.protection = { [weak self] p in
@@ -357,18 +362,23 @@ final class AppController: NSObject, NSMenuDelegate {
         case .inline(let d)?: data = d
         case nil: data = nil
         }
-        guard let data, certificateChecking.insert(p.id).inserted else { return then() }
+        guard let data else { return then() }
+        // A check already running (one after the key password was typed): wait for its result.
+        certificateWaiters[p.id, default: []].append(then)
+        guard certificateChecking.insert(p.id).inserted else { return }
         let pw = password ?? secrets.get(p.secretsKey, .keyPassword), tool = pkcs12Tool
         DispatchQueue.global().async { [weak self] in
             let end = CertificateExpiry.notAfter(pkcs12: data, password: pw, openssl: tool)
             DispatchQueue.main.async {
-                self?.certificateChecking.remove(p.id)
-                if let end { self?.warn(p, end) }
-                then()
+                guard let self else { return }
+                self.certificateChecking.remove(p.id)
+                if let end { self.warn(p, end) }
+                self.certificateWaiters.removeValue(forKey: p.id)?.forEach { $0() }
             }
         }
     }
     private var certificateChecking: Set<String> = []
+    private var certificateWaiters: [String: [() -> Void]] = [:]
     /// The openssl that reads PKCS#12 (a test build may slow it down: MUGVPN_E2E_OPENSSL).
     private var pkcs12Tool: String {
         testingBuild ? ProcessInfo.processInfo.environment["MUGVPN_E2E_OPENSSL"] ?? "/usr/bin/openssl" : "/usr/bin/openssl"
@@ -595,7 +605,7 @@ final class AppController: NSObject, NSMenuDelegate {
     private func profileItems(_ p: Profile) -> [NSMenuItem] {
         let active = manager.active[p.id] != nil
         return [action(L("Connect"), #selector(connectItem), p, enabled: !active),
-                action(L("Disconnect"), #selector(disconnectItem), p, enabled: active || pending.isPending(p.id)),
+                action(L("Disconnect"), #selector(disconnectItem), p, enabled: active || manager.isPending(p.id)),
                 action(L("Reconnect"), #selector(reconnectItem), p, enabled: active),
                 action(L("Show Status"), #selector(showStatusItem), p, enabled: active),
                 .separator(),
@@ -630,46 +640,34 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// Before it starts: a server refuses an expired certificate long before anything is up.
     /// - then: once it was asked to start (or could not be, or was disconnected while checked).
+    /// The certificate check before it is the manager's preflight (every way of connecting).
     func connect(_ p: Profile, then: @escaping () -> Void = {}) {
-        pendingThens[p.id, default: []].append(then)
-        // A second Connect while the first is checked: it waits for the same check.
-        guard pending.begin(p.id) else { return }
-        warnCertificate(p) { [weak self] in
-            guard let self else { return }
-            if self.pending.finish(p.id) == true { self.connectChecked(p) }
-            self.pendingThens.removeValue(forKey: p.id)?.forEach { $0() }
-            self.rebuildMenu()
-        }
-    }
-    private var pending = PendingStarts()
-    private var pendingThens: [String: [() -> Void]] = [:]
-
-    /// Disconnect, a connection still being checked included (it then does not start).
-    func disconnect(_ p: Profile) {
-        pending.cancel(p.id)
-        manager.disconnect(p.id)
-    }
-
-    func disconnectEverything() {
-        pending.cancelAll()
-        manager.disconnectAll()
-    }
-
-    private func connectChecked(_ p: Profile) {
         let setup = services.helperSetup
         if setup.state == .notRegistered {
             if HelperRegistration.problem(bundlePath: Bundle.main.bundlePath) != nil, !setup.isTestDouble {
-                return showError(L("Move MugVPN to the Applications folder, open it from there and connect again."))
+                showError(L("Move MugVPN to the Applications folder, open it from there and connect again."))
+                return then()
             }
             setup.register()
         }
-        guard setup.state == .enabled else { return showHelperSetup() }
-        manager.connect(p)
-        if manager.active[p.id] != nil, !EffectiveSettings.silent(settingsStore.settings, options.options(p.id)) {
-            autoStatus.insert(p.id)
-            showStatus(p)
+        guard setup.state == .enabled else {
+            showHelperSetup()
+            return then()
+        }
+        manager.connect(p) { [weak self] in
+            guard let self else { return then() }
+            if self.manager.active[p.id] != nil, !EffectiveSettings.silent(self.settingsStore.settings, self.options.options(p.id)) {
+                self.autoStatus.insert(p.id)
+                self.showStatus(p)
+            }
+            then()
         }
     }
+
+    /// Disconnect, a connection still being checked included (it then does not start).
+    func disconnect(_ p: Profile) { manager.disconnect(p.id) }
+
+    func disconnectEverything() { manager.disconnectAll() }
 
     @objc func disconnectItem(_ sender: NSMenuItem) {
         guard let p = sender.representedObject as? Profile else { return }
@@ -974,6 +972,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// The helper removes the system part (and stops every tunnel), then the app the user's part.
     func uninstall(keepProfiles: Bool, done: @escaping (String?) -> Void) {
+        manager.disconnectAll()   // a connection still being checked does not start meanwhile
         manager.helperClient.uninstall(keepProfiles: keepProfiles) { [weak self] err in
             guard let self else { return }
             if let err { return done(err) }
