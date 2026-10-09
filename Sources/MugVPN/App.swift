@@ -985,7 +985,8 @@ final class AppController: NSObject, NSMenuDelegate {
 
     @objc func quit() {
         let up = manager.active.values.map(\.profile.displayName).sorted()
-        guard !up.isEmpty else { return onQuit() }
+        // Nothing up: still through the manager, which drops connections waiting for their check.
+        guard !up.isEmpty else { return manager.appQuitting { [weak self] in self?.onQuit() } }
         showForm(kind: "confirm", profile: "", title: L("Quit MugVPN"),
                  views: [Form.label(L("Disconnect %@ and quit? They connect again the next time MugVPN starts.", up.joined(separator: ", ")),
                                     id: "prompt_text")], okTitle: L("Disconnect and Quit"), ok: { [weak self] _ in

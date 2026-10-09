@@ -392,3 +392,22 @@ def test_ui66_connect_waits_for_a_check_already_running(home, tmp_path):
         time.sleep(0.5)
         assert a.call("fake_helper")["starts"].count("late") == 1, "waits for the check running"
         wait_for(lambda: a.call("fake_helper")["starts"].count("late") == 2, 10, "then starts")
+
+
+
+def test_ui67_quit_while_a_connection_is_still_checked(home, tmp_path):
+    """Quit with nothing up yet but a connection waiting for its certificate check: it quits, and the
+    connection never starts (not even as the app goes)."""
+    import os
+    import time
+    slow = tmp_path / "openssl"
+    slow.write_text('#!/bin/sh\nsleep 2\nexec /usr/bin/openssl "$@"\n')
+    slow.chmod(0o755)
+    with launched(home, env_extra={"MUGVPN_E2E_OPENSSL": str(slow)}) as a:
+        a.add_profile("late", MINIMAL + "<pkcs12>\n" + LATE_P12 + "\n</pkcs12>\n")
+        a.click("late", "Connect")
+        a.click("Quit MugVPN")
+        wait_for(lambda: a.proc.poll() is not None, 10, "the app to quit")
+    time.sleep(3)
+    log = os.path.join(home, "starts.log")
+    assert not os.path.exists(log) or "late" not in open(log).read(), "started as the app went"

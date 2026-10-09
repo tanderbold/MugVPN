@@ -42,6 +42,16 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
             return reply(.failure(ProfileError(r)))
         }
         starts.append(bundle.name)
+        // Also on disk: a start as the app quits is seen after it is gone.
+        if let home = ProcessInfo.processInfo.environment["MUGVPN_E2E_HOME"],
+           let h = FileHandle(forWritingAtPath: home + "/starts.log") ?? {
+               FileManager.default.createFile(atPath: home + "/starts.log", contents: nil)
+               return FileHandle(forWritingAtPath: home + "/starts.log")
+           }() {
+            h.seekToEndOfFile()
+            h.write(Data((bundle.name + "\n").utf8))
+            try? h.close()
+        }
         warnedBeforeStart[bundle.name] = services?.notes.contains { $0["title"] == bundle.name && ($0["text"] ?? "").contains("certificate") } ?? false
         let p = bundle.protection
         bundles[bundle.name] = ["split_dns": bundle.splitDNS,
