@@ -106,6 +106,19 @@ func registerProtectionHelperTests() {
         let a = lastAnchor(sys)
         expect(a.contains("block return out quick inet6 all") && a.contains("to any port 53"), a)
     }
+    test("PROT-11", "an armed kill switch stays armed while a tunnel of that name is up (ext. audit 5: P2)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try upFull(sys, h)                                    // office, armed
+        _ = try? h.start(bundle: protectedBundle(), uid: 501)     // another "office"
+        let saved = String(decoding: sys.files["/L/locks.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("office") && saved.contains("armed"), "a second start leaves the arming: \(saved)")
+        try bringUp(sys, h, "ID2", uid: 501, device: "utun6")
+        _ = h.stop(id: "ID2", uid: 501)
+        sys.launched[1].process.onExit(.exited(0))                // one of the two ends as asked
+        let after = String(decoding: sys.files["/L/locks.json"]?.data ?? Data(), as: UTF8.self)
+        expect(after.contains("office"), "the other still takes all traffic: still armed: \(after)")
+    }
     test("PROT-07", "connecting the same profile again lifts its block") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

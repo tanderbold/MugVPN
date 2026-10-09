@@ -53,6 +53,8 @@ public protocol HelperSystem: AnyObject {
     func localIPv6Networks() -> [String]
     /// IPv4 networks ("address/bits") of the Mac's interfaces other than utun and loopback.
     func localIPv4Networks() -> [String]
+    /// The DNS servers the Mac itself uses.
+    func systemDNSServers() -> [String]
     /// Seconds, for rationing requests.
     func now() -> TimeInterval
     /// A new utun device: its descriptor and name.
@@ -349,8 +351,9 @@ public final class HelperCore {
         let bundle = try JSONDecoder().decode(ProfileBundle.self, from: data)
         // Connecting the profile again lifts the block its drop left.
         let lockName = HelperCore.lockName(bundle.name)
-        if locks.contains(where: { $0.name == lockName && $0.owner == uid }) {
-            locks.removeAll { $0.name == lockName && $0.owner == uid }
+        // (A block that fired only: the arming of a tunnel of that name still up stays.)
+        if locks.contains(where: { $0.name == lockName && $0.owner == uid && !$0.armed }) {
+            locks.removeAll { $0.name == lockName && $0.owner == uid && !$0.armed }
             saveLocks()
         }
         let r = try launch(bundle, owner: uid, management: ["--management-client-user", user], persistent: false)
@@ -670,7 +673,7 @@ public final class HelperCore {
         c.channel?.close()
         c.channel = nil
         let name = HelperCore.lockName(c.info.name)
-        locks.removeAll { $0.name == name && $0.owner == c.info.ownerUID && $0.armed }
+        disarm(name, owner: c.info.ownerUID)
         let tookAll = c.tunnel.takesAllTraffic
         if let id = c.serviceID { system.killProcesses(uids: id...id) }
         do {
@@ -753,9 +756,10 @@ public final class HelperCore {
         do {
             try carryOut(c, kind, message, others: others, reply: &reply)
         } catch {
-            // Nothing done: the record (written ahead) says so again.
+            // Nothing done: the record (written ahead) says so again; if it cannot, the
+            // connection is undone and stopped rather than left with a record of the future.
             c.tunnel = before
-            try? saveTunnel(c)
+            do { try saveTunnel(c) } catch { failClosed(c) }
             if let e = error as? TunnelRequestError { throw HelperCoreError.message(e.description) }
             throw error
         }
@@ -793,9 +797,8 @@ public final class HelperCore {
         }
         // All traffic with a kill switch only once its arming is on disk (it must outlive a helper crash).
         if c.protection.killSwitch, c.wasFull, !wasFullBefore, locksDirty {
-            let name = HelperCore.lockName(c.info.name)
-            locks.removeAll { $0.name == name && $0.owner == c.info.ownerUID && $0.armed }
             c.wasFull = false
+            disarm(HelperCore.lockName(c.info.name), owner: c.info.ownerUID)
             undoRequest()
             refreshProtection()
             throw HelperCoreError.message("the kill switch could not be recorded: not taking all traffic")
@@ -893,6 +896,18 @@ public final class HelperCore {
                     }
                 }
             }
+            if c.restricted {
+                // Nothing into the Mac's own networks (its LAN, its router, its DNS).
+                let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
+                for r in added {
+                    guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
+                          let p = TunnelState.prefix(ofMask: m) else { continue }
+                    // As narrow as a network of the Mac's or narrower would win over it (wider does not).
+                    if lan.contains(where: { $0.contains(a) && $0.prefix <= p }) {
+                        throw HelperCoreError.message("\(r.net)/\(p) is a network of the Mac's own")
+                    }
+                }
+            }
             // Between connections, whichever comes first: a host route via the Mac's gateway
             // must not cut into another's network, nor a network take another's host route.
             let (theirNets, theirHosts) = otherNetworks(than: c, otherOwnersOnly: false)
@@ -958,6 +973,19 @@ public final class HelperCore {
                     throw HelperCoreError.message("DNS for \(d): \(policy)")
                 }
             }
+            // A standard user's DNS servers: inside its own tunnel, never the Mac's own resolvers or
+            // networks (the system resolver would send everyone's queries there, whatever the name).
+            if c.restricted {
+                let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
+                let mine = c.tunnel.networks
+                let system = Set(self.system.systemDNSServers())
+                for srv in plan.servers {
+                    guard let a = TunnelState.ipv4(Substring(srv)), !system.contains(srv),
+                          !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
+                        throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
+                    }
+                }
+            }
             // A domain another user's tunnel answers for, or a part of it: the more specific one wins.
             let theirDomains = connections.values.filter { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.tunnel.dnsApplied }
                 .flatMap(\.tunnel.dnsDomains)
@@ -986,6 +1014,17 @@ public final class HelperCore {
         if !r.intoTunnel, others.contains(where: { $0.routes.contains(r) }) { return }
         if r.intoTunnel, others.contains(where: { $0.device == r.via }) { return }
         if system.routeExists(r) { _ = system.runNetwork(r.delete) }
+    }
+
+    /// At once, not after openvpn's grace: its routes, DNS and addresses go, then openvpn.
+    private func failClosed(_ c: Connection) {
+        let others = connections.values.filter { $0 !== c }.map(\.tunnel)
+        undo(c.tunnel, others: others)
+        takeDown(c.tunnel)
+        c.tunnel = TunnelState()
+        try? saveTunnel(c)
+        c.stopping = true
+        c.process.signal(SIGKILL)
     }
 
     /// Give back the utun devices of a tunnel that is gone (not one another connection has).
@@ -1132,6 +1171,14 @@ public final class HelperCore {
         String(s.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }.map(Character.init).prefix(64))
     }
 
+    /// Take an arming back: not while another tunnel of that name and user takes all traffic with a kill switch.
+    private func disarm(_ name: String, owner: UInt32) {
+        let stillArmed = connections.values.contains {
+            !$0.exited && $0.protection.killSwitch && $0.wasFull && HelperCore.lockName($0.info.name) == name && $0.info.ownerUID == owner
+        }
+        if !stillArmed { locks.removeAll { $0.name == name && $0.owner == owner && $0.armed } }
+    }
+
     private func addLock(_ l: Lock) {
         locks.removeAll { $0.name == l.name && $0.owner == l.owner }
         locks.append(l)
@@ -1185,7 +1232,7 @@ public final class HelperCore {
         if locksDirty { saveLocks() }
         // PF gone and not to be put back: standard users' tunnels would take others' traffic.
         if appliedPF != anchor {
-            for c in connections.values where c.restricted && c.tunnel.device != nil && !c.stopping { terminate(c) }
+            for c in connections.values where c.restricted && c.tunnel.device != nil && !c.exited { failClosed(c) }
         }
         // Tunnels come up and change routes after start, and PF can be changed under us:
         // look again while protection is asked for or in force.

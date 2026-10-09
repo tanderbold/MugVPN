@@ -79,6 +79,11 @@ final class FakeSystem: HelperSystem {
     func localIPv4Networks() -> [String] { localIPv4 }
     /// Writes that fail (disk full...), by path suffix.
     var failWrites: Set<String> = []
+    /// Every write fails after this many more succeed (nil: none fail).
+    var failAfterWrites: Int?
+    /// The Mac's own DNS servers.
+    var systemDNS: [String] = []
+    func systemDNSServers() -> [String] { systemDNS }
     func localIPv6Networks() -> [String] { localIPv6 }
     var clock: TimeInterval = 1000
     func now() -> TimeInterval { clock }
@@ -152,6 +157,10 @@ final class FakeSystem: HelperSystem {
     }
     func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
         if failWrites.contains(where: { path.hasSuffix($0) }) { throw CocoaError(.fileWriteOutOfSpace) }
+        if let n = failAfterWrites {
+            if n <= 0 { throw CocoaError(.fileWriteOutOfSpace) }
+            failAfterWrites = n - 1
+        }
         files[path] = (data, mode)
     }
     func readFile(_ path: String) -> Data? { files[path]?.data }

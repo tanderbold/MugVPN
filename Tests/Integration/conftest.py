@@ -30,6 +30,8 @@ PROFILES = "/Users/tester/stand"
 
 def _tart_ip(vm):
     out = subprocess.run(["tart", "ip", vm], capture_output=True, text=True)
+    if out.returncode != 0:  # the DHCP lease may be gone while the VM still runs
+        out = subprocess.run(["tart", "ip", "--resolver", "arp", vm], capture_output=True, text=True)
     if out.returncode != 0:
         pytest.exit(f"stand VM {vm} is not running: tools/stand/stand.sh up", returncode=3)
     return out.stdout.strip()

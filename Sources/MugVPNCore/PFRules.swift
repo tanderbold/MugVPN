@@ -66,7 +66,6 @@ public enum PFRules {
             if !dns.isEmpty {
                 r.append("pass out quick on \(t.device) proto { tcp udp } from any to { \(dns.joined(separator: " ")) } port 53 user 65")
             }
-            r.append("pass out quick on \(t.device) proto { icmp icmp6 } all")
             r.append("block return out quick on \(t.device) proto { tcp udp } all")
             r.append("block drop out quick on \(t.device) all")
         }

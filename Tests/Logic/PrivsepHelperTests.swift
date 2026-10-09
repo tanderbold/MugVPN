@@ -359,6 +359,8 @@ func registerPrivsepHelperTests() {
             let (id, _) = try h.start(bundle: psBundle(), uid: 502)
             sys.utunName = "utun\(sys.launched.count + 4)"
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "IFCONFIG", message: "10.8.0.2 255.255.255.0 1500 subnet")
+            sys.clock += 5
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
@@ -505,7 +507,7 @@ func registerPrivsepHelperTests() {
         let anchor = sys.pf.last ?? ""
         expect(anchor.contains("pass out quick on utun6 proto { tcp udp } user 502"), anchor)
         expect(!anchor.contains("user 65"), "no DNS of its own: the system resolver has no business there: \(anchor)")
-        expect(anchor.contains("pass out quick on utun6 proto { icmp icmp6 } all"), "ping still works")
+        expect(!anchor.contains("proto { icmp icmp6 }"), "ICMP cannot be told by user: not through it either")
         expect(anchor.contains("block return out quick on utun6 proto { tcp udp } all") && anchor.contains("block drop out quick on utun6 all"),
                "nobody else's TCP, UDP or other protocols: \(anchor)")
         let (a, _) = try h.start(bundle: psBundle(), uid: 501)
@@ -661,7 +663,9 @@ func registerPrivsepHelperTests() {
         sys.pfIntactAnswer = false
         sys.pfApplyFails = true
         h.refreshProtection()
-        expectEqual(sys.launched[0].process.signals, [SIGTERM], "the standard user's tunnel is stopped")
+        expect(!sys.routeTable.contains { $0.contains("utun6") }, "its routes go at once, before openvpn ends: \(sys.routeTable)")
+        expect(sys.commands.contains(["ifconfig", "utun6", "down"]))
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "and its openvpn is stopped at once")
         expectEqual(sys.launched[1].process.signals, [], "an administrator's goes on")
     }
     test("PS-41", "an address set by a request that is taken back goes too (ext. audit 4: P2)") {
@@ -700,5 +704,53 @@ func registerPrivsepHelperTests() {
         expectThrows("route add fails") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.20.0.0 255.255.0.0 10.8.0.1") }
         let saved = String(decoding: sys.files["/L/run/ID1/state.json"]?.data ?? Data(), as: UTF8.self)
         expect(!saved.contains("10.20.0.0"), saved)
+    }
+    test("PS-44", "a standard user's DNS servers: in its own tunnel, not the Mac's resolvers, not the Mac's networks (ext. audit 5: P1)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        sys.systemDNS = ["10.0.0.2"]
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.internal"]}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        func dns(_ server: String, routes: [String] = []) throws {
+            let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+            try bringUp(sys, h, id, uid: 502, device: "utun\(sys.launched.count + 4)", routes: routes)
+            sys.clock += 5
+            for v in ["dns_server_1_address_1=\(server)", "dns_server_1_resolve_domain_1=corp.internal"] {
+                _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: v)
+            }
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
+            sys.launched.last!.process.onExit(.exited(0))
+        }
+        for bad in [("10.0.0.2", ["10.0.0.2 255.255.255.255 10.8.0.1"]), ("10.30.0.9", [])] {
+            expectThrows(bad.0, matching: "DNS") { try dns(bad.0, routes: bad.1) }
+        }
+        try dns("10.8.0.53")
+        try dns("10.20.0.53", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+    }
+    test("PS-45", "a standard user routes nothing into the Mac's own networks (ext. audit 5: P1)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        for r in ["192.168.64.1 255.255.255.255 10.8.0.1", "192.168.64.0 255.255.255.128 10.8.0.1", "192.168.64.0 255.255.255.0 10.8.0.1"] {
+            expectThrows(r, matching: "network") { _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: r) }
+        }
+        // Wider than the LAN: the LAN's own route still wins for its addresses.
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "ROUTE", message: "192.168.0.0 255.255.0.0 10.8.0.1")
+    }
+    test("PS-46", "a record that cannot be put back after a failed change: the connection is undone and stopped (ext. audit 5: P3)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+        // route add fails (it is there already, not ours); the record ahead is written, putting it back is not.
+        sys.routeTable.insert(["route", "-n", "add", "-net", "10.30.0.0", "-netmask", "255.255.0.0", "-interface", "utun5"])
+        sys.failAfterWrites = 1
+        expectThrows("route add fails") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.30.0.0 255.255.0.0 10.8.0.1") }
+        sys.failAfterWrites = nil
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "stopped")
+        expect(!sys.routeTable.contains { $0.contains("10.20.0.0") }, "and undone")
     }
 }

@@ -83,7 +83,8 @@ you no longer build MugVPN). Install the build as an administrator.
 
 **Macs with standard users.** Routes and DNS are the whole Mac's, so by default a standard
 (non-administrator) user's connections reach only private networks (10/8, 172.16/12, 192.168/16,
-100.64/10, fc00::/7), carry only that user's own traffic, and set no DNS. The routing table is still
+100.64/10, fc00::/7), carry only that user's own TCP and UDP traffic (no ping), and set no DNS
+unless an administrator allows its names. The routing table is still
 the Mac's: such a route can make that private network unreachable for the Mac's other users while
 the connection is up. An administrator can allow more, or list the networks standard users may
 reach, in `/Library/Application Support/MugVPN/policy.json` (owned by root):

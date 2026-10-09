@@ -24,7 +24,7 @@ MAC_SSH=(ssh -n -i "$HOME/.ssh/npp-e2e" -o UserKnownHostsFile="$KNOWN" -o Strict
 SRV_SSH=(ssh -n -i "$HOME/.ssh/mugvpn-stand" -o UserKnownHostsFile="$KNOWN" -o StrictHostKeyChecking=accept-new -o ConnectTimeout=5)
 PROFILES="$ROOT/build/stand/profiles"
 
-ip_of() { tart ip "$1" 2>/dev/null; }
+ip_of() { tart ip "$1" 2>/dev/null || tart ip --resolver arp "$1" 2>/dev/null; }
 
 start() { # vm user ssh...
     local vm=$1; shift
