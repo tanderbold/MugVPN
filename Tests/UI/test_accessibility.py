@@ -14,8 +14,8 @@ def titles(a, *path):
 
 def open_every_window(a, localized=False):
     top = [i["title"] for i in a.menu()]
-    settings, about = top[-3], top[-2]
-    imp = top[-4]
+    settings, about = top[-4], top[-2]
+    imp = top[-5]
     imports = [c["title"] for c in a.menu_item(imp)["children"]]
     a.click(settings)
     a.click(about)

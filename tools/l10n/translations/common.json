@@ -29,7 +29,18 @@
   "Light": "Světlý",
   "Dark": "Tmavý",
   "Log theme:": "Motiv protokolu:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Spouští ho systém při startu: jeho nastavení připojení určuje správce v %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Spouští ho systém při startu: jeho nastavení připojení určuje správce v %@.",
+  "Disconnect All": "Odpojit vše",
+  "Open MugVPN at login": "Otevřít MugVPN po přihlášení",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Tento profil se přihlašuje i jinak (PKCS#12 nebo otisk certifikátu): viz Pokročilé.",
+  "Its certificate expired on %@: ask for a new one.": "Jeho certifikát vypršel %@: požádejte o nový.",
+  "Its certificate expires on %@: ask for a new one in time.": "Jeho certifikát vyprší %@: požádejte včas o nový.",
+  "Search": "Hledat",
+  "Export Diagnostics…": "Exportovat diagnostiku…",
+  "Cannot export diagnostics: %@": "Diagnostiku nelze exportovat: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).",
+  "This network asks you to sign in first.": "Tato síť nejprve vyžaduje přihlášení.",
+  "Sign in to This Network…": "Přihlásit se k této síti…"
  },
  "de": {
   "OK": "OK",
@@ -61,7 +72,18 @@
   "Light": "Hell",
   "Dark": "Dunkel",
   "Log theme:": "Protokolldesign:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wird beim Systemstart gestartet: Die Verbindungseinstellungen legt ein Administrator in %@ fest."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wird beim Systemstart gestartet: Die Verbindungseinstellungen legt ein Administrator in %@ fest.",
+  "Disconnect All": "Alle trennen",
+  "Open MugVPN at login": "MugVPN bei der Anmeldung öffnen",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Dieses Profil meldet sich auch anders an (PKCS#12 oder Zertifikat-Fingerabdruck): siehe Erweitert.",
+  "Its certificate expired on %@: ask for a new one.": "Sein Zertifikat ist am %@ abgelaufen: Fordern Sie ein neues an.",
+  "Its certificate expires on %@: ask for a new one in time.": "Sein Zertifikat läuft am %@ ab: Fordern Sie rechtzeitig ein neues an.",
+  "Search": "Suchen",
+  "Export Diagnostics…": "Diagnose exportieren …",
+  "Cannot export diagnostics: %@": "Diagnose kann nicht exportiert werden: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Der Helfer von MugVPN hat Version %@, nicht die dieser App (%@): Er wird aktualisiert, sobald ihn keine Verbindung mehr nutzt (oder nach einem Neustart).",
+  "This network asks you to sign in first.": "Dieses Netzwerk verlangt zuerst eine Anmeldung.",
+  "Sign in to This Network…": "Bei diesem Netzwerk anmelden …"
  },
  "da": {
   "OK": "OK",
@@ -93,7 +115,18 @@
   "Light": "Lys",
   "Dark": "Mørk",
   "Log theme:": "Logtema:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes af systemet ved opstart: forbindelsens indstillinger angives af en administrator i %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes af systemet ved opstart: forbindelsens indstillinger angives af en administrator i %@.",
+  "Disconnect All": "Afbryd alle",
+  "Open MugVPN at login": "Åbn MugVPN ved login",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Denne profil logger også ind på en anden måde (PKCS#12 eller et certifikatfingeraftryk): se Avanceret.",
+  "Its certificate expired on %@: ask for a new one.": "Dets certifikat udløb %@: bed om et nyt.",
+  "Its certificate expires on %@: ask for a new one in time.": "Dets certifikat udløber %@: bed om et nyt i god tid.",
+  "Search": "Søg",
+  "Export Diagnostics…": "Eksportér diagnosticering…",
+  "Cannot export diagnostics: %@": "Kan ikke eksportere diagnosticering: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN's hjælper er version %@, ikke denne apps %@: den opdateres, når ingen forbindelse bruger den (eller efter en genstart).",
+  "This network asks you to sign in first.": "Dette netværk kræver, at du logger ind først.",
+  "Sign in to This Network…": "Log ind på dette netværk…"
  },
  "el": {
   "OK": "OK",
@@ -125,7 +158,18 @@
   "Light": "Ανοιχτόχρωμο",
   "Dark": "Σκουρόχρωμο",
   "Log theme:": "Θέμα καταγραφής:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Ξεκινά από το σύστημα κατά την εκκίνηση: τις ρυθμίσεις σύνδεσης ορίζει ένας διαχειριστής στο %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Ξεκινά από το σύστημα κατά την εκκίνηση: τις ρυθμίσεις σύνδεσης ορίζει ένας διαχειριστής στο %@.",
+  "Disconnect All": "Αποσύνδεση όλων",
+  "Open MugVPN at login": "Άνοιγμα του MugVPN κατά τη σύνδεση",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Αυτό το προφίλ συνδέεται και με άλλο τρόπο (PKCS#12 ή αποτύπωμα πιστοποιητικού): δείτε Για προχωρημένους.",
+  "Its certificate expired on %@: ask for a new one.": "Το πιστοποιητικό του έληξε στις %@: ζητήστε νέο.",
+  "Its certificate expires on %@: ask for a new one in time.": "Το πιστοποιητικό του λήγει στις %@: ζητήστε νέο εγκαίρως.",
+  "Search": "Αναζήτηση",
+  "Export Diagnostics…": "Εξαγωγή διαγνωστικών…",
+  "Cannot export diagnostics: %@": "Δεν είναι δυνατή η εξαγωγή διαγνωστικών: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).",
+  "This network asks you to sign in first.": "Αυτό το δίκτυο ζητά πρώτα σύνδεση.",
+  "Sign in to This Network…": "Σύνδεση σε αυτό το δίκτυο…"
  },
  "es": {
   "OK": "Aceptar",
@@ -157,7 +201,18 @@
   "Light": "Claro",
   "Dark": "Oscuro",
   "Log theme:": "Tema del registro:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Lo inicia el sistema al arrancar: un administrador define sus ajustes de conexión en %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Lo inicia el sistema al arrancar: un administrador define sus ajustes de conexión en %@.",
+  "Disconnect All": "Desconectar todo",
+  "Open MugVPN at login": "Abrir MugVPN al iniciar sesión",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Este perfil también inicia sesión de otra forma (PKCS#12 o huella del certificado): consulte Avanzado.",
+  "Its certificate expired on %@: ask for a new one.": "Su certificado caducó el %@: pida uno nuevo.",
+  "Its certificate expires on %@: ask for a new one in time.": "Su certificado caduca el %@: pida uno nuevo a tiempo.",
+  "Search": "Buscar",
+  "Export Diagnostics…": "Exportar diagnóstico…",
+  "Cannot export diagnostics: %@": "No se puede exportar el diagnóstico: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "El asistente de MugVPN es la versión %@, no la %@ de esta app: se actualiza cuando ninguna conexión lo usa (o tras reiniciar).",
+  "This network asks you to sign in first.": "Esta red pide que inicie sesión primero.",
+  "Sign in to This Network…": "Iniciar sesión en esta red…"
  },
  "fa": {
   "OK": "تأیید",
@@ -189,7 +244,18 @@
   "Light": "روشن",
   "Dark": "تیره",
   "Log theme:": "پوستهٔ گزارش:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "سیستم آن را هنگام راه‌اندازی اجرا می‌کند: تنظیمات اتصال آن را مدیر در %@ تعیین می‌کند."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "سیستم آن را هنگام راه‌اندازی اجرا می‌کند: تنظیمات اتصال آن را مدیر در %@ تعیین می‌کند.",
+  "Disconnect All": "قطع همه",
+  "Open MugVPN at login": "باز کردن MugVPN هنگام ورود",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "این نمایه به روش دیگری هم وارد می‌شود (PKCS#12 یا اثر انگشت گواهی): بخش پیشرفته را ببینید.",
+  "Its certificate expired on %@: ask for a new one.": "گواهی آن در %@ منقضی شده است: گواهی جدید درخواست کنید.",
+  "Its certificate expires on %@: ask for a new one in time.": "گواهی آن در %@ منقضی می‌شود: به‌موقع گواهی جدید درخواست کنید.",
+  "Search": "جستجو",
+  "Export Diagnostics…": "صدور اطلاعات عیب‌یابی…",
+  "Cannot export diagnostics: %@": "صدور اطلاعات عیب‌یابی ممکن نیست: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "نسخهٔ دستیار MugVPN %@ است، نه %@ این برنامه: وقتی هیچ اتصالی از آن استفاده نکند (یا پس از راه‌اندازی دوباره) به‌روز می‌شود.",
+  "This network asks you to sign in first.": "این شبکه ابتدا از شما می‌خواهد وارد شوید.",
+  "Sign in to This Network…": "ورود به این شبکه…"
  },
  "fi": {
   "OK": "OK",
@@ -221,7 +287,18 @@
   "Light": "Vaalea",
   "Dark": "Tumma",
   "Log theme:": "Lokin teema:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Järjestelmä käynnistää sen käynnistyksen yhteydessä: ylläpitäjä määrittää yhteysasetukset tiedostossa %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Järjestelmä käynnistää sen käynnistyksen yhteydessä: ylläpitäjä määrittää yhteysasetukset tiedostossa %@.",
+  "Disconnect All": "Katkaise kaikki",
+  "Open MugVPN at login": "Avaa MugVPN kirjautuessa",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Tämä profiili kirjautuu myös muulla tavalla (PKCS#12 tai varmenteen sormenjälki): katso Lisäasetukset.",
+  "Its certificate expired on %@: ask for a new one.": "Sen varmenne vanheni %@: pyydä uusi.",
+  "Its certificate expires on %@: ask for a new one in time.": "Sen varmenne vanhenee %@: pyydä uusi ajoissa.",
+  "Search": "Haku",
+  "Export Diagnostics…": "Vie vianmääritystiedot…",
+  "Cannot export diagnostics: %@": "Vianmääritystietoja ei voi viedä: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).",
+  "This network asks you to sign in first.": "Tämä verkko vaatii ensin kirjautumisen.",
+  "Sign in to This Network…": "Kirjaudu tähän verkkoon…"
  },
  "fr": {
   "OK": "OK",
@@ -253,7 +330,18 @@
   "Light": "Clair",
   "Dark": "Sombre",
   "Log theme:": "Thème du journal :",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Démarré par le système au démarrage : ses réglages de connexion sont définis par un administrateur dans %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Démarré par le système au démarrage : ses réglages de connexion sont définis par un administrateur dans %@.",
+  "Disconnect All": "Tout déconnecter",
+  "Open MugVPN at login": "Ouvrir MugVPN à l'ouverture de session",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Ce profil s'authentifie aussi autrement (PKCS#12 ou empreinte de certificat) : voir Avancé.",
+  "Its certificate expired on %@: ask for a new one.": "Son certificat a expiré le %@ : demandez-en un nouveau.",
+  "Its certificate expires on %@: ask for a new one in time.": "Son certificat expire le %@ : demandez-en un nouveau à temps.",
+  "Search": "Rechercher",
+  "Export Diagnostics…": "Exporter les diagnostics…",
+  "Cannot export diagnostics: %@": "Impossible d'exporter les diagnostics : %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "L'assistant de MugVPN est en version %@, pas celle de cette app (%@) : il est mis à jour dès qu'aucune connexion ne l'utilise (ou après un redémarrage).",
+  "This network asks you to sign in first.": "Ce réseau demande d'abord de vous connecter.",
+  "Sign in to This Network…": "Se connecter à ce réseau…"
  },
  "it": {
   "OK": "OK",
@@ -285,7 +373,18 @@
   "Light": "Chiaro",
   "Dark": "Scuro",
   "Log theme:": "Tema del log:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Avviato dal sistema all'accensione: le impostazioni di connessione sono definite da un amministratore in %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Avviato dal sistema all'accensione: le impostazioni di connessione sono definite da un amministratore in %@.",
+  "Disconnect All": "Disconnetti tutto",
+  "Open MugVPN at login": "Apri MugVPN al login",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Questo profilo accede anche in un altro modo (PKCS#12 o impronta del certificato): vedi Avanzate.",
+  "Its certificate expired on %@: ask for a new one.": "Il suo certificato è scaduto il %@: richiedine uno nuovo.",
+  "Its certificate expires on %@: ask for a new one in time.": "Il suo certificato scade il %@: richiedine uno nuovo per tempo.",
+  "Search": "Cerca",
+  "Export Diagnostics…": "Esporta diagnostica…",
+  "Cannot export diagnostics: %@": "Impossibile esportare la diagnostica: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "L'helper di MugVPN è alla versione %@, non %@ di questa app: si aggiorna quando nessuna connessione lo usa (o dopo un riavvio).",
+  "This network asks you to sign in first.": "Questa rete chiede prima di accedere.",
+  "Sign in to This Network…": "Accedi a questa rete…"
  },
  "ja": {
   "OK": "OK",
@@ -317,7 +416,18 @@
   "Light": "ライト",
   "Dark": "ダーク",
   "Log theme:": "ログのテーマ:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。"
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。",
+  "Disconnect All": "すべて切断",
+  "Open MugVPN at login": "ログイン時に MugVPN を開く",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "このプロファイルは別の方法（PKCS#12 または証明書のフィンガープリント）でもサインインします。「詳細」を参照してください。",
+  "Its certificate expired on %@: ask for a new one.": "証明書は %@ に期限切れになりました。新しい証明書を依頼してください。",
+  "Its certificate expires on %@: ask for a new one in time.": "証明書は %@ に期限切れになります。早めに新しい証明書を依頼してください。",
+  "Search": "検索",
+  "Export Diagnostics…": "診断情報を書き出す…",
+  "Cannot export diagnostics: %@": "診断情報を書き出せません: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。",
+  "This network asks you to sign in first.": "このネットワークでは最初にサインインが必要です。",
+  "Sign in to This Network…": "このネットワークにサインイン…"
  },
  "ko": {
   "OK": "확인",
@@ -349,7 +459,18 @@
   "Light": "라이트",
   "Dark": "다크",
   "Log theme:": "로그 테마:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "시스템 시작 시 실행됩니다. 연결 설정은 관리자가 %@에서 지정합니다."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "시스템 시작 시 실행됩니다. 연결 설정은 관리자가 %@에서 지정합니다.",
+  "Disconnect All": "모두 연결 해제",
+  "Open MugVPN at login": "로그인 시 MugVPN 열기",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "이 프로필은 다른 방식(PKCS#12 또는 인증서 지문)으로도 로그인합니다. 고급을 참조하세요.",
+  "Its certificate expired on %@: ask for a new one.": "인증서가 %@에 만료되었습니다. 새 인증서를 요청하세요.",
+  "Its certificate expires on %@: ask for a new one in time.": "인증서가 %@에 만료됩니다. 미리 새 인증서를 요청하세요.",
+  "Search": "검색",
+  "Export Diagnostics…": "진단 정보 내보내기…",
+  "Cannot export diagnostics: %@": "진단 정보를 내보낼 수 없습니다: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 도우미는 버전 %@로, 이 앱의 %@가 아닙니다. 사용하는 연결이 없을 때(또는 재시동 후) 업데이트됩니다.",
+  "This network asks you to sign in first.": "이 네트워크는 먼저 로그인을 요구합니다.",
+  "Sign in to This Network…": "이 네트워크에 로그인…"
  },
  "nl": {
   "OK": "OK",
@@ -381,7 +502,18 @@
   "Light": "Licht",
   "Dark": "Donker",
   "Log theme:": "Thema logboek:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@.",
+  "Disconnect All": "Alles verbreken",
+  "Open MugVPN at login": "Open MugVPN bij inloggen",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Dit profiel meldt zich ook op een andere manier aan (PKCS#12 of een certificaatvingerafdruk): zie Geavanceerd.",
+  "Its certificate expired on %@: ask for a new one.": "Het certificaat is verlopen op %@: vraag een nieuw aan.",
+  "Its certificate expires on %@: ask for a new one in time.": "Het certificaat verloopt op %@: vraag op tijd een nieuw aan.",
+  "Search": "Zoek",
+  "Export Diagnostics…": "Diagnose exporteren…",
+  "Cannot export diagnostics: %@": "Kan diagnose niet exporteren: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "De helper van MugVPN is versie %@, niet die van deze app (%@): hij wordt bijgewerkt zodra geen verbinding hem gebruikt (of na een herstart).",
+  "This network asks you to sign in first.": "Dit netwerk vraagt eerst om in te loggen.",
+  "Sign in to This Network…": "Inloggen op dit netwerk…"
  },
  "nb": {
   "OK": "OK",
@@ -413,7 +545,18 @@
   "Light": "Lys",
   "Dark": "Mørk",
   "Log theme:": "Loggtema:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes av systemet ved oppstart: tilkoblingsinnstillingene angis av en administrator i %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes av systemet ved oppstart: tilkoblingsinnstillingene angis av en administrator i %@.",
+  "Disconnect All": "Koble fra alle",
+  "Open MugVPN at login": "Åpne MugVPN ved pålogging",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Denne profilen logger også på på en annen måte (PKCS#12 eller et sertifikatfingeravtrykk): se Avansert.",
+  "Its certificate expired on %@: ask for a new one.": "Sertifikatet utløp %@: be om et nytt.",
+  "Its certificate expires on %@: ask for a new one in time.": "Sertifikatet utløper %@: be om et nytt i tide.",
+  "Search": "Søk",
+  "Export Diagnostics…": "Eksporter diagnostikk…",
+  "Cannot export diagnostics: %@": "Kan ikke eksportere diagnostikk: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPNs hjelper er versjon %@, ikke denne appens %@: den oppdateres når ingen tilkobling bruker den (eller etter en omstart).",
+  "This network asks you to sign in first.": "Dette nettverket krever at du logger på først.",
+  "Sign in to This Network…": "Logg på dette nettverket…"
  },
  "pl": {
   "OK": "OK",
@@ -445,7 +588,18 @@
   "Light": "Jasny",
   "Dark": "Ciemny",
   "Log theme:": "Motyw logu:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Uruchamiane przez system przy starcie: ustawienia połączenia określa administrator w %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Uruchamiane przez system przy starcie: ustawienia połączenia określa administrator w %@.",
+  "Disconnect All": "Rozłącz wszystkie",
+  "Open MugVPN at login": "Otwieraj MugVPN po zalogowaniu",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Ten profil loguje się też w inny sposób (PKCS#12 lub odcisk certyfikatu): zobacz Zaawansowane.",
+  "Its certificate expired on %@: ask for a new one.": "Jego certyfikat wygasł %@: poproś o nowy.",
+  "Its certificate expires on %@: ask for a new one in time.": "Jego certyfikat wygasa %@: poproś w porę o nowy.",
+  "Search": "Szukaj",
+  "Export Diagnostics…": "Eksportuj diagnostykę…",
+  "Cannot export diagnostics: %@": "Nie można wyeksportować diagnostyki: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Pomocnik MugVPN ma wersję %@, nie %@ tej aplikacji: zaktualizuje się, gdy nie będzie go używać żadne połączenie (lub po ponownym uruchomieniu).",
+  "This network asks you to sign in first.": "Ta sieć najpierw wymaga zalogowania.",
+  "Sign in to This Network…": "Zaloguj się do tej sieci…"
  },
  "pt-BR": {
   "OK": "OK",
@@ -477,7 +631,18 @@
   "Light": "Claro",
   "Dark": "Escuro",
   "Log theme:": "Tema do registro:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Iniciada pelo sistema na inicialização: as configurações da conexão são definidas por um administrador em %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Iniciada pelo sistema na inicialização: as configurações da conexão são definidas por um administrador em %@.",
+  "Disconnect All": "Desconectar todas",
+  "Open MugVPN at login": "Abrir o MugVPN ao iniciar sessão",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Este perfil também se autentica de outra forma (PKCS#12 ou impressão digital do certificado): veja Avançado.",
+  "Its certificate expired on %@: ask for a new one.": "O certificado expirou em %@: peça um novo.",
+  "Its certificate expires on %@: ask for a new one in time.": "O certificado expira em %@: peça um novo a tempo.",
+  "Search": "Buscar",
+  "Export Diagnostics…": "Exportar diagnóstico…",
+  "Cannot export diagnostics: %@": "Não é possível exportar o diagnóstico: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "O auxiliar do MugVPN está na versão %@, não na %@ deste app: ele é atualizado quando nenhuma conexão o usa (ou após reiniciar).",
+  "This network asks you to sign in first.": "Esta rede pede que você entre primeiro.",
+  "Sign in to This Network…": "Entrar nesta rede…"
  },
  "ru": {
   "OK": "ОК",
@@ -509,7 +674,18 @@
   "Light": "Светлая",
   "Dark": "Тёмная",
   "Log theme:": "Тема журнала:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускается системой при загрузке: параметры подключения задаёт администратор в %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускается системой при загрузке: параметры подключения задаёт администратор в %@.",
+  "Disconnect All": "Отключить все",
+  "Open MugVPN at login": "Открывать MugVPN при входе в систему",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Этот профиль входит и другим способом (PKCS#12 или отпечаток сертификата): см. «Расширенные».",
+  "Its certificate expired on %@: ask for a new one.": "Его сертификат истёк %@: запросите новый.",
+  "Its certificate expires on %@: ask for a new one in time.": "Его сертификат истекает %@: запросите новый заранее.",
+  "Search": "Поиск",
+  "Export Diagnostics…": "Экспорт диагностики…",
+  "Cannot export diagnostics: %@": "Не удалось экспортировать диагностику: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Помощник MugVPN версии %@, а не %@, как приложение: он обновится, когда его не будет использовать ни одно подключение (или после перезагрузки).",
+  "This network asks you to sign in first.": "Эта сеть сначала требует входа.",
+  "Sign in to This Network…": "Войти в эту сеть…"
  },
  "sv": {
   "OK": "OK",
@@ -541,7 +717,18 @@
   "Light": "Ljust",
   "Dark": "Mörkt",
   "Log theme:": "Loggtema:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startas av systemet vid uppstart: anslutningens inställningar anges av en administratör i %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startas av systemet vid uppstart: anslutningens inställningar anges av en administratör i %@.",
+  "Disconnect All": "Koppla från alla",
+  "Open MugVPN at login": "Öppna MugVPN vid inloggning",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Den här profilen loggar också in på annat sätt (PKCS#12 eller ett certifikatfingeravtryck): se Avancerat.",
+  "Its certificate expired on %@: ask for a new one.": "Certifikatet gick ut %@: be om ett nytt.",
+  "Its certificate expires on %@: ask for a new one in time.": "Certifikatet går ut %@: be om ett nytt i tid.",
+  "Search": "Sök",
+  "Export Diagnostics…": "Exportera diagnostik…",
+  "Cannot export diagnostics: %@": "Kan inte exportera diagnostik: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPNs hjälpare är version %@, inte den här appens %@: den uppdateras när ingen anslutning använder den (eller efter en omstart).",
+  "This network asks you to sign in first.": "Det här nätverket kräver att du loggar in först.",
+  "Sign in to This Network…": "Logga in på det här nätverket…"
  },
  "tr": {
   "OK": "Tamam",
@@ -573,7 +760,18 @@
   "Light": "Açık",
   "Dark": "Koyu",
   "Log theme:": "Günlük teması:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Sistem açılışta başlatır: bağlantı ayarlarını bir yönetici %@ içinde belirler."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Sistem açılışta başlatır: bağlantı ayarlarını bir yönetici %@ içinde belirler.",
+  "Disconnect All": "Tümünün bağlantısını kes",
+  "Open MugVPN at login": "Oturum açıldığında MugVPN'i aç",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Bu profil başka bir yolla da oturum açar (PKCS#12 veya sertifika parmak izi): Gelişmiş'e bakın.",
+  "Its certificate expired on %@: ask for a new one.": "Sertifikasının süresi %@ tarihinde doldu: yenisini isteyin.",
+  "Its certificate expires on %@: ask for a new one in time.": "Sertifikasının süresi %@ tarihinde doluyor: zamanında yenisini isteyin.",
+  "Search": "Ara",
+  "Export Diagnostics…": "Tanılamayı dışa aktar…",
+  "Cannot export diagnostics: %@": "Tanılama dışa aktarılamıyor: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.",
+  "This network asks you to sign in first.": "Bu ağ önce oturum açmanızı istiyor.",
+  "Sign in to This Network…": "Bu ağda oturum aç…"
  },
  "uk": {
   "OK": "OK",
@@ -605,7 +803,18 @@
   "Light": "Світла",
   "Dark": "Темна",
   "Log theme:": "Тема журналу:",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускається системою під час завантаження: параметри підключення задає адміністратор у %@."
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускається системою під час завантаження: параметри підключення задає адміністратор у %@.",
+  "Disconnect All": "Відключити всі",
+  "Open MugVPN at login": "Відкривати MugVPN під час входу",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "Цей профіль входить і іншим способом (PKCS#12 або відбиток сертифіката): див. «Розширені».",
+  "Its certificate expired on %@: ask for a new one.": "Його сертифікат сплив %@: попросіть новий.",
+  "Its certificate expires on %@: ask for a new one in time.": "Його сертифікат спливає %@: попросіть новий заздалегідь.",
+  "Search": "Пошук",
+  "Export Diagnostics…": "Експорт діагностики…",
+  "Cannot export diagnostics: %@": "Не вдалося експортувати діагностику: %@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).",
+  "This network asks you to sign in first.": "Ця мережа спершу вимагає входу.",
+  "Sign in to This Network…": "Увійти в цю мережу…"
  },
  "zh-Hans": {
   "OK": "好",
@@ -637,7 +846,18 @@
   "Light": "浅色",
   "Dark": "深色",
   "Log theme:": "日志主题：",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。"
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。",
+  "Disconnect All": "全部断开",
+  "Open MugVPN at login": "登录时打开 MugVPN",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "此配置文件也通过其他方式登录（PKCS#12 或证书指纹）：请参阅“高级”。",
+  "Its certificate expired on %@: ask for a new one.": "其证书已于 %@ 过期：请申请新证书。",
+  "Its certificate expires on %@: ask for a new one in time.": "其证书将于 %@ 过期：请及时申请新证书。",
+  "Search": "搜索",
+  "Export Diagnostics…": "导出诊断信息…",
+  "Cannot export diagnostics: %@": "无法导出诊断信息：%@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。",
+  "This network asks you to sign in first.": "此网络要求先登录。",
+  "Sign in to This Network…": "登录此网络…"
  },
  "zh-Hant": {
   "OK": "好",
@@ -669,6 +889,17 @@
   "Light": "淺色",
   "Dark": "深色",
   "Log theme:": "紀錄主題：",
-  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系統在開機時啟動：其連線設定由管理員在 %@ 中指定。"
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系統在開機時啟動：其連線設定由管理員在 %@ 中指定。",
+  "Disconnect All": "全部中斷連線",
+  "Open MugVPN at login": "登入時開啟 MugVPN",
+  "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced.": "此設定檔也透過其他方式登入（PKCS#12 或憑證指紋）：請參閱「進階」。",
+  "Its certificate expired on %@: ask for a new one.": "其憑證已於 %@ 過期：請申請新憑證。",
+  "Its certificate expires on %@: ask for a new one in time.": "其憑證將於 %@ 過期：請及時申請新憑證。",
+  "Search": "搜尋",
+  "Export Diagnostics…": "輸出診斷資訊…",
+  "Cannot export diagnostics: %@": "無法輸出診斷資訊：%@",
+  "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 的輔助程式版本為 %@，而非此 App 的 %@：當沒有連線使用它時（或重新開機後）會更新。",
+  "This network asks you to sign in first.": "此網路要求先登入。",
+  "Sign in to This Network…": "登入此網路…"
  }
 }

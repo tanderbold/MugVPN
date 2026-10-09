@@ -218,3 +218,35 @@ def test_ui46_import_asked_by_another_program_needs_a_yes(app, tmp_path):
     app.call("command_import", path=str(prof))
     app.press(app.window("confirm"), "ok")
     wait_for(lambda: any(i["title"] == "asked" for i in app.menu()), 5, "imported after yes")
+
+
+def test_ui49_open_at_login(app):
+    """MugVPN itself starts at login when asked (a login item of the system's)."""
+    app.click("Settings…")
+    w = app.window("settings")
+    assert not app.control(w, "launch_at_login")["value"]
+    app.set(w, "launch_at_login", True)
+    app.press(w, "ok")
+    assert app.call("login_item")["enabled"]
+    app.click("Settings…")
+    w = app.window("settings")
+    assert app.control(w, "launch_at_login")["value"], "shows what the system has"
+    app.set(w, "launch_at_login", False)
+    app.press(w, "ok")
+    assert not app.call("login_item")["enabled"]
+
+
+def test_ui54_export_diagnostics(app, tmp_path):
+    import zipfile
+    app.add_profile("secretive", "client\nremote a 1194\n<key>\nTOPSECRET\n</key>\n")
+    out = tmp_path / "diag.zip"
+    app.call("answer_save_panel", path=str(out))
+    app.click("Export Diagnostics…")
+    wait_for(lambda: out.exists() and zipfile.is_zipfile(out), 30, "the archive")
+    z = zipfile.ZipFile(out)
+    names = [n.split("/", 1)[1] for n in z.namelist() if "/" in n]
+    for want in ("summary.txt", "routes.txt", "dns.txt", "profiles/secretive.ovpn", "profiles/stand-a.ovpn"):
+        assert want in names, (want, names)
+    text = b"".join(z.read(n) for n in z.namelist() if not n.endswith("/"))
+    assert b"TOPSECRET" not in text
+    assert b"MugVPN:" in z.read(next(n for n in z.namelist() if n.endswith("summary.txt")))

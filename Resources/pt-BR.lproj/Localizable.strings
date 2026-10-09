@@ -27,6 +27,7 @@
 "CA certificate:" = "Certificado da CA:";
 "Cancel" = "Cancelar";
 "Cannot check how DNS server %@ is reached" = "Não é possível verificar como o servidor DNS %@ é alcançado";
+"Cannot export diagnostics: %@" = "Não é possível exportar o diagnóstico: %@";
 "Cannot import %@: %@" = "Não é possível importar %@: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "Não é possível importar %@: um perfil baixado não pode fazer referência a arquivos deste Mac:\n%@";
 "Cannot import: %@" = "Não é possível importar: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Desconectar";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Desconectar %@ e sair? As conexões serão restabelecidas na próxima vez que o MugVPN for iniciado.";
 "Disconnect %@ before renaming it." = "Desconecte %@ antes de renomeá-la.";
+"Disconnect All" = "Desconectar todas";
 "Disconnect and Quit" = "Desconectar e sair";
 "Disconnect script (s):" = "Script de desconexão (s):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Desconectar quando o Mac entrar em repouso e conectar novamente ao despertar";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Digite no máximo 8 servidores DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Digite o endereço do proxy e uma porta de 1 a 65535.";
 "Every time" = "Sempre";
+"Export Diagnostics…" = "Exportar diagnóstico…";
 "Flat" = "Plano";
 "From the VPN server" = "Do servidor VPN";
 "General" = "Geral";
@@ -97,6 +100,8 @@
 "Imported" = "Importado";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Instalada por um administrador: apenas as opções do MugVPN podem ser alteradas aqui.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet bloqueada: %@ caiu. Reconecte ou desbloqueie.";
+"Its certificate expired on %@: ask for a new one." = "O certificado expirou em %@: peça um novo.";
+"Its certificate expires on %@: ask for a new one in time." = "O certificado expira em %@: peça um novo a tempo.";
 "Keep my profiles" = "Manter meus perfis";
 "Later" = "Mais tarde";
 "Light" = "Claro";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Configurações do MugVPN";
 "MugVPN needs its helper to start tunnels." = "O MugVPN precisa do seu auxiliar para iniciar túneis.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "O auxiliar do MugVPN está na versão %@, não na %@ deste app: ele é atualizado quando nenhuma conexão o usa (ou após reiniciar).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "O MugVPN, seu auxiliar, registros, ajustes e senhas salvas serão removidos. Os túneis serão desconectados.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenciar mensagens repetidas (h):";
@@ -126,6 +132,7 @@
 "Off" = "Desativado";
 "One server per line: host port udp|tcp" = "Um servidor por linha: host porta udp|tcp";
 "Only for domains:" = "Somente para os domínios:";
+"Open MugVPN at login" = "Abrir o MugVPN ao iniciar sessão";
 "Open System Settings" = "Abrir Ajustes do Sistema";
 "Open in Text Editor" = "Abrir no editor de texto";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN é uma marca registrada da OpenVPN Inc.";
@@ -148,6 +155,7 @@
 "Save" = "Salvar";
 "Save password" = "Salvar senha";
 "Saved:" = "Salvo:";
+"Search" = "Buscar";
 "Send DNS only through the VPN" = "Enviar o DNS somente pela VPN";
 "Send all traffic through the VPN" = "Enviar todo o tráfego pela VPN";
 "Sent:" = "Enviados:";
@@ -161,6 +169,7 @@
 "Show Status" = "Mostrar status";
 "Show in Finder" = "Mostrar no Finder";
 "Show the status window" = "Mostrar a janela de status";
+"Sign in to This Network…" = "Entrar nesta rede…";
 "Signing in needs a client certificate or a password." = "Para entrar, é necessário um certificado de cliente ou uma senha.";
 "Some settings are set by your administrator." = "Algumas configurações são definidas pelo administrador.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Dividir DNS por domínio: apenas os domínios do servidor vão para o DNS dele";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "O proxy de %@ requer usuário e senha.";
 "These DNS servers" = "Estes servidores DNS";
 "Third-Party Notices" = "Avisos de terceiros";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Este perfil também entra de outra forma (PKCS#12, impressão digital ou token): consulte Avançado.";
+"This network asks you to sign in first." = "Esta rede pede que você entre primeiro.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Este perfil também se autentica de outra forma (PKCS#12 ou impressão digital do certificado): veja Avançado.";
 "Traffic to %@ goes around the VPN (through %@)" = "O tráfego para %@ contorna a VPN (via %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Ative o MugVPN em Ajustes do Sistema > Geral > Itens de Início e conecte novamente.";
 "URL:" = "URL:";

@@ -27,6 +27,7 @@
 "CA certificate:" = "Certifikát CA:";
 "Cancel" = "Zrušit";
 "Cannot check how DNS server %@ is reached" = "Nelze ověřit, jak je dosažen DNS server %@";
+"Cannot export diagnostics: %@" = "Diagnostiku nelze exportovat: %@";
 "Cannot import %@: %@" = "Nelze importovat %@: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "%@ nelze importovat: stažený profil nesmí odkazovat na soubory v tomto Macu:\n%@";
 "Cannot import: %@" = "Nelze importovat: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Odpojit";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Odpojit %@ a ukončit? Při příštím spuštění MugVPN se znovu připojí.";
 "Disconnect %@ before renaming it." = "Před přejmenováním odpojte %@.";
+"Disconnect All" = "Odpojit vše";
 "Disconnect and Quit" = "Odpojit a ukončit";
 "Disconnect script (s):" = "Skript při odpojení (s):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Odpojit při uspání Macu, po probuzení znovu připojit";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Zadejte nejvýše 8 DNS serverů.";
 "Enter the proxy's address and a port from 1 to 65535." = "Zadejte adresu proxy a port od 1 do 65535.";
 "Every time" = "Pokaždé";
+"Export Diagnostics…" = "Exportovat diagnostiku…";
 "Flat" = "Ploché";
 "From the VPN server" = "Od VPN serveru";
 "General" = "Obecné";
@@ -97,6 +100,8 @@
 "Imported" = "Importováno";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Nainstalováno správcem: zde lze měnit jen jeho volby MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet zablokován: %@ vypadlo. Znovu se připojte nebo zrušte blokování.";
+"Its certificate expired on %@: ask for a new one." = "Jeho certifikát vypršel %@: požádejte o nový.";
+"Its certificate expires on %@: ask for a new one in time." = "Jeho certifikát vyprší %@: požádejte včas o nový.";
 "Keep my profiles" = "Ponechat moje profily";
 "Later" = "Později";
 "Light" = "Světlý";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Nastavení MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, jeho pomocná služba, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Potlačit opakované zprávy (h):";
@@ -126,6 +132,7 @@
 "Off" = "Vypnuto";
 "One server per line: host port udp|tcp" = "Jeden server na řádek: hostitel port udp|tcp";
 "Only for domains:" = "Jen pro domény:";
+"Open MugVPN at login" = "Otevřít MugVPN po přihlášení";
 "Open System Settings" = "Otevřít Nastavení systému";
 "Open in Text Editor" = "Otevřít v textovém editoru";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN je registrovaná ochranná známka společnosti OpenVPN Inc.";
@@ -148,6 +155,7 @@
 "Save" = "Uložit";
 "Save password" = "Uložit heslo";
 "Saved:" = "Uloženo:";
+"Search" = "Hledat";
 "Send DNS only through the VPN" = "Posílat DNS jen přes VPN";
 "Send all traffic through the VPN" = "Posílat veškerý provoz přes VPN";
 "Sent:" = "Odesláno:";
@@ -161,6 +169,7 @@
 "Show Status" = "Zobrazit stav";
 "Show in Finder" = "Zobrazit ve Finderu";
 "Show the status window" = "Zobrazit okno stavu";
+"Sign in to This Network…" = "Přihlásit se k této síti…";
 "Signing in needs a client certificate or a password." = "Přihlášení vyžaduje klientský certifikát nebo heslo.";
 "Some settings are set by your administrator." = "Některá nastavení určuje správce.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Rozdělené DNS podle domén: do DNS serveru jdou jen jeho domény";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "Proxy pro %@ vyžaduje uživatelské jméno a heslo.";
 "These DNS servers" = "Tyto DNS servery";
 "Third-Party Notices" = "Oznámení třetích stran";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Tento profil se přihlašuje i jiným způsobem (PKCS#12, otisk nebo token): viz Pokročilé.";
+"This network asks you to sign in first." = "Tato síť nejprve vyžaduje přihlášení.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Tento profil se přihlašuje i jinak (PKCS#12 nebo otisk certifikátu): viz Pokročilé.";
 "Traffic to %@ goes around the VPN (through %@)" = "Provoz do %@ obchází VPN (přes %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Zapněte MugVPN v Nastavení systému > Obecné > Položky otevírané po přihlášení a pak se znovu připojte.";
 "URL:" = "URL:";

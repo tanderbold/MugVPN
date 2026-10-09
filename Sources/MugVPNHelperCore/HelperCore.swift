@@ -1304,7 +1304,9 @@ public final class HelperCore {
         }
         // Armed on disk: if the helper dies with the tunnel, the next one blocks.
         if syncArming() { saveLocks() }
-        s.locks = locks.filter { !$0.armed }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN, everyone: $0.everyone) }
+        let now = system.now()
+        suspended = suspended.filter { $0.value > now }
+        s.locks = locks.filter { !$0.armed && suspended[HelperCore.suspendKey($0)] == nil }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN, everyone: $0.everyone) }
         let anchor = PFRules.anchor(s)
         let broken = !anchor.isEmpty && anchor == appliedPF && !system.pfIntact(anchor)
         if anchor != appliedPF || broken {
@@ -1334,6 +1336,25 @@ public final class HelperCore {
     public func locks(uid: UInt32) -> [String] {
         let admin = uid == 0 || system.isAdmin(uid: uid)
         return locks.filter { !$0.armed && (admin || $0.owner == uid) }.map(\.name).sorted()
+    }
+
+    /// Fired blocks lifted for a while (to sign in to a network), until this time. Not on disk:
+    /// a helper that starts again blocks again.
+    private var suspended: [String: TimeInterval] = [:]
+    public static let maxSuspend: TimeInterval = 300
+    private static func suspendKey(_ l: Lock) -> String { "\(l.owner)/\(l.everyone)/\(l.name)" }
+
+    /// Lift the caller's blocks (an administrator's: all) for at most `maxSuspend` seconds. Error text or nil.
+    public func suspendBlocks(uid: UInt32, seconds: TimeInterval) -> String? {
+        let admin = uid == 0 || system.isAdmin(uid: uid)
+        let mine = locks.filter { !$0.armed && (admin || $0.owner == uid) }
+        guard !mine.isEmpty || locks.allSatisfy(\.armed) else { return "only its owner or an administrator can lift the block" }
+        let wait = min(max(seconds, 1), HelperCore.maxSuspend)
+        let until = system.now() + wait
+        for l in mine { suspended[HelperCore.suspendKey(l)] = until }
+        system.after(wait) { [weak self] in self?.refreshProtection() }
+        refreshProtection()
+        return nil
     }
 
     /// Lift blocks: an administrator all of them, a user their own. Error text or nil.

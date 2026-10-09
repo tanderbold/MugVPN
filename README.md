@@ -25,7 +25,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - Every connection has its own `utun`, routes and DNS; connect, disconnect and reconnect each on its own.
 - **Split DNS per connection**: names in the domains a server pushes go to that tunnel's DNS, everything else as before — so two VPNs can each answer for their own domains. For servers that push only `dhcp-option DOMAIN`, one switch makes those domains split too.
 - **Your own DNS for a connection**: its servers for the domains you list (or for all names), or leave the Mac's DNS alone.
-- Warnings when connections collide: two that both take all traffic, overlapping routes, DNS already taken.
+- Warnings when connections collide: two that both take all traffic, overlapping routes (IPv4 and IPv6), DNS already taken.
 
 **Connections window**
 - Create a connection from scratch — servers, ports, protocols, CA, certificate, key, `tls-auth`/`tls-crypt`, password sign-in — or edit any profile in a form or as text. Only the lines you change are rewritten.
@@ -44,11 +44,13 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 
 **Everyday**
 - Coloured live log with a light/dark switch, View Log in Console; notifications.
-- Reconnects at once after sleep and on network changes; optional disconnect on sleep.
+- Reconnects at once after sleep and on network changes (another Wi-Fi, a new router or lease); optional disconnect on sleep.
+- Networks that ask for a sign-in first (hotels, airports): the menu offers it, lifting a kill switch's block for two minutes so the page can load.
+- Opens at login if you like; **Export Diagnostics…** makes a zip for a bug report — versions, routes, DNS, logs and the profiles without their keys and passwords.
 - Persistent connections that an administrator puts in `config-auto` start at boot, before anyone logs in.
 - Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root;
   variables a server pushes (`echo setenv NAME value`) reach them as `PUSHED_NAME`.
-- Command line: `MugVPN --command connect|disconnect|reconnect <profile>` and more.
+- Command line: `MugVPN --command connect|disconnect|reconnect|status|list` with exit codes and JSON — for scripts.
 - 22 languages, VoiceOver labels, light and dark appearance, an uninstaller.
 
 <p><img src="docs/screenshots/connections-auth.png" alt="The Authentication tab: certificates embedded in the profile" width="49%"> <img src="docs/screenshots/status-dark.png" alt="The status window in the dark appearance" width="49%"></p>

@@ -25,6 +25,27 @@ func windowTitle(_ profile: String) -> String { "MugVPN — " + profile }
 
 /// Every MugVPN window: what it is and which profile it belongs to. The E2E
 /// socket finds windows and their controls through this.
+/// A window's content that takes files dropped on it.
+final class DropView: NSView {
+    /// The paths dropped; returns those it takes.
+    var onDrop: ([String]) -> [String] = { _ in [] }
+
+    override init(frame: NSRect) {
+        super.init(frame: frame)
+        registerForDraggedTypes([.fileURL])
+    }
+    required init?(coder: NSCoder) { fatalError() }
+
+    private func paths(_ info: NSDraggingInfo) -> [String] {
+        (info.draggingPasteboard.readObjects(forClasses: [NSURL.self], options: [.urlReadingFileURLsOnly: true]) as? [URL] ?? [])
+            .map(\.path)
+    }
+    override func draggingEntered(_ sender: NSDraggingInfo) -> NSDragOperation {
+        ProfileStore.importable(paths(sender)).isEmpty ? [] : .copy
+    }
+    override func performDragOperation(_ sender: NSDraggingInfo) -> Bool { !onDrop(paths(sender)).isEmpty }
+}
+
 final class AppWindow: NSWindow {
     let kind: String
     let profile: String

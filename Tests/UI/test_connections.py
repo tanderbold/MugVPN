@@ -346,3 +346,40 @@ def test_ui47_persistent_settings_shown_not_changed(app):
     for cid in ("sleep", "proxy"):
         assert not app.control(w, cid)["enabled"], cid
     assert app.control(w, "auto_connect")["enabled"], "the app's own options stay"
+
+
+def test_ui50_other_sign_in_note_names_what_works(app):
+    """PKCS#11 tokens are not supported (openvpn is built without them): the note does not offer them."""
+    app.add_profile("p12", MINIMAL + "pkcs12 me.p12\n")
+    open_window(app, "p12")
+    t = app.control(tab(app, "auth"), "other_text")
+    assert t["visible"] and "PKCS#12" in t["value"] and "token" not in t["value"].lower(), t
+
+
+
+def test_ui52_find_a_profile(app):
+    for n in ("berlin-office", "berlin-lab", "paris"):
+        app.add_profile(n)
+    w = open_window(app)
+    app.set(w, "search", "berlin")
+    w = app.window("connections")
+    assert app.control(w, "list")["items"] == ["berlin-lab", "berlin-office"], app.control(w, "list")["items"]
+    app.set(w, "search", "lab")
+    w = app.window("connections")
+    assert app.control(w, "list")["items"] == ["berlin-lab"]
+    assert app.control(w, "name")["value"] == "berlin-lab", "the one found is shown"
+    app.set(w, "search", "")
+    assert len(app.control(app.window("connections"), "list")["items"]) == 5
+
+
+
+def test_ui53_drop_profiles_on_the_window(app, tmp_path):
+    good = tmp_path / "dropped.ovpn"
+    good.write_text(MINIMAL)
+    other = tmp_path / "notes.txt"
+    other.write_text("hello")
+    w = open_window(app)
+    r = app.call("drop_files", kind="connections", paths=[str(good), str(other)])
+    assert r["accepted"] == [str(good)], r
+    wait_for(lambda: "dropped" in app.control(app.window("connections"), "list")["items"], 5, "the dropped profile")
+    assert "notes" not in app.control(app.window("connections"), "list")["items"]

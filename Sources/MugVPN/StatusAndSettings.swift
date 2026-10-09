@@ -159,7 +159,7 @@ final class StatusView: NSObject {
 }
 
 enum SettingsWindow {
-    static func show(store: SettingsStore, changed: @escaping () -> Void) {
+    static func show(store: SettingsStore, services: Services, changed: @escaping () -> Void) {
         if let w = WindowRegistry.shared.of(kind: "settings").first { return w.present() }
         let s = store.settings
         func lock(_ v: NSControl, _ k: SettingKey) -> NSControl {
@@ -190,6 +190,7 @@ enum SettingsWindow {
 
         let views: [NSView] = [
             Form.label(L("General"), bold: true),
+            Form.checkbox("launch_at_login", L("Open MugVPN at login"), on: services.launchAtLogin),
             lock(Form.checkbox("silent_connection", L("Connect silently (no status window)"), on: s.silentConnection), .silentConnection),
             Form.row(L("Notify when connected:"), lock(Form.popup("show_balloon", [("0", L("Never")), ("1", L("The first time")), ("2", L("Every time"))],
                                                                selected: String(s.showBalloon.rawValue)), .showBalloon)),
@@ -234,6 +235,8 @@ enum SettingsWindow {
                     n.disconnectScriptTimeout = int("disconnect_timeout") ?? -1
                     n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
                 }
+                let login = checked(w, "launch_at_login")
+                if login != services.launchAtLogin { services.launchAtLogin = login }
             } catch {
                 let e = w.control("error_text") as? NSTextField
                 e?.stringValue = "\(error)"

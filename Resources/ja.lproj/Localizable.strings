@@ -27,6 +27,7 @@
 "CA certificate:" = "CA 証明書:";
 "Cancel" = "キャンセル";
 "Cannot check how DNS server %@ is reached" = "DNSサーバ %@ への経路を確認できません";
+"Cannot export diagnostics: %@" = "診断情報を書き出せません: %@";
 "Cannot import %@: %@" = "%@ をインポートできません: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "%@ を読み込めません: ダウンロードしたプロファイルはこのMac上のファイルを参照できません:\n%@";
 "Cannot import: %@" = "インポートできません: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "切断";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "%@ を切断して終了しますか？次回 MugVPN の起動時に再接続されます。";
 "Disconnect %@ before renaming it." = "名前を変更する前に %@ を切断してください。";
+"Disconnect All" = "すべて切断";
 "Disconnect and Quit" = "切断して終了";
 "Disconnect script (s):" = "切断スクリプト (秒):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Macのスリープ時に切断し、スリープ解除時に再接続";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "DNSサーバは8つまで入力できます。";
 "Enter the proxy's address and a port from 1 to 65535." = "プロキシのアドレスと 1〜65535 のポートを入力してください。";
 "Every time" = "毎回";
+"Export Diagnostics…" = "診断情報を書き出す…";
 "Flat" = "フラット";
 "From the VPN server" = "VPNサーバから";
 "General" = "一般";
@@ -97,6 +100,8 @@
 "Imported" = "インポート完了";
 "Installed by an administrator: only its MugVPN options can be changed here." = "管理者によってインストールされています: ここでは MugVPN のオプションのみ変更できます。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "インターネットをブロック中: %@ が切断されました。再接続するかブロックを解除してください。";
+"Its certificate expired on %@: ask for a new one." = "証明書は %@ に期限切れになりました。新しい証明書を依頼してください。";
+"Its certificate expires on %@: ask for a new one in time." = "証明書は %@ に期限切れになります。早めに新しい証明書を依頼してください。";
 "Keep my profiles" = "プロファイルを残す";
 "Later" = "後で";
 "Light" = "ライト";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN、ヘルパー、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "繰り返しメッセージを非表示 (時間):";
@@ -126,6 +132,7 @@
 "Off" = "オフ";
 "One server per line: host port udp|tcp" = "1行に1サーバー: ホスト ポート udp|tcp";
 "Only for domains:" = "対象ドメイン:";
+"Open MugVPN at login" = "ログイン時に MugVPN を開く";
 "Open System Settings" = "システム設定を開く";
 "Open in Text Editor" = "テキストエディタで開く";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN は OpenVPN Inc. の登録商標です。";
@@ -148,6 +155,7 @@
 "Save" = "保存";
 "Save password" = "パスワードを保存";
 "Saved:" = "保存済み:";
+"Search" = "検索";
 "Send DNS only through the VPN" = "DNSはVPN経由でのみ送信";
 "Send all traffic through the VPN" = "すべてのトラフィックを VPN 経由で送信";
 "Sent:" = "送信:";
@@ -161,6 +169,7 @@
 "Show Status" = "状態を表示";
 "Show in Finder" = "Finder で表示";
 "Show the status window" = "ステータスウインドウを表示";
+"Sign in to This Network…" = "このネットワークにサインイン…";
 "Signing in needs a client certificate or a password." = "サインインにはクライアント証明書またはパスワードが必要です。";
 "Some settings are set by your administrator." = "一部の設定は管理者によって設定されています。";
 "Split DNS by Domain: only the server's domains go to its DNS" = "ドメイン別にDNSを分割: サーバーのドメインのみをその DNS に送信";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "%@ のプロキシにはユーザー名とパスワードが必要です。";
 "These DNS servers" = "次のDNSサーバ";
 "Third-Party Notices" = "サードパーティに関する通知";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "このプロファイルは別の方法（PKCS#12、フィンガープリント、またはトークン）でもサインインします: 「詳細設定」を参照してください。";
+"This network asks you to sign in first." = "このネットワークでは最初にサインインが必要です。";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "このプロファイルは別の方法（PKCS#12 または証明書のフィンガープリント）でもサインインします。「詳細」を参照してください。";
 "Traffic to %@ goes around the VPN (through %@)" = "%@ への通信がVPNを迂回しています（%@ 経由）";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "システム設定 > 一般 > ログイン項目 で MugVPN をオンにしてから、もう一度接続してください。";
 "URL:" = "URL:";

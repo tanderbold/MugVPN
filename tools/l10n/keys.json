@@ -84,6 +84,9 @@
   "key": "Cannot check how DNS server %@ is reached"
  },
  {
+  "key": "Cannot export diagnostics: %@"
+ },
+ {
   "key": "Cannot import %@: %@"
  },
  {
@@ -207,6 +210,9 @@
   "key": "Disconnect %@ before renaming it."
  },
  {
+  "key": "Disconnect All"
+ },
+ {
   "key": "Disconnect and Quit"
  },
  {
@@ -244,6 +250,9 @@
  },
  {
   "key": "Every time"
+ },
+ {
+  "key": "Export Diagnostics…"
  },
  {
   "key": "Flat"
@@ -294,6 +303,12 @@
   "key": "Internet blocked: %@ dropped. Reconnect it or unblock."
  },
  {
+  "key": "Its certificate expired on %@: ask for a new one."
+ },
+ {
+  "key": "Its certificate expires on %@: ask for a new one in time."
+ },
+ {
   "key": "Keep my profiles"
  },
  {
@@ -325,6 +340,9 @@
  },
  {
   "key": "MugVPN needs its helper to start tunnels."
+ },
+ {
+  "key": "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)."
  },
  {
   "key": "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected."
@@ -379,6 +397,9 @@
  },
  {
   "key": "Only for domains:"
+ },
+ {
+  "key": "Open MugVPN at login"
  },
  {
   "key": "Open System Settings"
@@ -447,6 +468,9 @@
   "key": "Saved:"
  },
  {
+  "key": "Search"
+ },
+ {
   "key": "Send DNS only through the VPN"
  },
  {
@@ -484,6 +508,9 @@
  },
  {
   "key": "Show the status window"
+ },
+ {
+  "key": "Sign in to This Network…"
  },
  {
   "key": "Signing in needs a client certificate or a password."
@@ -528,7 +555,10 @@
   "key": "Third-Party Notices"
  },
  {
-  "key": "This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced."
+  "key": "This network asks you to sign in first."
+ },
+ {
+  "key": "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced."
  },
  {
   "key": "Traffic to %@ goes around the VPN (through %@)"

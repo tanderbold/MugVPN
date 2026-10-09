@@ -27,6 +27,7 @@
 "CA certificate:" = "Сертифікат CA:";
 "Cancel" = "Скасувати";
 "Cannot check how DNS server %@ is reached" = "Не вдалося перевірити, як досягається DNS-сервер %@";
+"Cannot export diagnostics: %@" = "Не вдалося експортувати діагностику: %@";
 "Cannot import %@: %@" = "Не вдалося імпортувати %@: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "Не вдалося імпортувати %@: завантажений профіль не може посилатися на файли на цьому Mac:\n%@";
 "Cannot import: %@" = "Не вдалося імпортувати: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Відключити";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Від'єднати %@ і вийти? Вони знову підключаться під час наступного запуску MugVPN.";
 "Disconnect %@ before renaming it." = "Відключіть %@, перш ніж перейменовувати його.";
+"Disconnect All" = "Відключити всі";
 "Disconnect and Quit" = "Від'єднати й вийти";
 "Disconnect script (s):" = "Скрипт від'єднання (с):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Від'єднуватися, коли Mac засинає, і підключатися знову після пробудження";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Вкажіть не більше 8 DNS-серверів.";
 "Enter the proxy's address and a port from 1 to 65535." = "Введіть адресу проксі-сервера та порт від 1 до 65535.";
 "Every time" = "Щоразу";
+"Export Diagnostics…" = "Експорт діагностики…";
 "Flat" = "Плоске";
 "From the VPN server" = "Від VPN-сервера";
 "General" = "Загальні";
@@ -97,6 +100,8 @@
 "Imported" = "Імпортовано";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Встановлено адміністратором: тут можна змінити лише його параметри MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Інтернет заблоковано: %@ обірвалося. Перепідключіть або зніміть блокування.";
+"Its certificate expired on %@: ask for a new one." = "Його сертифікат сплив %@: попросіть новий.";
+"Its certificate expires on %@: ask for a new one in time." = "Його сертифікат спливає %@: попросіть новий заздалегідь.";
 "Keep my profiles" = "Зберегти мої профілі";
 "Later" = "Пізніше";
 "Light" = "Світла";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Налаштування MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN потрібен допоміжний компонент для запуску тунелів.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Буде видалено MugVPN, його допоміжну службу, журнали, налаштування та збережені паролі. Тунелі буде відключено.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Приховувати повторні повідомлення (год):";
@@ -126,6 +132,7 @@
 "Off" = "Вимкнено";
 "One server per line: host port udp|tcp" = "Один сервер на рядок: хост порт udp|tcp";
 "Only for domains:" = "Лише для доменів:";
+"Open MugVPN at login" = "Відкривати MugVPN під час входу";
 "Open System Settings" = "Відкрити Системні параметри";
 "Open in Text Editor" = "Відкрити в текстовому редакторі";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN — зареєстрована торговельна марка OpenVPN Inc.";
@@ -148,6 +155,7 @@
 "Save" = "Зберегти";
 "Save password" = "Запам'ятати пароль";
 "Saved:" = "Збережено:";
+"Search" = "Пошук";
 "Send DNS only through the VPN" = "Надсилати DNS лише через VPN";
 "Send all traffic through the VPN" = "Спрямовувати весь трафік через VPN";
 "Sent:" = "Надіслано:";
@@ -161,6 +169,7 @@
 "Show Status" = "Показати стан";
 "Show in Finder" = "Показати у Finder";
 "Show the status window" = "Показувати вікно статусу";
+"Sign in to This Network…" = "Увійти в цю мережу…";
 "Signing in needs a client certificate or a password." = "Для входу потрібен сертифікат клієнта або пароль.";
 "Some settings are set by your administrator." = "Деякі параметри встановлено адміністратором.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Розділений DNS за доменами: до DNS сервера йдуть лише його домени";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "Проксі-сервер для %@ потребує імені користувача та пароля.";
 "These DNS servers" = "Ці DNS-сервери";
 "Third-Party Notices" = "Сторонні компоненти";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Цей профіль також використовує інший спосіб входу (PKCS#12, відбиток або токен): див. «Додаткові».";
+"This network asks you to sign in first." = "Ця мережа спершу вимагає входу.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Цей профіль входить і іншим способом (PKCS#12 або відбиток сертифіката): див. «Розширені».";
 "Traffic to %@ goes around the VPN (through %@)" = "Трафік до %@ іде повз VPN (через %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Увімкніть MugVPN у розділі «Системні параметри» > «Загальні» > «Елементи входу», а потім підключіться знову.";
 "URL:" = "URL:";

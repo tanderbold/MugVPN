@@ -109,7 +109,7 @@ def wait_for(cond, timeout, what):
 
 
 @contextlib.contextmanager
-def launched(home, forced=None, reset_defaults=True, language=None, appearance=None):
+def launched(home, forced=None, reset_defaults=True, language=None, appearance=None, helper_version=None):
     """MugVPN in E2E mode on `home`; quits it afterwards."""
     sock = os.path.join(tempfile.gettempdir(), f"mvpn-{os.getpid()}-{int(time.time() * 1000) % 100000}.sock")
     if reset_defaults:
@@ -119,6 +119,8 @@ def launched(home, forced=None, reset_defaults=True, language=None, appearance=N
         env["MUGVPN_E2E_FORCED"] = json.dumps(forced)
     if appearance:
         env["MUGVPN_E2E_APPEARANCE"] = appearance
+    if helper_version:
+        env["MUGVPN_E2E_HELPER_VERSION"] = helper_version
     args = [BIN] + (["-AppleLanguages", f"({language})"] if language else []) \
         + (["-AppleInterfaceStyle", appearance] if appearance else [])
     proc = subprocess.Popen(args, env=env, stdout=open(os.path.join(home, "app.log"), "a"), stderr=subprocess.STDOUT)

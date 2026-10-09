@@ -27,6 +27,7 @@
 "CA certificate:" = "Πιστοποιητικό CA:";
 "Cancel" = "Ακύρωση";
 "Cannot check how DNS server %@ is reached" = "Δεν είναι δυνατός ο έλεγχος του πώς προσεγγίζεται ο διακομιστής DNS %@";
+"Cannot export diagnostics: %@" = "Δεν είναι δυνατή η εξαγωγή διαγνωστικών: %@";
 "Cannot import %@: %@" = "Αδυναμία εισαγωγής του %@: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "Δεν είναι δυνατή η εισαγωγή του %@: ένα ληφθέν προφίλ δεν μπορεί να αναφέρεται σε αρχεία αυτού του Mac:\n%@";
 "Cannot import: %@" = "Αδυναμία εισαγωγής: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Αποσύνδεση";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Αποσύνδεση των %@ και έξοδος; Θα συνδεθούν ξανά την επόμενη φορά που θα ξεκινήσει το MugVPN.";
 "Disconnect %@ before renaming it." = "Αποσυνδέστε το %@ πριν το μετονομάσετε.";
+"Disconnect All" = "Αποσύνδεση όλων";
 "Disconnect and Quit" = "Αποσύνδεση και έξοδος";
 "Disconnect script (s):" = "Σενάριο αποσύνδεσης (s):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Αποσύνδεση όταν το Mac μεταβαίνει σε ύπνο, επανασύνδεση κατά την αφύπνιση";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Εισαγάγετε έως 8 διακομιστές DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Εισαγάγετε τη διεύθυνση του proxy και μια θύρα από 1 έως 65535.";
 "Every time" = "Κάθε φορά";
+"Export Diagnostics…" = "Εξαγωγή διαγνωστικών…";
 "Flat" = "Επίπεδο";
 "From the VPN server" = "Από τον διακομιστή VPN";
 "General" = "Γενικά";
@@ -97,6 +100,8 @@
 "Imported" = "Η εισαγωγή ολοκληρώθηκε";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Εγκαταστάθηκε από διαχειριστή: εδώ μπορούν να αλλάξουν μόνο οι επιλογές MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Το Διαδίκτυο αποκλείστηκε: η %@ διακόπηκε. Συνδεθείτε ξανά ή άρση αποκλεισμού.";
+"Its certificate expired on %@: ask for a new one." = "Το πιστοποιητικό του έληξε στις %@: ζητήστε νέο.";
+"Its certificate expires on %@: ask for a new one in time." = "Το πιστοποιητικό του λήγει στις %@: ζητήστε νέο εγκαίρως.";
 "Keep my profiles" = "Διατήρηση των προφίλ μου";
 "Later" = "Αργότερα";
 "Light" = "Ανοιχτόχρωμο";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Το MugVPN, το βοηθητικό του πρόγραμμα, τα αρχεία καταγραφής, οι ρυθμίσεις και τα αποθηκευμένα συνθήματα θα αφαιρεθούν. Οι σήραγγες θα αποσυνδεθούν.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Σίγαση επαναλαμβανόμενων μηνυμάτων (ώρες):";
@@ -126,6 +132,7 @@
 "Off" = "Ανενεργό";
 "One server per line: host port udp|tcp" = "Ένας διακομιστής ανά γραμμή: κεντρικός υπολογιστής θύρα udp|tcp";
 "Only for domains:" = "Μόνο για τομείς:";
+"Open MugVPN at login" = "Άνοιγμα του MugVPN κατά τη σύνδεση";
 "Open System Settings" = "Άνοιγμα Ρυθμίσεων συστήματος";
 "Open in Text Editor" = "Άνοιγμα σε επεξεργαστή κειμένου";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "Το OpenVPN είναι σήμα κατατεθέν της OpenVPN Inc.";
@@ -148,6 +155,7 @@
 "Save" = "Αποθήκευση";
 "Save password" = "Αποθήκευση συνθήματος";
 "Saved:" = "Αποθηκευμένα:";
+"Search" = "Αναζήτηση";
 "Send DNS only through the VPN" = "Αποστολή DNS μόνο μέσω VPN";
 "Send all traffic through the VPN" = "Αποστολή όλης της κίνησης μέσω του VPN";
 "Sent:" = "Εστάλησαν:";
@@ -161,6 +169,7 @@
 "Show Status" = "Εμφάνιση κατάστασης";
 "Show in Finder" = "Εμφάνιση στο Finder";
 "Show the status window" = "Εμφάνιση του παραθύρου κατάστασης";
+"Sign in to This Network…" = "Σύνδεση σε αυτό το δίκτυο…";
 "Signing in needs a client certificate or a password." = "Για τη σύνδεση απαιτείται πιστοποιητικό πελάτη ή σύνθημα.";
 "Some settings are set by your administrator." = "Ορισμένες ρυθμίσεις ορίζονται από τον διαχειριστή σας.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Διαχωρισμένο DNS ανά τομέα: μόνο οι τομείς του διακομιστή πηγαίνουν στο DNS του";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "Το proxy για το %@ απαιτεί όνομα χρήστη και σύνθημα.";
 "These DNS servers" = "Αυτοί οι διακομιστές DNS";
 "Third-Party Notices" = "Σημειώσεις τρίτων";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Αυτό το προφίλ συνδέεται και με άλλον τρόπο (PKCS#12, δακτυλικό αποτύπωμα ή token): δείτε «Για προχωρημένους».";
+"This network asks you to sign in first." = "Αυτό το δίκτυο ζητά πρώτα σύνδεση.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Αυτό το προφίλ συνδέεται και με άλλο τρόπο (PKCS#12 ή αποτύπωμα πιστοποιητικού): δείτε Για προχωρημένους.";
 "Traffic to %@ goes around the VPN (through %@)" = "Η κίνηση προς %@ παρακάμπτει το VPN (μέσω %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Ενεργοποιήστε το MugVPN στις Ρυθμίσεις συστήματος > Γενικά > Στοιχεία σύνδεσης και, στη συνέχεια, συνδεθείτε ξανά.";
 "URL:" = "URL:";

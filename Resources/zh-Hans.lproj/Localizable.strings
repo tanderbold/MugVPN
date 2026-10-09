@@ -27,6 +27,7 @@
 "CA certificate:" = "CA 证书：";
 "Cancel" = "取消";
 "Cannot check how DNS server %@ is reached" = "无法检查 DNS 服务器 %@ 的访问路径";
+"Cannot export diagnostics: %@" = "无法导出诊断信息：%@";
 "Cannot import %@: %@" = "无法导入 %@：%@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "无法导入 %@：下载的配置文件不能引用此 Mac 上的文件：\n%@";
 "Cannot import: %@" = "无法导入：%@";
@@ -68,6 +69,7 @@
 "Disconnect" = "断开连接";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "断开 %@ 并退出？下次 MugVPN 启动时它们会重新连接。";
 "Disconnect %@ before renaming it." = "请先断开 %@ 再重命名。";
+"Disconnect All" = "全部断开";
 "Disconnect and Quit" = "断开连接并退出";
 "Disconnect script (s):" = "断开连接脚本（秒）：";
 "Disconnect when the Mac sleeps, connect again on wake" = "Mac 睡眠时断开连接，唤醒后重新连接";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "最多输入 8 个 DNS 服务器。";
 "Enter the proxy's address and a port from 1 to 65535." = "请输入代理地址和 1 到 65535 之间的端口。";
 "Every time" = "每次";
+"Export Diagnostics…" = "导出诊断信息…";
 "Flat" = "扁平化";
 "From the VPN server" = "来自 VPN 服务器";
 "General" = "常规";
@@ -97,6 +100,8 @@
 "Imported" = "已导入";
 "Installed by an administrator: only its MugVPN options can be changed here." = "由管理员安装：此处只能更改其 MugVPN 选项。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "互联网已阻止：%@ 已断开。请重新连接或解除阻止。";
+"Its certificate expired on %@: ask for a new one." = "其证书已于 %@ 过期：请申请新证书。";
+"Its certificate expires on %@: ask for a new one in time." = "其证书将于 %@ 过期：请及时申请新证书。";
 "Keep my profiles" = "保留我的配置文件";
 "Later" = "稍后";
 "Light" = "浅色";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 设置";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其辅助程序来启动隧道。";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "将移除 MugVPN、其辅助程序、日志、设置和存储的密码。隧道将断开连接。";
 "MugVPN: %@" = "MugVPN：%@";
 "Mute repeated messages (h):" = "重复消息静音时长（小时）：";
@@ -126,6 +132,7 @@
 "Off" = "关闭";
 "One server per line: host port udp|tcp" = "每行一个服务器：主机 端口 udp|tcp";
 "Only for domains:" = "仅用于域：";
+"Open MugVPN at login" = "登录时打开 MugVPN";
 "Open System Settings" = "打开系统设置";
 "Open in Text Editor" = "在文本编辑器中打开";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN 是 OpenVPN Inc. 的注册商标。";
@@ -148,6 +155,7 @@
 "Save" = "保存";
 "Save password" = "保存密码";
 "Saved:" = "已保存：";
+"Search" = "搜索";
 "Send DNS only through the VPN" = "仅通过 VPN 发送 DNS";
 "Send all traffic through the VPN" = "通过 VPN 发送所有流量";
 "Sent:" = "发送：";
@@ -161,6 +169,7 @@
 "Show Status" = "显示状态";
 "Show in Finder" = "在 Finder 中显示";
 "Show the status window" = "显示状态窗口";
+"Sign in to This Network…" = "登录此网络…";
 "Signing in needs a client certificate or a password." = "登录需要客户端证书或密码。";
 "Some settings are set by your administrator." = "部分设置由管理员设置。";
 "Split DNS by Domain: only the server's domains go to its DNS" = "按域名拆分 DNS：仅将服务器的域名发送到其 DNS";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "%@ 的代理需要用户名和密码。";
 "These DNS servers" = "以下 DNS 服务器";
 "Third-Party Notices" = "第三方声明";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "此配置文件还使用其他方式登录（PKCS#12、指纹或令牌）：请参阅“高级”。";
+"This network asks you to sign in first." = "此网络要求先登录。";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "此配置文件也通过其他方式登录（PKCS#12 或证书指纹）：请参阅“高级”。";
 "Traffic to %@ goes around the VPN (through %@)" = "发往 %@ 的流量绕过了 VPN（经由 %@）";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "请在“系统设置”>“通用”>“登录项”中打开 MugVPN，然后重新连接。";
 "URL:" = "URL：";

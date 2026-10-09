@@ -67,6 +67,27 @@ func registerProtectionHelperTests() {
         expectEqual(lastAnchor(s2), "", "nothing left")
         expect(s2.files["/L/locks.json"] == nil, "the arming is gone too")
     }
+    test("PROT-14", "a block lifted for a while to sign in to a network: back after it, and over a helper restart") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try upFull(sys, h)
+        sys.launched[0].process.onExit(.signaled(9))
+        expect(lastAnchor(sys).contains("user 501"))
+        expectEqual(h.suspendBlocks(uid: 502, seconds: 120), "only its owner or an administrator can lift the block")
+        expectEqual(h.suspendBlocks(uid: 501, seconds: 3600), nil, "at most a few minutes")
+        expect(!lastAnchor(sys).contains("user 501"), "lifted: \(lastAnchor(sys))")
+        expectEqual(h.locks(uid: 501), ["office"], "still the profile's block")
+        expect(sys.timers.contains { $0.seconds == HelperCore.maxSuspend }, "\(sys.timers.map(\.seconds))")
+        // The helper dies meanwhile: the next one blocks again.
+        let s2 = sys
+        s2.pf = []
+        try makeHelper(s2).prepareRunDirectory()
+        expect(lastAnchor(s2).contains("user 501"))
+        // Or the time is up.
+        sys.clock += HelperCore.maxSuspend + 1
+        sys.fireTimers()
+        expect(lastAnchor(sys).contains("user 501"), "back: \(lastAnchor(sys))")
+    }
     test("PROT-04", "who lifts a block") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

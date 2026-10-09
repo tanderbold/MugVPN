@@ -51,12 +51,20 @@ final class XPCHelperClient: HelperClient {
         }
     }
 
+    func version(reply: @escaping (String) -> Void) {
+        proxy({ _ in })?.version { v in DispatchQueue.main.async { reply(v) } }
+    }
+
     func blocks(reply: @escaping ([String]) -> Void) {
         proxy({ _ in reply([]) })?.blocks { names in DispatchQueue.main.async { reply(names) } }
     }
 
     func unblock(reply: @escaping (String?) -> Void) {
         proxy({ reply("\($0.localizedDescription)") })?.unblock { err in DispatchQueue.main.async { reply(err) } }
+    }
+
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void) {
+        proxy({ reply("\($0.localizedDescription)") })?.suspendBlocks(seconds: seconds) { err in DispatchQueue.main.async { reply(err) } }
     }
 
     func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) {

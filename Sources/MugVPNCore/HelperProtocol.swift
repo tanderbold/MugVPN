@@ -44,6 +44,8 @@ public enum MugVPNIDs {
     /// Lift the blocks the caller may lift (their own; all for administrators).
     /// - reply: error text or nil.
     func unblock(reply: @escaping (String?) -> Void)
+    /// Lift the caller's blocks for a while (seconds, at most a few minutes): to sign in to a network.
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void)
 
     /// A request of the caller's unprivileged openvpn (privilege separation): OPENTUN,
     /// IFCONFIG, ROUTE, DNSUP... The helper checks it against the connection.

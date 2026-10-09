@@ -17,7 +17,23 @@ public enum NetworkConflicts {
         // What each tunnel asked for: a route another tunnel already holds is the conflict itself.
         let nets = tunnels.map { t in (t.0, t.1.requestedRoutes.compactMap(IPv4Net.init(route:))) }
         let takesDefault = nets.filter { $0.1.contains { $0.prefix == 1 && ($0.address == 0 || $0.address == 0x8000_0000) } }.map(\.0)
-        if takesDefault.count >= 2 { out.append(.bothTakeDefaultRoute(takesDefault[0], takesDefault[1])) }
+        // IPv6 the same way: all of it (the global range), and overlaps of narrower routes.
+        let nets6 = tunnels.map { t in (t.0, t.1.requestedRoutes.compactMap(IPv6Net.init(route:))) }
+        let takesAll6 = nets6.filter { IPv6Net.coversGlobal($0.1) }.map(\.0)
+        if takesDefault.count >= 2 {
+            out.append(.bothTakeDefaultRoute(takesDefault[0], takesDefault[1]))
+        } else if takesAll6.count >= 2 {
+            out.append(.bothTakeDefaultRoute(takesAll6[0], takesAll6[1]))
+        }
+        for i in nets6.indices {
+            for j in nets6.indices where j > i {
+                for a in nets6[i].1 where a.prefix > 7 && a.prefix < 128 {
+                    for b in nets6[j].1 where b.prefix > 7 && b.prefix < 128 {
+                        if let o = a.overlap(b) { out.append(.overlappingRoutes(nets6[i].0, nets6[j].0, o.description)) }
+                    }
+                }
+            }
+        }
         for i in nets.indices {
             for j in nets.indices where j > i {
                 for a in nets[i].1 where a.prefix > 1 && a.prefix < 32 {
@@ -72,5 +88,60 @@ struct IPv4Net: Equatable {
         let p = s.split(separator: ".").compactMap { UInt32($0) }
         guard p.count == 4, p.allSatisfy({ $0 < 256 }) else { return nil }
         return p[0] << 24 | p[1] << 16 | p[2] << 8 | p[3]
+    }
+}
+
+struct IPv6Net: Equatable {
+    var bytes: [UInt8]
+    var prefix: Int
+
+    /// From an openvpn route: ["-inet6", net, "-prefixlen", bits, gateway | "-iface", dev].
+    init?(route r: [String]) {
+        guard r.count >= 4, r[0] == "-inet6", r[2] == "-prefixlen", let p = Int(r[3]), (0...128).contains(p),
+              let b = IPv6Net.parse(r[1]) else { return nil }
+        self.init(bytes: b, prefix: p)
+    }
+
+    init(bytes: [UInt8], prefix: Int) {
+        self.prefix = prefix
+        self.bytes = IPv6Net.masked(bytes, prefix)
+    }
+
+    static func masked(_ b: [UInt8], _ p: Int) -> [UInt8] {
+        (0..<16).map { i in
+            let bits = max(0, min(8, p - i * 8))
+            return bits == 0 ? 0 : b[i] & UInt8(truncatingIfNeeded: 0xFF << (8 - bits))
+        }
+    }
+
+    func overlap(_ o: IPv6Net) -> IPv6Net? {
+        let p = min(prefix, o.prefix)
+        guard IPv6Net.masked(bytes, p) == IPv6Net.masked(o.bytes, p) else { return nil }
+        return prefix > o.prefix ? self : o
+    }
+
+    func contains(_ o: IPv6Net) -> Bool { prefix <= o.prefix && IPv6Net.masked(o.bytes, prefix) == bytes }
+
+    /// The routes cover 2000::/3, where all of the Internet's IPv6 is (redirect-gateway ipv6).
+    static func coversGlobal(_ nets: [IPv6Net]) -> Bool {
+        let global = IPv6Net(bytes: [0x20] + Array(repeating: 0, count: 15), prefix: 3)
+        if nets.contains(where: { $0.contains(global) }) { return true }
+        let halves = [IPv6Net(bytes: [0x20] + Array(repeating: 0, count: 15), prefix: 4),
+                      IPv6Net(bytes: [0x30] + Array(repeating: 0, count: 15), prefix: 4)]
+        return halves.allSatisfy { h in nets.contains { $0.contains(h) } }
+    }
+
+    var description: String {
+        var a = in6_addr()
+        withUnsafeMutableBytes(of: &a) { $0.copyBytes(from: bytes) }
+        var buf = [CChar](repeating: 0, count: Int(INET6_ADDRSTRLEN))
+        inet_ntop(AF_INET6, &a, &buf, socklen_t(buf.count))
+        return String(cString: buf) + "/\(prefix)"
+    }
+
+    static func parse(_ s: String) -> [UInt8]? {
+        var a = in6_addr()
+        guard s.count <= 45, inet_pton(AF_INET6, s, &a) == 1 else { return nil }
+        return withUnsafeBytes(of: a) { Array($0) }
     }
 }

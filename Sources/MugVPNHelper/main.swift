@@ -108,6 +108,11 @@ final class Service: NSObject, MugVPNHelperProtocol {
         queue.async { reply(core.unblock(uid: uid)) }
     }
 
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void) {
+        let uid = caller
+        queue.async { reply(core.suspendBlocks(uid: uid, seconds: TimeInterval(seconds))) }
+    }
+
     func releaseManagement(connectionID: String, reply: @escaping (String?) -> Void) {
         let uid = caller
         queue.async { reply(core.releaseManagement(id: connectionID, uid: uid)) }

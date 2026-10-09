@@ -410,6 +410,27 @@ public final class ProfileStore {
 
     // MARK: - menu
 
+    /// Files dropped on MugVPN that it imports: profiles and Tunnelblick configurations.
+    public static func importable(_ paths: [String]) -> [String] {
+        paths.filter { ["ovpn", "conf", "tblk"].contains(($0 as NSString).pathExtension.lowercased()) }
+    }
+
+    /// The profiles a search finds: each word in the shown name, the name, the folder or where it comes from.
+    public static func matching(_ profiles: [Profile], _ query: String) -> [Profile] {
+        let words = query.lowercased().split(whereSeparator: \.isWhitespace)
+        guard !words.isEmpty else { return profiles }
+        return profiles.filter { p in
+            let source: String
+            switch p.source {
+            case .user: source = "user"
+            case .system: source = "system"
+            case .persistent: source = "persistent"
+            }
+            let text = [p.displayName, p.name, p.folder, source].joined(separator: " ").lowercased()
+            return words.allSatisfy { text.contains($0) }
+        }
+    }
+
     public static func menu(_ profiles: [Profile], mode: MenuMode) -> [MenuNode] {
         let nested = mode == .nested || (mode == .auto && profiles.count > flatMenuLimit)
         guard nested else { return profiles.map(MenuNode.profile) }

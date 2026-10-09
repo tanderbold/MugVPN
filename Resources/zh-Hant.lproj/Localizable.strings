@@ -27,6 +27,7 @@
 "CA certificate:" = "CA 憑證：";
 "Cancel" = "取消";
 "Cannot check how DNS server %@ is reached" = "無法檢查 DNS 伺服器 %@ 的存取路徑";
+"Cannot export diagnostics: %@" = "無法輸出診斷資訊：%@";
 "Cannot import %@: %@" = "無法匯入 %@：%@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "無法輸入 %@：下載的描述檔不能參照此 Mac 上的檔案：\n%@";
 "Cannot import: %@" = "無法匯入：%@";
@@ -68,6 +69,7 @@
 "Disconnect" = "中斷連線";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "中斷 %@ 並結束？下次 MugVPN 啟動時會重新連線。";
 "Disconnect %@ before renaming it." = "請先中斷 %@ 的連線再重新命名。";
+"Disconnect All" = "全部中斷連線";
 "Disconnect and Quit" = "斷線並結束";
 "Disconnect script (s):" = "離線指令碼（秒）：";
 "Disconnect when the Mac sleeps, connect again on wake" = "Mac 睡眠時斷線，喚醒後重新連線";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "最多輸入 8 個 DNS 伺服器。";
 "Enter the proxy's address and a port from 1 to 65535." = "請輸入代理伺服器位址和 1 到 65535 之間的連接埠。";
 "Every time" = "每次";
+"Export Diagnostics…" = "輸出診斷資訊…";
 "Flat" = "平面";
 "From the VPN server" = "來自 VPN 伺服器";
 "General" = "一般";
@@ -97,6 +100,8 @@
 "Imported" = "已匯入";
 "Installed by an administrator: only its MugVPN options can be changed here." = "由管理員安裝：此處僅能更改其 MugVPN 選項。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "網際網路已阻擋：%@ 已中斷。請重新連線或解除阻擋。";
+"Its certificate expired on %@: ask for a new one." = "其憑證已於 %@ 過期：請申請新憑證。";
+"Its certificate expires on %@: ask for a new one in time." = "其憑證將於 %@ 過期：請及時申請新憑證。";
 "Keep my profiles" = "保留我的設定檔";
 "Later" = "稍後";
 "Light" = "淺色";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其輔助程式來啟動通道。";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的輔助程式版本為 %@，而非此 App 的 %@：當沒有連線使用它時（或重新開機後）會更新。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "將移除 MugVPN、其輔助程式、紀錄、設定和儲存的密碼。通道將中斷連線。";
 "MugVPN: %@" = "MugVPN：%@";
 "Mute repeated messages (h):" = "重複訊息靜音時長（小時）：";
@@ -126,6 +132,7 @@
 "Off" = "關閉";
 "One server per line: host port udp|tcp" = "每行一個伺服器：主機 連接埠 udp|tcp";
 "Only for domains:" = "僅用於網域：";
+"Open MugVPN at login" = "登入時開啟 MugVPN";
 "Open System Settings" = "打開「系統設定」";
 "Open in Text Editor" = "在文字編輯器中打開";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN 是 OpenVPN Inc. 的註冊商標。";
@@ -148,6 +155,7 @@
 "Save" = "儲存";
 "Save password" = "儲存密碼";
 "Saved:" = "已儲存：";
+"Search" = "搜尋";
 "Send DNS only through the VPN" = "僅透過 VPN 傳送 DNS";
 "Send all traffic through the VPN" = "透過 VPN 傳送所有流量";
 "Sent:" = "傳送：";
@@ -161,6 +169,7 @@
 "Show Status" = "顯示狀態";
 "Show in Finder" = "在 Finder 中顯示";
 "Show the status window" = "顯示狀態視窗";
+"Sign in to This Network…" = "登入此網路…";
 "Signing in needs a client certificate or a password." = "登入需要用戶端憑證或密碼。";
 "Some settings are set by your administrator." = "部分設定由管理員設定。";
 "Split DNS by Domain: only the server's domains go to its DNS" = "依網域分割 DNS：僅將伺服器的網域傳送至其 DNS";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "%@ 的代理伺服器需要使用者名稱和密碼。";
 "These DNS servers" = "以下 DNS 伺服器";
 "Third-Party Notices" = "第三方聲明";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "此設定檔也會以其他方式登入（PKCS#12、指紋或權杖）：請參閱「進階」。";
+"This network asks you to sign in first." = "此網路要求先登入。";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "此設定檔也透過其他方式登入（PKCS#12 或憑證指紋）：請參閱「進階」。";
 "Traffic to %@ goes around the VPN (through %@)" = "前往 %@ 的流量繞過了 VPN（經由 %@）";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "請在「系統設定」>「一般」>「登入項目」中開啟 MugVPN，然後重新連線。";
 "URL:" = "URL：";

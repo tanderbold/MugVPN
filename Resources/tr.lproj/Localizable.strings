@@ -27,6 +27,7 @@
 "CA certificate:" = "CA sertifikası:";
 "Cancel" = "Vazgeç";
 "Cannot check how DNS server %@ is reached" = "DNS sunucusu %@ nasıl erişildiği denetlenemiyor";
+"Cannot export diagnostics: %@" = "Tanılama dışa aktarılamıyor: %@";
 "Cannot import %@: %@" = "%@ içe aktarılamıyor: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "%@ içe aktarılamıyor: indirilen bir profil bu Mac’teki dosyalara başvuramaz:\n%@";
 "Cannot import: %@" = "İçe aktarılamıyor: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Bağlantıyı kes";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "%@ bağlantısı kesilip çıkılsın mı? MugVPN bir sonraki başlatıldığında yeniden bağlanacaklar.";
 "Disconnect %@ before renaming it." = "Yeniden adlandırmadan önce %@ bağlantısını kesin.";
+"Disconnect All" = "Tümünün bağlantısını kes";
 "Disconnect and Quit" = "Bağlantıyı kes ve çık";
 "Disconnect script (s):" = "Bağlantı kesme betiği (sn):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Mac uyku moduna geçince bağlantıyı kes, uyanınca yeniden bağlan";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "En fazla 8 DNS sunucusu girin.";
 "Enter the proxy's address and a port from 1 to 65535." = "Proxy adresini ve 1 ile 65535 arasında bir port girin.";
 "Every time" = "Her seferinde";
+"Export Diagnostics…" = "Tanılamayı dışa aktar…";
 "Flat" = "Düz";
 "From the VPN server" = "VPN sunucusundan";
 "General" = "Genel";
@@ -97,6 +100,8 @@
 "Imported" = "İçe aktarıldı";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Bir yönetici tarafından yüklendi: burada yalnızca MugVPN seçenekleri değiştirilebilir.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "İnternet engellendi: %@ koptu. Yeniden bağlanın veya engeli kaldırın.";
+"Its certificate expired on %@: ask for a new one." = "Sertifikasının süresi %@ tarihinde doldu: yenisini isteyin.";
+"Its certificate expires on %@: ask for a new one in time." = "Sertifikasının süresi %@ tarihinde doluyor: zamanında yenisini isteyin.";
 "Keep my profiles" = "Profillerimi sakla";
 "Later" = "Daha sonra";
 "Light" = "Açık";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN Ayarları";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, yardımcı programı, günlükler, ayarlar ve kayıtlı parolalar silinecek. Tüneller kesilecek.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Tekrarlanan mesajları sessize al (sa):";
@@ -126,6 +132,7 @@
 "Off" = "Kapalı";
 "One server per line: host port udp|tcp" = "Her satıra bir sunucu: ana bilgisayar port udp|tcp";
 "Only for domains:" = "Yalnızca şu alan adları için:";
+"Open MugVPN at login" = "Oturum açıldığında MugVPN'i aç";
 "Open System Settings" = "Sistem Ayarları'nı aç";
 "Open in Text Editor" = "Metin düzenleyicide aç";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN, OpenVPN Inc.'in tescilli ticari markasıdır.";
@@ -148,6 +155,7 @@
 "Save" = "Kaydet";
 "Save password" = "Şifreyi kaydet";
 "Saved:" = "Kayıtlı:";
+"Search" = "Ara";
 "Send DNS only through the VPN" = "DNS’i yalnızca VPN üzerinden gönder";
 "Send all traffic through the VPN" = "Tüm trafiği VPN üzerinden gönder";
 "Sent:" = "Gönderilen:";
@@ -161,6 +169,7 @@
 "Show Status" = "Durumu göster";
 "Show in Finder" = "Finder'da göster";
 "Show the status window" = "Durum penceresini göster";
+"Sign in to This Network…" = "Bu ağda oturum aç…";
 "Signing in needs a client certificate or a password." = "Oturum açmak için istemci sertifikası veya şifre gerekir.";
 "Some settings are set by your administrator." = "Bazı ayarlar yöneticiniz tarafından belirlenmiştir.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Alan adına göre bölünmüş DNS: yalnızca sunucunun alan adları onun DNS'ine gider";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "%@ için proxy, kullanıcı adı ve şifre gerektiriyor.";
 "These DNS servers" = "Bu DNS sunucuları";
 "Third-Party Notices" = "Üçüncü taraf bildirimleri";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Bu profil başka bir yolla da oturum açıyor (PKCS#12, parmak izi veya token): Gelişmiş'e bakın.";
+"This network asks you to sign in first." = "Bu ağ önce oturum açmanızı istiyor.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Bu profil başka bir yolla da oturum açar (PKCS#12 veya sertifika parmak izi): Gelişmiş'e bakın.";
 "Traffic to %@ goes around the VPN (through %@)" = "%@ hedefine giden trafik VPN’i atlıyor (%@ üzerinden)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "MugVPN'i Sistem Ayarları > Genel > Giriş Öğeleri bölümünden açın, ardından yeniden bağlanın.";
 "URL:" = "URL:";

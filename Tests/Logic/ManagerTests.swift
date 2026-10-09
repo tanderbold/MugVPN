@@ -3,10 +3,13 @@ import MugVPNAppCore
 import MugVPNCore
 
 final class FakeHelperClient: HelperClient {
+    var version = MugVPNIDs.helperVersion
+    func version(reply: @escaping (String) -> Void) { reply(version) }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
     func unblock(reply: @escaping (String?) -> Void) { unblocks += 1; blocked = []; reply(nil) }
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void) { reply(nil) }
     var starts: [ProfileBundle] = []
     var stops: [String] = []
     var running: [ConnectionInfo] = []
@@ -135,6 +138,18 @@ final class ManagerHarness {
 }
 
 func registerManagerTests() {
+    test("MAN-23", "at start the helper's version is asked: another one than the app's is said") {
+        let h = ManagerHarness()
+        h.m.appStarted()
+        expectEqual(h.m.helperVersionMismatch, nil, "the same version")
+        let old = ManagerHarness()
+        old.helper.version = "0.0.9"
+        var changes = 0
+        old.m.onChange = { changes += 1 }
+        old.m.appStarted()
+        expectEqual(old.m.helperVersionMismatch, "0.0.9")
+        expect(changes > 0, "the app hears of it")
+    }
     test("MAN-22", "quitting is not held up by a connection that goes another way, nor for ever") {
         let h = ManagerHarness()
         h.transport.failures = 1000          // its management socket never answers

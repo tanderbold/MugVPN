@@ -235,6 +235,20 @@ func registerProfileTests() {
         let r = try store(fs).importProfile(at: "/D/a.ovpn", as: "evil\u{202E}gpj\nx")
         expectEqual(r.profile.name, "evil_gpj_x")
     }
+    test("PRF-24", "files dropped on MugVPN: profiles (.ovpn, .conf) and Tunnelblick configurations (.tblk) only") {
+        expectEqual(ProfileStore.importable(["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk", "/a/notes.txt", "/a/key.pem", "/a/ovpn"]),
+                    ["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk"])
+    }
+    test("PRF-23", "finding profiles: every word, in the name, folder or where it comes from; any case") {
+        let ps = [Profile(name: "office", path: "/u/work/office.ovpn", source: .user, folder: "work", displayName: "office (work)"),
+                  Profile(name: "home-lab", path: "/u/home-lab.ovpn", source: .user, folder: ""),
+                  Profile(name: "corp", path: "/s/corp.ovpn", source: .system, folder: "", displayName: "corp (system)")]
+        expectEqual(ProfileStore.matching(ps, "").map(\.name), ["office", "home-lab", "corp"])
+        expectEqual(ProfileStore.matching(ps, "  LAB ").map(\.name), ["home-lab"])
+        expectEqual(ProfileStore.matching(ps, "work off").map(\.name), ["office"], "every word")
+        expectEqual(ProfileStore.matching(ps, "system").map(\.name), ["corp"])
+        expectEqual(ProfileStore.matching(ps, "nothing").map(\.name), [])
+    }
     test("PRF-22", "a profile names no other profile as a file; each file is read once") {
         let fs = MemFS()
         fs.add("/D/a.ovpn", "client\ndev tun\nremote x 1194\nca other.ovpn\n")

@@ -27,6 +27,7 @@
 "CA certificate:" = "CA-varmenne:";
 "Cancel" = "Kumoa";
 "Cannot check how DNS server %@ is reached" = "Ei voi tarkistaa, miten DNS-palvelin %@ tavoitetaan";
+"Cannot export diagnostics: %@" = "Vianmääritystietoja ei voi viedä: %@";
 "Cannot import %@: %@" = "Kohdetta %@ ei voi tuoda: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "Kohdetta %@ ei voi tuoda: ladattu profiili ei voi viitata tämän Macin tiedostoihin:\n%@";
 "Cannot import: %@" = "Tuonti ei onnistu: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Katkaise yhteys";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Katkaistaanko yhteydet (%@) ja lopetetaan? Ne yhdistetään uudelleen, kun MugVPN käynnistetään seuraavan kerran.";
 "Disconnect %@ before renaming it." = "Katkaise yhteys (%@) ennen kuin nimeät sen uudelleen.";
+"Disconnect All" = "Katkaise kaikki";
 "Disconnect and Quit" = "Katkaise ja lopeta";
 "Disconnect script (s):" = "Yhteyden katkaisun komentosarja (s):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Katkaise yhteys, kun Mac siirtyy nukkumaan, ja yhdistä uudelleen herätessä";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Anna enintään 8 DNS-palvelinta.";
 "Enter the proxy's address and a port from 1 to 65535." = "Anna välipalvelimen osoite ja portti väliltä 1–65535.";
 "Every time" = "Joka kerta";
+"Export Diagnostics…" = "Vie vianmääritystiedot…";
 "Flat" = "Tasainen";
 "From the VPN server" = "VPN-palvelimelta";
 "General" = "Yleiset";
@@ -97,6 +100,8 @@
 "Imported" = "Tuotu";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Järjestelmänvalvojan asentama: täällä voi muuttaa vain sen MugVPN-valintoja.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet estetty: %@ katkesi. Yhdistä uudelleen tai poista esto.";
+"Its certificate expired on %@: ask for a new one." = "Sen varmenne vanheni %@: pyydä uusi.";
+"Its certificate expires on %@: ask for a new one in time." = "Sen varmenne vanhenee %@: pyydä uusi ajoissa.";
 "Keep my profiles" = "Säilytä profiilini";
 "Later" = "Myöhemmin";
 "Light" = "Vaalea";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-asetukset";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, sen apuohjelma, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Mykistä toistuvat viestit (h):";
@@ -126,6 +132,7 @@
 "Off" = "Pois";
 "One server per line: host port udp|tcp" = "Yksi palvelin riviä kohden: isäntä portti udp|tcp";
 "Only for domains:" = "Vain verkkotunnuksille:";
+"Open MugVPN at login" = "Avaa MugVPN kirjautuessa";
 "Open System Settings" = "Avaa Järjestelmäasetukset";
 "Open in Text Editor" = "Avaa tekstieditorissa";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN on OpenVPN Inc.:n rekisteröity tavaramerkki.";
@@ -148,6 +155,7 @@
 "Save" = "Tallenna";
 "Save password" = "Tallenna salasana";
 "Saved:" = "Tallennettu:";
+"Search" = "Haku";
 "Send DNS only through the VPN" = "Lähetä DNS vain VPN:n kautta";
 "Send all traffic through the VPN" = "Lähetä kaikki liikenne VPN:n kautta";
 "Sent:" = "Lähetetty:";
@@ -161,6 +169,7 @@
 "Show Status" = "Näytä tila";
 "Show in Finder" = "Näytä Finderissa";
 "Show the status window" = "Näytä tilaikkuna";
+"Sign in to This Network…" = "Kirjaudu tähän verkkoon…";
 "Signing in needs a client certificate or a password." = "Kirjautuminen vaatii asiakasvarmenteen tai salasanan.";
 "Some settings are set by your administrator." = "Järjestelmänvalvoja on määrittänyt osan asetuksista.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Jaettu DNS verkkotunnuksittain: vain palvelimen verkkotunnukset menevät sen DNS:lle";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "Profiilin %@ välipalvelin vaatii käyttäjänimen ja salasanan.";
 "These DNS servers" = "Nämä DNS-palvelimet";
 "Third-Party Notices" = "Kolmansien osapuolten ilmoitukset";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Tämä profiili kirjautuu myös muulla tavalla (PKCS#12, sormenjälki tai tunnus): katso Lisäasetukset.";
+"This network asks you to sign in first." = "Tämä verkko vaatii ensin kirjautumisen.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Tämä profiili kirjautuu myös muulla tavalla (PKCS#12 tai varmenteen sormenjälki): katso Lisäasetukset.";
 "Traffic to %@ goes around the VPN (through %@)" = "Liikenne kohteeseen %@ kiertää VPN:n (kautta %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Laita MugVPN päälle kohdassa Järjestelmäasetukset > Yleiset > Kirjautumiskohteet ja yhdistä sitten uudelleen.";
 "URL:" = "URL:";

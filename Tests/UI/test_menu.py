@@ -51,7 +51,7 @@ def test_ui02b_single_profile_items_at_the_top(app):
 
 def test_ui03_general_items(app):
     titles = [i["title"] for i in app.menu()]
-    assert titles[-4:] == ["Import", "Settings…", "About MugVPN", "Quit MugVPN"], titles
+    assert titles[-5:] == ["Import", "Settings…", "Export Diagnostics…", "About MugVPN", "Quit MugVPN"], titles
     imp = [c["title"] for c in app.menu_item("Import")["children"]]
     assert imp == ["Import File…", "Import from Access Server…", "Import from URL…"]
 
@@ -113,3 +113,33 @@ def test_ui31_menu_bar_icon_is_drawn(app):
     assert s["image"].startswith("MenuIcon-")
     assert s["button_width"] >= 16, f"the status item takes room in the menu bar: {s['button_width']}"
     assert s["image_pixels"] > 20, "the picture is not empty"
+
+
+def test_ui48_disconnect_all(app):
+    titles = lambda: [i["title"] for i in app.menu()]
+    assert "Disconnect All" not in titles(), "nothing to disconnect"
+    app.connect("stand-a")
+    assert "Disconnect All" not in titles(), "one: its own Disconnect"
+    app.connect("stand-b")
+    assert "Disconnect All" in titles()
+    app.click("Disconnect All")
+    stops = lambda: app.call("fake_helper")["stops"]
+    wait_for(lambda: "stand-a" in stops() and "stand-b" in stops(), 5, "both to stop")
+
+
+
+def test_ui56_sign_in_to_a_network(app):
+    """A network that asks for a sign-in (its page instead of Apple's probe): the menu offers it; while
+    a kill switch blocks, signing in lifts the block for two minutes."""
+    portal = {"status": 200, "body": "<html>Accept the terms</html>"}
+    app.call("fake_blocks", names=["stand-a"])
+    app.call("fake_http", responses=[portal])
+    app.call("system_event", event="networkChanged")
+    wait_for(lambda: "Sign in to This Network…" in [i["title"] for i in app.menu()], 5, "the offer")
+    assert any("http://captive.apple.com/hotspot-detect.html" == r["url"] for r in app.call("http_requests")["requests"])
+    app.click("Sign in to This Network…")
+    wait_for(lambda: app.call("fake_helper")["suspends"] == [120], 5, "the block lifted for a while")
+    assert "http://captive.apple.com/hotspot-detect.html" in app.call("opened_urls")["urls"]
+    app.call("fake_http", responses=[{"status": 200, "body": "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>"}])
+    app.call("system_event", event="networkChanged")
+    wait_for(lambda: "Sign in to This Network…" not in [i["title"] for i in app.menu()], 5, "signed in")

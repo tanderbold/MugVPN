@@ -1,6 +1,7 @@
 import AppKit
 import MugVPNAppCore
 import MugVPNCore
+import ServiceManagement
 import UserNotifications
 
 /// What the system's routing and DNS look like, as any user sees them (LeakCheck).
@@ -25,6 +26,10 @@ protocol Services: AnyObject {
     func chooseFile() -> String?
     var helperSetup: HelperSetup { get }
     var http: HTTPFetcher { get }
+    /// MugVPN starts at login (the system's login item for it).
+    var launchAtLogin: Bool { get set }
+    /// Ask where to save a file; nil on Cancel.
+    func chooseSaveLocation(suggested: String) -> String?
     /// Uninstalling: the user's files, settings and passwords; then the app itself.
     func removeUserData(_ paths: [String])
     func moveAppToTrash()
@@ -33,6 +38,10 @@ protocol Services: AnyObject {
 final class RealServices: Services {
     let helperSetup: HelperSetup = SMHelperSetup()
     let http: HTTPFetcher = URLSessionFetcher()
+    var launchAtLogin: Bool {
+        get { SMAppService.mainApp.status == .enabled }
+        set { _ = try? newValue ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister() }
+    }
 
     func removeUserData(_ paths: [String]) {
         paths.forEach { try? FileManager.default.removeItem(atPath: $0) }
@@ -65,6 +74,13 @@ final class RealServices: Services {
 
     func reveal(_ path: String) {
         NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
+    }
+
+    func chooseSaveLocation(suggested: String) -> String? {
+        let p = NSSavePanel()
+        p.nameFieldStringValue = suggested
+        NSApp.activate(ignoringOtherApps: true)
+        return p.runModal() == .OK ? p.url?.path : nil
     }
 
     func chooseFile() -> String? {
@@ -115,9 +131,33 @@ final class AppController: NSObject, NSMenuDelegate {
             guard let self, names != self.blockedBy else { return }
             if !names.isEmpty, self.blockedBy.isEmpty {
                 self.services.notify(title: L("MugVPN"), text: L("Internet blocked: %@ dropped. Reconnect it or unblock.", names.joined(separator: ", ")))
+                self.probeCaptivePortal()
             }
             self.blockedBy = names
             self.rebuildMenu()
+        }
+    }
+
+    /// The network asks for a sign-in first (captive.apple.com answers with another page).
+    private(set) var captivePortal = false
+
+    /// Asked as macOS asks; the answer (or none) is kept until the next network change.
+    func probeCaptivePortal() {
+        services.http.get(CaptivePortal.probeURL, username: "", password: "") { [weak self] r in
+            guard let self, let v = CaptivePortal.verdict(r) ?? (self.blockedBy.isEmpty ? false : nil), v != self.captivePortal else { return }
+            self.captivePortal = v
+            if v { self.services.notify(title: L("MugVPN"), text: L("This network asks you to sign in first.")) }
+            self.rebuildMenu()
+        }
+    }
+
+    /// The sign-in page; a kill switch's block is lifted for a while so it can load.
+    @objc func signInToNetwork() {
+        let open: () -> Void = { [weak self] in self?.services.open(CaptivePortal.probeURL.absoluteString) }
+        guard !blockedBy.isEmpty else { return open() }
+        manager.helperClient.suspendBlocks(seconds: CaptivePortal.signInSeconds) { err in
+            if let err { return showError(err) }
+            open()
         }
     }
 
@@ -222,6 +262,7 @@ final class AppController: NSObject, NSMenuDelegate {
                 continue
             }
             guard wasConnected.insert(id).inserted else { continue } // already up: no change
+            warnCertificate(c.profile)
             if autoStatus.remove(id) != nil {
                 WindowRegistry.shared.of(kind: "status", profile: c.profile.displayName).forEach { $0.close() }
             }
@@ -240,6 +281,11 @@ final class AppController: NSObject, NSMenuDelegate {
             let name = manager.profiles.first { $0.id == id }?.displayName ?? id
             showError(name + ": " + localizedCore(err), profile: name)
         }
+        if let v = manager.helperVersionMismatch, !helperVersionShown {
+            helperVersionShown = true
+            services.notify(title: L("MugVPN"), text: L("MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).",
+                                                      v, MugVPNIDs.helperVersion))
+        }
         updateStatusWindows()
         // Conflicts, leaks and blocks are looked at when connections change state,
         // not on every log line or byte count (each check runs processes).
@@ -253,6 +299,27 @@ final class AppController: NSObject, NSMenuDelegate {
         rebuildMenu()
     }
     private var wasConnected: Set<String> = []
+    private var helperVersionShown = false
+    /// Profiles warned about their certificate since MugVPN started.
+    private var certificateWarned: Set<String> = []
+
+    /// A client certificate that ends within 30 days, or has ended: said once a run, on connecting.
+    private func warnCertificate(_ p: Profile) {
+        guard !certificateWarned.contains(p.id), let config = store.config(of: p) else { return }
+        let dir = (p.path as NSString).deletingLastPathComponent
+        guard let pem = CertificateExpiry.clientCertificate(config: config, read: { f in
+                  let path = f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f)
+                  return try? String(contentsOfFile: path, encoding: .utf8)
+              }),
+              let end = CertificateExpiry.notAfter(pem: pem),
+              let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
+        certificateWarned.insert(p.id)
+        let day = DateFormatter.localizedString(from: end, dateStyle: .medium, timeStyle: .none)
+        switch w {
+        case .expired: services.notify(title: p.displayName, text: L("Its certificate expired on %@: ask for a new one.", day))
+        case .expiresSoon: services.notify(title: p.displayName, text: L("Its certificate expires on %@: ask for a new one in time.", day))
+        }
+    }
     private var shownErrors: Set<String> = []
 
     private func checkConflicts() {
@@ -363,7 +430,10 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     func systemEvent(_ e: SystemEvent) {
-        if e == .networkChanged || e == .didWake { checkLeaks() }
+        if e == .networkChanged || e == .didWake {
+            checkLeaks()
+            probeCaptivePortal()
+        }
         manager.handle(e, disconnectOnSleep: { [weak self] p in
             guard let self else { return false }
             return EffectiveSettings.disconnectOnSleep(self.settingsStore.settings, self.options.options(p.id))
@@ -396,7 +466,8 @@ final class AppController: NSObject, NSMenuDelegate {
             i.isEnabled = false
             menu.addItem(i)
         }
-        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty { menu.addItem(.separator()) }
+        if captivePortal { menu.addItem(action(L("Sign in to This Network…"), #selector(signInToNetwork))) }
+        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || captivePortal { menu.addItem(.separator()) }
         let profiles = manager.profiles
         if profiles.isEmpty {
             let i = NSMenuItem(title: L("No profiles yet"), action: nil, keyEquivalent: "")
@@ -406,6 +477,10 @@ final class AppController: NSObject, NSMenuDelegate {
             profileItems(profiles[0]).forEach(menu.addItem)
         } else {
             for node in ProfileStore.menu(profiles, mode: settingsStore.settings.menuView) { menu.addItem(item(node)) }
+        }
+        if manager.active.count >= 2 {
+            menu.addItem(.separator())
+            menu.addItem(action(L("Disconnect All"), #selector(disconnectAll)))
         }
         menu.addItem(.separator())
         menu.addItem(action(L("Connections…"), #selector(openConnections)))
@@ -417,9 +492,12 @@ final class AppController: NSObject, NSMenuDelegate {
         imp.submenu?.addItem(action(L("Import from URL…"), #selector(importURL)))
         menu.addItem(imp)
         menu.addItem(action(L("Settings…"), #selector(openSettings)))
+        menu.addItem(action(L("Export Diagnostics…"), #selector(exportDiagnostics)))
         menu.addItem(action(L("About MugVPN"), #selector(about)))
         menu.addItem(action(L("Quit MugVPN"), #selector(quit)))
     }
+
+    @objc func disconnectAll() { manager.disconnectAll() }
 
     private func action(_ title: String, _ sel: Selector, _ obj: Any? = nil, enabled: Bool = true) -> NSMenuItem {
         let i = NSMenuItem(title: title, action: sel, keyEquivalent: "")
@@ -514,6 +592,61 @@ final class AppController: NSObject, NSMenuDelegate {
         guard let p = sender.representedObject as? Profile else { return }
         autoStatus.remove(p.id)
         showStatus(p)
+    }
+
+    /// A zip for a bug report or an administrator: versions, the network's state, the profiles
+    /// without their secrets, the logs (Diagnostics).
+    @objc func exportDiagnostics() {
+        let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
+        guard let dest = services.chooseSaveLocation(suggested: "MugVPN Diagnostics \(stamp).zip") else { return }
+        let profiles = manager.profiles.map { ($0.displayName, store.config(of: $0) ?? "") }
+        let logs: [(String, String)] = manager.profiles.compactMap { p in
+            let path = LogLocation.path(profile: safeLogName(p.name), helperID: manager.active[p.id]?.helperID,
+                                        uid: getuid(), runDir: runDir, logsDir: logsDir,
+                                        exists: { FileManager.default.isReadableFile(atPath: $0) })
+            return path.flatMap { try? String(contentsOfFile: $0, encoding: .utf8) }.map { (p.displayName, String($0.suffix(1 << 20))) }
+        }
+        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+        let os = ProcessInfo.processInfo.operatingSystemVersionString
+        let connected = manager.active.values.map { "\($0.profile.displayName): \($0.controller.status)" }.sorted()
+        manager.helperClient.version { [weak self] helperVersion in
+            DispatchQueue.global().async {
+                func run(_ tool: String, _ args: [String]) -> String {
+                    let p = Process()
+                    p.executableURL = URL(fileURLWithPath: tool)
+                    p.arguments = args
+                    let out = Pipe()
+                    p.standardOutput = out
+                    p.standardError = out
+                    guard (try? p.run()) != nil else { return "(\(tool) did not run)" }
+                    let d = out.fileHandleForReading.readDataToEndOfFile()
+                    p.waitUntilExit()
+                    return String(decoding: d, as: UTF8.self)
+                }
+                let openvpn = run(MugVPNIDs.libexecDir + "/openvpn", ["--version"]).components(separatedBy: "\n").first ?? ""
+                let files = Diagnostics.files(
+                    summary: ["MugVPN": appVersion, "helper": helperVersion, "openvpn": openvpn, "macOS": os,
+                              "connections": connected.isEmpty ? "none" : connected.joined(separator: "; ")],
+                    commands: ["routes.txt": run("/usr/sbin/netstat", ["-rn"]), "dns.txt": run("/usr/sbin/scutil", ["--dns"]),
+                               "interfaces.txt": run("/sbin/ifconfig", [])],
+                    profiles: profiles, logs: logs)
+                let dir = FileManager.default.temporaryDirectory.appendingPathComponent("MugVPN Diagnostics \(stamp)")
+                try? FileManager.default.removeItem(at: dir)
+                for f in files {
+                    let url = dir.appendingPathComponent(f.name)
+                    try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                    try? Data(f.text.utf8).write(to: url)
+                }
+                try? FileManager.default.removeItem(atPath: dest)
+                let zipped = run("/usr/bin/ditto", ["-c", "-k", "--keepParent", dir.path, dest])
+                try? FileManager.default.removeItem(at: dir)
+                DispatchQueue.main.async {
+                    guard let self else { return }
+                    if FileManager.default.fileExists(atPath: dest) { self.services.reveal(dest) }
+                    else { showError(L("Cannot export diagnostics: %@", zipped)) }
+                }
+            }
+        }
     }
 
     @objc func viewLog(_ sender: NSMenuItem) {
@@ -703,7 +836,7 @@ final class AppController: NSObject, NSMenuDelegate {
     // MARK: - settings, about, quit
 
     @objc func openSettings() {
-        SettingsWindow.show(store: settingsStore) { [weak self] in self?.rescan() }
+        SettingsWindow.show(store: settingsStore, services: services) { [weak self] in self?.rescan() }
     }
 
     @objc func about() {

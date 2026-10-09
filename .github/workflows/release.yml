@@ -1,0 +1,66 @@
+name: Release
+
+# A tag v* builds, signs (Developer ID), notarizes and staples the DMG and puts it, with its
+# SHA-256, in a draft release to be checked and published by hand. Without the signing secrets
+# it stops at once: an ad-hoc build is never packaged (tools/make-dmg.sh refuses it too).
+on:
+  push:
+    tags: ["v*"]
+
+permissions:
+  contents: write
+
+jobs:
+  release:
+    runs-on: macos-15
+    env:
+      MUGVPN_SIGN_ID: ${{ secrets.MUGVPN_SIGN_ID }}
+      MUGVPN_TEAM: ${{ secrets.MUGVPN_TEAM }}
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Signing secrets are there
+        env:
+          CERT: ${{ secrets.MUGVPN_DEVELOPER_ID_P12 }}
+          NOTARY: ${{ secrets.MUGVPN_NOTARY_KEY_P8 }}
+        run: |
+          for v in MUGVPN_SIGN_ID MUGVPN_TEAM CERT NOTARY; do
+            [ -n "${!v}" ] || { echo "::error::secret for $v is not set: no Developer ID, no release"; exit 1; }
+          done
+      - name: Developer ID certificate into a keychain of this run
+        env:
+          CERT: ${{ secrets.MUGVPN_DEVELOPER_ID_P12 }}
+          CERT_PASSWORD: ${{ secrets.MUGVPN_DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          KC="$RUNNER_TEMP/release.keychain-db"
+          PW=$(openssl rand -hex 24)
+          echo "$CERT" | base64 --decode > "$RUNNER_TEMP/id.p12"
+          security create-keychain -p "$PW" "$KC"
+          security set-keychain-settings -lut 3600 "$KC"
+          security unlock-keychain -p "$PW" "$KC"
+          security import "$RUNNER_TEMP/id.p12" -k "$KC" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$PW" "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/id.p12"
+      - name: Logic tests
+        run: swift build --product MugVPNTests && .build/debug/MugVPNTests
+      - name: Build (release, Developer ID)
+        run: tools/build.sh
+      - name: DMG
+        run: tools/make-dmg.sh
+      - name: Notarize, staple, checksum
+        env:
+          NOTARY: ${{ secrets.MUGVPN_NOTARY_KEY_P8 }}
+          MUGVPN_NOTARY_KEY_ID: ${{ secrets.MUGVPN_NOTARY_KEY_ID }}
+          MUGVPN_NOTARY_ISSUER: ${{ secrets.MUGVPN_NOTARY_ISSUER }}
+        run: |
+          export MUGVPN_NOTARY_KEY="$RUNNER_TEMP/notary.p8"
+          echo "$NOTARY" | base64 --decode > "$MUGVPN_NOTARY_KEY"
+          tools/notarize.sh
+          rm -f "$MUGVPN_NOTARY_KEY"
+      - name: Draft release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 --draft --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+      - name: Keychain away
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" 2>/dev/null || true

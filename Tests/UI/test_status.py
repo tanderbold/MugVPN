@@ -1,5 +1,5 @@
 """UI-05, 11, 12, 16, 17, 18: connecting, the status window, notifications, quitting."""
-from conftest import launched, wait_for
+from conftest import MINIMAL, launched, wait_for
 
 
 def test_ui05_status_window_while_connecting(app):
@@ -196,3 +196,40 @@ def test_ui44_leak_warning(app):
     app.call("fake_network", netstat=NETSTAT, scutil=SCUTIL, interfaces={"10.84.0.1": "utun4"})
     app.call("leak_check")
     assert not any("⚠︎" in i["title"] for i in app.menu()), "gone once fixed"
+
+
+
+SOON_CERT = """-----BEGIN CERTIFICATE-----
+MIIBcjCCARegAwIBAgIUTNfpzIXzMkRyMSy1ufaOULblylwwCgYIKoZIzj0EAwIw
+DjEMMAoGA1UEAwwDdDEwMB4XDTI2MTAwOTEwNTUzNFoXDTI2MTAxOTEwNTUzNFow
+DjEMMAoGA1UEAwwDdDEwMFkwEwYHKoZIzj0CAQYIKoZIzj0DAQcDQgAE0XUKhMns
+SyI/QaP0cieWzzeOk+wgjjD7m4LpmLAUOiiHyra3xnqG7hcJNmR2FCBCyJWDw84p
+yp7JXOTfdJH4caNTMFEwHQYDVR0OBBYEFF+2aFuvl0iubwubrHbTYpNSkJDcMB8G
+A1UdIwQYMBaAFF+2aFuvl0iubwubrHbTYpNSkJDcMA8GA1UdEwEB/wQFMAMBAf8w
+CgYIKoZIzj0EAwIDSQAwRgIhAIAWd3qjbOZre+3b8VH5TiHy5IzItQViE5KLfmCo
+tA79AiEAtNDiOKdnF5YDdi01W91wn6BMR1WpUHA58PHwP++u98I=
+-----END CERTIFICATE-----"""
+
+
+def test_ui51_certificate_running_out(app):
+    """Connecting with a client certificate that ends within 30 days (or has ended): a warning."""
+    app.add_profile("old", MINIMAL + "<cert>\n" + SOON_CERT + "\n</cert>\n")
+    app.connect("old")
+    wait_for(lambda: any("certificate" in n["text"].lower() for n in app.call("notifications")["items"]), 5, "the warning")
+    n = [n for n in app.call("notifications")["items"] if "certificate" in n["text"].lower()]
+    assert len(n) == 1 and "old" in n[0]["title"], n
+    app.connect("stand-a")
+    assert len([n for n in app.call("notifications")["items"] if "certificate" in n["text"].lower()]) == 1, "stand-a has none"
+
+
+
+def test_ui55_helper_of_another_version(home):
+    """The running helper is another version than the app (an update it has not taken yet): said once."""
+    with launched(home, helper_version="0.0.9") as a:
+        wait_for(lambda: any("0.0.9" in n["text"] for n in a.call("notifications")["items"]), 5, "the notice")
+        assert len([n for n in a.call("notifications")["items"] if "0.0.9" in n["text"]]) == 1
+        a.connect("stand-a")
+        assert len([n for n in a.call("notifications")["items"] if "0.0.9" in n["text"]]) == 1, "once"
+    with launched(home) as b:
+        b.connect("stand-a")
+        assert not any("version" in n["text"] for n in b.call("notifications")["items"])

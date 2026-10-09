@@ -27,6 +27,7 @@
 "CA certificate:" = "CA-certifikat:";
 "Cancel" = "Avbryt";
 "Cannot check how DNS server %@ is reached" = "Det går inte att kontrollera hur DNS-servern %@ nås";
+"Cannot export diagnostics: %@" = "Kan inte exportera diagnostik: %@";
 "Cannot import %@: %@" = "Kan inte importera %@: %@";
 "Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@" = "Det går inte att importera %@: en hämtad profil får inte hänvisa till filer på den här datorn:\n%@";
 "Cannot import: %@" = "Kan inte importera: %@";
@@ -68,6 +69,7 @@
 "Disconnect" = "Koppla från";
 "Disconnect %@ and quit? They connect again the next time MugVPN starts." = "Koppla ner %@ och avsluta? De ansluts igen nästa gång MugVPN startas.";
 "Disconnect %@ before renaming it." = "Koppla från %@ innan du byter namn på den.";
+"Disconnect All" = "Koppla från alla";
 "Disconnect and Quit" = "Koppla ner och avsluta";
 "Disconnect script (s):" = "Nedkopplingsskript (s):";
 "Disconnect when the Mac sleeps, connect again on wake" = "Koppla ner när datorn går i vila och anslut igen när den vaknar";
@@ -81,6 +83,7 @@
 "Enter at most 8 DNS servers." = "Ange högst 8 DNS-servrar.";
 "Enter the proxy's address and a port from 1 to 65535." = "Ange proxyns adress och en port mellan 1 och 65535.";
 "Every time" = "Varje gång";
+"Export Diagnostics…" = "Exportera diagnostik…";
 "Flat" = "Platt";
 "From the VPN server" = "Från VPN-servern";
 "General" = "Allmänt";
@@ -97,6 +100,8 @@
 "Imported" = "Importerat";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Installerad av en administratör: endast dess MugVPN-alternativ kan ändras här.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet blockerat: %@ bröts. Anslut igen eller häv blockeringen.";
+"Its certificate expired on %@: ask for a new one." = "Certifikatet gick ut %@: be om ett nytt.";
+"Its certificate expires on %@: ask for a new one in time." = "Certifikatet går ut %@: be om ett nytt i tid.";
 "Keep my profiles" = "Behåll mina profiler";
 "Later" = "Senare";
 "Light" = "Ljust";
@@ -108,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Inställningar för MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN behöver sin hjälpkomponent för att starta tunnlar.";
+"MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPNs hjälpare är version %@, inte den här appens %@: den uppdateras när ingen anslutning använder den (eller efter en omstart).";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, dess hjälpprogram, loggar, inställningar och sparade lösenord tas bort. Tunnlar kopplas från.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Tysta upprepade meddelanden (h):";
@@ -126,6 +132,7 @@
 "Off" = "Av";
 "One server per line: host port udp|tcp" = "En server per rad: värd port udp|tcp";
 "Only for domains:" = "Endast för domäner:";
+"Open MugVPN at login" = "Öppna MugVPN vid inloggning";
 "Open System Settings" = "Öppna Systeminställningar";
 "Open in Text Editor" = "Öppna i textredigerare";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN är ett registrerat varumärke som tillhör OpenVPN Inc.";
@@ -148,6 +155,7 @@
 "Save" = "Spara";
 "Save password" = "Spara lösenord";
 "Saved:" = "Sparat:";
+"Search" = "Sök";
 "Send DNS only through the VPN" = "Skicka DNS endast genom VPN";
 "Send all traffic through the VPN" = "Skicka all trafik via VPN";
 "Sent:" = "Skickat:";
@@ -161,6 +169,7 @@
 "Show Status" = "Visa status";
 "Show in Finder" = "Visa i Finder";
 "Show the status window" = "Visa statusfönstret";
+"Sign in to This Network…" = "Logga in på det här nätverket…";
 "Signing in needs a client certificate or a password." = "Inloggning kräver ett klientcertifikat eller ett lösenord.";
 "Some settings are set by your administrator." = "Vissa inställningar har ställts in av din administratör.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Delad DNS per domän: bara serverns domäner går till dess DNS";
@@ -175,7 +184,8 @@
 "The proxy for %@ needs a username and password." = "Proxyn för %@ kräver användarnamn och lösenord.";
 "These DNS servers" = "Dessa DNS-servrar";
 "Third-Party Notices" = "Meddelanden från tredje part";
-"This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced." = "Den här profilen loggar även in på annat sätt (PKCS#12, fingeravtryck eller token): se Avancerat.";
+"This network asks you to sign in first." = "Det här nätverket kräver att du loggar in först.";
+"This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Den här profilen loggar också in på annat sätt (PKCS#12 eller ett certifikatfingeravtryck): se Avancerat.";
 "Traffic to %@ goes around the VPN (through %@)" = "Trafik till %@ går förbi VPN (via %@)";
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Slå på MugVPN i Systeminställningar > Allmänt > Inloggningsobjekt och anslut sedan igen.";
 "URL:" = "URL:";

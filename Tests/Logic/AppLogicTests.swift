@@ -360,6 +360,20 @@ func registerAppLogicTests() {
         expectEqual(NetworkConflicts.find([("d", OpenVPNLogFacts.parse(first), first), ("d2", f2, second)]),
                     [.bothTakeDefaultRoute("d", "d2")])
     }
+    test("NET-08", "IPv6: overlapping routes and two tunnels taking all IPv6") {
+        func r6(_ net: String, _ bits: String) -> [String] { ["-inet6", net, "-prefixlen", bits, "-iface", "utun5"] }
+        let a = facts([r6("2001:db8::", "32")])
+        let b = facts([r6("2001:db8:1::", "48")])
+        let c = facts([r6("2001:db9::", "32")])
+        expectEqual(NetworkConflicts.find([("a", a, ""), ("b", b, ""), ("c", c, "")]),
+                    [.overlappingRoutes("a", "b", "2001:db8:1::/48")])
+        let all6 = facts([r6("2000::", "4"), r6("3000::", "4"), r6("fc00::", "7")])
+        expectEqual(NetworkConflicts.find([("x", all6, ""), ("y", all6, "")]), [.bothTakeDefaultRoute("x", "y")])
+        let both = facts(defaultHalves + [r6("::", "1"), r6("8000::", "1")])
+        expectEqual(NetworkConflicts.find([("x", both, ""), ("y", both, "")]), [.bothTakeDefaultRoute("x", "y")], "once")
+        let host = facts([["-inet6", "2001:db8::7", "-prefixlen", "128", "fe80::1"]])
+        expectEqual(NetworkConflicts.find([("a", host, ""), ("b", host, "")]), [], "the same host route to a shared server")
+    }
     test("NET-03", "DNS refused by the script") {
         let log = "2026-10-06 05:46:44 setting DNS failed, already redirecting to another tunnel\n"
         expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), log)]), [.dnsTakenByAnother("d")])

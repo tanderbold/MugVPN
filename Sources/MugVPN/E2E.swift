@@ -53,10 +53,14 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         reply(nil)
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply([]) }
+    var helperVersion = ProcessInfo.processInfo.environment["MUGVPN_E2E_HELPER_VERSION"] ?? MugVPNIDs.helperVersion
+    func version(reply: @escaping (String) -> Void) { reply(helperVersion) }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
     func unblock(reply: @escaping (String?) -> Void) { unblocks += 1; blocked = []; reply(nil) }
+    var suspends: [Int] = []
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void) { suspends.append(seconds); reply(nil) }
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void) {
         reply(.failure(ProfileError("no tunnels in E2E mode")))
     }
@@ -122,6 +126,7 @@ final class E2EServices: Services {
     let backend: E2EBackend
     var realHelperSetup: HelperSetup?
     var helperSetup: HelperSetup { realHelperSetup ?? backend }
+    var launchAtLogin = false
 
     init(backend: E2EBackend) {
         self.backend = backend
@@ -131,6 +136,12 @@ final class E2EServices: Services {
     func notify(title: String, text: String) { notes.append(["title": title, "text": text]) }
     func showMessage(profile: String, title: String, text: String) { showMessageWindow(profile: profile, title: title, text: text) }
     func reveal(_ path: String) { urls.append("reveal:" + path) }
+    var nextSave: String?
+    func chooseSaveLocation(suggested: String) -> String? {
+        panels += 1
+        defer { nextSave = nil }
+        return nextSave
+    }
     var panels = 0
     func chooseFile() -> String? {
         panels += 1 // the real app shows an open panel here
@@ -306,7 +317,7 @@ final class E2EServer {
             backend.links.removeValue(forKey: try str("profile"))?.onClose()
             return [:]
         case "fake_helper": return ["starts": backend.starts, "stops": backend.stops, "bundles": backend.bundles,
-                                    "unblocks": backend.unblocks]
+                                    "unblocks": backend.unblocks, "suspends": backend.suspends]
         case "snapshot":
             // A window as it looks on screen, frame and shadow included (an app may capture its own windows).
             let w = try window()
@@ -362,6 +373,15 @@ final class E2EServer {
         case "fake_helper_status":
             backend.state = HelperState(rawValue: try str("status")) ?? .enabled
             return [:]
+        case "drop_files":
+            // As if dropped on the window: the same handler a drag reaches.
+            guard let w = WindowRegistry.shared.of(kind: try str("kind")).first, let d = w.contentView as? DropView else {
+                throw E2EError("no window to drop on")
+            }
+            return ["accepted": d.onDrop(r["paths"] as? [String] ?? [])]
+        case "answer_save_panel":
+            services.nextSave = r["path"] as? String
+            return [:]
         case "answer_open_panel":
             services.nextFile = .some(r["path"] as? String)
             return [:]
@@ -394,6 +414,7 @@ final class E2EServer {
             return ["helper": backend.uninstallRequests, "removed": services.removed, "trashed": services.trashed]
         case "opened_urls": return ["urls": services.urls, "panels": services.panels]
         case "notifications": return ["items": services.notes]
+        case "login_item": return ["enabled": services.launchAtLogin]
         case "quit": return [:]
         default: throw E2EError("unknown command \(cmd)")
         }

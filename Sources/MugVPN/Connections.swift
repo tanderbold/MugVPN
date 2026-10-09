@@ -51,7 +51,7 @@ final class TextBox {
 /// Settings of each connection, adding and removing connections: one window,
 /// a list on the left and the selected connection's settings on the right.
 final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDelegate, NSTabViewDelegate,
-                               NSTextViewDelegate, NSTextFieldDelegate {
+                               NSTextViewDelegate, NSTextFieldDelegate, NSSearchFieldDelegate {
     enum Row: Equatable {
         case profile(Profile)
         case new
@@ -60,6 +60,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
 
     private unowned let app: AppController
     private var rows: [Row] = []
+    private let search = NSSearchField()
     private var current = -1
     let window: AppWindow
 
@@ -85,7 +86,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
     private let askPassword = Form.checkbox("ask_password", L("Ask for a username and password"))
     private let savedText_ = Form.label("", id: "saved_text", wraps: false)
     private let clearPasswords: NSButton
-    private let otherNote = Form.label(L("This profile also signs in another way (PKCS#12, fingerprint or token): see Advanced."), id: "other_text")
+    private let otherNote = Form.label(L("This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced."), id: "other_text")
     private var materialLabels: [String: NSTextField] = [:]
     private var materialButtons: [NSButton] = []
     private let autoConnect = Form.checkbox("auto_connect", L("Connect when MugVPN starts"))
@@ -177,7 +178,11 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         remove.setAccessibilityLabel(L("Delete the connection"))
         let listButtons = NSStackView(views: [add, remove])
         listButtons.orientation = .horizontal
-        let left = NSStackView(views: [listScroll, listButtons])
+        search.placeholderString = L("Search")
+        search.setAccessibilityIdentifier("search")
+        search.setAccessibilityLabel(L("Search"))
+        search.delegate = self
+        let left = NSStackView(views: [search, listScroll, listButtons])
         left.orientation = .vertical
         left.alignment = .leading
 
@@ -286,8 +291,14 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         all.spacing = 16
         Form.alignRows(in: all)
 
-        let container = window.contentView!
-        container.subviews.forEach { $0.removeFromSuperview() }
+        // The whole window takes profiles dropped on it: the user's own act, imported without asking.
+        let container = DropView()
+        container.onDrop = { [weak app] paths in
+            let take = ProfileStore.importable(paths)
+            if !take.isEmpty { DispatchQueue.main.async { app?.importFiles(take) } }
+            return take
+        }
+        window.contentView = container
         all.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(all)
         NSLayoutConstraint.activate([
@@ -367,7 +378,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
 
     private func reloadRows() {
         let hasNew = rows.contains(.new)
-        rows = app.manager.profiles.map { .profile($0) } + (hasNew ? [.new] : [])
+        rows = ProfileStore.matching(app.manager.profiles, search.stringValue).map { .profile($0) } + (hasNew ? [.new] : [])
         list.titles = rows.map(title)
         list.reloadData()
     }
@@ -644,7 +655,10 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
     }
 
     @objc private func changed() { refresh() }
-    func controlTextDidChange(_ obj: Notification) { refresh() }
+    func controlTextDidChange(_ obj: Notification) {
+        if (obj.object as? NSSearchField) === search { return profilesChanged() }
+        refresh()
+    }
     func textDidChange(_ notification: Notification) { refresh() }
 
     private func showError(_ text: String) {

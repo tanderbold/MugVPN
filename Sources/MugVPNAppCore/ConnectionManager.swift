@@ -3,6 +3,8 @@ import MugVPNCore
 
 /// The helper as the app sees it (XPC in the app, a fake in tests).
 public protocol HelperClient: AnyObject {
+    /// The helper's version (MugVPNIDs.helperVersion of the build it came with).
+    func version(reply: @escaping (String) -> Void)
     func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
     func stop(_ id: String, reply: @escaping (String?) -> Void)
     func list(reply: @escaping ([ConnectionInfo]) -> Void)
@@ -14,6 +16,8 @@ public protocol HelperClient: AnyObject {
     func blocks(reply: @escaping ([String]) -> Void)
     /// Lift the blocks this user may lift; an error text or nil.
     func unblock(reply: @escaping (String?) -> Void)
+    /// Lift them for a while (to sign in to a network); an error text or nil.
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void)
     /// A persistent tunnel: the helper lets go of its management connection for the app.
     func releaseManagement(_ id: String, reply: @escaping (String?) -> Void)
     /// What an unprivileged openvpn asks for (privilege separation); the utun for OPENTUN.
@@ -91,6 +95,8 @@ public final class ConnectionManager {
     public private(set) var active: [String: ActiveConnection] = [:]
     public private(set) var lastError: [String: String] = [:]
     public var onChange: () -> Void = {}
+    /// The helper's version when it is not the app's (an update not yet taken by the running helper).
+    public private(set) var helperVersionMismatch: String?
 
     private let helper: HelperClient
     public var helperClient: HelperClient { helper }
@@ -274,6 +280,11 @@ public final class ConnectionManager {
     /// crashed), stop those for profiles that are gone, then reconnect the
     /// ones that were up when the app last quit.
     public func appStarted() {
+        helper.version { [weak self] v in
+            guard let self, v != MugVPNIDs.helperVersion else { return }
+            self.helperVersionMismatch = v
+            self.onChange()
+        }
         helper.list { [weak self] running in
             guard let self else { return }
             for info in running {
