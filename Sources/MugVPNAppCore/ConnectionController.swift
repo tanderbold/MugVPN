@@ -125,6 +125,8 @@ public final class ConnectionController {
     /// The management socket went away without a clean exit.
     public var onLost: () -> Void = {}
     public var onChange: () -> Void = {}
+    /// The private key's password as it is sent (saved or typed): a PKCS#12's end can be read with it.
+    public var onKeyPassword: (String) -> Void = { _ in }
 
     public private(set) var status: ConnectionStatus = .disconnected { didSet { onChange() } }
     public private(set) var bytesIn: UInt64 = 0
@@ -356,12 +358,14 @@ public final class ConnectionController {
     private func answerSecret(type: String) {
         let error = lastError.removeValue(forKey: type)
         if error == nil, settings.savePasswordsAllowed, let saved = secrets.get(profile, .keyPassword) {
+            if type == "Private Key" { onKeyPassword(saved) }
             return send("password \(managementQuote(type)) \(managementQuote(saved))")
         }
         ui.askSecret(type: type, error: error) { [weak self] a in
             guard let self else { return }
             guard let a else { return self.disconnect() }
             if a.save && self.settings.savePasswordsAllowed { self.secrets.set(self.profile, .keyPassword, a.secret) }
+            if type == "Private Key" { self.onKeyPassword(a.secret) }
             self.send("password \(managementQuote(type)) \(managementQuote(a.secret))")
         }
     }

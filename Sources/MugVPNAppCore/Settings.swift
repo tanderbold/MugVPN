@@ -90,14 +90,22 @@ public final class SettingsStore {
     /// Apply a change: refused as a whole if it touches a locked setting or
     /// leaves a value out of range.
     public func update(_ change: (inout Settings) -> Void) throws {
+        let new = try prepared(change)
+        SettingsStore.store(new, old: settings, backend)
+        settings = new
+    }
+
+    /// What `update` would refuse, refused; nothing stored (to change something else first).
+    public func check(_ change: (inout Settings) -> Void) throws { _ = try prepared(change) }
+
+    private func prepared(_ change: (inout Settings) -> Void) throws -> Settings {
         var new = settings
         change(&new)
         for key in SettingKey.allCases where SettingsStore.differs(key, settings, new) && isLocked(key) {
             throw SettingsError(description: "\(key.rawValue) is set by your administrator")
         }
         try SettingsStore.validate(new)
-        SettingsStore.store(new, old: settings, backend)
-        settings = new
+        return new
     }
 
     static func validate(_ s: Settings) throws {

@@ -153,6 +153,16 @@ func registerConnectionTests() {
         h.line(">PASSWORD:Need 'Auth' username/password")
         expectEqual(h.ui.asked, [.credentials(type: "Auth", username: "bob", challenge: nil, error: "Authentication failed")])
     }
+    test("CON-36", "the private key's password, saved or typed, is handed on (to check a PKCS#12's end with it)") {
+        let h = Harness()
+        var got: [String] = []
+        h.c.onKeyPassword = { got.append($0) }
+        h.line(">PASSWORD:Need 'Private Key' password")
+        h.ui.secretReply?(SecretAnswer(secret: "typed", save: false))
+        expectEqual(got, ["typed"])
+        h.line(">PASSWORD:Need 'Auth' username/password")
+        expectEqual(got, ["typed"], "not other passwords")
+    }
     test("CON-06", "private key password") {
         let h = Harness()
         h.line(">PASSWORD:Need 'Private Key' password")

@@ -413,14 +413,21 @@ func registerCleanupTests() {
 // MARK: - L-HLP
 
 func registerHelperTests() {
+    test("HLP-35", "exits for an update only if the helper on disk is newer than the one running") {
+        let h = makeHelper(FakeSystem())
+        expectEqual(h.beginRestartIfIdle(installed: MugVPNIDs.helperVersion), .notNewer, "the same: an older app asked")
+        expectEqual(h.beginRestartIfIdle(installed: "0.0.1"), .notNewer)
+        expectEqual(h.beginRestartIfIdle(installed: nil), .notNewer, "cannot tell: stays")
+        expectEqual(h.beginRestartIfIdle(installed: "99.0.0"), .restart)
+    }
     test("HLP-34", "deciding to exit for an update and closing are one step: no tunnel starts in between") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         let (id, _) = try h.start(bundle: bundle(), uid: 502)
-        expect(!h.beginRestartIfIdle(), "in use")
+        expectEqual(h.beginRestartIfIdle(installed: "99.0.0"), .inUse)
         sys.launched[0].process.onExit(.exited(0))
         _ = id
-        expect(h.beginRestartIfIdle())
+        expectEqual(h.beginRestartIfIdle(installed: "99.0.0"), .restart)
         expectThrows("closing", matching: "closing") { _ = try h.start(bundle: bundle(), uid: 501) }
         expectThrows("persistent too", matching: "closing") { _ = try h.startPersistent(name: "site", uid: 0) }
     }

@@ -7,8 +7,12 @@ public enum HelperRestart: Equatable, Sendable {
     case restarting
     /// A connection or block of someone's needs it now.
     case inUse
-    /// It has no such call (an older helper) or does not answer.
+    /// It has no such call (an older helper).
     case unsupported
+    /// It does not answer at all (not running, not registered, a passing failure).
+    case unavailable
+    /// The helper on disk is not newer than the running one: nothing to start again into.
+    case notNewer
 }
 
 public protocol HelperClient: AnyObject {
@@ -17,6 +21,8 @@ public protocol HelperClient: AnyObject {
     /// Exit if no connection or block of anyone's needs it (launchd then starts the helper the
     /// app came with); nil when it does, or why not.
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void)
+    /// Whether it answers a call every helper version has (an old one does; none that is not there).
+    func reachable(reply: @escaping (Bool) -> Void)
     func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
     func stop(_ id: String, reply: @escaping (String?) -> Void)
     func list(reply: @escaping ([ConnectionInfo]) -> Void)
@@ -109,6 +115,8 @@ public final class ConnectionManager {
     }
     public private(set) var lastError: [String: String] = [:]
     public var onChange: () -> Void = {}
+    /// A connection's private key password as it is sent (to read a PKCS#12's end with it).
+    public var onKeyPassword: (Profile, String) -> Void = { _, _ in }
     /// The helper's version when it is not the app's (an update not yet taken by the running helper).
     public private(set) var helperVersionMismatch: String?
     private var helperRestartAsked = false
@@ -118,29 +126,73 @@ public final class ConnectionManager {
     private var helperRestartWait: TimeInterval = 60
     public static let helperRestartMaxWait: TimeInterval = 1800
 
-    /// The user put the new helper in place by hand: asked again shortly.
+    /// The user put the new helper in place by hand: asked again shortly (the same old one: offered again).
     public func helperReplaced() {
         helperNeedsManualUpdate = false
+        helperVersionMismatch = nil
         onChange()
         scheduler.after(3) { [weak self] in self?.checkHelperVersion() }
     }
 
-    /// nil (no answer: an older helper has no version call) counts as another version.
+    private func needsManualUpdate() {
+        helperNeedsManualUpdate = true
+        onChange()
+    }
+
+    /// The helper is newer than the app (another user's newer MugVPN): the app is what to update.
+    public var helperIsNewer: Bool {
+        helperVersionMismatch.map { !ConnectionManager.isOlder($0, than: MugVPNIDs.helperVersion) } ?? false
+    }
+
+    /// "a.b.c" against "a.b.c", numerically; "unknown" (a helper without a version call) is the oldest.
+    public static func isOlder(_ a: String, than b: String) -> Bool {
+        func parts(_ s: String) -> [Int]? {
+            let p = s.split(separator: ".").map { Int($0) }
+            return p.isEmpty || p.contains(nil) ? nil : p.compactMap { $0 }
+        }
+        guard let y = parts(b) else { return false }
+        guard let x = parts(a) else { return true }
+        for i in 0..<max(x.count, y.count) {
+            let l = i < x.count ? x[i] : 0, r = i < y.count ? y[i] : 0
+            if l != r { return l < r }
+        }
+        return false
+    }
+
+    /// No version answer: an old helper (it answers its older calls) or none at all (asked again later).
     private func checkHelperVersion() {
         helper.version { [weak self] v in
             guard let self else { return }
-            let now: String? = v == MugVPNIDs.helperVersion ? nil : (v ?? "unknown")
-            guard now != self.helperVersionMismatch else { return }
-            self.helperVersionMismatch = now
-            self.onChange()
-            self.restartOutdatedHelper()
+            guard let v else {
+                return self.helper.reachable { [weak self] up in
+                    guard let self else { return }
+                    if up { self.versionKnown("unknown") } else { self.retryLater { [weak self] in self?.checkHelperVersion() } }
+                }
+            }
+            self.versionKnown(v)
         }
+    }
+
+    private func versionKnown(_ v: String) {
+        let now: String? = v == MugVPNIDs.helperVersion ? nil : v
+        guard now != helperVersionMismatch else { return }
+        helperVersionMismatch = now
+        onChange()
+        restartOutdatedHelper()
+    }
+
+    private func retryLater(_ f: @escaping () -> Void) {
+        let wait = helperRestartWait
+        helperRestartWait = min(wait * 2, ConnectionManager.helperRestartMaxWait)
+        scheduler.after(wait, f)
     }
 
     /// Another helper version, and nothing of this app's uses it: it is asked to start again
     /// (it does only if no one's connection or block needs it), then asked its version again.
     private func restartOutdatedHelper() {
-        guard helperVersionMismatch != nil, active.isEmpty, !helperRestartAsked, !helperNeedsManualUpdate else { return }
+        // Only an older one: a newer helper (another user's newer MugVPN) is not this app's to stop.
+        guard let v = helperVersionMismatch, ConnectionManager.isOlder(v, than: MugVPNIDs.helperVersion),
+              active.isEmpty, !helperRestartAsked, !helperNeedsManualUpdate else { return }
         helperRestartAsked = true
         helper.restartIfIdle { [weak self] answer in
             guard let self else { return }
@@ -152,17 +204,30 @@ public final class ConnectionManager {
                     self?.checkHelperVersion()
                 }
             case .inUse:
-                // Someone else's tunnel or block: nothing here says when it ends, so ask again later.
-                let wait = self.helperRestartWait
-                self.helperRestartWait = min(wait * 2, ConnectionManager.helperRestartMaxWait)
-                self.scheduler.after(wait) { [weak self] in
+                // Someone else's tunnel or block, or no answer: nothing here says when that ends, so ask again later.
+                self.retryLater { [weak self] in
                     self?.helperRestartAsked = false
                     self?.restartOutdatedHelper()
                 }
-            case .unsupported:
+            case .unavailable:
+                // No answer: asked its version again before anything is concluded (a new helper may be up by now).
+                self.helper.version { [weak self] v in
+                    guard let self else { return }
+                    if let v {
+                        self.helperRestartAsked = false
+                        return self.versionKnown(v)
+                    }
+                    self.helper.reachable { [weak self] up in
+                        guard let self else { return }
+                        self.helperRestartAsked = false
+                        if up { self.needsManualUpdate() } else { self.retryLater { [weak self] in self?.restartOutdatedHelper() } }
+                    }
+                }
+            case .unsupported, .notNewer:
+                // An older helper without the call, or one whose bundle on disk is old too (the service was
+                // registered from an older copy of the app): registering it again from this copy is the way.
                 self.helperRestartAsked = false
-                self.helperNeedsManualUpdate = true
-                self.onChange()
+                self.needsManualUpdate()
             }
         }
     }
@@ -418,6 +483,7 @@ public final class ConnectionManager {
         let controller = ConnectionController(profile: p.secretsKey, ui: ui(p), secrets: secrets,
                                               settings: profileSettings?(p) ?? settings())
         controller.displayName = p.displayName
+        controller.onKeyPassword = { [weak self] pw in self?.onKeyPassword(p, pw) }
         let c = ActiveConnection(profile: p, controller: controller)
         controller.send = { [weak c] cmd in
             guard let c else { return }

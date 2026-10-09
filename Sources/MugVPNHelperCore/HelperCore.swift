@@ -1343,11 +1343,28 @@ public final class HelperCore {
     /// Then it may exit for launchd to start the one an updated app came with.
     public var idleForRestart: Bool { connections.isEmpty && locks.isEmpty && !closing }
 
-    /// Idle, and closed in the same step: no start gets in before the exit. - Returns: whether to exit.
-    public func beginRestartIfIdle() -> Bool {
-        guard idleForRestart else { return false }
+    public enum RestartDecision: Equatable, Sendable { case restart, inUse, notNewer }
+    /// This helper's version (a test build may pretend to be older, to be updated on the stand).
+    public var runningVersion = MugVPNIDs.helperVersion
+
+    /// Idle, and closed in the same step: no start gets in before the exit. Only for a newer helper
+    /// on disk (`installed`: the version of the app bundle it comes from): an older app asking does not
+    /// stop a newer helper in a loop.
+    public func beginRestartIfIdle(installed: String?) -> RestartDecision {
+        guard let installed, Self.newer(installed, than: runningVersion) else { return .notNewer }
+        guard idleForRestart else { return .inUse }
         closing = true
-        return true
+        return .restart
+    }
+
+    static func newer(_ a: String, than b: String) -> Bool {
+        let x = a.split(separator: ".").map { Int($0) ?? -1 }, y = b.split(separator: ".").map { Int($0) ?? -1 }
+        guard !x.contains(-1), !y.contains(-1) else { return false }
+        for i in 0..<max(x.count, y.count) {
+            let l = i < x.count ? x[i] : 0, r = i < y.count ? y[i] : 0
+            if l != r { return l > r }
+        }
+        return false
     }
 
     /// Fired blocks lifted for a while (to sign in to a network), until this time. Not on disk:

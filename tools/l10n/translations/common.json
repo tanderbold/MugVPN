@@ -45,7 +45,9 @@
   "Update MugVPN's Helper": "Aktualizovat pomocníka MugVPN",
   "Update": "Aktualizovat",
   "MugVPN's helper was updated.": "Pomocník MugVPN byl aktualizován.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?",
+  "MugVPN's helper was not updated: %@": "Pomocník MugVPN nebyl aktualizován: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Pomocník MugVPN má verzi %@, novější než tato aplikace (%@): aktualizujte MugVPN."
  },
  "de": {
   "OK": "OK",
@@ -93,7 +95,9 @@
   "Update MugVPN's Helper": "Helfer von MugVPN aktualisieren",
   "Update": "Aktualisieren",
   "MugVPN's helper was updated.": "Der Helfer von MugVPN wurde aktualisiert.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Der laufende Helfer ist älter und kann sich nicht selbst aktualisieren. Den neuen einzusetzen beendet alle MugVPN-Verbindungen auf diesem Mac, aller Benutzer. Fortfahren?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Der laufende Helfer ist älter und kann sich nicht selbst aktualisieren. Den neuen einzusetzen beendet alle MugVPN-Verbindungen auf diesem Mac, aller Benutzer. Fortfahren?",
+  "MugVPN's helper was not updated: %@": "Der Helfer von MugVPN wurde nicht aktualisiert: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Der Helfer von MugVPN hat Version %@, neuer als diese App (%@): Aktualisieren Sie MugVPN."
  },
  "da": {
   "OK": "OK",
@@ -141,7 +145,9 @@
   "Update MugVPN's Helper": "Opdater MugVPN's hjælper",
   "Update": "Opdater",
   "MugVPN's helper was updated.": "MugVPN's hjælper blev opdateret.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Den kørende hjælper er en ældre, der ikke kan opdatere sig selv. At sætte den nye i stedet stopper alle MugVPN-forbindelser på denne Mac for alle brugere. Fortsæt?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Den kørende hjælper er en ældre, der ikke kan opdatere sig selv. At sætte den nye i stedet stopper alle MugVPN-forbindelser på denne Mac for alle brugere. Fortsæt?",
+  "MugVPN's helper was not updated: %@": "MugVPN's hjælper blev ikke opdateret: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN's hjælper er version %@, nyere end denne app (%@): opdater MugVPN."
  },
  "el": {
   "OK": "OK",
@@ -189,7 +195,9 @@
   "Update MugVPN's Helper": "Ενημέρωση του βοηθού του MugVPN",
   "Update": "Ενημέρωση",
   "MugVPN's helper was updated.": "Ο βοηθός του MugVPN ενημερώθηκε.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;",
+  "MugVPN's helper was not updated: %@": "Ο βοηθός του MugVPN δεν ενημερώθηκε: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN."
  },
  "es": {
   "OK": "Aceptar",
@@ -237,7 +245,9 @@
   "Update MugVPN's Helper": "Actualizar el asistente de MugVPN",
   "Update": "Actualizar",
   "MugVPN's helper was updated.": "Se actualizó el asistente de MugVPN.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "El asistente en ejecución es uno anterior que no puede actualizarse solo. Poner el nuevo detiene todas las conexiones de MugVPN de este Mac, de todos los usuarios. ¿Continuar?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "El asistente en ejecución es uno anterior que no puede actualizarse solo. Poner el nuevo detiene todas las conexiones de MugVPN de este Mac, de todos los usuarios. ¿Continuar?",
+  "MugVPN's helper was not updated: %@": "No se actualizó el asistente de MugVPN: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "El asistente de MugVPN es la versión %@, más reciente que esta app (%@): actualice MugVPN."
  },
  "fa": {
   "OK": "تأیید",
@@ -285,7 +295,9 @@
   "Update MugVPN's Helper": "به‌روزرسانی دستیار MugVPN",
   "Update": "به‌روزرسانی",
   "MugVPN's helper was updated.": "دستیار MugVPN به‌روز شد.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟",
+  "MugVPN's helper was not updated: %@": "دستیار MugVPN به‌روز نشد: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "نسخهٔ دستیار MugVPN %@ است، جدیدتر از این برنامه (%@): MugVPN را به‌روز کنید."
  },
  "fi": {
   "OK": "OK",
@@ -333,7 +345,9 @@
   "Update MugVPN's Helper": "Päivitä MugVPN:n apuohjelma",
   "Update": "Päivitä",
   "MugVPN's helper was updated.": "MugVPN:n apuohjelma päivitettiin.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?",
+  "MugVPN's helper was not updated: %@": "MugVPN:n apuohjelmaa ei päivitetty: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN."
  },
  "fr": {
   "OK": "OK",
@@ -381,7 +395,9 @@
   "Update MugVPN's Helper": "Mettre à jour l'assistant de MugVPN",
   "Update": "Mettre à jour",
   "MugVPN's helper was updated.": "L'assistant de MugVPN a été mis à jour.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?",
+  "MugVPN's helper was not updated: %@": "L'assistant de MugVPN n'a pas été mis à jour : %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "L'assistant de MugVPN est en version %@, plus récente que cette app (%@) : mettez MugVPN à jour."
  },
  "it": {
   "OK": "OK",
@@ -429,7 +445,9 @@
   "Update MugVPN's Helper": "Aggiorna l'helper di MugVPN",
   "Update": "Aggiorna",
   "MugVPN's helper was updated.": "L'helper di MugVPN è stato aggiornato.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?",
+  "MugVPN's helper was not updated: %@": "L'helper di MugVPN non è stato aggiornato: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "L'helper di MugVPN è alla versione %@, più recente di questa app (%@): aggiorna MugVPN."
  },
  "ja": {
   "OK": "OK",
@@ -477,7 +495,9 @@
   "Update MugVPN's Helper": "MugVPN のヘルパーをアップデート",
   "Update": "アップデート",
   "MugVPN's helper was updated.": "MugVPN のヘルパーをアップデートしました。",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？",
+  "MugVPN's helper was not updated: %@": "MugVPN のヘルパーをアップデートできませんでした: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN のヘルパーはバージョン %@ で、このアプリ（%@）より新しいです。MugVPN をアップデートしてください。"
  },
  "ko": {
   "OK": "확인",
@@ -525,7 +545,9 @@
   "Update MugVPN's Helper": "MugVPN 도우미 업데이트",
   "Update": "업데이트",
   "MugVPN's helper was updated.": "MugVPN 도우미가 업데이트되었습니다.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "실행 중인 도우미는 스스로 업데이트할 수 없는 이전 버전입니다. 새 도우미로 바꾸면 이 Mac의 모든 사용자의 MugVPN 연결이 중단됩니다. 계속하시겠습니까?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "실행 중인 도우미는 스스로 업데이트할 수 없는 이전 버전입니다. 새 도우미로 바꾸면 이 Mac의 모든 사용자의 MugVPN 연결이 중단됩니다. 계속하시겠습니까?",
+  "MugVPN's helper was not updated: %@": "MugVPN 도우미가 업데이트되지 않았습니다: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요."
  },
  "nl": {
   "OK": "OK",
@@ -573,7 +595,9 @@
   "Update MugVPN's Helper": "Helper van MugVPN bijwerken",
   "Update": "Bijwerken",
   "MugVPN's helper was updated.": "De helper van MugVPN is bijgewerkt.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?",
+  "MugVPN's helper was not updated: %@": "De helper van MugVPN is niet bijgewerkt: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "De helper van MugVPN is versie %@, nieuwer dan deze app (%@): werk MugVPN bij."
  },
  "nb": {
   "OK": "OK",
@@ -621,7 +645,9 @@
   "Update MugVPN's Helper": "Oppdater MugVPNs hjelper",
   "Update": "Oppdater",
   "MugVPN's helper was updated.": "MugVPNs hjelper ble oppdatert.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjelperen som kjører, er en eldre som ikke kan oppdatere seg selv. Å sette inn den nye stopper alle MugVPN-tilkoblinger på denne Macen, for alle brukere. Fortsette?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjelperen som kjører, er en eldre som ikke kan oppdatere seg selv. Å sette inn den nye stopper alle MugVPN-tilkoblinger på denne Macen, for alle brukere. Fortsette?",
+  "MugVPN's helper was not updated: %@": "MugVPNs hjelper ble ikke oppdatert: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPNs hjelper er versjon %@, nyere enn denne appen (%@): oppdater MugVPN."
  },
  "pl": {
   "OK": "OK",
@@ -669,7 +695,9 @@
   "Update MugVPN's Helper": "Zaktualizuj pomocnika MugVPN",
   "Update": "Aktualizuj",
   "MugVPN's helper was updated.": "Pomocnik MugVPN został zaktualizowany.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?",
+  "MugVPN's helper was not updated: %@": "Pomocnik MugVPN nie został zaktualizowany: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Pomocnik MugVPN ma wersję %@, nowszą niż ta aplikacja (%@): zaktualizuj MugVPN."
  },
  "pt-BR": {
   "OK": "OK",
@@ -717,7 +745,9 @@
   "Update MugVPN's Helper": "Atualizar o auxiliar do MugVPN",
   "Update": "Atualizar",
   "MugVPN's helper was updated.": "O auxiliar do MugVPN foi atualizado.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?",
+  "MugVPN's helper was not updated: %@": "O auxiliar do MugVPN não foi atualizado: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "O auxiliar do MugVPN está na versão %@, mais nova que este app (%@): atualize o MugVPN."
  },
  "ru": {
   "OK": "ОК",
@@ -765,7 +795,9 @@
   "Update MugVPN's Helper": "Обновить помощник MugVPN",
   "Update": "Обновить",
   "MugVPN's helper was updated.": "Помощник MugVPN обновлён.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Работающий помощник — старый, сам обновиться он не может. Установка нового остановит все подключения MugVPN на этом Mac, у всех пользователей. Продолжить?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Работающий помощник — старый, сам обновиться он не может. Установка нового остановит все подключения MugVPN на этом Mac, у всех пользователей. Продолжить?",
+  "MugVPN's helper was not updated: %@": "Помощник MugVPN не обновлён: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Помощник MugVPN версии %@ — новее, чем это приложение (%@): обновите MugVPN."
  },
  "sv": {
   "OK": "OK",
@@ -813,7 +845,9 @@
   "Update MugVPN's Helper": "Uppdatera MugVPNs hjälpare",
   "Update": "Uppdatera",
   "MugVPN's helper was updated.": "MugVPNs hjälpare uppdaterades.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjälparen som körs är en äldre som inte kan uppdatera sig själv. Att sätta in den nya stoppar alla MugVPN-anslutningar på den här Macen, för alla användare. Fortsätta?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjälparen som körs är en äldre som inte kan uppdatera sig själv. Att sätta in den nya stoppar alla MugVPN-anslutningar på den här Macen, för alla användare. Fortsätta?",
+  "MugVPN's helper was not updated: %@": "MugVPNs hjälpare uppdaterades inte: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPNs hjälpare är version %@, nyare än den här appen (%@): uppdatera MugVPN."
  },
  "tr": {
   "OK": "Tamam",
@@ -861,7 +895,9 @@
   "Update MugVPN's Helper": "MugVPN yardımcısını güncelle",
   "Update": "Güncelle",
   "MugVPN's helper was updated.": "MugVPN yardımcısı güncellendi.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?",
+  "MugVPN's helper was not updated: %@": "MugVPN yardımcısı güncellenmedi: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN yardımcısı %@ sürümünde, bu uygulamadan (%@) daha yeni: MugVPN'i güncelleyin."
  },
  "uk": {
   "OK": "OK",
@@ -909,7 +945,9 @@
   "Update MugVPN's Helper": "Оновити помічник MugVPN",
   "Update": "Оновити",
   "MugVPN's helper was updated.": "Помічник MugVPN оновлено.",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?",
+  "MugVPN's helper was not updated: %@": "Помічник MugVPN не оновлено: %@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Помічник MugVPN версії %@ — новіший за цей застосунок (%@): оновіть MugVPN."
  },
  "zh-Hans": {
   "OK": "好",
@@ -957,7 +995,9 @@
   "Update MugVPN's Helper": "更新 MugVPN 助手",
   "Update": "更新",
   "MugVPN's helper was updated.": "MugVPN 助手已更新。",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在运行的助手是无法自行更新的旧版本。换上新版本会停止此 Mac 上所有用户的所有 MugVPN 连接。是否继续？"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在运行的助手是无法自行更新的旧版本。换上新版本会停止此 Mac 上所有用户的所有 MugVPN 连接。是否继续？",
+  "MugVPN's helper was not updated: %@": "MugVPN 助手未更新：%@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1005,6 +1045,8 @@
   "Update MugVPN's Helper": "更新 MugVPN 輔助程式",
   "Update": "更新",
   "MugVPN's helper was updated.": "MugVPN 輔助程式已更新。",
-  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？"
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？",
+  "MugVPN's helper was not updated: %@": "MugVPN 輔助程式未更新：%@",
+  "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 輔助程式版本為 %@，比此 App（%@）新：請更新 MugVPN。"
  }
 }

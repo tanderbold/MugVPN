@@ -94,6 +94,14 @@ func registerAppLogicTests() {
         expectEqual(b.values["log_append"] as? Bool, true)
         expect(SettingsStore(backend: b).settings.logAppend, "persisted")
     }
+    test("SET-04", "settings checked without saving: what update would refuse, refused, nothing changed") {
+        let b = FakeSettingsBackend()
+        let st = SettingsStore(backend: b)
+        expectThrows { try st.check { $0.connectScriptTimeout = 500 } }
+        try st.check { $0.connectScriptTimeout = 20 }
+        expectEqual(st.settings.connectScriptTimeout, Settings().connectScriptTimeout, "a check stores nothing")
+        expect(b.values.isEmpty, "\(b.values)")
+    }
     test("SET-03", "invalid values refused") {
         let st = SettingsStore(backend: FakeSettingsBackend())
         expectThrows { try st.update { $0.disconnectScriptTimeout = 0 } }

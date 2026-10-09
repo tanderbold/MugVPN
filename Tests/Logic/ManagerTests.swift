@@ -10,9 +10,18 @@ final class FakeHelperClient: HelperClient {
     var restartTo: String?? = .some(MugVPNIDs.helperVersion)
     /// An older helper: it has no restart call at all.
     var restartUnsupported = false
+    /// Answers its older calls (an old helper) or nothing at all (not running, not registered).
+    var reachable = true
+    func reachable(reply: @escaping (Bool) -> Void) { reply(reachable) }
+    var restartNotNewer = false
+    /// The restart call fails (no answer), and the helper then answers this version (a new one started).
+    var restartFailsThenVersion: String?
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void) {
         restarts += 1
-        if restartUnsupported { return reply(.unsupported) }
+        if restartNotNewer { return reply(.notNewer) }
+        if let v = restartFailsThenVersion { version = v; return reply(.unavailable) }
+        // An older helper: no such call; the XPC client hears only that there was no answer.
+        if restartUnsupported { return reply(.unavailable) }
         guard case .some(let v) = restartTo else { return reply(.inUse) }
         version = v
         reply(.restarting)
@@ -194,6 +203,65 @@ func registerManagerTests() {
         expectEqual(h.m.helperVersionMismatch, "unknown")
         expect(h.m.helperNeedsManualUpdate, "the app offers to put the new one in place")
         expect(h.scheduler.pending.isEmpty, "not asked again: it cannot")
+    }
+    test("MAN-27", "a newer helper than the app (another user's newer MugVPN) is left alone") {
+        let h = ManagerHarness()
+        h.helper.version = "9.0.0"
+        h.m.appStarted()
+        expectEqual(h.m.helperVersionMismatch, "9.0.0")
+        expectEqual(h.helper.restarts, 0, "never stopped for an older app")
+        expect(!h.m.helperNeedsManualUpdate)
+        expect(ConnectionManager.isOlder("0.1.9", than: "0.2.0") && ConnectionManager.isOlder("unknown", than: "0.2.0"))
+        expect(!ConnectionManager.isOlder("0.10.0", than: "0.9.0") && !ConnectionManager.isOlder("0.2.0", than: "0.2.0"))
+    }
+    test("MAN-28", "put in place by hand, but the old one is still there: offered again") {
+        let h = ManagerHarness()
+        h.helper.version = nil
+        h.helper.restartUnsupported = true
+        h.m.appStarted()
+        expect(h.m.helperNeedsManualUpdate)
+        h.m.helperReplaced()
+        h.scheduler.drain(limit: 3)
+        expect(h.m.helperNeedsManualUpdate, "the same old helper answers: the offer comes back")
+    }
+    test("MAN-29", "a helper that does not answer at all is not taken for an old one") {
+        let h = ManagerHarness()
+        h.helper.version = nil
+        h.helper.reachable = false
+        h.m.appStarted()
+        expectEqual(h.m.helperVersionMismatch, nil, "nothing known: nothing said")
+        expect(!h.m.helperNeedsManualUpdate, "no offer to stop every tunnel")
+        expect(!h.scheduler.pending.isEmpty, "asked again later")
+        h.helper.reachable = true
+        h.helper.version = MugVPNIDs.helperVersion
+        h.scheduler.drain(limit: 3)
+        expectEqual(h.m.helperVersionMismatch, nil)
+    }
+    test("MAN-30", "a helper whose bundle on disk is no newer (the service registered from an older copy): put in place by hand") {
+        let h = ManagerHarness()
+        h.helper.version = "0.0.9"
+        h.helper.restartNotNewer = true
+        h.m.appStarted()
+        expect(h.m.helperNeedsManualUpdate, "re-registering from this copy is the way")
+    }
+    test("MAN-31", "a restart call that fails while a new helper is already there: no offer to put one in place") {
+        let h = ManagerHarness()
+        h.helper.version = "0.0.9"
+        h.helper.restartFailsThenVersion = MugVPNIDs.helperVersion   // started again meanwhile
+        h.m.appStarted()
+        expect(!h.m.helperNeedsManualUpdate)
+        expectEqual(h.m.helperVersionMismatch, nil, "asked again: the new one")
+    }
+    test("MAN-32", "a newer helper is told apart from an older one") {
+        let h = ManagerHarness()
+        h.helper.version = "9.0.0"
+        h.m.appStarted()
+        expect(h.m.helperIsNewer)
+        let o = ManagerHarness()
+        o.helper.version = "0.0.9"
+        o.helper.restartTo = nil
+        o.m.appStarted()
+        expect(!o.m.helperIsNewer)
     }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()

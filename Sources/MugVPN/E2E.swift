@@ -42,6 +42,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
             return reply(.failure(ProfileError(r)))
         }
         starts.append(bundle.name)
+        warnedBeforeStart[bundle.name] = services?.notes.contains { $0["title"] == bundle.name && ($0["text"] ?? "").contains("certificate") } ?? false
         let p = bundle.protection
         bundles[bundle.name] = ["split_dns": bundle.splitDNS,
                                 "protection": ["killSwitch": p.killSwitch, "blockIPv6": p.blockIPv6,
@@ -57,6 +58,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     func version(reply: @escaping (String?) -> Void) { reply(helperVersion == "none" ? nil : helperVersion) }
     /// "none": an older helper (no version, no restart call); otherwise always in use: an update waits.
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void) { reply(helperVersion == "none" ? .unsupported : .inUse) }
+    func reachable(reply: @escaping (Bool) -> Void) { reply(true) }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
@@ -74,6 +76,15 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     var setupCalls: [String] = []
     func unregister() { setupCalls.append("unregister") }
+    var reregisterRefusal: String?
+    func reregister(completion: @escaping (Error?) -> Void) {
+        if let r = reregisterRefusal { return completion(ProfileError(r)) }
+        unregister()
+        register()
+        completion(nil)
+    }
+    /// Per profile: whether a certificate warning had come before its start.
+    var warnedBeforeStart: [String: Bool] = [:]
     func startPersistent(_ name: String, reply: @escaping (Result<String, Error>) -> Void) {
         reply(.failure(ProfileError("no persistent connections in E2E mode")))
     }
@@ -326,7 +337,7 @@ final class E2EServer {
             return [:]
         case "fake_helper": return ["starts": backend.starts, "stops": backend.stops, "bundles": backend.bundles,
                                     "unblocks": backend.unblocks, "suspends": backend.suspends,
-                                    "setup": backend.setupCalls]
+                                    "setup": backend.setupCalls, "warned_before_start": backend.warnedBeforeStart]
         case "snapshot":
             // A window as it looks on screen, frame and shadow included (an app may capture its own windows).
             let w = try window()
@@ -424,6 +435,9 @@ final class E2EServer {
         case "opened_urls": return ["urls": services.urls, "panels": services.panels]
         case "notifications": return ["items": services.notes]
         case "login_item": return ["enabled": services.launchAtLogin]
+        case "fake_reregister_fails":
+            backend.reregisterRefusal = r["message"] as? String
+            return [:]
         case "fake_login_item_refuses":
             services.loginItemRefusal = r["message"] as? String
             return [:]

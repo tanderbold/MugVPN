@@ -269,3 +269,76 @@ def test_ui61_an_older_helper_is_put_in_place_by_hand(home):
         a.click("Update MugVPN's Helper…")
         a.press(a.window("confirm"), "ok")
         wait_for(lambda: a.call("fake_helper")["setup"] == ["unregister", "register"], 5, "registered again")
+
+
+
+def test_ui62_helper_not_put_in_place(home):
+    """Registering the service again fails: said, nothing claimed done, the offer stays."""
+    with launched(home, helper_version="none") as a:
+        wait_for(lambda: "Update MugVPN's Helper…" in [i["title"] for i in a.menu()], 5, "the offer")
+        a.call("fake_reregister_fails", message="Operation not permitted")
+        a.click("Update MugVPN's Helper…")
+        a.press(a.window("confirm"), "ok")
+        w = a.window("error")
+        assert "Operation not permitted" in a.control(w, "text")["value"]
+        assert not any("was updated" in n["text"] for n in a.call("notifications")["items"])
+        assert "Update MugVPN's Helper…" in [i["title"] for i in a.menu()]
+
+
+SOON_P12 = """MIIEFAIBAzCCA8IGCSqGSIb3DQEHAaCCA7MEggOvMIIDqzCCAloGCSqGSIb3DQEH
+BqCCAkswggJHAgEAMIICQAYJKoZIhvcNAQcBMF8GCSqGSIb3DQEFDTBSMDEGCSqG
+SIb3DQEFDDAkBBD4FF2Q2kcoaFR3Wm2XMGHOAgIIADAMBggqhkiG9w0CCQUAMB0G
+CWCGSAFlAwQBKgQQvObjTVDAvou45XkU2mJLeoCCAdD2vlf0Mk2bUmHPeQl0cS3y
+0BnOYj9Zdcowkq9oeNkpVTfoOL6F+LJXM8as7hxCEChMLwnnjJupO1tFDRpDT2YN
+/V/ygxGjroRfJ09bXCYsV+sKHLLC6yM31gcl5frGaAkI9j78T3w1FXhs+o99YAzw
+3xLqSkKhnm9RgIvkb6vvTP4bXivxjjOBUYlKBV/vP2rKHf+OzOlixcsR+Piqjz36
+8tQLsw/IzWq+qHVFL6zO8SclwzIj4O3/DojX0LeGwnNZDoqSJxXM27PJzXwsnv9a
+jgVtBGahGLEnhPvIU0TGC6cXv3jINs6shPhF1n5lHQnwjw7A6vBC8YbYIENiPD8k
+VV4SNM+LmbZ/qtdoviGr9xbQ/mr4TmsHOVfK7OOKzMBxQi/WHkkcO7rJAQv79B80
+aqujQKHaYKcrfO8AMk3C3GOs5c6TLSDTlNK0Jm0/zgtUTMR90mhelJBfrwz9sjUp
+Bkube1A3wk2DUUkGvi+m9oa+Ac0L/ot5Jfa70MQPf4uudG/AIQS5YQwtyUK9Py+e
+PAyzRfpC0VgtntUmyujnFkyGSiXvlkH5f8OrZwrdUmkdOAOMrE1slzh7PjgAC1c/
+r5YGve709VoGQchCJ0IH4jCCAUkGCSqGSIb3DQEHAaCCAToEggE2MIIBMjCCAS4G
+CyqGSIb3DQEMCgECoIH3MIH0MF8GCSqGSIb3DQEFDTBSMDEGCSqGSIb3DQEFDDAk
+BBCdisDqmPPGA+BP/sTA0wEnAgIIADAMBggqhkiG9w0CCQUAMB0GCWCGSAFlAwQB
+KgQQF8m/OH42uPkKXxj+abK8ygSBkNhznbE/XB1ONGe4cuchtjnYTpTVg6zyBlen
+vJak/NS+1QDT7ZgAPTVAVK0U18Do4jvWtw8HJ7y+GHfIvFfS6v7MJrzJQwozs/FG
+83Y69b1dkocOfnPgQccZZWqo3S3TQKVNjMsWu/5785ep/9oPim6agzJhbu4OYHMs
+Q5HKXydmKUjJJXljKnsEi0he41rH9TElMCMGCSqGSIb3DQEJFTEWBBQqiu2WMB41
+61qjxNuV2C5YfipnbTBJMDEwDQYJYIZIAWUDBAIBBQAEILptNRB8S6JUT6G1QWMp
+LZpT2Csy1p8whtVl6BUEHrTPBBBVOEnS4S46CQCobwoPiBDOAgIIAA=="""
+
+
+def test_ui63_pkcs12_checked_before_the_tunnel_starts(app):
+    app.add_profile("p12soon", MINIMAL + "<pkcs12>\n" + SOON_P12 + "\n</pkcs12>\n")
+    app.click("p12soon", "Connect")
+    wait_for(lambda: "p12soon" in app.call("fake_helper")["starts"], 10, "the start")
+    assert app.call("fake_helper")["warned_before_start"]["p12soon"], "the warning came first"
+
+
+
+def test_ui64_connect_twice_or_disconnect_while_checked(home, tmp_path):
+    """While a PKCS#12 is checked (slow here): a second Connect waits for the same check (one start),
+    and a Disconnect meanwhile means no start at all."""
+    slow = tmp_path / "openssl"
+    slow.write_text('#!/bin/sh\nsleep 3\nexec /usr/bin/openssl "$@"\n')
+    slow.chmod(0o755)
+    with launched(home, env_extra={"MUGVPN_E2E_OPENSSL": str(slow)}) as a:
+        a.add_profile("p12a", MINIMAL + "<pkcs12>\n" + SOON_P12 + "\n</pkcs12>\n")
+        a.add_profile("p12b", MINIMAL + "<pkcs12>\n" + SOON_P12 + "\n</pkcs12>\n")
+        a.click("p12a", "Connect")
+        a.click("p12a", "Connect")
+        wait_for(lambda: "p12a" in a.call("fake_helper")["starts"], 10, "the start")
+        assert a.call("fake_helper")["starts"].count("p12a") == 1
+        a.click("p12b", "Connect")
+        a.click("p12b", "Disconnect")
+        import time
+        time.sleep(5)
+        assert "p12b" not in a.call("fake_helper")["starts"], "disconnected while checked: not started"
+
+
+def test_ui65_newer_helper_asks_for_the_app_to_be_updated(home):
+    with launched(home, helper_version="9.0.0") as a:
+        wait_for(lambda: any("9.0.0" in n["text"] for n in a.call("notifications")["items"]), 5, "the notice")
+        t = next(n["text"] for n in a.call("notifications")["items"] if "9.0.0" in n["text"])
+        assert "update MugVPN" in t and "updated once" not in t, t

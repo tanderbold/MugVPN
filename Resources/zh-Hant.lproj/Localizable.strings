@@ -113,7 +113,9 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其輔助程式來啟動通道。";
+"MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 輔助程式版本為 %@，比此 App（%@）新：請更新 MugVPN。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的輔助程式版本為 %@，而非此 App 的 %@：當沒有連線使用它時（或重新開機後）會更新。";
+"MugVPN's helper was not updated: %@" = "MugVPN 輔助程式未更新：%@";
 "MugVPN's helper was updated." = "MugVPN 輔助程式已更新。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "將移除 MugVPN、其輔助程式、紀錄、設定和儲存的密碼。通道將中斷連線。";
 "MugVPN: %@" = "MugVPN：%@";

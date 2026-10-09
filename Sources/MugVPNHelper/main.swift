@@ -16,6 +16,13 @@ signal(SIGPIPE, SIG_IGN)
 let queue = DispatchQueue(label: "mugvpn.helper")
 let system = RealSystem(queue: queue)
 let core = HelperCore(system: system)
+#if MUGVPN_TESTING
+// The stand: a version to pretend to run (root's file), so that an update can be tried (INT-46).
+let pretend = MugVPNIDs.supportDir + "/test-running-version"
+if let info = system.fileInfo(pretend), info.rootOnly, let d = system.readFile(pretend) {
+    core.runningVersion = String(decoding: d, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
+}
+#endif
 // Once uninstalled (every request answered): leave launchd's list too (a
 // development install has no SMAppService to do it) and exit.
 core.onUninstalled = {
@@ -109,8 +116,14 @@ final class Service: NSObject, MugVPNHelperProtocol {
     }
 
     func restartIfIdle(reply: @escaping (String?) -> Void) {
+        // The version of the bundle the helper comes from, as it is on disk now (an update replaced it).
+        let installed = (NSDictionary(contentsOf: contentsDir.appendingPathComponent("Info.plist")) as? [String: Any])?["CFBundleShortVersionString"] as? String
         queue.async {
-            guard core.beginRestartIfIdle() else { return reply("in use: it is updated once no connection or block needs it") }
+            switch core.beginRestartIfIdle(installed: installed) {
+            case .notNewer: return reply("not newer: the helper on disk is not newer than this one")
+            case .inUse: return reply("in use: it is updated once no connection or block needs it")
+            case .restart: break
+            }
             reply(nil)
             log("idle: exiting so that the updated helper starts")
             // A clean exit: launchd starts the helper again on the next call (from the app's bundle).

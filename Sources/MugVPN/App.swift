@@ -179,10 +179,12 @@ final class AppController: NSObject, NSMenuDelegate {
             DispatchQueue.main.async {
                 guard let self else { return }
                 self.manager.disconnectAll()
-                self.services.helperSetup.unregister()
-                self.services.helperSetup.register()
-                self.manager.helperReplaced()
-                self.services.notify(title: L("MugVPN"), text: L("MugVPN's helper was updated."))
+                self.services.helperSetup.reregister { [weak self] err in
+                    guard let self else { return }
+                    if let err { return showError(L("MugVPN's helper was not updated: %@", "\(err)")) }
+                    self.manager.helperReplaced()
+                    self.services.notify(title: L("MugVPN"), text: L("MugVPN's helper was updated."))
+                }
             }
             return true
         })
@@ -226,6 +228,8 @@ final class AppController: NSObject, NSMenuDelegate {
 
     private func wireOptions() {
         manager.splitDNS = { [weak self] p in self?.options.options(p.id).splitDNS ?? false }
+        // A PKCS#12's key password as typed: its end can be read now.
+        manager.onKeyPassword = { [weak self] p, pw in self?.warnCertificate(p, password: pw) }
         manager.protection = { [weak self] p in
             guard let self else { return ProtectionOptions() }
             return EffectiveSettings.protection(self.settingsStore.settings, self.options.options(p.id))
@@ -310,8 +314,13 @@ final class AppController: NSObject, NSMenuDelegate {
         }
         if let v = manager.helperVersionMismatch, !helperVersionShown {
             helperVersionShown = true
-            services.notify(title: L("MugVPN"), text: L("MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).",
-                                                      v, MugVPNIDs.helperVersion))
+            if manager.helperIsNewer {
+                services.notify(title: L("MugVPN"), text: L("MugVPN's helper is version %@, newer than this app (%@): update MugVPN.",
+                                                          v, MugVPNIDs.helperVersion))
+            } else {
+                services.notify(title: L("MugVPN"), text: L("MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).",
+                                                          v, MugVPNIDs.helperVersion))
+            }
         }
         updateStatusWindows()
         // Conflicts, leaks and blocks are looked at when connections change state,
@@ -331,32 +340,39 @@ final class AppController: NSObject, NSMenuDelegate {
     private var certificateWarned: Set<String> = []
 
     /// A client certificate that ends within 30 days, or has ended: said once a run, on connecting.
-    private func warnCertificate(_ p: Profile) {
-        guard !certificateWarned.contains(p.id), let config = store.config(of: p) else { return }
+    /// - then: called once the check is done (a PKCS#12 is read off the main thread, within its deadline).
+    private func warnCertificate(_ p: Profile, password: String? = nil, then: @escaping () -> Void = {}) {
+        guard !certificateWarned.contains(p.id), let config = store.config(of: p) else { return then() }
         let dir = (p.path as NSString).deletingLastPathComponent
         func path(_ f: String) -> String { f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f) }
         if let end = CertificateExpiry.clientCertificate(config: config, read: { try? String(contentsOfFile: path($0), encoding: .utf8) })
             .flatMap(CertificateExpiry.notAfter(pem:)) {
-            return warn(p, end)
+            warn(p, end)
+            return then()
         }
-        // PKCS#12: read by openssl off the main thread, with the key password saved for the profile.
+        // PKCS#12: read by openssl off the main thread, with the key password (saved, or as typed).
         let data: Data?
         switch CertificateExpiry.clientPKCS12(config: config) {
         case .file(let f)?: data = FileManager.default.contents(atPath: path(f))
         case .inline(let d)?: data = d
         case nil: data = nil
         }
-        guard let data, certificateChecking.insert(p.id).inserted else { return }
-        let password = secrets.get(p.secretsKey, .keyPassword)
+        guard let data, certificateChecking.insert(p.id).inserted else { return then() }
+        let pw = password ?? secrets.get(p.secretsKey, .keyPassword), tool = pkcs12Tool
         DispatchQueue.global().async { [weak self] in
-            let end = CertificateExpiry.notAfter(pkcs12: data, password: password)
+            let end = CertificateExpiry.notAfter(pkcs12: data, password: pw, openssl: tool)
             DispatchQueue.main.async {
                 self?.certificateChecking.remove(p.id)
                 if let end { self?.warn(p, end) }
+                then()
             }
         }
     }
     private var certificateChecking: Set<String> = []
+    /// The openssl that reads PKCS#12 (a test build may slow it down: MUGVPN_E2E_OPENSSL).
+    private var pkcs12Tool: String {
+        testingBuild ? ProcessInfo.processInfo.environment["MUGVPN_E2E_OPENSSL"] ?? "/usr/bin/openssl" : "/usr/bin/openssl"
+    }
 
     private func warn(_ p: Profile, _ end: Date) {
         guard !certificateWarned.contains(p.id), let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
@@ -547,7 +563,7 @@ final class AppController: NSObject, NSMenuDelegate {
         menu.addItem(action(L("Quit MugVPN"), #selector(quit)))
     }
 
-    @objc func disconnectAll() { manager.disconnectAll() }
+    @objc func disconnectAll() { disconnectEverything() }
 
     private func action(_ title: String, _ sel: Selector, _ obj: Any? = nil, enabled: Bool = true) -> NSMenuItem {
         let i = NSMenuItem(title: title, action: sel, keyEquivalent: "")
@@ -579,7 +595,7 @@ final class AppController: NSObject, NSMenuDelegate {
     private func profileItems(_ p: Profile) -> [NSMenuItem] {
         let active = manager.active[p.id] != nil
         return [action(L("Connect"), #selector(connectItem), p, enabled: !active),
-                action(L("Disconnect"), #selector(disconnectItem), p, enabled: active),
+                action(L("Disconnect"), #selector(disconnectItem), p, enabled: active || pending.isPending(p.id)),
                 action(L("Reconnect"), #selector(reconnectItem), p, enabled: active),
                 action(L("Show Status"), #selector(showStatusItem), p, enabled: active),
                 .separator(),
@@ -612,9 +628,34 @@ final class AppController: NSObject, NSMenuDelegate {
         connect(p)
     }
 
-    func connect(_ p: Profile) {
-        // Before it starts: a server refuses an expired certificate long before anything is up.
-        warnCertificate(p)
+    /// Before it starts: a server refuses an expired certificate long before anything is up.
+    /// - then: once it was asked to start (or could not be, or was disconnected while checked).
+    func connect(_ p: Profile, then: @escaping () -> Void = {}) {
+        pendingThens[p.id, default: []].append(then)
+        // A second Connect while the first is checked: it waits for the same check.
+        guard pending.begin(p.id) else { return }
+        warnCertificate(p) { [weak self] in
+            guard let self else { return }
+            if self.pending.finish(p.id) == true { self.connectChecked(p) }
+            self.pendingThens.removeValue(forKey: p.id)?.forEach { $0() }
+            self.rebuildMenu()
+        }
+    }
+    private var pending = PendingStarts()
+    private var pendingThens: [String: [() -> Void]] = [:]
+
+    /// Disconnect, a connection still being checked included (it then does not start).
+    func disconnect(_ p: Profile) {
+        pending.cancel(p.id)
+        manager.disconnect(p.id)
+    }
+
+    func disconnectEverything() {
+        pending.cancelAll()
+        manager.disconnectAll()
+    }
+
+    private func connectChecked(_ p: Profile) {
         let setup = services.helperSetup
         if setup.state == .notRegistered {
             if HelperRegistration.problem(bundlePath: Bundle.main.bundlePath) != nil, !setup.isTestDouble {
@@ -632,7 +673,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     @objc func disconnectItem(_ sender: NSMenuItem) {
         guard let p = sender.representedObject as? Profile else { return }
-        manager.disconnect(p.id)
+        disconnect(p)
     }
 
     @objc func reconnectItem(_ sender: NSMenuItem) {
@@ -746,7 +787,7 @@ final class AppController: NSObject, NSMenuDelegate {
         }
         let v = StatusView(
             onConnect: { [weak self] in self?.connect(p) },
-            onDisconnect: { [weak self] in self?.manager.disconnect(p.id) },
+            onDisconnect: { [weak self] in self?.disconnect(p) },
             onReconnect: { [weak self] in self?.manager.reconnect(p.id) })
         let w = AppWindow(kind: "status", profile: p.displayName, title: windowTitle(p.displayName), content: v.view)
         v.onHide = { [weak w] in w?.close() }

@@ -60,13 +60,26 @@ final class XPCHelperClient: HelperClient {
         p.version { once($0) }
     }
 
-    /// An older helper has no such call: the XPC error (or no answer within 5 s) says so.
+    /// No answer: .unavailable (an older helper without the call looks the same from here).
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void) {
         var done = false
         let once: (HelperRestart) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once(.unsupported) }
-        guard let p = proxy({ _ in once(.unsupported) }) else { return once(.unsupported) }
-        p.restartIfIdle { once($0 == nil ? .restarting : .inUse) }
+        // What the failure means (an older helper, or a passing one) is for the caller to find out.
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once(.unavailable) }
+        guard let p = proxy({ _ in once(.unavailable) }) else { return once(.unavailable) }
+        p.restartIfIdle { err in
+            if err == nil { return once(.restarting) }
+            once(err?.hasPrefix("not newer") == true ? .notNewer : .inUse)
+        }
+    }
+
+    /// A call every helper version has (blocks), within 5 s.
+    func reachable(reply: @escaping (Bool) -> Void) {
+        var done = false
+        let once: (Bool) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once(false) }
+        guard let p = proxy({ _ in once(false) }) else { return once(false) }
+        p.blocks { _ in once(true) }
     }
 
     func blocks(reply: @escaping ([String]) -> Void) {
@@ -306,6 +319,8 @@ extension HelperSetup {
 
 protocol HelperSetup: AnyObject {
     var state: HelperState { get }
+    /// Unregister, then (once launchd has stopped the running helper) register again; the error or nil.
+    func reregister(completion: @escaping (Error?) -> Void)
     /// The test mode's stand-in (a testing build only).
     var isTestDouble: Bool { get }
     func register()
@@ -328,6 +343,16 @@ final class SMHelperSetup: HelperSetup {
     }
     func register() { if !devInstall { try? service.register() } }
     func unregister() { try? service.unregister() }
+    /// Register again only from unregister's completion: the running daemon is gone by then.
+    func reregister(completion: @escaping (Error?) -> Void) {
+        if devInstall { return completion(ProfileError("a development install: run tools/stand/stand.sh helper")) }
+        service.unregister { [service] err in
+            DispatchQueue.main.async {
+                if let err { return completion(err) }
+                do { try service.register(); completion(nil) } catch { completion(error) }
+            }
+        }
+    }
     func openLoginItems() { SMAppService.openSystemSettingsLoginItems() }
 }
 

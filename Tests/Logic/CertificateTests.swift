@@ -36,6 +36,20 @@ func registerCertificateTests() {
         let f = ISO8601DateFormatter()
         return f.date(from: s)!
     }
+    test("PEND-01", "connections waiting for their certificate check: one check, every waiter, cancelled by a disconnect") {
+        var p = PendingStarts()
+        expect(p.begin("a"), "the first starts the check")
+        expect(!p.begin("a"), "a second Connect waits for the same one")
+        expect(p.isPending("a"))
+        expectEqual(p.finish("a"), true, "done: connect (once)")
+        expect(!p.isPending("a"))
+        expect(p.begin("b"))
+        p.cancel("b")
+        expectEqual(p.finish("b"), false, "disconnected meanwhile: no start")
+        expect(p.begin("b"), "a new Connect after that checks again")
+        p.cancelAll()
+        expectEqual(p.finish("b"), false)
+    }
     test("CERT-01", "a certificate's end date, in both time forms") {
         expectEqual(CertificateExpiry.notAfter(pem: soon), date("2026-10-19T10:55:34Z"))
         expectEqual(CertificateExpiry.notAfter(pem: late), date("2054-02-24T10:55:34Z"))

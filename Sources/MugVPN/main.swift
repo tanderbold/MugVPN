@@ -318,12 +318,17 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             switch c {
             case .connect(let n):
                 guard let p = profile(n) else { return }
-                if m.active[p.id] != nil { controller.showStatus(p) } else { controller.connect(p) }
-                guard m.active[p.id] != nil else { return reply(.failed("\(p.displayName) was not started (see MugVPN)")) }
-                waitFor(p, .connected(after: nil), within: wait)
+                if m.active[p.id] != nil {
+                    controller.showStatus(p)
+                    return waitFor(p, .connected(after: nil), within: wait)
+                }
+                controller.connect(p) {
+                    guard m.active[p.id] != nil else { return reply(.failed("\(p.displayName) was not started (see MugVPN)")) }
+                    waitFor(p, .connected(after: nil), within: wait)
+                }
             case .disconnect(let n):
                 guard let p = profile(n) else { return }
-                m.disconnect(p.id)
+                controller.disconnect(p)
                 waitFor(p, .gone, within: wait)
             case .reconnect(let n):
                 guard let p = profile(n) else { return }
@@ -332,7 +337,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 m.reconnect(p.id)
                 waitFor(p, .connected(after: before), within: wait)
             case .disconnectAll:
-                m.disconnectAll()
+                controller.disconnectEverything()
                 reply(.ok)
             case .silentConnection(let on):
                 do {

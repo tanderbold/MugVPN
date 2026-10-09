@@ -113,7 +113,9 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "تنظیمات MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN برای راه‌اندازی تونل‌ها به سرویس کمکی خود نیاز دارد.";
+"MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "نسخهٔ دستیار MugVPN %@ است، جدیدتر از این برنامه (%@): MugVPN را به‌روز کنید.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "نسخهٔ دستیار MugVPN %@ است، نه %@ این برنامه: وقتی هیچ اتصالی از آن استفاده نکند (یا پس از راه‌اندازی دوباره) به‌روز می‌شود.";
+"MugVPN's helper was not updated: %@" = "دستیار MugVPN به‌روز نشد: %@";
 "MugVPN's helper was updated." = "دستیار MugVPN به‌روز شد.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN، برنامهٔ کمکی آن، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.";
 "MugVPN: %@" = "MugVPN: %@";

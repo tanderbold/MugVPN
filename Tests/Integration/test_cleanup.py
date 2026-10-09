@@ -77,16 +77,29 @@ def test_int35_helper_stays_responsive_through_cleanups(vpn, mac):
 
 
 def test_int46_helper_restarts_for_an_update_only_when_idle(vpn, mac):
-    """INT-46: the helper exits for launchd to start the updated one only when nothing needs it."""
+    """INT-46: the helper exits for launchd to start the updated one only when the one on disk is
+    newer and nothing needs it (the test build pretends to run an older version)."""
     import re
+    pretend = "'/Library/Application Support/MugVPN/test-running-version'"
     pid = lambda: mac.out("pgrep -f Contents/MacOS/MugVPNHelper || true").split()
-    vpn.connected("stand-a")
-    r = vpn.cli("restart-if-idle")
-    assert r.returncode != 0 and "in use" in r.stderr, r.stdout + r.stderr
-    vpn.disconnect_all()
-    before = pid()
-    assert vpn.cli("restart-if-idle").returncode == 0
-    wait_for(lambda: pid() != before, 10, "the old helper to exit")
-    out = vpn.cli("helper-version").stdout.strip()
-    assert re.fullmatch(r"\d+\.\d+\.\d+", out), out
-    assert pid() and pid() != before, "launchd started it again on the next call"
+    restart = lambda: mac.run("sudo launchctl kickstart -k system/com.mugvpn.helper", check=True)
+    try:
+        r = vpn.cli("restart-if-idle")
+        assert r.returncode != 0 and "not newer" in r.stderr, "the same version on disk: stays: " + r.stdout + r.stderr
+        mac.run(f"echo 0.0.1 | sudo tee {pretend} >/dev/null && sudo chmod 644 {pretend}", check=True)
+        restart()
+        wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
+        vpn.connected("stand-a")
+        r = vpn.cli("restart-if-idle")
+        assert r.returncode != 0 and "in use" in r.stderr, r.stdout + r.stderr
+        vpn.disconnect_all()
+        before = pid()
+        assert vpn.cli("restart-if-idle").returncode == 0
+        wait_for(lambda: pid() != before, 10, "the old helper to exit")
+        out = vpn.cli("helper-version").stdout.strip()
+        assert re.fullmatch(r"\d+\.\d+\.\d+", out), out
+        assert pid() and pid() != before, "launchd started it again on the next call"
+    finally:
+        mac.run(f"sudo rm -f {pretend}")
+        restart()
+        wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")

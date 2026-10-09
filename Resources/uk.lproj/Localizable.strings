@@ -113,7 +113,9 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Налаштування MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN потрібен допоміжний компонент для запуску тунелів.";
+"MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Помічник MugVPN версії %@ — новіший за цей застосунок (%@): оновіть MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).";
+"MugVPN's helper was not updated: %@" = "Помічник MugVPN не оновлено: %@";
 "MugVPN's helper was updated." = "Помічник MugVPN оновлено.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Буде видалено MugVPN, його допоміжну службу, журнали, налаштування та збережені паролі. Тунелі буде відключено.";
 "MugVPN: %@" = "MugVPN: %@";
