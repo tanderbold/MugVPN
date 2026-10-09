@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN Ayarları";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.";
+"MugVPN's helper was updated." = "MugVPN yardımcısı güncellendi.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, yardımcı programı, günlükler, ayarlar ve kayıtlı parolalar silinecek. Tüneller kesilecek.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Tekrarlanan mesajları sessize al (sa):";
@@ -182,6 +183,7 @@
 "The first time" = "İlk seferde";
 "The private key needs its client certificate." = "Özel anahtar için istemci sertifikası gerekir.";
 "The proxy for %@ needs a username and password." = "%@ için proxy, kullanıcı adı ve şifre gerektiriyor.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?";
 "These DNS servers" = "Bu DNS sunucuları";
 "Third-Party Notices" = "Üçüncü taraf bildirimleri";
 "This network asks you to sign in first." = "Bu ağ önce oturum açmanızı istiyor.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Kaldır";
 "Uninstall MugVPN" = "MugVPN’i Kaldır";
 "Uninstall MugVPN…" = "MugVPN’i Kaldır…";
+"Update" = "Güncelle";
+"Update MugVPN's Helper" = "MugVPN yardımcısını güncelle";
+"Update MugVPN's Helper…" = "MugVPN yardımcısını güncelle…";
 "Use the system proxy settings" = "Sistem proxy ayarlarını kullan";
 "Username:" = "Kullanıcı adı:";
 "View Log" = "Günlüğü göster";

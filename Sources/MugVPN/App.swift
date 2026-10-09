@@ -169,6 +169,25 @@ final class AppController: NSObject, NSMenuDelegate {
         }
     }
 
+    /// An older helper cannot start itself again: registering the service again puts the app's in
+    /// place. launchd stops the old one, and with it every user's tunnels: asked first.
+    @objc func updateHelper() {
+        showForm(kind: "confirm", profile: "", title: L("Update MugVPN's Helper"),
+                 views: [Form.label(L("The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?"),
+                                    id: "prompt_text")],
+                 okTitle: L("Update"), ok: { [weak self] _ in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                self.manager.disconnectAll()
+                self.services.helperSetup.unregister()
+                self.services.helperSetup.register()
+                self.manager.helperReplaced()
+                self.services.notify(title: L("MugVPN"), text: L("MugVPN's helper was updated."))
+            }
+            return true
+        })
+    }
+
     @objc func unblockInternet() {
         manager.helperClient.unblock { [weak self] err in
             if let err { showError(err) }
@@ -316,11 +335,31 @@ final class AppController: NSObject, NSMenuDelegate {
         guard !certificateWarned.contains(p.id), let config = store.config(of: p) else { return }
         let dir = (p.path as NSString).deletingLastPathComponent
         func path(_ f: String) -> String { f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f) }
-        let pemEnd = CertificateExpiry.clientCertificate(config: config, read: { try? String(contentsOfFile: path($0), encoding: .utf8) })
-            .flatMap(CertificateExpiry.notAfter(pem:))
-        let p12End = CertificateExpiry.clientPKCS12(config: config)
-            .flatMap { CertificateExpiry.notAfter(pkcs12File: path($0)) }
-        guard let end = pemEnd ?? p12End, let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
+        if let end = CertificateExpiry.clientCertificate(config: config, read: { try? String(contentsOfFile: path($0), encoding: .utf8) })
+            .flatMap(CertificateExpiry.notAfter(pem:)) {
+            return warn(p, end)
+        }
+        // PKCS#12: read by openssl off the main thread, with the key password saved for the profile.
+        let data: Data?
+        switch CertificateExpiry.clientPKCS12(config: config) {
+        case .file(let f)?: data = FileManager.default.contents(atPath: path(f))
+        case .inline(let d)?: data = d
+        case nil: data = nil
+        }
+        guard let data, certificateChecking.insert(p.id).inserted else { return }
+        let password = secrets.get(p.secretsKey, .keyPassword)
+        DispatchQueue.global().async { [weak self] in
+            let end = CertificateExpiry.notAfter(pkcs12: data, password: password)
+            DispatchQueue.main.async {
+                self?.certificateChecking.remove(p.id)
+                if let end { self?.warn(p, end) }
+            }
+        }
+    }
+    private var certificateChecking: Set<String> = []
+
+    private func warn(_ p: Profile, _ end: Date) {
+        guard !certificateWarned.contains(p.id), let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
         certificateWarned.insert(p.id)
         let day = DateFormatter.localizedString(from: end, dateStyle: .medium, timeStyle: .none)
         switch w {
@@ -475,7 +514,10 @@ final class AppController: NSObject, NSMenuDelegate {
             menu.addItem(i)
         }
         if offerSignIn { menu.addItem(action(L("Sign in to This Network…"), #selector(signInToNetwork))) }
-        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || offerSignIn { menu.addItem(.separator()) }
+        if manager.helperNeedsManualUpdate { menu.addItem(action(L("Update MugVPN's Helper…"), #selector(updateHelper))) }
+        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || offerSignIn || manager.helperNeedsManualUpdate {
+            menu.addItem(.separator())
+        }
         let profiles = manager.profiles
         if profiles.isEmpty {
             let i = NSMenuItem(title: L("No profiles yet"), action: nil, keyEquivalent: "")

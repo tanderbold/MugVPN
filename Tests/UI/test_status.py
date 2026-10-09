@@ -254,3 +254,18 @@ def test_ui59_expired_certificate_said_before_connecting(app):
     app.add_profile("expired", MINIMAL + "<cert>\n" + EXPIRED_CERT + "\n</cert>\n")
     app.click("expired", "Connect")
     wait_for(lambda: any("expired" in n["text"] for n in app.call("notifications")["items"]), 5, "the warning")
+
+
+def test_ui61_an_older_helper_is_put_in_place_by_hand(home):
+    """An older helper (no version, no restart call) cannot start itself again: the menu offers to put
+    the new one in place; it asks first (every user's tunnels stop), then registers the service again."""
+    with launched(home, helper_version="none") as a:
+        wait_for(lambda: "Update MugVPN's Helper…" in [i["title"] for i in a.menu()], 5, "the offer")
+        a.click("Update MugVPN's Helper…")
+        c = a.window("confirm")
+        assert "every" in a.control(c, "prompt_text")["value"].lower()
+        a.press(c, "cancel")
+        assert a.call("fake_helper")["setup"] == []
+        a.click("Update MugVPN's Helper…")
+        a.press(a.window("confirm"), "ok")
+        wait_for(lambda: a.call("fake_helper")["setup"] == ["unregister", "register"], 5, "registered again")

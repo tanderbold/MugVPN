@@ -2,12 +2,21 @@ import Foundation
 import MugVPNCore
 
 /// The helper as the app sees it (XPC in the app, a fake in tests).
+/// What the helper says to "start again for an update".
+public enum HelperRestart: Equatable, Sendable {
+    case restarting
+    /// A connection or block of someone's needs it now.
+    case inUse
+    /// It has no such call (an older helper) or does not answer.
+    case unsupported
+}
+
 public protocol HelperClient: AnyObject {
     /// The helper's version (MugVPNIDs.helperVersion of the build it came with).
     func version(reply: @escaping (String?) -> Void)
     /// Exit if no connection or block of anyone's needs it (launchd then starts the helper the
     /// app came with); nil when it does, or why not.
-    func restartIfIdle(reply: @escaping (String?) -> Void)
+    func restartIfIdle(reply: @escaping (HelperRestart) -> Void)
     func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
     func stop(_ id: String, reply: @escaping (String?) -> Void)
     func list(reply: @escaping ([ConnectionInfo]) -> Void)
@@ -103,6 +112,18 @@ public final class ConnectionManager {
     /// The helper's version when it is not the app's (an update not yet taken by the running helper).
     public private(set) var helperVersionMismatch: String?
     private var helperRestartAsked = false
+    /// An older helper that cannot start itself again: the user puts the new one in place (re-registering it).
+    public private(set) var helperNeedsManualUpdate = false
+    /// The next wait before asking a helper in use again.
+    private var helperRestartWait: TimeInterval = 60
+    public static let helperRestartMaxWait: TimeInterval = 1800
+
+    /// The user put the new helper in place by hand: asked again shortly.
+    public func helperReplaced() {
+        helperNeedsManualUpdate = false
+        onChange()
+        scheduler.after(3) { [weak self] in self?.checkHelperVersion() }
+    }
 
     /// nil (no answer: an older helper has no version call) counts as another version.
     private func checkHelperVersion() {
@@ -119,14 +140,29 @@ public final class ConnectionManager {
     /// Another helper version, and nothing of this app's uses it: it is asked to start again
     /// (it does only if no one's connection or block needs it), then asked its version again.
     private func restartOutdatedHelper() {
-        guard helperVersionMismatch != nil, active.isEmpty, !helperRestartAsked else { return }
+        guard helperVersionMismatch != nil, active.isEmpty, !helperRestartAsked, !helperNeedsManualUpdate else { return }
         helperRestartAsked = true
-        helper.restartIfIdle { [weak self] err in
+        helper.restartIfIdle { [weak self] answer in
             guard let self else { return }
-            if err != nil { self.helperRestartAsked = false; return }
-            self.scheduler.after(2) { [weak self] in
-                self?.helperRestartAsked = false
-                self?.checkHelperVersion()
+            switch answer {
+            case .restarting:
+                self.helperRestartWait = 60
+                self.scheduler.after(2) { [weak self] in
+                    self?.helperRestartAsked = false
+                    self?.checkHelperVersion()
+                }
+            case .inUse:
+                // Someone else's tunnel or block: nothing here says when it ends, so ask again later.
+                let wait = self.helperRestartWait
+                self.helperRestartWait = min(wait * 2, ConnectionManager.helperRestartMaxWait)
+                self.scheduler.after(wait) { [weak self] in
+                    self?.helperRestartAsked = false
+                    self?.restartOutdatedHelper()
+                }
+            case .unsupported:
+                self.helperRestartAsked = false
+                self.helperNeedsManualUpdate = true
+                self.onChange()
             }
         }
     }

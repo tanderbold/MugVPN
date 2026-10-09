@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN-asetukset";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).";
+"MugVPN's helper was updated." = "MugVPN:n apuohjelma päivitettiin.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, sen apuohjelma, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Mykistä toistuvat viestit (h):";
@@ -182,6 +183,7 @@
 "The first time" = "Ensimmäisellä kerralla";
 "The private key needs its client certificate." = "Yksityinen avain tarvitsee asiakasvarmenteensa.";
 "The proxy for %@ needs a username and password." = "Profiilin %@ välipalvelin vaatii käyttäjänimen ja salasanan.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?";
 "These DNS servers" = "Nämä DNS-palvelimet";
 "Third-Party Notices" = "Kolmansien osapuolten ilmoitukset";
 "This network asks you to sign in first." = "Tämä verkko vaatii ensin kirjautumisen.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Poista asennus";
 "Uninstall MugVPN" = "Poista MugVPN";
 "Uninstall MugVPN…" = "Poista MugVPN…";
+"Update" = "Päivitä";
+"Update MugVPN's Helper" = "Päivitä MugVPN:n apuohjelma";
+"Update MugVPN's Helper…" = "Päivitä MugVPN:n apuohjelma…";
 "Use the system proxy settings" = "Käytä järjestelmän välipalvelinasetuksia";
 "Username:" = "Käyttäjänimi:";
 "View Log" = "Näytä loki";

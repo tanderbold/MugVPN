@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Nastavení MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).";
+"MugVPN's helper was updated." = "Pomocník MugVPN byl aktualizován.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, jeho pomocná služba, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Potlačit opakované zprávy (h):";
@@ -182,6 +183,7 @@
 "The first time" = "Poprvé";
 "The private key needs its client certificate." = "Soukromý klíč potřebuje svůj klientský certifikát.";
 "The proxy for %@ needs a username and password." = "Proxy pro %@ vyžaduje uživatelské jméno a heslo.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?";
 "These DNS servers" = "Tyto DNS servery";
 "Third-Party Notices" = "Oznámení třetích stran";
 "This network asks you to sign in first." = "Tato síť nejprve vyžaduje přihlášení.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Odinstalovat";
 "Uninstall MugVPN" = "Odinstalovat MugVPN";
 "Uninstall MugVPN…" = "Odinstalovat MugVPN…";
+"Update" = "Aktualizovat";
+"Update MugVPN's Helper" = "Aktualizovat pomocníka MugVPN";
+"Update MugVPN's Helper…" = "Aktualizovat pomocníka MugVPN…";
 "Use the system proxy settings" = "Použít systémové nastavení proxy";
 "Username:" = "Jméno:";
 "View Log" = "Zobrazit protokol";

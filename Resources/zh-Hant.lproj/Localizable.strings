@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其輔助程式來啟動通道。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的輔助程式版本為 %@，而非此 App 的 %@：當沒有連線使用它時（或重新開機後）會更新。";
+"MugVPN's helper was updated." = "MugVPN 輔助程式已更新。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "將移除 MugVPN、其輔助程式、紀錄、設定和儲存的密碼。通道將中斷連線。";
 "MugVPN: %@" = "MugVPN：%@";
 "Mute repeated messages (h):" = "重複訊息靜音時長（小時）：";
@@ -182,6 +183,7 @@
 "The first time" = "僅第一次";
 "The private key needs its client certificate." = "私密金鑰需要其用戶端憑證。";
 "The proxy for %@ needs a username and password." = "%@ 的代理伺服器需要使用者名稱和密碼。";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？";
 "These DNS servers" = "以下 DNS 伺服器";
 "Third-Party Notices" = "第三方聲明";
 "This network asks you to sign in first." = "此網路要求先登入。";
@@ -193,6 +195,9 @@
 "Uninstall" = "解除安裝";
 "Uninstall MugVPN" = "解除安裝 MugVPN";
 "Uninstall MugVPN…" = "解除安裝 MugVPN…";
+"Update" = "更新";
+"Update MugVPN's Helper" = "更新 MugVPN 輔助程式";
+"Update MugVPN's Helper…" = "更新 MugVPN 輔助程式…";
 "Use the system proxy settings" = "使用系統代理伺服器設定";
 "Username:" = "使用者名稱：";
 "View Log" = "檢視紀錄";

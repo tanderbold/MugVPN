@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN-indstillinger";
 "MugVPN needs its helper to start tunnels." = "MugVPN skal bruge sin hjælper for at starte tunneler.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN's hjælper er version %@, ikke denne apps %@: den opdateres, når ingen forbindelse bruger den (eller efter en genstart).";
+"MugVPN's helper was updated." = "MugVPN's hjælper blev opdateret.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, dets hjælpeprogram, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Undertryk gentagne meddelelser (t):";
@@ -182,6 +183,7 @@
 "The first time" = "Første gang";
 "The private key needs its client certificate." = "Den private nøgle kræver sit klientcertifikat.";
 "The proxy for %@ needs a username and password." = "Proxyen til %@ kræver brugernavn og kodeord.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Den kørende hjælper er en ældre, der ikke kan opdatere sig selv. At sætte den nye i stedet stopper alle MugVPN-forbindelser på denne Mac for alle brugere. Fortsæt?";
 "These DNS servers" = "Disse DNS-servere";
 "Third-Party Notices" = "Tredjepartsmeddelelser";
 "This network asks you to sign in first." = "Dette netværk kræver, at du logger ind først.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Afinstaller";
 "Uninstall MugVPN" = "Afinstaller MugVPN";
 "Uninstall MugVPN…" = "Afinstaller MugVPN…";
+"Update" = "Opdater";
+"Update MugVPN's Helper" = "Opdater MugVPN's hjælper";
+"Update MugVPN's Helper…" = "Opdater MugVPN's hjælper…";
 "Use the system proxy settings" = "Brug systemets proxyindstillinger";
 "Username:" = "Brugernavn:";
 "View Log" = "Vis log";

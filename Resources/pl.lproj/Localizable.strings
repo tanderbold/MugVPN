@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Ustawienia MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN potrzebuje programu pomocniczego, aby uruchamiać tunele.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocnik MugVPN ma wersję %@, nie %@ tej aplikacji: zaktualizuje się, gdy nie będzie go używać żadne połączenie (lub po ponownym uruchomieniu).";
+"MugVPN's helper was updated." = "Pomocnik MugVPN został zaktualizowany.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, jego program pomocniczy, logi, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Wycisz powtarzane komunikaty (h):";
@@ -182,6 +183,7 @@
 "The first time" = "Za pierwszym razem";
 "The private key needs its client certificate." = "Klucz prywatny wymaga certyfikatu klienta.";
 "The proxy for %@ needs a username and password." = "Proxy dla %@ wymaga nazwy użytkownika i hasła.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?";
 "These DNS servers" = "Te serwery DNS";
 "Third-Party Notices" = "Informacje o oprogramowaniu innych firm";
 "This network asks you to sign in first." = "Ta sieć najpierw wymaga zalogowania.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Odinstaluj";
 "Uninstall MugVPN" = "Odinstaluj MugVPN";
 "Uninstall MugVPN…" = "Odinstaluj MugVPN…";
+"Update" = "Aktualizuj";
+"Update MugVPN's Helper" = "Zaktualizuj pomocnika MugVPN";
+"Update MugVPN's Helper…" = "Zaktualizuj pomocnika MugVPN…";
 "Use the system proxy settings" = "Użyj systemowych ustawień proxy";
 "Username:" = "Nazwa użytkownika:";
 "View Log" = "Pokaż log";

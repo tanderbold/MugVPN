@@ -54,9 +54,9 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply([]) }
     var helperVersion = ProcessInfo.processInfo.environment["MUGVPN_E2E_HELPER_VERSION"] ?? MugVPNIDs.helperVersion
-    func version(reply: @escaping (String?) -> Void) { reply(helperVersion) }
-    /// The fake helper is always in use: an update waits.
-    func restartIfIdle(reply: @escaping (String?) -> Void) { reply("in use") }
+    func version(reply: @escaping (String?) -> Void) { reply(helperVersion == "none" ? nil : helperVersion) }
+    /// "none": an older helper (no version, no restart call); otherwise always in use: an update waits.
+    func restartIfIdle(reply: @escaping (HelperRestart) -> Void) { reply(helperVersion == "none" ? .unsupported : .inUse) }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
@@ -72,7 +72,8 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         uninstallRequests.append(["keepProfiles": keepProfiles])
         reply(nil)
     }
-    func unregister() {}
+    var setupCalls: [String] = []
+    func unregister() { setupCalls.append("unregister") }
     func startPersistent(_ name: String, reply: @escaping (Result<String, Error>) -> Void) {
         reply(.failure(ProfileError("no persistent connections in E2E mode")))
     }
@@ -82,7 +83,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         links[name] = l
         return l
     }
-    func register() {}
+    func register() { setupCalls.append("register") }
     func openLoginItems() { services?.urls.append("x-apple.systempreferences:com.apple.LoginItems-Settings.extension") }
 }
 
@@ -324,7 +325,8 @@ final class E2EServer {
             backend.links.removeValue(forKey: try str("profile"))?.onClose()
             return [:]
         case "fake_helper": return ["starts": backend.starts, "stops": backend.stops, "bundles": backend.bundles,
-                                    "unblocks": backend.unblocks, "suspends": backend.suspends]
+                                    "unblocks": backend.unblocks, "suspends": backend.suspends,
+                                    "setup": backend.setupCalls]
         case "snapshot":
             // A window as it looks on screen, frame and shadow included (an app may capture its own windows).
             let w = try window()

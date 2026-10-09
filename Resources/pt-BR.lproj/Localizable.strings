@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Configurações do MugVPN";
 "MugVPN needs its helper to start tunnels." = "O MugVPN precisa do seu auxiliar para iniciar túneis.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "O auxiliar do MugVPN está na versão %@, não na %@ deste app: ele é atualizado quando nenhuma conexão o usa (ou após reiniciar).";
+"MugVPN's helper was updated." = "O auxiliar do MugVPN foi atualizado.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "O MugVPN, seu auxiliar, registros, ajustes e senhas salvas serão removidos. Os túneis serão desconectados.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenciar mensagens repetidas (h):";
@@ -182,6 +183,7 @@
 "The first time" = "Na primeira vez";
 "The private key needs its client certificate." = "A chave privada requer seu certificado de cliente.";
 "The proxy for %@ needs a username and password." = "O proxy de %@ requer usuário e senha.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?";
 "These DNS servers" = "Estes servidores DNS";
 "Third-Party Notices" = "Avisos de terceiros";
 "This network asks you to sign in first." = "Esta rede pede que você entre primeiro.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Desinstalar";
 "Uninstall MugVPN" = "Desinstalar o MugVPN";
 "Uninstall MugVPN…" = "Desinstalar o MugVPN…";
+"Update" = "Atualizar";
+"Update MugVPN's Helper" = "Atualizar o auxiliar do MugVPN";
+"Update MugVPN's Helper…" = "Atualizar o auxiliar do MugVPN…";
 "Use the system proxy settings" = "Usar as configurações de proxy do sistema";
 "Username:" = "Usuário:";
 "View Log" = "Ver registro";

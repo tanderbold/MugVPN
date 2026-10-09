@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Налаштування MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN потрібен допоміжний компонент для запуску тунелів.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).";
+"MugVPN's helper was updated." = "Помічник MugVPN оновлено.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Буде видалено MugVPN, його допоміжну службу, журнали, налаштування та збережені паролі. Тунелі буде відключено.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Приховувати повторні повідомлення (год):";
@@ -182,6 +183,7 @@
 "The first time" = "Лише вперше";
 "The private key needs its client certificate." = "Закритому ключу потрібен його сертифікат клієнта.";
 "The proxy for %@ needs a username and password." = "Проксі-сервер для %@ потребує імені користувача та пароля.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?";
 "These DNS servers" = "Ці DNS-сервери";
 "Third-Party Notices" = "Сторонні компоненти";
 "This network asks you to sign in first." = "Ця мережа спершу вимагає входу.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Видалити";
 "Uninstall MugVPN" = "Видалити MugVPN";
 "Uninstall MugVPN…" = "Видалити MugVPN…";
+"Update" = "Оновити";
+"Update MugVPN's Helper" = "Оновити помічник MugVPN";
+"Update MugVPN's Helper…" = "Оновити помічник MugVPN…";
 "Use the system proxy settings" = "Використовувати системні налаштування проксі-сервера";
 "Username:" = "Ім'я користувача:";
 "View Log" = "Показати журнал";

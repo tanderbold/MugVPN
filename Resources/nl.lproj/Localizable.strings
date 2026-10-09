@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN-instellingen";
 "MugVPN needs its helper to start tunnels." = "MugVPN heeft zijn hulpcomponent nodig om tunnels te starten.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "De helper van MugVPN is versie %@, niet die van deze app (%@): hij wordt bijgewerkt zodra geen verbinding hem gebruikt (of na een herstart).";
+"MugVPN's helper was updated." = "De helper van MugVPN is bijgewerkt.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, de helper, logbestanden, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Herhaalde berichten dempen (u):";
@@ -182,6 +183,7 @@
 "The first time" = "De eerste keer";
 "The private key needs its client certificate." = "De privésleutel heeft het bijbehorende clientcertificaat nodig.";
 "The proxy for %@ needs a username and password." = "De proxy voor %@ vereist een gebruikersnaam en wachtwoord.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?";
 "These DNS servers" = "Deze DNS-servers";
 "Third-Party Notices" = "Kennisgevingen van derden";
 "This network asks you to sign in first." = "Dit netwerk vraagt eerst om in te loggen.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Verwijder";
 "Uninstall MugVPN" = "Verwijder MugVPN";
 "Uninstall MugVPN…" = "Verwijder MugVPN…";
+"Update" = "Bijwerken";
+"Update MugVPN's Helper" = "Helper van MugVPN bijwerken";
+"Update MugVPN's Helper…" = "Helper van MugVPN bijwerken…";
 "Use the system proxy settings" = "Proxyinstellingen van systeem gebruiken";
 "Username:" = "Gebruikersnaam:";
 "View Log" = "Toon logboek";

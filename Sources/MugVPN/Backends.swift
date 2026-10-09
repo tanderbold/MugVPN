@@ -60,12 +60,13 @@ final class XPCHelperClient: HelperClient {
         p.version { once($0) }
     }
 
-    func restartIfIdle(reply: @escaping (String?) -> Void) {
+    /// An older helper has no such call: the XPC error (or no answer within 5 s) says so.
+    func restartIfIdle(reply: @escaping (HelperRestart) -> Void) {
         var done = false
-        let once: (String?) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
-        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once("the helper did not answer") }
-        guard let p = proxy({ once("\($0.localizedDescription)") }) else { return once("no helper") }
-        p.restartIfIdle { once($0) }
+        let once: (HelperRestart) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once(.unsupported) }
+        guard let p = proxy({ _ in once(.unsupported) }) else { return once(.unsupported) }
+        p.restartIfIdle { once($0 == nil ? .restarting : .inUse) }
     }
 
     func blocks(reply: @escaping ([String]) -> Void) {

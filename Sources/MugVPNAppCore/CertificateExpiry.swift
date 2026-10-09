@@ -22,29 +22,59 @@ public enum CertificateExpiry {
         return d.args.first.flatMap(read)
     }
 
-    /// The PKCS#12 file a profile names (`pkcs12 file`; an inline one is left to openvpn).
-    public static func clientPKCS12(config: String) -> String? {
-        guard let d = (try? ConfigParser.parse(config))?.last(where: { $0.name == "pkcs12" }), d.inline == nil else { return nil }
-        return d.args.first
+    public enum PKCS12Source: Equatable, Sendable {
+        case file(String)
+        case inline(Data)
     }
 
-    /// The end of a PKCS#12 file's certificate, when it opens without a password (one with a
-    /// password is known only once openvpn asks for it). The system's openssl reads it: Security
-    /// does not open a PKCS#12 with an empty password.
-    public static func notAfter(pkcs12File path: String) -> Date? {
-        guard FileManager.default.isReadableFile(atPath: path) else { return nil }
+    /// The profile's PKCS#12: the file it names, or the inline block (base64).
+    public static func clientPKCS12(config: String) -> PKCS12Source? {
+        guard let d = (try? ConfigParser.parse(config))?.last(where: { $0.name == "pkcs12" }) else { return nil }
+        if let inline = d.inline {
+            return Data(base64Encoded: inline, options: .ignoreUnknownCharacters).map(PKCS12Source.inline)
+        }
+        return d.args.first.map(PKCS12Source.file)
+    }
+
+    /// The end of a PKCS#12's certificate, opened with its password (nil: none) by the system's
+    /// openssl (Security does not open one with an empty password). The password goes on stdin, the
+    /// data through a file of the user's own; never longer than `timeout` (the process is killed).
+    /// Blocking: call it off the main thread.
+    public static func notAfter(pkcs12: Data, password: String?, timeout: TimeInterval = 5,
+                                openssl: String = "/usr/bin/openssl") -> Date? {
+        let path = NSTemporaryDirectory() + "mugvpn-p12-\(UUID().uuidString)"
+        guard FileManager.default.createFile(atPath: path, contents: pkcs12, attributes: [.posixPermissions: 0o600]) else { return nil }
+        defer { try? FileManager.default.removeItem(atPath: path) }
         let p = Process()
-        p.executableURL = URL(fileURLWithPath: "/usr/bin/openssl")
-        p.arguments = ["pkcs12", "-in", path, "-nokeys", "-clcerts", "-passin", "pass:"]
-        let out = Pipe()
+        p.executableURL = URL(fileURLWithPath: openssl)
+        p.arguments = ["pkcs12", "-in", path, "-nokeys", "-clcerts", "-passin", "stdin"]
+        let out = Pipe(), input = Pipe()
         p.standardOutput = out
         p.standardError = FileHandle.nullDevice
-        p.standardInput = FileHandle.nullDevice
+        p.standardInput = input
+        let done = DispatchSemaphore(value: 0)
+        p.terminationHandler = { _ in done.signal() }
         guard (try? p.run()) != nil else { return nil }
-        let d = out.fileHandleForReading.readDataToEndOfFile()
-        p.waitUntilExit()
+        input.fileHandleForWriting.write(Data(((password ?? "") + "\n").utf8))
+        try? input.fileHandleForWriting.close()
+        // Read while it runs (a full pipe would hold it up), at most 1 MB.
+        var data = Data()
+        let reader = DispatchQueue(label: "pkcs12-read")
+        reader.async {
+            while data.count < 1 << 20 {
+                let chunk = out.fileHandleForReading.availableData
+                if chunk.isEmpty { break }
+                data.append(chunk)
+            }
+        }
+        if done.wait(timeout: .now() + timeout) == .timedOut {
+            p.terminate()
+            kill(p.processIdentifier, SIGKILL)
+            return nil
+        }
+        reader.sync {}
         guard p.terminationStatus == 0 else { return nil }
-        return notAfter(pem: String(decoding: d, as: UTF8.self))
+        return notAfter(pem: String(decoding: data, as: UTF8.self))
     }
 
     /// The end of the first certificate of a PEM text (its validity's notAfter).

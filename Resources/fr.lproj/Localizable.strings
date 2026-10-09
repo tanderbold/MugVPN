@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Réglages de MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN a besoin de son outil d'assistance pour démarrer les tunnels.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "L'assistant de MugVPN est en version %@, pas celle de cette app (%@) : il est mis à jour dès qu'aucune connexion ne l'utilise (ou après un redémarrage).";
+"MugVPN's helper was updated." = "L'assistant de MugVPN a été mis à jour.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, son assistant, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels seront déconnectés.";
 "MugVPN: %@" = "MugVPN : %@";
 "Mute repeated messages (h):" = "Masquer les messages répétés (h) :";
@@ -182,6 +183,7 @@
 "The first time" = "La première fois";
 "The private key needs its client certificate." = "La clé privée nécessite son certificat client.";
 "The proxy for %@ needs a username and password." = "Le proxy de %@ nécessite un nom d'utilisateur et un mot de passe.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?";
 "These DNS servers" = "Ces serveurs DNS";
 "Third-Party Notices" = "Mentions de tiers";
 "This network asks you to sign in first." = "Ce réseau demande d'abord de vous connecter.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Désinstaller";
 "Uninstall MugVPN" = "Désinstaller MugVPN";
 "Uninstall MugVPN…" = "Désinstaller MugVPN…";
+"Update" = "Mettre à jour";
+"Update MugVPN's Helper" = "Mettre à jour l'assistant de MugVPN";
+"Update MugVPN's Helper…" = "Mettre à jour l'assistant de MugVPN…";
 "Use the system proxy settings" = "Utiliser les réglages proxy du système";
 "Username:" = "Nom d'utilisateur :";
 "View Log" = "Afficher le journal";

@@ -8,11 +8,14 @@ final class FakeHelperClient: HelperClient {
     var restarts = 0
     /// What a restart brings (the new helper's version), or nil: busy.
     var restartTo: String?? = .some(MugVPNIDs.helperVersion)
-    func restartIfIdle(reply: @escaping (String?) -> Void) {
+    /// An older helper: it has no restart call at all.
+    var restartUnsupported = false
+    func restartIfIdle(reply: @escaping (HelperRestart) -> Void) {
         restarts += 1
-        guard case .some(let v) = restartTo else { return reply("busy") }
+        if restartUnsupported { return reply(.unsupported) }
+        guard case .some(let v) = restartTo else { return reply(.inUse) }
         version = v
-        reply(nil)
+        reply(.restarting)
     }
     var blocked: [String] = []
     var unblocks = 0
@@ -164,6 +167,33 @@ func registerManagerTests() {
         none.helper.restartTo = nil
         none.m.appStarted()
         expectEqual(none.m.helperVersionMismatch, "unknown", "a helper that does not answer (an older one has no version call)")
+    }
+    test("MAN-25", "a helper in use (another user's tunnel, a block) is asked again later, waiting longer each time") {
+        let h = ManagerHarness()
+        h.helper.version = "0.0.9"
+        h.helper.restartTo = nil
+        h.m.appStarted()
+        expectEqual(h.helper.restarts, 1)
+        var waits: [TimeInterval] = []
+        for _ in 0..<7 {
+            guard let next = h.scheduler.pending.first else { break }
+            waits.append(next.0)
+            h.scheduler.pending.removeFirst()
+            next.1()
+        }
+        expectEqual(waits, [60, 120, 240, 480, 960, 1800, 1800])
+        h.helper.restartTo = .some(MugVPNIDs.helperVersion)
+        h.scheduler.drain(limit: 3)
+        expectEqual(h.m.helperVersionMismatch, nil, "once free it is started again and answers with the app's version")
+    }
+    test("MAN-26", "a helper without the restart call (an older one): updated by hand, asked of the user") {
+        let h = ManagerHarness()
+        h.helper.version = nil
+        h.helper.restartUnsupported = true
+        h.m.appStarted()
+        expectEqual(h.m.helperVersionMismatch, "unknown")
+        expect(h.m.helperNeedsManualUpdate, "the app offers to put the new one in place")
+        expect(h.scheduler.pending.isEmpty, "not asked again: it cannot")
     }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()

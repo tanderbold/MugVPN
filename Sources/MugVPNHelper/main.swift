@@ -110,7 +110,7 @@ final class Service: NSObject, MugVPNHelperProtocol {
 
     func restartIfIdle(reply: @escaping (String?) -> Void) {
         queue.async {
-            guard core.idleForRestart else { return reply("in use: it is updated once no connection or block needs it") }
+            guard core.beginRestartIfIdle() else { return reply("in use: it is updated once no connection or block needs it") }
             reply(nil)
             log("idle: exiting so that the updated helper starts")
             // A clean exit: launchd starts the helper again on the next call (from the app's bundle).

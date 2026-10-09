@@ -413,6 +413,17 @@ func registerCleanupTests() {
 // MARK: - L-HLP
 
 func registerHelperTests() {
+    test("HLP-34", "deciding to exit for an update and closing are one step: no tunnel starts in between") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: bundle(), uid: 502)
+        expect(!h.beginRestartIfIdle(), "in use")
+        sys.launched[0].process.onExit(.exited(0))
+        _ = id
+        expect(h.beginRestartIfIdle())
+        expectThrows("closing", matching: "closing") { _ = try h.start(bundle: bundle(), uid: 501) }
+        expectThrows("persistent too", matching: "closing") { _ = try h.startPersistent(name: "site", uid: 0) }
+    }
     test("HLP-33", "started again for an update only when nobody's connection or block needs it") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

@@ -55,18 +55,22 @@ func registerCertificateTests() {
         expectEqual(CertificateExpiry.clientCertificate(config: file, read: { $0 == "keys/me.crt" ? late : nil }), late)
         expectEqual(CertificateExpiry.clientCertificate(config: "client\nremote a 1194\n", read: { _ in soon }), nil)
     }
-    test("CERT-04", "a PKCS#12 file without a password: its certificate's end; with one: not known before it is asked") {
-        func file(_ d: Data) -> String {
-            let p = NSTemporaryDirectory() + "cert-04-\(UUID().uuidString).p12"
-            FileManager.default.createFile(atPath: p, contents: d)
-            return p
-        }
-        expectEqual(CertificateExpiry.notAfter(pkcs12File: file(noPassP12)), date("2026-10-19T10:55:34Z"))
-        expectEqual(CertificateExpiry.notAfter(pkcs12File: file(passP12)), nil)
-        expectEqual(CertificateExpiry.notAfter(pkcs12File: file(Data("junk".utf8))), nil)
-        expectEqual(CertificateExpiry.notAfter(pkcs12File: "/nonexistent.p12"), nil)
-        let config = "client\nremote a 1194\npkcs12 me.p12\n"
-        expectEqual(CertificateExpiry.clientPKCS12(config: config), "me.p12")
-        expectEqual(CertificateExpiry.clientPKCS12(config: "client\n<pkcs12>\nAAAA\n</pkcs12>\n"), nil, "inline: not a file name")
+    test("CERT-04", "a PKCS#12 without a password: its certificate's end; a file or inline") {
+        expectEqual(CertificateExpiry.notAfter(pkcs12: noPassP12, password: nil), date("2026-10-19T10:55:34Z"))
+        expectEqual(CertificateExpiry.notAfter(pkcs12: passP12, password: nil), nil, "a password it does not know")
+        expectEqual(CertificateExpiry.notAfter(pkcs12: Data("junk".utf8), password: nil), nil)
+        expectEqual(CertificateExpiry.clientPKCS12(config: "client\nremote a 1194\npkcs12 me.p12\n"), .file("me.p12"))
+        let b64 = noPassP12.base64EncodedString(options: .lineLength64Characters)
+        expectEqual(CertificateExpiry.clientPKCS12(config: "client\n<pkcs12>\n\(b64)\n</pkcs12>\n"), .inline(noPassP12))
+        expectEqual(CertificateExpiry.clientPKCS12(config: "client\nremote a 1194\n"), nil)
+    }
+    test("CERT-05", "a PKCS#12 with its saved password; never longer than its deadline (read off the main thread)") {
+        expectEqual(CertificateExpiry.notAfter(pkcs12: passP12, password: "secret"), date("2026-10-19T10:55:34Z"))
+        expectEqual(CertificateExpiry.notAfter(pkcs12: passP12, password: "wrong"), nil)
+        let slow = NSTemporaryDirectory() + "slow-openssl-\(UUID().uuidString)"
+        FileManager.default.createFile(atPath: slow, contents: Data("#!/bin/sh\nsleep 30\n".utf8), attributes: [.posixPermissions: 0o755])
+        let t = Date()
+        expectEqual(CertificateExpiry.notAfter(pkcs12: noPassP12, password: nil, timeout: 1, openssl: slow), nil)
+        expect(Date().timeIntervalSince(t) < 5, "stopped at its deadline: \(Date().timeIntervalSince(t)) s")
     }
 }

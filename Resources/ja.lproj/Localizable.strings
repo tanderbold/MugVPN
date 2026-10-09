@@ -114,6 +114,7 @@
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。";
+"MugVPN's helper was updated." = "MugVPN のヘルパーをアップデートしました。";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN、ヘルパー、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "繰り返しメッセージを非表示 (時間):";
@@ -182,6 +183,7 @@
 "The first time" = "初回のみ";
 "The private key needs its client certificate." = "秘密鍵にはクライアント証明書が必要です。";
 "The proxy for %@ needs a username and password." = "%@ のプロキシにはユーザー名とパスワードが必要です。";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？";
 "These DNS servers" = "次のDNSサーバ";
 "Third-Party Notices" = "サードパーティに関する通知";
 "This network asks you to sign in first." = "このネットワークでは最初にサインインが必要です。";
@@ -193,6 +195,9 @@
 "Uninstall" = "アンインストール";
 "Uninstall MugVPN" = "MugVPN をアンインストール";
 "Uninstall MugVPN…" = "MugVPN をアンインストール…";
+"Update" = "アップデート";
+"Update MugVPN's Helper" = "MugVPN のヘルパーをアップデート";
+"Update MugVPN's Helper…" = "MugVPN のヘルパーをアップデート…";
 "Use the system proxy settings" = "システムのプロキシ設定を使用";
 "Username:" = "ユーザー名:";
 "View Log" = "ログを表示";

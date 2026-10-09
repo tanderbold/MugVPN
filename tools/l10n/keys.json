@@ -345,6 +345,9 @@
   "key": "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)."
  },
  {
+  "key": "MugVPN's helper was updated."
+ },
+ {
   "key": "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected."
  },
  {
@@ -549,6 +552,9 @@
   "key": "The proxy for %@ needs a username and password."
  },
  {
+  "key": "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?"
+ },
+ {
   "key": "These DNS servers"
  },
  {
@@ -580,6 +586,15 @@
  },
  {
   "key": "Uninstall MugVPN…"
+ },
+ {
+  "key": "Update"
+ },
+ {
+  "key": "Update MugVPN's Helper"
+ },
+ {
+  "key": "Update MugVPN's Helper…"
  },
  {
   "key": "Use the system proxy settings"

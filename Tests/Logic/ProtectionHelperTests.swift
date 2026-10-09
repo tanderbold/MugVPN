@@ -88,6 +88,27 @@ func registerProtectionHelperTests() {
         sys.fireTimers()
         expect(lastAnchor(sys).contains("user 501"), "back: \(lastAnchor(sys))")
     }
+    test("PROT-15", "lifting for a sign-in succeeds only if every block on the caller is lifted") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/auto", mode: 0o755)
+        try sys.writeFile("/L/auto/site.ovpn", Data("client\ndev tun\nremote a 1194\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/auto/site.json", Data(#"{"kill_switch": true}"#.utf8), mode: 0o644)
+        sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        _ = try upFull(sys, h, uid: 502, name: "mine")
+        sys.launched[0].process.onExit(.signaled(9))   // the user's own block
+        h.startPersistentProfiles()
+        try bringUp(sys, h, h.list(uid: 0)[0].id, uid: 0, device: "utun6")
+        sys.timers = []
+        sys.launched[1].process.onExit(.signaled(9))   // the persistent one: everyone's
+        let before = lastAnchor(sys)
+        expect(before.contains("all user 502") && before.contains("block return out quick proto { tcp udp } all"), before)
+        let r = h.suspendBlocks(uid: 502, seconds: 120)
+        expect(r?.contains("administrator") == true, "\(r ?? "nil"): a block the user cannot lift stays: no success")
+        expectEqual(lastAnchor(sys), before, "nothing lifted half-way")
+    }
     test("PROT-04", "who lifts a block") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

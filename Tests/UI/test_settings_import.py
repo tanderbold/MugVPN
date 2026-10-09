@@ -258,8 +258,13 @@ def test_ui60_open_at_login_refused(app):
     app.click("Settings…")
     w = app.window("settings")
     app.set(w, "launch_at_login", True)
+    app.set(w, "log_append", True)
     app.press(w, "ok")
     w = app.window("settings")
     e = app.control(w, "error_text")
     assert e["visible"] and "Operation not permitted" in e["value"], e
     assert not app.call("login_item")["enabled"]
+    assert read_default("log_append") != "1", "nothing saved half-way"
+    app.press(w, "cancel")
+    app.no_window("settings")
+    assert read_default("log_append") != "1"

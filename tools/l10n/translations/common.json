@@ -40,7 +40,12 @@
   "Cannot export diagnostics: %@": "Diagnostiku nelze exportovat: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).",
   "This network asks you to sign in first.": "Tato síť nejprve vyžaduje přihlášení.",
-  "Sign in to This Network…": "Přihlásit se k této síti…"
+  "Sign in to This Network…": "Přihlásit se k této síti…",
+  "Update MugVPN's Helper…": "Aktualizovat pomocníka MugVPN…",
+  "Update MugVPN's Helper": "Aktualizovat pomocníka MugVPN",
+  "Update": "Aktualizovat",
+  "MugVPN's helper was updated.": "Pomocník MugVPN byl aktualizován.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?"
  },
  "de": {
   "OK": "OK",
@@ -83,7 +88,12 @@
   "Cannot export diagnostics: %@": "Diagnose kann nicht exportiert werden: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Der Helfer von MugVPN hat Version %@, nicht die dieser App (%@): Er wird aktualisiert, sobald ihn keine Verbindung mehr nutzt (oder nach einem Neustart).",
   "This network asks you to sign in first.": "Dieses Netzwerk verlangt zuerst eine Anmeldung.",
-  "Sign in to This Network…": "Bei diesem Netzwerk anmelden …"
+  "Sign in to This Network…": "Bei diesem Netzwerk anmelden …",
+  "Update MugVPN's Helper…": "Helfer von MugVPN aktualisieren …",
+  "Update MugVPN's Helper": "Helfer von MugVPN aktualisieren",
+  "Update": "Aktualisieren",
+  "MugVPN's helper was updated.": "Der Helfer von MugVPN wurde aktualisiert.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Der laufende Helfer ist älter und kann sich nicht selbst aktualisieren. Den neuen einzusetzen beendet alle MugVPN-Verbindungen auf diesem Mac, aller Benutzer. Fortfahren?"
  },
  "da": {
   "OK": "OK",
@@ -126,7 +136,12 @@
   "Cannot export diagnostics: %@": "Kan ikke eksportere diagnosticering: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN's hjælper er version %@, ikke denne apps %@: den opdateres, når ingen forbindelse bruger den (eller efter en genstart).",
   "This network asks you to sign in first.": "Dette netværk kræver, at du logger ind først.",
-  "Sign in to This Network…": "Log ind på dette netværk…"
+  "Sign in to This Network…": "Log ind på dette netværk…",
+  "Update MugVPN's Helper…": "Opdater MugVPN's hjælper…",
+  "Update MugVPN's Helper": "Opdater MugVPN's hjælper",
+  "Update": "Opdater",
+  "MugVPN's helper was updated.": "MugVPN's hjælper blev opdateret.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Den kørende hjælper er en ældre, der ikke kan opdatere sig selv. At sætte den nye i stedet stopper alle MugVPN-forbindelser på denne Mac for alle brugere. Fortsæt?"
  },
  "el": {
   "OK": "OK",
@@ -169,7 +184,12 @@
   "Cannot export diagnostics: %@": "Δεν είναι δυνατή η εξαγωγή διαγνωστικών: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).",
   "This network asks you to sign in first.": "Αυτό το δίκτυο ζητά πρώτα σύνδεση.",
-  "Sign in to This Network…": "Σύνδεση σε αυτό το δίκτυο…"
+  "Sign in to This Network…": "Σύνδεση σε αυτό το δίκτυο…",
+  "Update MugVPN's Helper…": "Ενημέρωση του βοηθού του MugVPN…",
+  "Update MugVPN's Helper": "Ενημέρωση του βοηθού του MugVPN",
+  "Update": "Ενημέρωση",
+  "MugVPN's helper was updated.": "Ο βοηθός του MugVPN ενημερώθηκε.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;"
  },
  "es": {
   "OK": "Aceptar",
@@ -212,7 +232,12 @@
   "Cannot export diagnostics: %@": "No se puede exportar el diagnóstico: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "El asistente de MugVPN es la versión %@, no la %@ de esta app: se actualiza cuando ninguna conexión lo usa (o tras reiniciar).",
   "This network asks you to sign in first.": "Esta red pide que inicie sesión primero.",
-  "Sign in to This Network…": "Iniciar sesión en esta red…"
+  "Sign in to This Network…": "Iniciar sesión en esta red…",
+  "Update MugVPN's Helper…": "Actualizar el asistente de MugVPN…",
+  "Update MugVPN's Helper": "Actualizar el asistente de MugVPN",
+  "Update": "Actualizar",
+  "MugVPN's helper was updated.": "Se actualizó el asistente de MugVPN.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "El asistente en ejecución es uno anterior que no puede actualizarse solo. Poner el nuevo detiene todas las conexiones de MugVPN de este Mac, de todos los usuarios. ¿Continuar?"
  },
  "fa": {
   "OK": "تأیید",
@@ -255,7 +280,12 @@
   "Cannot export diagnostics: %@": "صدور اطلاعات عیب‌یابی ممکن نیست: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "نسخهٔ دستیار MugVPN %@ است، نه %@ این برنامه: وقتی هیچ اتصالی از آن استفاده نکند (یا پس از راه‌اندازی دوباره) به‌روز می‌شود.",
   "This network asks you to sign in first.": "این شبکه ابتدا از شما می‌خواهد وارد شوید.",
-  "Sign in to This Network…": "ورود به این شبکه…"
+  "Sign in to This Network…": "ورود به این شبکه…",
+  "Update MugVPN's Helper…": "به‌روزرسانی دستیار MugVPN…",
+  "Update MugVPN's Helper": "به‌روزرسانی دستیار MugVPN",
+  "Update": "به‌روزرسانی",
+  "MugVPN's helper was updated.": "دستیار MugVPN به‌روز شد.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟"
  },
  "fi": {
   "OK": "OK",
@@ -298,7 +328,12 @@
   "Cannot export diagnostics: %@": "Vianmääritystietoja ei voi viedä: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).",
   "This network asks you to sign in first.": "Tämä verkko vaatii ensin kirjautumisen.",
-  "Sign in to This Network…": "Kirjaudu tähän verkkoon…"
+  "Sign in to This Network…": "Kirjaudu tähän verkkoon…",
+  "Update MugVPN's Helper…": "Päivitä MugVPN:n apuohjelma…",
+  "Update MugVPN's Helper": "Päivitä MugVPN:n apuohjelma",
+  "Update": "Päivitä",
+  "MugVPN's helper was updated.": "MugVPN:n apuohjelma päivitettiin.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?"
  },
  "fr": {
   "OK": "OK",
@@ -341,7 +376,12 @@
   "Cannot export diagnostics: %@": "Impossible d'exporter les diagnostics : %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "L'assistant de MugVPN est en version %@, pas celle de cette app (%@) : il est mis à jour dès qu'aucune connexion ne l'utilise (ou après un redémarrage).",
   "This network asks you to sign in first.": "Ce réseau demande d'abord de vous connecter.",
-  "Sign in to This Network…": "Se connecter à ce réseau…"
+  "Sign in to This Network…": "Se connecter à ce réseau…",
+  "Update MugVPN's Helper…": "Mettre à jour l'assistant de MugVPN…",
+  "Update MugVPN's Helper": "Mettre à jour l'assistant de MugVPN",
+  "Update": "Mettre à jour",
+  "MugVPN's helper was updated.": "L'assistant de MugVPN a été mis à jour.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?"
  },
  "it": {
   "OK": "OK",
@@ -384,7 +424,12 @@
   "Cannot export diagnostics: %@": "Impossibile esportare la diagnostica: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "L'helper di MugVPN è alla versione %@, non %@ di questa app: si aggiorna quando nessuna connessione lo usa (o dopo un riavvio).",
   "This network asks you to sign in first.": "Questa rete chiede prima di accedere.",
-  "Sign in to This Network…": "Accedi a questa rete…"
+  "Sign in to This Network…": "Accedi a questa rete…",
+  "Update MugVPN's Helper…": "Aggiorna l'helper di MugVPN…",
+  "Update MugVPN's Helper": "Aggiorna l'helper di MugVPN",
+  "Update": "Aggiorna",
+  "MugVPN's helper was updated.": "L'helper di MugVPN è stato aggiornato.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?"
  },
  "ja": {
   "OK": "OK",
@@ -427,7 +472,12 @@
   "Cannot export diagnostics: %@": "診断情報を書き出せません: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。",
   "This network asks you to sign in first.": "このネットワークでは最初にサインインが必要です。",
-  "Sign in to This Network…": "このネットワークにサインイン…"
+  "Sign in to This Network…": "このネットワークにサインイン…",
+  "Update MugVPN's Helper…": "MugVPN のヘルパーをアップデート…",
+  "Update MugVPN's Helper": "MugVPN のヘルパーをアップデート",
+  "Update": "アップデート",
+  "MugVPN's helper was updated.": "MugVPN のヘルパーをアップデートしました。",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？"
  },
  "ko": {
   "OK": "확인",
@@ -470,7 +520,12 @@
   "Cannot export diagnostics: %@": "진단 정보를 내보낼 수 없습니다: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 도우미는 버전 %@로, 이 앱의 %@가 아닙니다. 사용하는 연결이 없을 때(또는 재시동 후) 업데이트됩니다.",
   "This network asks you to sign in first.": "이 네트워크는 먼저 로그인을 요구합니다.",
-  "Sign in to This Network…": "이 네트워크에 로그인…"
+  "Sign in to This Network…": "이 네트워크에 로그인…",
+  "Update MugVPN's Helper…": "MugVPN 도우미 업데이트…",
+  "Update MugVPN's Helper": "MugVPN 도우미 업데이트",
+  "Update": "업데이트",
+  "MugVPN's helper was updated.": "MugVPN 도우미가 업데이트되었습니다.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "실행 중인 도우미는 스스로 업데이트할 수 없는 이전 버전입니다. 새 도우미로 바꾸면 이 Mac의 모든 사용자의 MugVPN 연결이 중단됩니다. 계속하시겠습니까?"
  },
  "nl": {
   "OK": "OK",
@@ -513,7 +568,12 @@
   "Cannot export diagnostics: %@": "Kan diagnose niet exporteren: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "De helper van MugVPN is versie %@, niet die van deze app (%@): hij wordt bijgewerkt zodra geen verbinding hem gebruikt (of na een herstart).",
   "This network asks you to sign in first.": "Dit netwerk vraagt eerst om in te loggen.",
-  "Sign in to This Network…": "Inloggen op dit netwerk…"
+  "Sign in to This Network…": "Inloggen op dit netwerk…",
+  "Update MugVPN's Helper…": "Helper van MugVPN bijwerken…",
+  "Update MugVPN's Helper": "Helper van MugVPN bijwerken",
+  "Update": "Bijwerken",
+  "MugVPN's helper was updated.": "De helper van MugVPN is bijgewerkt.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?"
  },
  "nb": {
   "OK": "OK",
@@ -556,7 +616,12 @@
   "Cannot export diagnostics: %@": "Kan ikke eksportere diagnostikk: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPNs hjelper er versjon %@, ikke denne appens %@: den oppdateres når ingen tilkobling bruker den (eller etter en omstart).",
   "This network asks you to sign in first.": "Dette nettverket krever at du logger på først.",
-  "Sign in to This Network…": "Logg på dette nettverket…"
+  "Sign in to This Network…": "Logg på dette nettverket…",
+  "Update MugVPN's Helper…": "Oppdater MugVPNs hjelper…",
+  "Update MugVPN's Helper": "Oppdater MugVPNs hjelper",
+  "Update": "Oppdater",
+  "MugVPN's helper was updated.": "MugVPNs hjelper ble oppdatert.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjelperen som kjører, er en eldre som ikke kan oppdatere seg selv. Å sette inn den nye stopper alle MugVPN-tilkoblinger på denne Macen, for alle brukere. Fortsette?"
  },
  "pl": {
   "OK": "OK",
@@ -599,7 +664,12 @@
   "Cannot export diagnostics: %@": "Nie można wyeksportować diagnostyki: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Pomocnik MugVPN ma wersję %@, nie %@ tej aplikacji: zaktualizuje się, gdy nie będzie go używać żadne połączenie (lub po ponownym uruchomieniu).",
   "This network asks you to sign in first.": "Ta sieć najpierw wymaga zalogowania.",
-  "Sign in to This Network…": "Zaloguj się do tej sieci…"
+  "Sign in to This Network…": "Zaloguj się do tej sieci…",
+  "Update MugVPN's Helper…": "Zaktualizuj pomocnika MugVPN…",
+  "Update MugVPN's Helper": "Zaktualizuj pomocnika MugVPN",
+  "Update": "Aktualizuj",
+  "MugVPN's helper was updated.": "Pomocnik MugVPN został zaktualizowany.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?"
  },
  "pt-BR": {
   "OK": "OK",
@@ -642,7 +712,12 @@
   "Cannot export diagnostics: %@": "Não é possível exportar o diagnóstico: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "O auxiliar do MugVPN está na versão %@, não na %@ deste app: ele é atualizado quando nenhuma conexão o usa (ou após reiniciar).",
   "This network asks you to sign in first.": "Esta rede pede que você entre primeiro.",
-  "Sign in to This Network…": "Entrar nesta rede…"
+  "Sign in to This Network…": "Entrar nesta rede…",
+  "Update MugVPN's Helper…": "Atualizar o auxiliar do MugVPN…",
+  "Update MugVPN's Helper": "Atualizar o auxiliar do MugVPN",
+  "Update": "Atualizar",
+  "MugVPN's helper was updated.": "O auxiliar do MugVPN foi atualizado.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?"
  },
  "ru": {
   "OK": "ОК",
@@ -685,7 +760,12 @@
   "Cannot export diagnostics: %@": "Не удалось экспортировать диагностику: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Помощник MugVPN версии %@, а не %@, как приложение: он обновится, когда его не будет использовать ни одно подключение (или после перезагрузки).",
   "This network asks you to sign in first.": "Эта сеть сначала требует входа.",
-  "Sign in to This Network…": "Войти в эту сеть…"
+  "Sign in to This Network…": "Войти в эту сеть…",
+  "Update MugVPN's Helper…": "Обновить помощник MugVPN…",
+  "Update MugVPN's Helper": "Обновить помощник MugVPN",
+  "Update": "Обновить",
+  "MugVPN's helper was updated.": "Помощник MugVPN обновлён.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Работающий помощник — старый, сам обновиться он не может. Установка нового остановит все подключения MugVPN на этом Mac, у всех пользователей. Продолжить?"
  },
  "sv": {
   "OK": "OK",
@@ -728,7 +808,12 @@
   "Cannot export diagnostics: %@": "Kan inte exportera diagnostik: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPNs hjälpare är version %@, inte den här appens %@: den uppdateras när ingen anslutning använder den (eller efter en omstart).",
   "This network asks you to sign in first.": "Det här nätverket kräver att du loggar in först.",
-  "Sign in to This Network…": "Logga in på det här nätverket…"
+  "Sign in to This Network…": "Logga in på det här nätverket…",
+  "Update MugVPN's Helper…": "Uppdatera MugVPNs hjälpare…",
+  "Update MugVPN's Helper": "Uppdatera MugVPNs hjälpare",
+  "Update": "Uppdatera",
+  "MugVPN's helper was updated.": "MugVPNs hjälpare uppdaterades.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjälparen som körs är en äldre som inte kan uppdatera sig själv. Att sätta in den nya stoppar alla MugVPN-anslutningar på den här Macen, för alla användare. Fortsätta?"
  },
  "tr": {
   "OK": "Tamam",
@@ -771,7 +856,12 @@
   "Cannot export diagnostics: %@": "Tanılama dışa aktarılamıyor: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.",
   "This network asks you to sign in first.": "Bu ağ önce oturum açmanızı istiyor.",
-  "Sign in to This Network…": "Bu ağda oturum aç…"
+  "Sign in to This Network…": "Bu ağda oturum aç…",
+  "Update MugVPN's Helper…": "MugVPN yardımcısını güncelle…",
+  "Update MugVPN's Helper": "MugVPN yardımcısını güncelle",
+  "Update": "Güncelle",
+  "MugVPN's helper was updated.": "MugVPN yardımcısı güncellendi.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?"
  },
  "uk": {
   "OK": "OK",
@@ -814,7 +904,12 @@
   "Cannot export diagnostics: %@": "Не вдалося експортувати діагностику: %@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).",
   "This network asks you to sign in first.": "Ця мережа спершу вимагає входу.",
-  "Sign in to This Network…": "Увійти в цю мережу…"
+  "Sign in to This Network…": "Увійти в цю мережу…",
+  "Update MugVPN's Helper…": "Оновити помічник MugVPN…",
+  "Update MugVPN's Helper": "Оновити помічник MugVPN",
+  "Update": "Оновити",
+  "MugVPN's helper was updated.": "Помічник MugVPN оновлено.",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?"
  },
  "zh-Hans": {
   "OK": "好",
@@ -857,7 +952,12 @@
   "Cannot export diagnostics: %@": "无法导出诊断信息：%@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。",
   "This network asks you to sign in first.": "此网络要求先登录。",
-  "Sign in to This Network…": "登录此网络…"
+  "Sign in to This Network…": "登录此网络…",
+  "Update MugVPN's Helper…": "更新 MugVPN 助手…",
+  "Update MugVPN's Helper": "更新 MugVPN 助手",
+  "Update": "更新",
+  "MugVPN's helper was updated.": "MugVPN 助手已更新。",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在运行的助手是无法自行更新的旧版本。换上新版本会停止此 Mac 上所有用户的所有 MugVPN 连接。是否继续？"
  },
  "zh-Hant": {
   "OK": "好",
@@ -900,6 +1000,11 @@
   "Cannot export diagnostics: %@": "無法輸出診斷資訊：%@",
   "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).": "MugVPN 的輔助程式版本為 %@，而非此 App 的 %@：當沒有連線使用它時（或重新開機後）會更新。",
   "This network asks you to sign in first.": "此網路要求先登入。",
-  "Sign in to This Network…": "登入此網路…"
+  "Sign in to This Network…": "登入此網路…",
+  "Update MugVPN's Helper…": "更新 MugVPN 輔助程式…",
+  "Update MugVPN's Helper": "更新 MugVPN 輔助程式",
+  "Update": "更新",
+  "MugVPN's helper was updated.": "MugVPN 輔助程式已更新。",
+  "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？"
  }
 }

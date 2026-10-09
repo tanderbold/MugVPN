@@ -215,28 +215,35 @@ enum SettingsWindow {
         let w = showForm(kind: "settings", profile: "", title: L("MugVPN Settings"), views: views, ok: { w in
             func popup(_ id: String) -> String { (w.control(id) as? NSPopUpButton)?.selectedItem?.identifier?.rawValue ?? "" }
             func int(_ id: String) -> Int? { Int(text(w, id).trimmingCharacters(in: .whitespaces)) }
+            // All or nothing: the login item first (the system may refuse it), the settings after it;
+            // settings that cannot be saved put the login item back as it was.
+            let login = checked(w, "launch_at_login"), loginBefore = services.launchAtLogin
             do {
-                try store.update { n in
-                    n.silentConnection = checked(w, "silent_connection")
-                    n.showBalloon = BalloonMode(rawValue: Int(popup("show_balloon")) ?? 1) ?? .initial
-                    n.menuView = ["flat": .flat, "nested": .nested][popup("menu_view")] ?? .auto
-                    n.disablePopupMessages = checked(w, "disable_popups")
-                    n.disconnectOnSleep = checked(w, "disconnect_on_sleep")
-                    n.allowLANWhenBlocked = checked(w, "allow_lan_when_blocked")
-                    n.popupMuteHours = int("popup_mute") ?? -1
-                    switch popup("proxy_source") {
-                    case "manual": n.proxy = .manual(host: text(w, "proxy_host"), port: int("proxy_port") ?? 0)
-                    case "none": n.proxy = .none
-                    default: n.proxy = .system
+                if login != loginBefore { try services.setLaunchAtLogin(login) }
+                do {
+                    try store.update { n in
+                        n.silentConnection = checked(w, "silent_connection")
+                        n.showBalloon = BalloonMode(rawValue: Int(popup("show_balloon")) ?? 1) ?? .initial
+                        n.menuView = ["flat": .flat, "nested": .nested][popup("menu_view")] ?? .auto
+                        n.disablePopupMessages = checked(w, "disable_popups")
+                        n.disconnectOnSleep = checked(w, "disconnect_on_sleep")
+                        n.allowLANWhenBlocked = checked(w, "allow_lan_when_blocked")
+                        n.popupMuteHours = int("popup_mute") ?? -1
+                        switch popup("proxy_source") {
+                        case "manual": n.proxy = .manual(host: text(w, "proxy_host"), port: int("proxy_port") ?? 0)
+                        case "none": n.proxy = .none
+                        default: n.proxy = .system
+                        }
+                        n.logAppend = checked(w, "log_append")
+                        n.preconnectScriptTimeout = int("preconnect_timeout") ?? -1
+                        n.connectScriptTimeout = int("connect_timeout") ?? -1
+                        n.disconnectScriptTimeout = int("disconnect_timeout") ?? -1
+                        n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
                     }
-                    n.logAppend = checked(w, "log_append")
-                    n.preconnectScriptTimeout = int("preconnect_timeout") ?? -1
-                    n.connectScriptTimeout = int("connect_timeout") ?? -1
-                    n.disconnectScriptTimeout = int("disconnect_timeout") ?? -1
-                    n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
+                } catch {
+                    if login != loginBefore { try? services.setLaunchAtLogin(loginBefore) }
+                    throw error
                 }
-                let login = checked(w, "launch_at_login")
-                if login != services.launchAtLogin { try services.setLaunchAtLogin(login) }
             } catch {
                 let e = w.control("error_text") as? NSTextField
                 e?.stringValue = "\(error)"

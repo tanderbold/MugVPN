@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Impostazioni di MugVPN";
 "MugVPN needs its helper to start tunnels." = "MugVPN necessita del suo componente di supporto per avviare i tunnel.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "L'helper di MugVPN è alla versione %@, non %@ di questa app: si aggiorna quando nessuna connessione lo usa (o dopo un riavvio).";
+"MugVPN's helper was updated." = "L'helper di MugVPN è stato aggiornato.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, il suo helper, i log, le impostazioni e le password salvate verranno rimossi. I tunnel verranno disconnessi.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenzia messaggi ripetuti (h):";
@@ -182,6 +183,7 @@
 "The first time" = "La prima volta";
 "The private key needs its client certificate." = "La chiave privata richiede il relativo certificato client.";
 "The proxy for %@ needs a username and password." = "Il proxy di %@ richiede nome utente e password.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?";
 "These DNS servers" = "Questi server DNS";
 "Third-Party Notices" = "Note di terze parti";
 "This network asks you to sign in first." = "Questa rete chiede prima di accedere.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Disinstalla";
 "Uninstall MugVPN" = "Disinstalla MugVPN";
 "Uninstall MugVPN…" = "Disinstalla MugVPN…";
+"Update" = "Aggiorna";
+"Update MugVPN's Helper" = "Aggiorna l'helper di MugVPN";
+"Update MugVPN's Helper…" = "Aggiorna l'helper di MugVPN…";
 "Use the system proxy settings" = "Usa le impostazioni proxy di sistema";
 "Username:" = "Nome utente:";
 "View Log" = "Mostra log";

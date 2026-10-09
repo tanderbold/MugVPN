@@ -1343,6 +1343,13 @@ public final class HelperCore {
     /// Then it may exit for launchd to start the one an updated app came with.
     public var idleForRestart: Bool { connections.isEmpty && locks.isEmpty && !closing }
 
+    /// Idle, and closed in the same step: no start gets in before the exit. - Returns: whether to exit.
+    public func beginRestartIfIdle() -> Bool {
+        guard idleForRestart else { return false }
+        closing = true
+        return true
+    }
+
     /// Fired blocks lifted for a while (to sign in to a network), until this time. Not on disk:
     /// a helper that starts again blocks again.
     private var suspended: [String: TimeInterval] = [:]
@@ -1354,6 +1361,10 @@ public final class HelperCore {
         let admin = uid == 0 || system.isAdmin(uid: uid)
         let mine = locks.filter { !$0.armed && (admin || $0.owner == uid) }
         guard !mine.isEmpty || locks.allSatisfy(\.armed) else { return "only its owner or an administrator can lift the block" }
+        // Every block on the caller, or none: a page behind one still in force would not load.
+        if !admin, locks.contains(where: { !$0.armed && $0.everyone }) {
+            return "a persistent connection blocks the Internet: only an administrator can lift that block"
+        }
         let wait = min(max(seconds, 1), HelperCore.maxSuspend)
         let until = system.now() + wait
         for l in mine { suspended[HelperCore.suspendKey(l)] = until }

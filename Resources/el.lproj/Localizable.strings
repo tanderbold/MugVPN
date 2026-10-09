@@ -114,6 +114,7 @@
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).";
+"MugVPN's helper was updated." = "Ο βοηθός του MugVPN ενημερώθηκε.";
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Το MugVPN, το βοηθητικό του πρόγραμμα, τα αρχεία καταγραφής, οι ρυθμίσεις και τα αποθηκευμένα συνθήματα θα αφαιρεθούν. Οι σήραγγες θα αποσυνδεθούν.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Σίγαση επαναλαμβανόμενων μηνυμάτων (ώρες):";
@@ -182,6 +183,7 @@
 "The first time" = "Την πρώτη φορά";
 "The private key needs its client certificate." = "Το ιδιωτικό κλειδί χρειάζεται το πιστοποιητικό πελάτη του.";
 "The proxy for %@ needs a username and password." = "Το proxy για το %@ απαιτεί όνομα χρήστη και σύνθημα.";
+"The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;";
 "These DNS servers" = "Αυτοί οι διακομιστές DNS";
 "Third-Party Notices" = "Σημειώσεις τρίτων";
 "This network asks you to sign in first." = "Αυτό το δίκτυο ζητά πρώτα σύνδεση.";
@@ -193,6 +195,9 @@
 "Uninstall" = "Απεγκατάσταση";
 "Uninstall MugVPN" = "Απεγκατάσταση του MugVPN";
 "Uninstall MugVPN…" = "Απεγκατάσταση του MugVPN…";
+"Update" = "Ενημέρωση";
+"Update MugVPN's Helper" = "Ενημέρωση του βοηθού του MugVPN";
+"Update MugVPN's Helper…" = "Ενημέρωση του βοηθού του MugVPN…";
 "Use the system proxy settings" = "Χρήση των ρυθμίσεων proxy του συστήματος";
 "Username:" = "Όνομα χρήστη:";
 "View Log" = "Προβολή αρχείου καταγραφής";
