@@ -10,13 +10,17 @@ public enum CLICommand: Equatable, Sendable {
     case exit
     case rescan
     case importFile(String)
+    case list
+    /// One profile's state, or every profile's.
+    case status(String?)
 }
 
 public enum CommandLineRequest: Equatable, Sendable {
     case launch
     case connectOnStart(String)
     case launchAndImport(String)
-    case command(CLICommand)
+    /// - wait: how long the command line waits for the result (connected, disconnected); nil: until it is under way.
+    case command(CLICommand, wait: TimeInterval? = nil)
     case help
     case error(String)
     /// Remove MugVPN; without `confirmed` only say what would go.
@@ -25,7 +29,8 @@ public enum CommandLineRequest: Equatable, Sendable {
     public static var usageText: String { usage }
     static let usage = """
     usage: MugVPN [--connect <profile>]
-           MugVPN --command connect|disconnect|reconnect <profile>
+           MugVPN --command connect|disconnect|reconnect <profile> [--wait] [--timeout <seconds>]
+           MugVPN --command list | status [<profile>]
            MugVPN --command disconnect_all | exit | rescan
            MugVPN --command silent_connection 0|1
            MugVPN --command import <path>
@@ -62,12 +67,25 @@ public enum CommandLineRequest: Equatable, Sendable {
             return .connectOnStart(profileName(args[1]))
         case "--command":
             guard args.count >= 2 else { return .error(usage) }
-            let rest = Array(args.dropFirst(2))
+            var rest = Array(args.dropFirst(2))
+            // --wait [--timeout N]: connect, disconnect and reconnect report how they ended.
+            var wait: TimeInterval?
+            if let i = rest.firstIndex(of: "--wait") { wait = defaultWait; rest.remove(at: i) }
+            if let i = rest.firstIndex(of: "--timeout") {
+                guard i + 1 < rest.count, let t = TimeInterval(rest[i + 1]), t > 0, t <= 3600 else { return .error(usage) }
+                wait = t
+                rest.removeSubrange(i...(i + 1))
+            }
+            guard wait == nil || ["connect", "disconnect", "reconnect"].contains(args[1]) else { return .error(usage) }
             func one() -> String? { rest.count == 1 ? rest[0] : nil }
             switch args[1] {
-            case "connect": return one().map { .command(.connect(profileName($0))) } ?? .error(usage)
-            case "disconnect": return one().map { .command(.disconnect(profileName($0))) } ?? .error(usage)
-            case "reconnect": return one().map { .command(.reconnect(profileName($0))) } ?? .error(usage)
+            case "connect": return one().map { .command(.connect(profileName($0)), wait: wait) } ?? .error(usage)
+            case "disconnect": return one().map { .command(.disconnect(profileName($0)), wait: wait) } ?? .error(usage)
+            case "reconnect": return one().map { .command(.reconnect(profileName($0)), wait: wait) } ?? .error(usage)
+            case "list": return rest.isEmpty ? .command(.list) : .error(usage)
+            case "status":
+                if rest.isEmpty { return .command(.status(nil)) }
+                return one().map { .command(.status(profileName($0))) } ?? .error(usage)
             case "disconnect_all": return rest.isEmpty ? .command(.disconnectAll) : .error(usage)
             case "exit": return rest.isEmpty ? .command(.exit) : .error(usage)
             case "rescan": return rest.isEmpty ? .command(.rescan) : .error(usage)
@@ -85,13 +103,22 @@ public enum CommandLineRequest: Equatable, Sendable {
         }
     }
 
-    /// With no MugVPN running: connect starts it and connects, import starts
-    /// it and imports; the other commands have nothing to act on.
-    public static func withoutInstance(_ c: CLICommand) -> CommandLineRequest? {
+    public static let defaultWait: TimeInterval = 60
+
+    /// With no MugVPN running.
+    public enum WithoutInstance: Equatable, Sendable {
+        /// Start it, then send the command (and report its result).
+        case launchFirst
+        /// Done already (nothing to quit).
+        case done
+        /// Nothing to act on: an error.
+        case notRunning
+    }
+    public static func withoutInstance(_ c: CLICommand) -> WithoutInstance {
         switch c {
-        case .connect(let p): return .connectOnStart(p)
-        case .importFile(let p): return .launchAndImport(p)
-        default: return nil
+        case .connect, .importFile: return .launchFirst
+        case .exit: return .done
+        default: return .notRunning
         }
     }
 

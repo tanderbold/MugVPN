@@ -1,4 +1,5 @@
 import Foundation
+import MugVPNCore
 
 /// One IPv4 route of the system table.
 public struct RouteEntry: Equatable, Sendable {
@@ -108,6 +109,9 @@ public enum LeakCheck {
 
     /// Public IPv6 networks (2000::/3) routed via a router outside the tunnels: an RA's
     /// route information, as TunnelVision does with DHCP. (On-link networks are the LAN.)
+    /// The helper blocks IPv6 for the whole Mac while any tunnel taking all traffic asks for it.
+    public static func ipv6Blocked(_ fullTunnels: [ProtectionOptions]) -> Bool { fullTunnels.contains(where: \.blockIPv6) }
+
     public static func ipv6Bypass(netstat: String, tunnels: Set<String>) -> [LeakFinding] {
         netstat.components(separatedBy: "\n").compactMap { line in
             let f = line.split(whereSeparator: { $0 == " " || $0 == "\t" }).map(String.init)

@@ -125,12 +125,67 @@ func registerAppLogicTests() {
         expectEqual(CommandLineRequest.parse(["--connect", "office"]), .connectOnStart("office"))
         expectEqual(CommandLineRequest.parse([]), .launch)
     }
-    test("CLI-03", "no running instance") {
-        expectEqual(CommandLineRequest.withoutInstance(.connect("office")), .connectOnStart("office"))
-        for c in [CLICommand.disconnect("x"), .reconnect("x"), .disconnectAll, .exit, .rescan, .silentConnection(true)] {
-            expectEqual(CommandLineRequest.withoutInstance(c), nil, "\(c)")
+    test("CLI-03", "no running instance: connect and import start it first, exit is done, the rest fail") {
+        expectEqual(CommandLineRequest.withoutInstance(.connect("office")), .launchFirst)
+        expectEqual(CommandLineRequest.withoutInstance(.importFile("/a.ovpn")), .launchFirst)
+        expectEqual(CommandLineRequest.withoutInstance(.exit), .done)
+        for c in [CLICommand.disconnect("x"), .reconnect("x"), .disconnectAll, .rescan, .silentConnection(true), .list, .status(nil)] {
+            expectEqual(CommandLineRequest.withoutInstance(c), .notRunning, "\(c)")
         }
-        expectEqual(CommandLineRequest.withoutInstance(.importFile("/a.ovpn")), .launchAndImport("/a.ovpn"))
+    }
+    test("CLI-06", "list, status, --wait and --timeout") {
+        expectEqual(CommandLineRequest.parse(["--command", "list"]), .command(.list))
+        expectEqual(CommandLineRequest.parse(["--command", "status"]), .command(.status(nil)))
+        expectEqual(CommandLineRequest.parse(["--command", "status", "office.ovpn"]), .command(.status("office")))
+        expectEqual(CommandLineRequest.parse(["--command", "connect", "office", "--wait"]),
+                    .command(.connect("office"), wait: CommandLineRequest.defaultWait))
+        expectEqual(CommandLineRequest.parse(["--command", "disconnect", "--timeout", "15", "office"]),
+                    .command(.disconnect("office"), wait: 15))
+        for bad in [["--command", "list", "x"], ["--command", "connect", "office", "--timeout", "0"],
+                    ["--command", "connect", "office", "--timeout"], ["--command", "rescan", "--wait"],
+                    ["--command", "connect", "office", "--timeout", "abc"]] {
+            if case .error = CommandLineRequest.parse(bad) {} else { expect(false, "\(bad) should be an error") }
+        }
+    }
+    test("CLI-07", "one profile per name; a shared name is refused with the names to use") {
+        var a = Profile(name: "office", path: "/u/office/office.ovpn", source: .user, folder: "office")
+        var b = Profile(name: "office", path: "/s/office.ovpn", source: .system, folder: "")
+        a.displayName = "office (office)"
+        b.displayName = "office (system)"
+        let c = Profile(name: "home", path: "/u/home.ovpn", source: .user, folder: "")
+        let all = [a, b, c]
+        expectEqual(try? CommandReply.find("home", in: all).get(), c)
+        expectEqual(try? CommandReply.find("office (system)", in: all).get(), b)
+        expectEqual(try? CommandReply.find("/u/office/office.ovpn", in: all).get(), a)
+        guard case .failure(let r) = CommandReply.find("office", in: all) else { return expect(false, "ambiguous") }
+        expect(r.code == .failed && (r.error ?? "").contains("office (office), office (system)"), "\(r)")
+        guard case .failure(let n) = CommandReply.find("nope", in: all) else { return expect(false, "missing") }
+        expectEqual(n.code, .failed)
+    }
+    test("CLI-08", "the reply: a JSON line with an exit code and the profiles' states") {
+        let p = Profile(name: "home", path: "/u/home.ovpn", source: .user, folder: "")
+        let r = CommandReply(profiles: [CommandReply.ProfileState(p, .connected(ip: "10.8.0.2", ipv6: "", withErrors: false)),
+                                        CommandReply.ProfileState(p, nil)])
+        let back = try JSONDecoder().decode(CommandReply.self, from: try JSONEncoder().encode(r))
+        expectEqual(back, r)
+        expectEqual(back.profiles?.map(\.status), ["connected", "disconnected"])
+        expectEqual(back.profiles?.first?.ip, "10.8.0.2")
+        expectEqual(back.profiles?.first?.ipv6, nil)
+        expectEqual(CommandReply.failed("x").code.rawValue, 1)
+        expectEqual(CommandReply.Code.timedOut.rawValue, 4)
+    }
+    test("CLI-09", "--wait: what counts as done") {
+        let up = ConnectionStatus.connected(ip: "10.8.0.2", ipv6: "", withErrors: false)
+        let t0 = Date(timeIntervalSince1970: 100), t1 = Date(timeIntervalSince1970: 200)
+        expectEqual(CommandReply.check(.connected(after: nil), name: "a", status: .connecting("WAIT"), connectedSince: nil), nil)
+        expectEqual(CommandReply.check(.connected(after: nil), name: "a", status: up, connectedSince: t0), .ok)
+        expectEqual(CommandReply.check(.connected(after: nil), name: "a", status: nil, connectedSince: nil)?.code, .failed)
+        expectEqual(CommandReply.check(.connected(after: nil), name: "a", status: .disconnected, connectedSince: nil), nil,
+                    "a connection not started yet (found in INT-27d)")
+        expectEqual(CommandReply.check(.connected(after: t0), name: "a", status: up, connectedSince: t0), nil, "the old connection")
+        expectEqual(CommandReply.check(.connected(after: t0), name: "a", status: up, connectedSince: t1), .ok, "reconnected")
+        expectEqual(CommandReply.check(.gone, name: "a", status: .disconnecting, connectedSince: nil), nil)
+        expectEqual(CommandReply.check(.gone, name: "a", status: nil, connectedSince: nil), .ok)
     }
     test("CLI-04", "errors") {
         for bad in [["--command"], ["--command", "frob"], ["--command", "connect"], ["--command", "silent_connection", "2"],
@@ -260,6 +315,38 @@ func registerAppLogicTests() {
         let host = facts([["-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]])
         expectEqual(NetworkConflicts.find([("a", host, ""), ("b", host, "")]), [],
                     "the same host route to a shared server is not a conflict")
+    }
+    test("NET-06", "a network change: another router, address or DHCP lease on the same interface, or another interface") {
+        let g4: [String: Any] = ["PrimaryInterface": "en0", "Router": "192.168.1.1"]
+        let s4: [String: Any] = ["Addresses": ["192.168.1.20"], "Router": "192.168.1.1"]
+        let dhcp: [String: Any] = ["Option_54": Data([192, 168, 1, 1]), "Option_6": Data([192, 168, 1, 1])]
+        func id(_ g: [String: Any] = g4, _ s: [String: Any] = s4, _ d: [String: Any]? = dhcp) -> NetworkIdentity? {
+            NetworkIdentity.from(global4: g, global6: nil, service4: s, service6: nil, dhcp: d)
+        }
+        var d = NetworkChangeDetector()
+        expect(!d.update(id()), "the first look is no change")
+        expect(!d.update(id()), "the same network")
+        // Another Wi-Fi network on the same en0: the same subnet and router, another DHCP server.
+        expect(d.update(id(g4, s4, ["Option_54": Data([192, 168, 1, 2]), "Option_6": Data([192, 168, 1, 1])])))
+        expect(d.update(id(g4, ["Addresses": ["192.168.1.21"], "Router": "192.168.1.1"])), "a new address")
+        expect(d.update(id(g4.merging(["Router": "10.0.0.1"]) { $1 }, ["Addresses": ["10.0.0.5"], "Router": "10.0.0.1"])),
+               "a new router")
+        let eth = id(["PrimaryInterface": "en5", "Router": "10.0.0.1"], ["Addresses": ["10.0.0.5"], "Router": "10.0.0.1"])
+        expect(d.update(eth), "Wi-Fi to Ethernet")
+        expect(!d.update(nil), "no network: nothing to reconnect to")
+        expect(!d.update(eth), "the same network back after a moment without (DHCP set again; found in INT-27f)")
+        expect(!d.update(nil))
+        expect(d.update(id(g4, ["Addresses": ["192.168.1.99"], "Router": "192.168.1.1"])), "another one after none")
+    }
+    test("NET-07", "MugVPN's own tunnels and DNS are no network change") {
+        let s4: [String: Any] = ["Addresses": ["192.168.1.20"], "Router": "192.168.1.1"]
+        expectEqual(NetworkIdentity.from(global4: ["PrimaryInterface": "utun5"], global6: nil, service4: nil, service6: nil, dhcp: nil), nil)
+        var d = NetworkChangeDetector()
+        let a = NetworkIdentity.from(global4: ["PrimaryInterface": "en0"], global6: nil, service4: s4, service6: nil, dhcp: nil)
+        _ = d.update(a)
+        // The DNS MugVPN sets is not part of it (only DHCP's own record is).
+        expect(!d.update(NetworkIdentity.from(global4: ["PrimaryInterface": "en0"], global6: nil, service4: s4,
+                                              service6: ["Addresses": ["fd00::99"]], dhcp: nil)), "a temporary IPv6 address")
     }
     test("NET-05", "a route another tunnel already holds still counts for conflicts") {
         let first = """

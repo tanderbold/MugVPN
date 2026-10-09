@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "скрипт перед подключением завершился с ошибкой";
 "username %@" = "имя пользователя %@";
 "write a server as: host port udp|tcp" = "укажите сервер в виде: хост порт udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Запускается системой при загрузке: параметры подключения задаёт администратор в %@.";

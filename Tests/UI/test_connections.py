@@ -324,3 +324,25 @@ def test_ui45b_lan_while_blocked_is_a_general_setting(app):
     app.click("stand-b", "Connect")
     wait_for(lambda: "stand-b" in app.call("fake_helper")["starts"], 5, "the start")
     assert app.call("fake_helper")["bundles"]["stand-b"]["protection"]["allowLAN"] is True
+
+
+def test_ui47_persistent_settings_shown_not_changed(app):
+    """A persistent profile: the settings the helper applies (beside it in config-auto) are shown,
+    and what only the app could apply cannot be changed here."""
+    d = os.path.join(app.home, "config-auto")
+    os.makedirs(d, exist_ok=True)
+    with open(os.path.join(d, "site.ovpn"), "w") as f:
+        f.write(MINIMAL)
+    with open(os.path.join(d, "site.json"), "w") as f:
+        f.write('{"kill_switch": true, "block_ipv6": false, "dns_only_tunnel": false, "split_dns": true}')
+    app.call("rescan")
+    w = open_window(app, "site")
+    t = app.control(w, "readonly_text")
+    assert t["visible"] and "site.json" in t["value"], t
+    w = tab(app, "options")
+    for cid, on in (("kill_switch", True), ("block_ipv6", False), ("dns_only", False), ("split_dns", True)):
+        c = app.control(w, cid)
+        assert bool(c["value"]) == on and not c["enabled"], (cid, c)
+    for cid in ("sleep", "proxy"):
+        assert not app.control(w, cid)["enabled"], cid
+    assert app.control(w, "auto_connect")["enabled"], "the app's own options stay"

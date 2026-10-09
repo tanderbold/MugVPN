@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "预连接脚本失败";
 "username %@" = "用户名 %@";
 "write a server as: host port udp|tcp" = "服务器格式应为：主机 端口 udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。";

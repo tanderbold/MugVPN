@@ -27,6 +27,19 @@ public struct ProfileOptions: Codable, Equatable, Sendable {
         case autoConnect, splitDNS, silent, proxy, disconnectOnSleep, killSwitch, blockIPv6, dnsOnlyTunnel
     }
 
+    /// A persistent profile: what the helper applies (its settings beside it in config-auto) in
+    /// place of the options only the app could apply; the app's own (auto-connect, silent) stay.
+    public func applying(_ s: PersistentSettings) -> ProfileOptions {
+        var o = self
+        o.splitDNS = s.splitDNS
+        o.killSwitch = s.protection.killSwitch
+        o.blockIPv6 = s.protection.blockIPv6
+        o.dnsOnlyTunnel = s.protection.dnsOnlyTunnel
+        o.proxy = .global
+        o.disconnectOnSleep = false
+        return o
+    }
+
     /// Options saved by an older version read as the defaults for what they lack.
     public init(from decoder: Decoder) throws {
         let c = try decoder.container(keyedBy: CodingKeys.self)

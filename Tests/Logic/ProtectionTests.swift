@@ -19,7 +19,8 @@ func registerProtectionTests() {
         s.tunnels = ["utun4", "utun7"]
         s.locks = [.init(owner: 501, allowLAN: false)]
         let r = rules(s)
-        expectEqual(r.first, "pass out quick on lo0 all")
+        // Without state: a local server's SYN-ACK goes out on lo0 too, and would meet the block (found in INT-30c).
+        expectEqual(r.first, "pass out quick on lo0 all no state")
         expect(r.contains("pass out quick on { utun4 utun7 } all"))
         expectEqual(r.last, "block return out quick proto { tcp udp } all user 501")
         expect(!r.contains { $0.hasPrefix("pass quick") || $0.hasPrefix("pass in") }, "only outbound passes: \(r)")
@@ -60,6 +61,19 @@ func registerProtectionTests() {
         s.locks = [.init(owner: 501, allowLAN: false)]
         let text = PFRules.anchor(s)
         expect(text.contains("{ utun4 }") && !text.contains("en0") && !text.contains(";"), text)
+    }
+    test("PF-08", "a persistent tunnel's kill switch: the whole Mac, but openvpn, DHCP and name lookups") {
+        var s = ProtectionState()
+        s.locks = [.init(owner: 0, allowLAN: false, everyone: true)]
+        let r = rules(s)
+        expect(r.contains("pass out quick proto { tcp udp } user 469999999 >< 470004096"), "MugVPN's openvpn reaches its servers: \(r)")
+        expect(r.contains("pass out quick proto udp from any port 68 to any port 67"), "DHCP")
+        expect(r.contains("pass out quick proto { tcp udp } to any port 53 user 65"), "the resolver, for openvpn's server names")
+        expectEqual(r.last, "block return out quick proto { tcp udp } all")
+        s.locks = [.init(owner: 0, allowLAN: true, everyone: true)]
+        expectEqual(rules(s).last, "block return out quick proto { tcp udp } to ! <mugvpn_lan>")
+        s.locks = [.init(owner: 0, allowLAN: true, everyone: true), .init(owner: 0, allowLAN: false, everyone: true)]
+        expectEqual(rules(s).last, "block return out quick proto { tcp udp } all", "the stricter")
     }
     test("PF-07", "the anchor's name and where it hangs") {
         expectEqual(PFRules.anchorName, "com.apple/mugvpn")

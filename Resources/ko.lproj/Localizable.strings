@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "연결 전 스크립트 실패";
 "username %@" = "사용자 이름 %@";
 "write a server as: host port udp|tcp" = "서버는 '호스트 포트 udp|tcp' 형식으로 작성하십시오";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "시스템 시작 시 실행됩니다. 연결 설정은 관리자가 %@에서 지정합니다.";

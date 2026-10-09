@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "連線前指令碼失敗";
 "username %@" = "使用者名稱 %@";
 "write a server as: host port udp|tcp" = "伺服器格式應為：主機 連接埠 udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "由系統在開機時啟動：其連線設定由管理員在 %@ 中指定。";

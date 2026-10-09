@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "het script vóór verbinden is mislukt";
 "username %@" = "gebruikersnaam %@";
 "write a server as: host port udp|tcp" = "schrijf een server als: host poort udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@.";

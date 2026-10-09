@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "接続前スクリプトが失敗しました";
 "username %@" = "ユーザー名 %@";
 "write a server as: host port udp|tcp" = "サーバーは「ホスト ポート udp|tcp」の形式で記述してください";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。";

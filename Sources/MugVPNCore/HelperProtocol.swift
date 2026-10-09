@@ -77,6 +77,45 @@ public struct ProtectionOptions: Codable, Equatable, Sendable {
     public var any: Bool { killSwitch || blockIPv6 || dnsOnlyTunnel }
 }
 
+/// A persistent profile's settings: `<name>.json` beside it in config-auto, root's like the
+/// profile (the app cannot apply settings to a tunnel the helper starts at boot).
+public struct PersistentSettings: Equatable, Sendable {
+    public var splitDNS = false
+    public var protection = ProtectionOptions()
+    public init() {}
+
+    public static let keys = ["split_dns", "kill_switch", "block_ipv6", "dns_only_tunnel", "allow_lan"]
+
+    /// Strict: an unknown key or a value that is not true/false is an error (a typo must not
+    /// leave a tunnel without the kill switch its administrator meant).
+    public static func parse(_ data: Data) throws -> PersistentSettings {
+        guard let o = try? JSONSerialization.jsonObject(with: data) as? [String: Any] else {
+            throw PersistentSettingsError("not a JSON object")
+        }
+        var s = PersistentSettings()
+        for (k, v) in o {
+            guard keys.contains(k) else { throw PersistentSettingsError("unknown setting \(k)") }
+            guard let n = v as? NSNumber, CFGetTypeID(n) == CFBooleanGetTypeID() else {
+                throw PersistentSettingsError("\(k) must be true or false")
+            }
+            let b = n.boolValue
+            switch k {
+            case "split_dns": s.splitDNS = b
+            case "kill_switch": s.protection.killSwitch = b
+            case "block_ipv6": s.protection.blockIPv6 = b
+            case "dns_only_tunnel": s.protection.dnsOnlyTunnel = b
+            default: s.protection.allowLAN = b
+            }
+        }
+        return s
+    }
+}
+
+public struct PersistentSettingsError: Error, CustomStringConvertible {
+    public let description: String
+    public init(_ s: String) { description = s }
+}
+
 /// A profile as the app sends it: the config text and the files it names
 /// (ca, cert, key, tls-crypt...), keyed by the name used in the config.
 public struct ProfileBundle: Codable, Sendable {

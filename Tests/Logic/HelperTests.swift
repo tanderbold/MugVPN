@@ -1030,6 +1030,79 @@ func registerPersistentHelperTests() {
         expectThrows(matching: "no persistent profile") { _ = try h.startPersistent(name: "nope", uid: 501) }
         expectThrows(matching: "no persistent profile") { _ = try h.startPersistent(name: "../run/x", uid: 501) }
     }
+    test("PER-19", "a persistent profile's settings: beside it in config-auto, root's, strict") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        try sys.writeFile("/L/auto/site.json", Data(#"{"kill_switch": true, "block_ipv6": true, "split_dns": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        let id = h.list(uid: 0)[0].id
+        try bringUp(sys, h, id, uid: 0)
+        expect((sys.pf.last ?? "").contains("block return out quick inet6 all"), "IPv6 blocked: \(sys.pf.last ?? "")")
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_server_1_resolve_domain_1=corp.internal"] {
+            _ = try h.tunnelRequest(id: id, uid: 0, kind: "DNSVAR", message: v)
+        }
+        _ = try h.tunnelRequest(id: id, uid: 0, kind: "DNSUP", message: "utun5")
+        expectEqual(sys.dnsSet.last?.split, true, "split DNS")
+        for (bad, why) in [(#"{"kill_switch": "yes"}"#, "a string"), (#"{"killswitch": true}"#, "a typo"), ("[]", "not an object")] {
+            let s2 = FakeSystem()
+            try autoProfile(s2, "site")
+            try s2.writeFile("/L/auto/site.json", Data(bad.utf8), mode: 0o644)
+            let h2 = makeHelper(s2)
+            expectThrows(why, matching: "site.json") { _ = try h2.startPersistent(name: "site", uid: 0) }
+        }
+        let s3 = FakeSystem()
+        try autoProfile(s3, "site")
+        try s3.writeFile("/L/auto/site.json", Data(#"{"kill_switch": false}"#.utf8), mode: 0o644)
+        s3.infos["/L/auto/site.json"] = (501, 0o644)
+        expectThrows("not root's", matching: "site.json") { _ = try makeHelper(s3).startPersistent(name: "site", uid: 0) }
+        s3.infos["/L/auto/site.json"] = (0, 0o666)
+        expectThrows("others may write it", matching: "site.json") { _ = try makeHelper(s3).startPersistent(name: "site", uid: 0) }
+    }
+    test("PER-20", "a persistent tunnel's kill switch blocks the whole Mac; it holds over its restart until it is up again") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        try sys.writeFile("/L/auto/site.json", Data(#"{"kill_switch": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        try bringUp(sys, h, h.list(uid: 0)[0].id, uid: 0)
+        sys.launched[0].process.onExit(.signaled(9))
+        let blocked = "block return out quick proto { tcp udp } all"
+        expectEqual((sys.pf.last ?? "").split(separator: "\n").last.map(String.init), blocked, sys.pf.last ?? "")
+        sys.fireTimers()                                          // started again
+        expectEqual(sys.launched.count, 2)
+        expect((sys.pf.last ?? "").contains(blocked), "still blocked while it connects again")
+        try bringUp(sys, h, h.list(uid: 0)[0].id, uid: 0, device: "utun6")
+        expect(!(sys.pf.last ?? "").contains(blocked), "lifted once it takes all traffic again")
+        // The helper dies with it up: the next one blocks.
+        sys.pf = []
+        try makeHelper(sys).prepareRunDirectory()
+        expect((sys.pf.last ?? "").contains(blocked))
+    }
+    test("PER-21", "a persistent tunnel that ends unasked starts again, waiting longer each time") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        var waits: [TimeInterval] = []
+        for i in 0..<8 {
+            sys.timers = []
+            sys.launched[i].process.onExit(.exited(1))
+            waits.append(sys.timers.map(\.seconds).max() ?? 0)
+            sys.fireTimers()
+        }
+        expectEqual(waits, [5, 10, 20, 40, 80, 160, 300, 300])
+        sys.clock += 600                                          // up a long time: back to a short wait
+        sys.timers = []
+        sys.launched[8].process.onExit(.exited(1))
+        expectEqual(sys.timers.map(\.seconds).max(), 5)
+        sys.fireTimers()
+        _ = h.stop(id: h.list(uid: 0)[0].id, uid: 501)            // stopped by an administrator: stays stopped
+        sys.timers = []
+        sys.launched[9].process.onExit(.exited(0))
+        sys.fireTimers()
+        expectEqual(sys.launched.count, 10)
+    }
 }
 
 // MARK: - L-UNI (helper side)

@@ -437,9 +437,14 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
             savedText = app.store.config(of: p) ?? ""
             savedDraft = try? ConnectionDraft(config: savedText)
             savedOptions = app.options.options(p.id)
-            // What an administrator requires counts as saved (no "unsaved changes" for it).
-            if app.settingsStore.settings.requireKillSwitch { savedOptions.killSwitch = true }
-            if app.settingsStore.settings.requireLeakProtection { savedOptions.blockIPv6 = true; savedOptions.dnsOnlyTunnel = true }
+            if p.source == .persistent {
+                // The helper applies these at boot, from beside the profile: shown, not changed here.
+                savedOptions = savedOptions.applying(app.persistentSettings(p))
+            } else {
+                // What an administrator requires counts as saved (no "unsaved changes" for it).
+                if app.settingsStore.settings.requireKillSwitch { savedOptions.killSwitch = true }
+                if app.settingsStore.settings.requireLeakProtection { savedOptions.blockIPv6 = true; savedOptions.dnsOnlyTunnel = true }
+            }
             savedName = p.name
         case .new?:
             savedText = ConnectionDraft.template
@@ -594,24 +599,33 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
                 canEdit && (materials[m.id] ?? nil) != nil
         }
         otherNote.isHidden = !baseDraft.otherCredentials
+        let persistent = selected?.profile?.source == .persistent
         for v in [autoConnect, silent, sleep, proxy, killSwitch, blockIPv6, dnsOnly] as [NSControl] { v.isEnabled = has }
         // Required by an administrator: shown on, not to be turned off.
         let g = app.settingsStore.settings
-        if g.requireKillSwitch { killSwitch.state = .on; killSwitch.isEnabled = false }
-        if g.requireLeakProtection {
+        if g.requireKillSwitch, !persistent { killSwitch.state = .on; killSwitch.isEnabled = false }
+        if g.requireLeakProtection, !persistent {
             blockIPv6.state = .on; blockIPv6.isEnabled = false
             dnsOnly.state = .on; dnsOnly.isEnabled = false
         }
+        // Persistent: the helper starts it at boot with the settings beside it.
+        if persistent { for v in [sleep, proxy, killSwitch, blockIPv6, dnsOnly] as [NSControl] { v.isEnabled = false } }
         dnsMode.isEnabled = canEdit
         let ownDNS = popup(dnsMode) == "own"
         dnsServers.isEnabled = canEdit && ownDNS
         dnsDomains.isEnabled = canEdit && ownDNS
-        splitDNS.isEnabled = has && popup(dnsMode) == "server"
+        splitDNS.isEnabled = has && !persistent && popup(dnsMode) == "server"
         let manual = popup(proxy) == "manual" && has
         proxyHost.isEnabled = manual
         proxyPort.isEnabled = manual
         remove.isEnabled = has && (selected == .new || isUser)
         readOnly.isHidden = !has || canEdit
+        if let p = selected?.profile, persistent {
+            readOnly.stringValue = L("Started by the system at boot: its connection settings are set by an administrator in %@.",
+                                     ((p.path as NSString).deletingLastPathComponent as NSString).appendingPathComponent(p.name + ".json"))
+        } else {
+            readOnly.stringValue = L("Installed by an administrator: only its MugVPN options can be changed here.")
+        }
         add.itemArray.first { $0.identifier?.rawValue == "duplicate" }?.isEnabled = selected?.profile != nil
         if let p = selected?.profile {
             let user = app.secrets.get(p.secretsKey, .username)

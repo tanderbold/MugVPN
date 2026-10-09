@@ -1,4 +1,5 @@
 import Foundation
+import MugVPNAppCore
 import MugVPNCore
 
 /// `MugVPN --command ...` reaches the running app through a socket in the user's own
@@ -9,12 +10,13 @@ enum CommandChannel {
         FileManager.default.homeDirectoryForCurrentUser.path + "/Library/Application Support/MugVPN/ipc/command.sock"
     }
 
-    /// The app's end: every complete request (a JSON array of arguments) goes to `handle`, on the main queue.
+    /// The app's end: every complete request (a JSON array of arguments) goes to `handle`, on the
+    /// main queue; what it answers (once the command is carried out) goes back as one JSON line.
     final class Server {
         private var listener: DispatchSourceRead?
-        private let handle: ([String]) -> Void
+        private let handle: ([String], @escaping (CommandReply) -> Void) -> Void
 
-        init(handle: @escaping ([String]) -> Void) { self.handle = handle }
+        init(handle: @escaping ([String], @escaping (CommandReply) -> Void) -> Void) { self.handle = handle }
 
         func start() {
             let dir = (CommandChannel.path as NSString).deletingLastPathComponent
@@ -34,7 +36,8 @@ enum CommandChannel {
                 let client = accept(sock, nil, nil)
                 guard client >= 0 else { return }
                 setNoSigPipe(client)
-                self?.serve(client)
+                guard let self else { close(client); return }
+                self.serve(client)
             }
             source.setCancelHandler { close(sock) }
             source.resume()
@@ -42,22 +45,31 @@ enum CommandChannel {
         }
 
         private func serve(_ client: Int32) {
-            defer { close(client) }
             var uid: uid_t = 0, gid: gid_t = 0
-            guard getpeereid(client, &uid, &gid) == 0, uid == getuid() else { return }
+            guard getpeereid(client, &uid, &gid) == 0, uid == getuid() else { close(client); return }
             var tv = timeval(tv_sec: 5, tv_usec: 0)
             setsockopt(client, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
             var data = Data()
             var chunk = [UInt8](repeating: 0, count: 4096)
             while !data.contains(0x0A), data.count < 1 << 16 {
                 let n = read(client, &chunk, chunk.count)
-                guard n > 0 else { return }
+                guard n > 0 else { close(client); return }
                 data.append(contentsOf: chunk[0..<n])
             }
             guard let line = data.split(separator: 0x0A).first,
-                  let args = try? JSONSerialization.jsonObject(with: Data(line)) as? [String] else { return }
-            _ = "ok\n".withCString { write(client, $0, 3) }
-            DispatchQueue.main.async { self.handle(args) }
+                  let args = try? JSONSerialization.jsonObject(with: Data(line)) as? [String] else { close(client); return }
+            DispatchQueue.main.async {
+                var answered = false
+                self.handle(args) { reply in
+                    guard !answered else { return }
+                    answered = true
+                    let out = ((try? JSONEncoder().encode(reply)) ?? Data()) + Data("\n".utf8)
+                    DispatchQueue.global().async {
+                        _ = out.withUnsafeBytes { write(client, $0.baseAddress, $0.count) }
+                        close(client)
+                    }
+                }
+            }
         }
     }
 
@@ -70,9 +82,10 @@ enum CommandChannel {
         return addr
     }
 
-    /// The command line's end: send, wait for the app's "ok" (it may still be starting: up to 10 s).
-    static func send(_ args: [String]) -> Bool {
-        guard let json = try? JSONSerialization.data(withJSONObject: args) else { return false }
+    /// The command line's end: send (the app may still be starting: up to 10 s), then wait up to
+    /// `answerWithin` for what it did. nil: no app answered.
+    static func send(_ args: [String], answerWithin: TimeInterval) -> CommandReply? {
+        guard let json = try? JSONSerialization.data(withJSONObject: args) else { return nil }
         let deadline = Date().addingTimeInterval(10)
         while Date() < deadline {
             let sock = socket(AF_UNIX, SOCK_STREAM, 0)
@@ -87,18 +100,24 @@ enum CommandChannel {
                     if getpeereid(sock, &uid, &gid) == 0, uid == getuid() {
                         let msg = json + Data("\n".utf8)
                         _ = msg.withUnsafeBytes { write(sock, $0.baseAddress, $0.count) }
-                        var reply = [UInt8](repeating: 0, count: 8)
-                        var tv = timeval(tv_sec: 10, tv_usec: 0)
+                        var tv = timeval(tv_sec: Int(answerWithin.rounded(.up)), tv_usec: 0)
                         setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
-                        let n = read(sock, &reply, reply.count)
+                        var reply = Data()
+                        var chunk = [UInt8](repeating: 0, count: 4096)
+                        while !reply.contains(0x0A), reply.count < 1 << 20 {
+                            let n = read(sock, &chunk, chunk.count)
+                            guard n > 0 else { break }
+                            reply.append(contentsOf: chunk[0..<n])
+                        }
                         close(sock)
-                        return n >= 2 && reply[0] == UInt8(ascii: "o") && reply[1] == UInt8(ascii: "k")
+                        guard let line = reply.split(separator: 0x0A).first else { return nil }
+                        return try? JSONDecoder().decode(CommandReply.self, from: Data(line))
                     }
                 }
                 close(sock)
             }
             Thread.sleep(forTimeInterval: 0.3)
         }
-        return false
+        return nil
     }
 }

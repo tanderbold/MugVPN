@@ -195,6 +195,8 @@ public final class HelperCore {
         /// It has taken all traffic (the kill switch applies to it).
         var wasFull = false
         var splitDNS = false
+        /// When it was started (a persistent tunnel up a long time starts again soon).
+        var startedAt: TimeInterval = 0
         /// The id its openvpn runs as (privilege separation).
         var serviceID: UInt32?
         /// Persistent tunnels: the helper's management connection while no app holds it.
@@ -228,7 +230,28 @@ public final class HelperCore {
         var allowLAN: Bool = false
         /// Armed: its tunnel is up; it fires if the helper starts again without it (a crash).
         var armed: Bool = false
+        /// A persistent tunnel's: the whole Mac's traffic.
+        var everyone: Bool = false
+
+        init(name: String, owner: UInt32, allowLAN: Bool = false, armed: Bool = false, everyone: Bool = false) {
+            self.name = name
+            self.owner = owner
+            self.allowLAN = allowLAN
+            self.armed = armed
+            self.everyone = everyone
+        }
+        init(from d: Decoder) throws {
+            let c = try d.container(keyedBy: CodingKeys.self)
+            name = try c.decode(String.self, forKey: .name)
+            owner = try c.decode(UInt32.self, forKey: .owner)
+            allowLAN = try c.decodeIfPresent(Bool.self, forKey: .allowLAN) ?? false
+            armed = try c.decodeIfPresent(Bool.self, forKey: .armed) ?? false
+            everyone = try c.decodeIfPresent(Bool.self, forKey: .everyone) ?? false
+        }
     }
+    /// Persistent tunnels that ended unasked, by name: each start again waits longer.
+    private var persistentRestarts: [String: Int] = [:]
+    public static let persistentRestartMax: TimeInterval = 300
     public static let maxLocksPerUser = 4
     private var locks: [Lock] = []
     private var appliedPF = ""
@@ -352,8 +375,8 @@ public final class HelperCore {
         // Connecting the profile again lifts the block its drop left.
         let lockName = HelperCore.lockName(bundle.name)
         // (A block that fired only: the arming of a tunnel of that name still up stays.)
-        if locks.contains(where: { $0.name == lockName && $0.owner == uid && !$0.armed }) {
-            locks.removeAll { $0.name == lockName && $0.owner == uid && !$0.armed }
+        if locks.contains(where: { $0.name == lockName && $0.owner == uid && !$0.armed && !$0.everyone }) {
+            locks.removeAll { $0.name == lockName && $0.owner == uid && !$0.armed && !$0.everyone }
             saveLocks()
         }
         let r = try launch(bundle, owner: uid, management: ["--management-client-user", user], persistent: false)
@@ -402,10 +425,24 @@ public final class HelperCore {
             }
             files[ref] = d
         }
+        // Its settings: beside it, vouched for the same way.
+        var settings = PersistentSettings()
+        if system.list(paths.autoDir).contains(name + ".json") {
+            guard trustedInAutoDir(name + ".json", readable: true), let d = system.readFile(paths.autoDir + "/" + name + ".json") else {
+                throw HelperCoreError.message("\(name).json: the settings must be a file only root can change")
+            }
+            do { settings = try PersistentSettings.parse(d) } catch {
+                throw HelperCoreError.message("\(name).json: \(error)")
+            }
+        }
+        var bundle = ProfileBundle(name: name, config: text, files: files)
+        bundle.splitDNS = settings.splitDNS
         // Not a client group: openvpn checks only the client's primary group,
         // and administrators' is staff. A password only the helper hands out instead.
-        return try launch(ProfileBundle(name: name, config: text, files: files), owner: 0, management: [],
-                          persistent: true).id
+        let id = try launch(bundle, owner: 0, management: [], persistent: true).id
+        connections[id]?.protection = settings.protection
+        refreshProtection()
+        return id
     }
 
     private func trustedAutoDir() -> Bool {
@@ -415,7 +452,8 @@ public final class HelperCore {
 
     /// A file under config-auto that only root can have put there: every
     /// folder on the way and the file itself root-only, no symbolic links.
-    private func trustedInAutoDir(_ relative: String) -> Bool {
+    /// - readable: others may read it (settings, not secrets); only root writes it either way.
+    private func trustedInAutoDir(_ relative: String, readable: Bool = false) -> Bool {
         var path = paths.autoDir
         let parts = relative.split(separator: "/").map(String.init)
         for (i, part) in parts.enumerated() {
@@ -423,7 +461,7 @@ public final class HelperCore {
             guard let info = system.fileInfo(path), info.rootOnly else { return false }
             guard info.kind == (i == parts.count - 1 ? .regular : .directory) else { return false }
             // Profiles and keys: nobody but root reads them either.
-            if i == parts.count - 1, info.mode & 0o077 != 0 { return false }
+            if i == parts.count - 1, info.mode & (readable ? 0o022 : 0o077) != 0 { return false }
         }
         return !parts.isEmpty
     }
@@ -577,6 +615,7 @@ public final class HelperCore {
             let info = ConnectionInfo(id: id, name: bundle.name, pid: process.pid, managementSocket: socket, ownerUID: uid,
                                       persistent: persistent)
             let c = Connection(info: info, process: process, dir: dir)
+            c.startedAt = system.now()
             c.serviceID = user?.uid
             c.splitDNS = bundle.splitDNS
             c.mayRouteAll = limit.mayRouteAll
@@ -683,7 +722,15 @@ public final class HelperCore {
         }
         if c.protection.killSwitch, !c.stopping, c.wasFull || tookAll {
             // Dropped without being asked to: keep its owner's traffic from going around the tunnel.
-            addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN))
+            addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, everyone: c.info.persistent))
+        }
+        if c.info.persistent, !c.stopping, !closing {
+            // Ended unasked: started again, after a wait that grows (a tunnel up a long time starts the count again).
+            let n = system.now() - c.startedAt > 120 ? 0 : persistentRestarts[c.info.name] ?? 0
+            persistentRestarts[c.info.name] = n + 1
+            let wait = min(HelperCore.persistentRestartMax, 5 * pow(2, Double(min(n, 16))))
+            let pname = c.info.name
+            system.after(wait) { [weak self] in _ = try? self?.startPersistent(name: pname, uid: 0) }
         }
         saveLocks()
         let kept = paths.logsDir + "/" + HelperCore.logFileName(c.info.name, uid: c.info.ownerUID) + ".log"
@@ -712,8 +759,8 @@ public final class HelperCore {
     /// utun devices of one connection that may exist at once (a reconnect opens a new one).
     public static let maxOpenTunnels = 4
     /// Ids for openvpn: one per connection, never an account (the directory is checked).
-    public static let serviceIDBase: UInt32 = 470_000_000
-    public static let serviceIDCount: UInt32 = 4096
+    public static let serviceIDBase: UInt32 = PFRules.serviceIDs.lowerBound
+    public static let serviceIDCount: UInt32 = PFRules.serviceIDs.upperBound - PFRules.serviceIDs.lowerBound
     /// Where id allocation starts: random, so a restarted helper does not hand out the same first id.
     public var nextServiceID: UInt32 = UInt32.random(in: 0..<HelperCore.serviceIDCount)
 
@@ -1030,7 +1077,8 @@ public final class HelperCore {
     private func failClosed(_ c: Connection) {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         if c.protection.killSwitch, c.wasFull || c.tunnel.takesAllTraffic {
-            addLock(Lock(name: HelperCore.lockName(c.info.name), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN))
+            addLock(Lock(name: HelperCore.lockName(c.info.name), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN,
+                         everyone: c.info.persistent))
             saveLocks()
         }
         undo(c.tunnel, others: others)
@@ -1193,14 +1241,15 @@ public final class HelperCore {
         for c in connections.values.sorted(by: { $0.info.id < $1.info.id })
         where !c.exited && c.protection.killSwitch && c.wasFull {
             let name = HelperCore.lockName(c.info.name)
-            if let i = want.firstIndex(where: { $0.name == name && $0.owner == c.info.ownerUID }) {
+            if let i = want.firstIndex(where: { $0.name == name && $0.owner == c.info.ownerUID && $0.everyone == c.info.persistent }) {
                 want[i].allowLAN = want[i].allowLAN && c.protection.allowLAN
             } else {
-                want.append(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true))
+                want.append(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true,
+                                 everyone: c.info.persistent))
             }
         }
-        let have = locks.filter(\.armed)
-        guard Set(have.map { "\($0.owner)/\($0.allowLAN)/\($0.name)" }) != Set(want.map { "\($0.owner)/\($0.allowLAN)/\($0.name)" }) else { return false }
+        func key(_ l: Lock) -> String { "\(l.owner)/\(l.allowLAN)/\(l.everyone)/\(l.name)" }
+        guard Set(locks.filter(\.armed).map(key)) != Set(want.map(key)) else { return false }
         locks.removeAll(where: \.armed)
         locks += want
         return true
@@ -1210,10 +1259,10 @@ public final class HelperCore {
     /// Blocks of one name merge to the stricter: the LAN stays open only if all of them allow it.
     private func addLock(_ l: Lock) {
         var l = l
-        if let old = locks.first(where: { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed }) {
+        if let old = locks.first(where: { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed && $0.everyone == l.everyone }) {
             l.allowLAN = l.allowLAN && old.allowLAN
         }
-        locks.removeAll { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed }
+        locks.removeAll { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed && $0.everyone == l.everyone }
         locks.append(l)
         // A user cannot pile blocks up: the oldest fired ones go (armings are bounded by connections).
         while locks.filter({ $0.owner == l.owner && !$0.armed }).count > HelperCore.maxLocksPerUser,
@@ -1240,6 +1289,14 @@ public final class HelperCore {
             }
             guard c.protection.any else { continue }
             if full, !c.wasFull { c.wasFull = true }
+            // A persistent tunnel up again with all traffic: the block its drop left goes (nobody connects it by hand).
+            if full, c.info.persistent, !c.exited {
+                let name = HelperCore.lockName(c.info.name)
+                if locks.contains(where: { $0.everyone && !$0.armed && $0.name == name }) {
+                    locks.removeAll { $0.everyone && !$0.armed && $0.name == name }
+                    saveLocks()
+                }
+            }
             if full {
                 s.blockIPv6 = s.blockIPv6 || c.protection.blockIPv6
                 s.dnsOnlyTunnels = s.dnsOnlyTunnels || c.protection.dnsOnlyTunnel
@@ -1247,7 +1304,7 @@ public final class HelperCore {
         }
         // Armed on disk: if the helper dies with the tunnel, the next one blocks.
         if syncArming() { saveLocks() }
-        s.locks = locks.filter { !$0.armed }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN) }
+        s.locks = locks.filter { !$0.armed }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN, everyone: $0.everyone) }
         let anchor = PFRules.anchor(s)
         let broken = !anchor.isEmpty && anchor == appliedPF && !system.pfIntact(anchor)
         if anchor != appliedPF || broken {

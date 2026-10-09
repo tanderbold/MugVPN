@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "das Preconnect-Skript ist fehlgeschlagen";
 "username %@" = "Benutzername %@";
 "write a server as: host port udp|tcp" = "gib einen Server so an: Host Port udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Wird beim Systemstart gestartet: Die Verbindungseinstellungen legt ein Administrator in %@ fest.";

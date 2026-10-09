@@ -205,3 +205,4 @@
 "the pre-connect script failed" = "før-forbind-scriptet mislykkedes";
 "username %@" = "brugernavn %@";
 "write a server as: host port udp|tcp" = "angiv en server som: vært port udp|tcp";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Startes af systemet ved opstart: forbindelsens indstillinger angives af en administrator i %@.";

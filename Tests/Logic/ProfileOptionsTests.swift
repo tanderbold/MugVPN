@@ -104,6 +104,24 @@ func registerProfileOptionsTests() {
         expectEqual(secrets.get(moved.secretsKey, .password), "pw")
         expect(opts.options(moved.id).autoConnect)
     }
+    test("POPT-08", "a persistent profile shows what the helper applies: its settings beside it") {
+        var mine = ProfileOptions()
+        mine.autoConnect = true
+        mine.killSwitch = true
+        mine.proxy = .none
+        mine.disconnectOnSleep = true
+        var s = PersistentSettings()
+        s.splitDNS = true
+        s.protection = ProtectionOptions(killSwitch: false, blockIPv6: false, dnsOnlyTunnel: true)
+        let o = mine.applying(s)
+        expect(o.autoConnect, "the app's own stays")
+        expect(!o.killSwitch && !o.blockIPv6 && o.dnsOnlyTunnel && o.splitDNS)
+        expectEqual(o.proxy, .global)
+        expectEqual(o.disconnectOnSleep, false, "persistent tunnels stay over sleep")
+        expectEqual(try PersistentSettings.parse(Data(#"{"allow_lan": true, "kill_switch": true}"#.utf8)).protection,
+                    ProtectionOptions(killSwitch: true, allowLAN: true))
+        expectThrows { _ = try PersistentSettings.parse(Data(#"{"kill_switch": 1}"#.utf8)) }
+    }
     test("POPT-05", "delete a user profile") {
         let fs = MemFS()
         fs.add("\(userDir)/work/work.ovpn", "client\nremote w 1194\n")

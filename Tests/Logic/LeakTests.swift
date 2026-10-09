@@ -110,6 +110,17 @@ func registerLeakTests() {
         """
         expectEqual(LeakCheck.ipv6Bypass(netstat: netstat6, tunnels: ["utun5"]), [.bypass("2a00:1450::/32", "en0")])
     }
+    test("LEAK-10", "IPv6 counts as blocked as the helper blocks it: any full tunnel asking, forced settings included") {
+        var forced = Settings()
+        forced.requireLeakProtection = true
+        let none: ProfileOptions = { var o = ProfileOptions(); o.blockIPv6 = false; return o }()
+        let asks: ProfileOptions = { var o = ProfileOptions(); o.blockIPv6 = true; return o }()
+        expect(!LeakCheck.ipv6Blocked([EffectiveSettings.protection(Settings(), none)]))
+        expect(LeakCheck.ipv6Blocked([EffectiveSettings.protection(forced, none)]), "forced by the administrator")
+        expect(LeakCheck.ipv6Blocked([EffectiveSettings.protection(Settings(), none), EffectiveSettings.protection(Settings(), asks)]),
+               "one full tunnel asking is enough: PF blocks IPv6 for the whole Mac")
+        expect(!LeakCheck.ipv6Blocked([]))
+    }
     test("LEAK-08", "the VPN server is the address openvpn connected to, not any host route") {
         let log = "2026-10-07 09:58:24 TCP/UDP: Preserving recently used remote address: [AF_INET]203.0.113.7:1194\n"
             + "2026-10-07 09:58:24 UDPv4 link remote: [AF_INET]203.0.113.7:1194\n"

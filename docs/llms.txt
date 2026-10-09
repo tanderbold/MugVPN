@@ -1,6 +1,6 @@
 # MugVPN
 
-> MugVPN is a free, open-source (MIT) macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time, each with its own tunnel (utun), routes and split DNS. macOS 13+, Apple silicon and Intel, 23 languages.
+> MugVPN is a free, open-source (MIT) macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time, each with its own tunnel (utun), routes and split DNS. macOS 13+, Apple silicon and Intel, 22 languages.
 
 ## What it does
 - Several simultaneous OpenVPN connections (OpenVPN Connect on macOS allows one); conflict warnings when two connections collide.

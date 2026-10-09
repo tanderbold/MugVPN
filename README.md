@@ -9,7 +9,7 @@
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](#requirements)
 [![Apple silicon and Intel](https://img.shields.io/badge/Apple%20silicon-%2B%20Intel-blue)](#requirements)
 [![openvpn 2.7](https://img.shields.io/badge/openvpn-2.7-orange)](#how-it-works)
-[![23 languages](https://img.shields.io/badge/languages-23-green)](#what-you-get)
+[![22 languages](https://img.shields.io/badge/languages-22-green)](#what-you-get)
 [![Swift](https://img.shields.io/badge/Swift-AppKit-F05138)](Sources)
 
 The office VPN, a client's VPN and your home lab — at the same time, each with its own tunnel,
@@ -49,7 +49,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root;
   variables a server pushes (`echo setenv NAME value`) reach them as `PUSHED_NAME`.
 - Command line: `MugVPN --command connect|disconnect|reconnect <profile>` and more.
-- 23 languages, VoiceOver labels, light and dark appearance, an uninstaller.
+- 22 languages, VoiceOver labels, light and dark appearance, an uninstaller.
 
 <p><img src="docs/screenshots/connections-auth.png" alt="The Authentication tab: certificates embedded in the profile" width="49%"> <img src="docs/screenshots/status-dark.png" alt="The status window in the dark appearance" width="49%"></p>
 
@@ -110,6 +110,16 @@ reach, in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 | `/Library/Application Support/MugVPN/config` | profiles an administrator installs for every user |
 | `/Library/Application Support/MugVPN/config-auto` | persistent profiles, started by the system at boot |
 
+A persistent profile's settings go beside it, as `<name>.json` (owned by root, not writable by
+others); MugVPN's window shows them but does not change them:
+
+```json
+{ "kill_switch": true, "allow_lan": false, "block_ipv6": true, "dns_only_tunnel": true, "split_dns": false }
+```
+
+Its kill switch blocks the whole Mac's traffic outside the tunnel until the tunnel is back; a
+persistent tunnel that ends unexpectedly is started again, waiting longer each time (up to 5 minutes).
+
 Standard `.ovpn` profiles work as they are. For safety, a profile from a user may not
 run programs as root: `up`, `down`, `plugin`, `script-security 2` and the like are refused, with
 the line that caused it. Use the `_pre/_up/_down.sh` scripts instead; they run as you.
@@ -118,14 +128,20 @@ the line that caused it. Use the `_pre/_up/_down.sh` scripts instead; they run a
 
 ```
 MugVPN --connect <profile>
-MugVPN --command connect|disconnect|reconnect <profile>
+MugVPN --command connect|disconnect|reconnect <profile> [--wait] [--timeout <seconds>]
+MugVPN --command list | status [<profile>]
 MugVPN --command disconnect_all | rescan | exit
 MugVPN --command silent_connection 0|1
 MugVPN --command import <path>
 MugVPN --uninstall [--keep-profiles] [--yes]
 ```
 
-`MugVPN` here is `/Applications/MugVPN.app/Contents/MacOS/MugVPN`.
+`MugVPN` here is `/Applications/MugVPN.app/Contents/MacOS/MugVPN`. A command returns once MugVPN has
+carried it out (with `--wait`, once the connection is up or down), with exit code 0 on success,
+1 if it failed (an unknown profile, a connection that did not come up), 2 for a usage error,
+3 if MugVPN is not running (`connect` and `import` start it) and 4 on timeout. `list` and `status`
+print JSON. A profile is named as MugVPN shows it, by its file path, or by its name when only one
+profile has it.
 
 ## Uninstall
 

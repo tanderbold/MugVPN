@@ -71,3 +71,32 @@ def test_int30b_untrusted_folder_is_ignored(vpn, mac, persistent_site):
     restart_helper(mac)
     wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
     assert "site" not in vpn.list().values()
+
+
+def test_int30c_persistent_settings_kill_switch_and_restart(vpn, mac):
+    """INT-30c: a persistent profile's settings beside it (root's); its kill switch blocks the
+    whole Mac (LAN allowed here: the stand is reached over it) until the helper has started it
+    again and it takes all traffic once more."""
+    mac.run(f"sudo mkdir -p '{AUTO}' && sudo cp /Users/tester/stand/stand-d.ovpn '{AUTO}/site.ovpn' "
+            f"&& printf '{{\"kill_switch\": true, \"allow_lan\": true}}' | sudo tee '{AUTO}/site.json' >/dev/null "
+            f"&& sudo chown -R root:wheel '{AUTO}' && sudo chmod 755 '{AUTO}' && sudo chmod 600 '{AUTO}/site.ovpn' "
+            f"&& sudo chmod 644 '{AUTO}/site.json'", check=True)
+    rules = lambda: mac.out("sudo pfctl -a com.apple/mugvpn -sr 2>/dev/null")
+    try:
+        restart_helper(mac)
+        wait_for(lambda: "site" in vpn.list().values(), 30, "site to start")
+        wait_for(lambda: vpn.primary_dns() == ["10.84.0.1"], 60, "site's tunnel up")
+        site = vpn.id_of("site")
+        mac.run(f"sudo kill -9 {vpn.pid_of(site)}", check=True)
+        wait_for(lambda: "mugvpn_lan" in rules() and "470004096" in rules(), 15, "the whole Mac's block (pfctl took it)")
+        # Blocked: the public network is not reached outside the tunnel (the LAN still is).
+        wait_for(lambda: "site" in vpn.list().values() and vpn.id_of("site") != site, 30, "the helper to start it again")
+        wait_for(lambda: vpn.primary_dns() == ["10.84.0.1"], 90, "site's tunnel up again")
+        wait_for(lambda: "mugvpn_lan" not in rules(), 15, "the block lifted")
+    finally:
+        mac.run(f"sudo rm -rf '{AUTO}'", check=True)
+        for cid, name in vpn.list().items():
+            if name == "site":
+                vpn.cli(f"disconnect {cid}")
+        wait_for(lambda: "site" not in vpn.list().values(), 30, "site to stop")
+        mac.run("sudo pfctl -a com.apple/mugvpn -F rules 2>/dev/null; true")

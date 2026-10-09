@@ -269,9 +269,9 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     /// Connections that take all traffic: their utun devices, their servers' addresses,
-    /// and whether all of them block IPv6.
+    /// and whether IPv6 is blocked (as the helper does it).
     private func fullTunnels() -> (devices: Set<String>, servers: [String], ipv6Blocked: Bool) {
-        var devices = Set<String>(), servers: [String] = [], blocked = true
+        var devices = Set<String>(), servers: [String] = [], protections: [ProtectionOptions] = []
         for c in manager.active.values {
             guard case .connected = c.controller.status else { continue }
             let log = logText(c)
@@ -281,9 +281,17 @@ final class AppController: NSObject, NSMenuDelegate {
             guard (halves.contains("0.0.0.0") && halves.contains("128.0.0.0")) || replaced, let dev = f.device else { continue }
             devices.insert(dev)
             servers += LeakCheck.serverAddresses(log: log)
-            blocked = blocked && options.options(c.profile.id).blockIPv6
+            protections.append(c.profile.source == .persistent ? persistentSettings(c.profile).protection
+                                : EffectiveSettings.protection(settingsStore.settings, options.options(c.profile.id)))
         }
-        return (devices, servers, blocked)
+        return (devices, servers, LeakCheck.ipv6Blocked(protections))
+    }
+
+    /// A persistent profile's settings, as the helper reads them (beside it in config-auto).
+    func persistentSettings(_ p: Profile) -> PersistentSettings {
+        let path = ((p.path as NSString).deletingLastPathComponent as NSString).appendingPathComponent(p.name + ".json")
+        guard let d = FileManager.default.contents(atPath: path) else { return PersistentSettings() }
+        return (try? PersistentSettings.parse(d)) ?? PersistentSettings()
     }
 
     /// Statuses of the connections: checks run again when these change, not on every log line.
@@ -586,13 +594,17 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     /// An import another program asked for (`--command import`): the user says yes first.
-    func confirmImport(_ path: String) {
+    /// - finished: nil once imported, or why not.
+    func confirmImport(_ path: String, finished: ((String?) -> Void)? = nil) {
         showForm(kind: "confirm", profile: "", title: L("Import"),
                  views: [Form.label(L("A program asked MugVPN to import %@. Import it?", ProfileDownloader.visible(path)), id: "prompt_text")],
                  okTitle: L("Import"), ok: { [weak self] _ in
-            DispatchQueue.main.async { self?.importFiles([path]) }
+            DispatchQueue.main.async {
+                self?.importOne(path, downloaded: false, allowOutside: false, finished: finished)
+                self?.rescan()
+            }
             return true
-        })
+        }, cancel: { finished?("not imported: declined") })
     }
 
     /// - downloaded: from a URL or an Access Server; such a profile may not
@@ -604,7 +616,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// - name: the new profile's name (Duplicate); `done` gets the imported profile.
     func importOne(_ path: String, downloaded: Bool, allowOutside: Bool, as name: String? = nil,
-                   done: ((Profile) -> Void)? = nil) {
+                   done: ((Profile) -> Void)? = nil, finished: ((String?) -> Void)? = nil) {
         let file = (path as NSString).lastPathComponent
         do {
             let skipped = path.lowercased().hasSuffix(".tblk")
@@ -619,9 +631,11 @@ final class AppController: NSObject, NSMenuDelegate {
                 services.showMessage(profile: "", title: L("Imported"),
                                      text: L("Not imported (MugVPN does not run profile scripts as root): %@", skipped.joined(separator: ", ")))
             }
+            finished?(nil)
         } catch let e as ImportNeedsConsent {
             let list = e.outside.joined(separator: "\n")
             if downloaded {
+                finished?("a downloaded profile cannot name files on this Mac")
                 return showError(L("Cannot import %@: a downloaded profile cannot name files on this Mac:\n%@", file, list))
             }
             // Read with the user's rights and sent to the server: the user decides.
@@ -630,12 +644,13 @@ final class AppController: NSObject, NSMenuDelegate {
                                         id: "prompt_text")],
                      okTitle: L("Copy and Import"), ok: { [weak self] _ in
                 DispatchQueue.main.async {
-                    self?.importOne(path, downloaded: false, allowOutside: true, as: name, done: done)
+                    self?.importOne(path, downloaded: false, allowOutside: true, as: name, done: done, finished: finished)
                     self?.rescan()
                 }
                 return true
-            })
+            }, cancel: { finished?("not imported: declined") })
         } catch {
+            finished?("\(error)")
             showError(L("Cannot import %@: %@", file, "\(error)"))
         }
     }
