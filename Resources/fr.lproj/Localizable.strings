@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "L'authentification nécessite un certificat client ou un mot de passe.";
 "Some settings are set by your administrator." = "Certains réglages sont définis par votre administrateur.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "DNS fractionné par domaine : seuls les domaines du serveur sont envoyés à son DNS";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Démarré par le système au démarrage : ses réglages de connexion sont définis par un administrateur dans %@.";
 "Stay connected" = "Rester connecté";
 "TLS auth key:" = "Clé TLS auth :";
 "TLS crypt key:" = "Clé TLS crypt :";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "le script de préconnexion a échoué";
 "username %@" = "nom d'utilisateur %@";
 "write a server as: host port udp|tcp" = "indiquez un serveur sous la forme : hôte port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Démarré par le système au démarrage : ses réglages de connexion sont définis par un administrateur dans %@.";

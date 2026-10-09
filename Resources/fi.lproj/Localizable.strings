@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Kirjautuminen vaatii asiakasvarmenteen tai salasanan.";
 "Some settings are set by your administrator." = "Järjestelmänvalvoja on määrittänyt osan asetuksista.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Jaettu DNS verkkotunnuksittain: vain palvelimen verkkotunnukset menevät sen DNS:lle";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Järjestelmä käynnistää sen käynnistyksen yhteydessä: ylläpitäjä määrittää yhteysasetukset tiedostossa %@.";
 "Stay connected" = "Pysy yhdistettynä";
 "TLS auth key:" = "TLS auth -avain:";
 "TLS crypt key:" = "TLS crypt -avain:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "yhdistämistä edeltävä komentosarja epäonnistui";
 "username %@" = "käyttäjänimi %@";
 "write a server as: host port udp|tcp" = "kirjoita palvelin muodossa: isäntä portti udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Järjestelmä käynnistää sen käynnistyksen yhteydessä: ylläpitäjä määrittää yhteysasetukset tiedostossa %@.";

@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "登录需要客户端证书或密码。";
 "Some settings are set by your administrator." = "部分设置由管理员设置。";
 "Split DNS by Domain: only the server's domains go to its DNS" = "按域名拆分 DNS：仅将服务器的域名发送到其 DNS";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。";
 "Stay connected" = "保持连接";
 "TLS auth key:" = "TLS auth 密钥：";
 "TLS crypt key:" = "TLS crypt 密钥：";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "预连接脚本失败";
 "username %@" = "用户名 %@";
 "write a server as: host port udp|tcp" = "服务器格式应为：主机 端口 udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。";

@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "サインインにはクライアント証明書またはパスワードが必要です。";
 "Some settings are set by your administrator." = "一部の設定は管理者によって設定されています。";
 "Split DNS by Domain: only the server's domains go to its DNS" = "ドメイン別にDNSを分割: サーバーのドメインのみをその DNS に送信";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。";
 "Stay connected" = "接続を維持";
 "TLS auth key:" = "TLS auth 鍵:";
 "TLS crypt key:" = "TLS crypt 鍵:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "接続前スクリプトが失敗しました";
 "username %@" = "ユーザー名 %@";
 "write a server as: host port udp|tcp" = "サーバーは「ホスト ポート udp|tcp」の形式で記述してください";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。";

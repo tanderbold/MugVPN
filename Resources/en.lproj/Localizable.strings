@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Signing in needs a client certificate or a password.";
 "Some settings are set by your administrator." = "Some settings are set by your administrator.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Split DNS by Domain: only the server's domains go to its DNS";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Started by the system at boot: its connection settings are set by an administrator in %@.";
 "Stay connected" = "Stay connected";
 "TLS auth key:" = "TLS auth key:";
 "TLS crypt key:" = "TLS crypt key:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "the pre-connect script failed";
 "username %@" = "username %@";
 "write a server as: host port udp|tcp" = "write a server as: host port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Started by the system at boot: its connection settings are set by an administrator in %@.";

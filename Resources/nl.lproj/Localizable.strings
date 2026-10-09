@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Voor inloggen is een clientcertificaat of een wachtwoord nodig.";
 "Some settings are set by your administrator." = "Sommige instellingen zijn ingesteld door je beheerder.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "DNS splitsen per domein: alleen de domeinen van de server gaan naar zijn DNS";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@.";
 "Stay connected" = "Blijf verbonden";
 "TLS auth key:" = "TLS auth-sleutel:";
 "TLS crypt key:" = "TLS crypt-sleutel:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "het script vóór verbinden is mislukt";
 "username %@" = "gebruikersnaam %@";
 "write a server as: host port udp|tcp" = "schrijf een server als: host poort udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@.";

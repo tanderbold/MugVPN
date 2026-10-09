@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Inloggning kräver ett klientcertifikat eller ett lösenord.";
 "Some settings are set by your administrator." = "Vissa inställningar har ställts in av din administratör.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Delad DNS per domän: bara serverns domäner går till dess DNS";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Startas av systemet vid uppstart: anslutningens inställningar anges av en administratör i %@.";
 "Stay connected" = "Förbli ansluten";
 "TLS auth key:" = "TLS auth-nyckel:";
 "TLS crypt key:" = "TLS crypt-nyckel:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "föranslutningsskriptet misslyckades";
 "username %@" = "användarnamn %@";
 "write a server as: host port udp|tcp" = "skriv en server som: värd port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Startas av systemet vid uppstart: anslutningens inställningar anges av en administratör i %@.";

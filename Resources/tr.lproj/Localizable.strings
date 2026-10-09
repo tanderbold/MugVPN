@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Oturum açmak için istemci sertifikası veya şifre gerekir.";
 "Some settings are set by your administrator." = "Bazı ayarlar yöneticiniz tarafından belirlenmiştir.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Alan adına göre bölünmüş DNS: yalnızca sunucunun alan adları onun DNS'ine gider";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Sistem açılışta başlatır: bağlantı ayarlarını bir yönetici %@ içinde belirler.";
 "Stay connected" = "Bağlı kal";
 "TLS auth key:" = "TLS auth anahtarı:";
 "TLS crypt key:" = "TLS crypt anahtarı:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "bağlantı öncesi betik başarısız oldu";
 "username %@" = "kullanıcı adı %@";
 "write a server as: host port udp|tcp" = "sunucuyu şöyle yazın: ana bilgisayar port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Sistem açılışta başlatır: bağlantı ayarlarını bir yönetici %@ içinde belirler.";

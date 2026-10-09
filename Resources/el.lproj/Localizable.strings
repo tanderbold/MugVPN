@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Για τη σύνδεση απαιτείται πιστοποιητικό πελάτη ή σύνθημα.";
 "Some settings are set by your administrator." = "Ορισμένες ρυθμίσεις ορίζονται από τον διαχειριστή σας.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Διαχωρισμένο DNS ανά τομέα: μόνο οι τομείς του διακομιστή πηγαίνουν στο DNS του";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Ξεκινά από το σύστημα κατά την εκκίνηση: τις ρυθμίσεις σύνδεσης ορίζει ένας διαχειριστής στο %@.";
 "Stay connected" = "Παραμονή σε σύνδεση";
 "TLS auth key:" = "Κλειδί TLS auth:";
 "TLS crypt key:" = "Κλειδί TLS crypt:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "το σενάριο πριν τη σύνδεση απέτυχε";
 "username %@" = "όνομα χρήστη %@";
 "write a server as: host port udp|tcp" = "γράψτε τον διακομιστή ως: κεντρικός υπολογιστής θύρα udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Ξεκινά από το σύστημα κατά την εκκίνηση: τις ρυθμίσεις σύνδεσης ορίζει ένας διαχειριστής στο %@.";

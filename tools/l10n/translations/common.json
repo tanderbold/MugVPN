@@ -28,7 +28,8 @@
   "No log for %@ yet.": "Pro %@ zatím není žádný protokol.",
   "Light": "Světlý",
   "Dark": "Tmavý",
-  "Log theme:": "Motiv protokolu:"
+  "Log theme:": "Motiv protokolu:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Spouští ho systém při startu: jeho nastavení připojení určuje správce v %@."
  },
  "de": {
   "OK": "OK",
@@ -59,7 +60,8 @@
   "No log for %@ yet.": "Für %@ gibt es noch kein Protokoll.",
   "Light": "Hell",
   "Dark": "Dunkel",
-  "Log theme:": "Protokolldesign:"
+  "Log theme:": "Protokolldesign:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wird beim Systemstart gestartet: Die Verbindungseinstellungen legt ein Administrator in %@ fest."
  },
  "da": {
   "OK": "OK",
@@ -90,7 +92,8 @@
   "No log for %@ yet.": "Der er endnu ingen log for %@.",
   "Light": "Lys",
   "Dark": "Mørk",
-  "Log theme:": "Logtema:"
+  "Log theme:": "Logtema:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes af systemet ved opstart: forbindelsens indstillinger angives af en administrator i %@."
  },
  "el": {
   "OK": "OK",
@@ -121,7 +124,8 @@
   "No log for %@ yet.": "Δεν υπάρχει ακόμη αρχείο καταγραφής για το %@.",
   "Light": "Ανοιχτόχρωμο",
   "Dark": "Σκουρόχρωμο",
-  "Log theme:": "Θέμα καταγραφής:"
+  "Log theme:": "Θέμα καταγραφής:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Ξεκινά από το σύστημα κατά την εκκίνηση: τις ρυθμίσεις σύνδεσης ορίζει ένας διαχειριστής στο %@."
  },
  "es": {
   "OK": "Aceptar",
@@ -152,7 +156,8 @@
   "No log for %@ yet.": "Todavía no hay registro de %@.",
   "Light": "Claro",
   "Dark": "Oscuro",
-  "Log theme:": "Tema del registro:"
+  "Log theme:": "Tema del registro:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Lo inicia el sistema al arrancar: un administrador define sus ajustes de conexión en %@."
  },
  "fa": {
   "OK": "تأیید",
@@ -183,7 +188,8 @@
   "No log for %@ yet.": "هنوز گزارشی برای %@ وجود ندارد.",
   "Light": "روشن",
   "Dark": "تیره",
-  "Log theme:": "پوستهٔ گزارش:"
+  "Log theme:": "پوستهٔ گزارش:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "سیستم آن را هنگام راه‌اندازی اجرا می‌کند: تنظیمات اتصال آن را مدیر در %@ تعیین می‌کند."
  },
  "fi": {
   "OK": "OK",
@@ -214,7 +220,8 @@
   "No log for %@ yet.": "Profiililla %@ ei ole vielä lokia.",
   "Light": "Vaalea",
   "Dark": "Tumma",
-  "Log theme:": "Lokin teema:"
+  "Log theme:": "Lokin teema:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Järjestelmä käynnistää sen käynnistyksen yhteydessä: ylläpitäjä määrittää yhteysasetukset tiedostossa %@."
  },
  "fr": {
   "OK": "OK",
@@ -245,7 +252,8 @@
   "No log for %@ yet.": "Aucun journal pour %@ pour l’instant.",
   "Light": "Clair",
   "Dark": "Sombre",
-  "Log theme:": "Thème du journal :"
+  "Log theme:": "Thème du journal :",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Démarré par le système au démarrage : ses réglages de connexion sont définis par un administrateur dans %@."
  },
  "it": {
   "OK": "OK",
@@ -276,7 +284,8 @@
   "No log for %@ yet.": "Non c’è ancora un log per %@.",
   "Light": "Chiaro",
   "Dark": "Scuro",
-  "Log theme:": "Tema del log:"
+  "Log theme:": "Tema del log:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Avviato dal sistema all'accensione: le impostazioni di connessione sono definite da un amministratore in %@."
  },
  "ja": {
   "OK": "OK",
@@ -307,7 +316,8 @@
   "No log for %@ yet.": "%@ のログはまだありません。",
   "Light": "ライト",
   "Dark": "ダーク",
-  "Log theme:": "ログのテーマ:"
+  "Log theme:": "ログのテーマ:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "起動時にシステムが開始します。接続設定は管理者が %@ で指定します。"
  },
  "ko": {
   "OK": "확인",
@@ -338,7 +348,8 @@
   "No log for %@ yet.": "%@의 로그가 아직 없습니다.",
   "Light": "라이트",
   "Dark": "다크",
-  "Log theme:": "로그 테마:"
+  "Log theme:": "로그 테마:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "시스템 시작 시 실행됩니다. 연결 설정은 관리자가 %@에서 지정합니다."
  },
  "nl": {
   "OK": "OK",
@@ -369,7 +380,8 @@
   "No log for %@ yet.": "Er is nog geen logboek voor %@.",
   "Light": "Licht",
   "Dark": "Donker",
-  "Log theme:": "Thema logboek:"
+  "Log theme:": "Thema logboek:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Wordt bij het opstarten door het systeem gestart: de verbindingsinstellingen stelt een beheerder in via %@."
  },
  "nb": {
   "OK": "OK",
@@ -400,7 +412,8 @@
   "No log for %@ yet.": "Det finnes ingen logg for %@ ennå.",
   "Light": "Lys",
   "Dark": "Mørk",
-  "Log theme:": "Loggtema:"
+  "Log theme:": "Loggtema:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startes av systemet ved oppstart: tilkoblingsinnstillingene angis av en administrator i %@."
  },
  "pl": {
   "OK": "OK",
@@ -431,7 +444,8 @@
   "No log for %@ yet.": "Nie ma jeszcze logu dla %@.",
   "Light": "Jasny",
   "Dark": "Ciemny",
-  "Log theme:": "Motyw logu:"
+  "Log theme:": "Motyw logu:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Uruchamiane przez system przy starcie: ustawienia połączenia określa administrator w %@."
  },
  "pt-BR": {
   "OK": "OK",
@@ -462,7 +476,8 @@
   "No log for %@ yet.": "Ainda não há registro de %@.",
   "Light": "Claro",
   "Dark": "Escuro",
-  "Log theme:": "Tema do registro:"
+  "Log theme:": "Tema do registro:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Iniciada pelo sistema na inicialização: as configurações da conexão são definidas por um administrador em %@."
  },
  "ru": {
   "OK": "ОК",
@@ -493,7 +508,8 @@
   "No log for %@ yet.": "Журнала для %@ пока нет.",
   "Light": "Светлая",
   "Dark": "Тёмная",
-  "Log theme:": "Тема журнала:"
+  "Log theme:": "Тема журнала:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускается системой при загрузке: параметры подключения задаёт администратор в %@."
  },
  "sv": {
   "OK": "OK",
@@ -524,7 +540,8 @@
   "No log for %@ yet.": "Det finns ingen logg för %@ ännu.",
   "Light": "Ljust",
   "Dark": "Mörkt",
-  "Log theme:": "Loggtema:"
+  "Log theme:": "Loggtema:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Startas av systemet vid uppstart: anslutningens inställningar anges av en administratör i %@."
  },
  "tr": {
   "OK": "Tamam",
@@ -555,7 +572,8 @@
   "No log for %@ yet.": "%@ için henüz günlük yok.",
   "Light": "Açık",
   "Dark": "Koyu",
-  "Log theme:": "Günlük teması:"
+  "Log theme:": "Günlük teması:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Sistem açılışta başlatır: bağlantı ayarlarını bir yönetici %@ içinde belirler."
  },
  "uk": {
   "OK": "OK",
@@ -586,7 +604,8 @@
   "No log for %@ yet.": "Журналу для %@ поки немає.",
   "Light": "Світла",
   "Dark": "Темна",
-  "Log theme:": "Тема журналу:"
+  "Log theme:": "Тема журналу:",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "Запускається системою під час завантаження: параметри підключення задає адміністратор у %@."
  },
  "zh-Hans": {
   "OK": "好",
@@ -617,7 +636,8 @@
   "No log for %@ yet.": "%@ 还没有日志。",
   "Light": "浅色",
   "Dark": "深色",
-  "Log theme:": "日志主题："
+  "Log theme:": "日志主题：",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系统在启动时启动：其连接设置由管理员在 %@ 中指定。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -648,6 +668,7 @@
   "No log for %@ yet.": "%@ 尚無紀錄。",
   "Light": "淺色",
   "Dark": "深色",
-  "Log theme:": "紀錄主題："
+  "Log theme:": "紀錄主題：",
+  "Started by the system at boot: its connection settings are set by an administrator in %@.": "由系統在開機時啟動：其連線設定由管理員在 %@ 中指定。"
  }
 }

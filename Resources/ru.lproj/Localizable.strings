@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Для входа нужен сертификат клиента или пароль.";
 "Some settings are set by your administrator." = "Некоторые параметры заданы администратором.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Раздельный DNS по доменам: на DNS сервера идут только его домены";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Запускается системой при загрузке: параметры подключения задаёт администратор в %@.";
 "Stay connected" = "Не отключаться";
 "TLS auth key:" = "Ключ TLS auth:";
 "TLS crypt key:" = "Ключ TLS crypt:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "скрипт перед подключением завершился с ошибкой";
 "username %@" = "имя пользователя %@";
 "write a server as: host port udp|tcp" = "укажите сервер в виде: хост порт udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Запускается системой при загрузке: параметры подключения задаёт администратор в %@.";

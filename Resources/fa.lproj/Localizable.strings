@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "برای ورود، گواهی کلاینت یا رمز عبور لازم است.";
 "Some settings are set by your administrator." = "برخی تنظیمات توسط مدیر سیستم تعیین شده‌اند.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "DNS تفکیکی بر اساس دامنه: فقط دامنه‌های سرور به DNS آن فرستاده می‌شوند";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "سیستم آن را هنگام راه‌اندازی اجرا می‌کند: تنظیمات اتصال آن را مدیر در %@ تعیین می‌کند.";
 "Stay connected" = "متصل ماندن";
 "TLS auth key:" = "کلید TLS auth:";
 "TLS crypt key:" = "کلید TLS crypt:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "اسکریپت پیش از اتصال ناموفق بود";
 "username %@" = "نام کاربری %@";
 "write a server as: host port udp|tcp" = "سرور را به این شکل بنویسید: host port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "سیستم آن را هنگام راه‌اندازی اجرا می‌کند: تنظیمات اتصال آن را مدیر در %@ تعیین می‌کند.";

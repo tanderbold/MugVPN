@@ -164,6 +164,7 @@
 "Signing in needs a client certificate or a password." = "Přihlášení vyžaduje klientský certifikát nebo heslo.";
 "Some settings are set by your administrator." = "Některá nastavení určuje správce.";
 "Split DNS by Domain: only the server's domains go to its DNS" = "Rozdělené DNS podle domén: do DNS serveru jdou jen jeho domény";
+"Started by the system at boot: its connection settings are set by an administrator in %@." = "Spouští ho systém při startu: jeho nastavení připojení určuje správce v %@.";
 "Stay connected" = "Zůstat připojeno";
 "TLS auth key:" = "Klíč TLS auth:";
 "TLS crypt key:" = "Klíč TLS crypt:";
@@ -205,4 +206,3 @@
 "the pre-connect script failed" = "skript před připojením selhal";
 "username %@" = "uživatelské jméno %@";
 "write a server as: host port udp|tcp" = "zadejte server ve tvaru: hostitel port udp|tcp";
-"Started by the system at boot: its connection settings are set by an administrator in %@." = "Spouští ho systém při startu: jeho nastavení připojení určuje správce v %@.";
