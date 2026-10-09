@@ -44,6 +44,8 @@ public enum MugVPNIDs {
     /// Lift the blocks the caller may lift (their own; all for administrators).
     /// - reply: error text or nil.
     func unblock(reply: @escaping (String?) -> Void)
+    /// Exit when nothing needs the helper (launchd starts the updated one on the next call); an error text or nil.
+    func restartIfIdle(reply: @escaping (String?) -> Void)
     /// Lift the caller's blocks for a while (seconds, at most a few minutes): to sign in to a network.
     func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void)
 

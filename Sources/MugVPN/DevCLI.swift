@@ -10,7 +10,8 @@ import ServiceManagement
 // stand VM without the interface. `MugVPN register|status|connect|...`.
 
 /// Subcommands that select this mode.
-let devCommands: Set<String> = ["register", "unregister", "status", "connect", "disconnect", "list", "parse", "serve"]
+let devCommands: Set<String> = ["register", "unregister", "status", "connect", "disconnect", "list", "parse", "serve",
+                                 "restart-if-idle", "helper-version"]
 
 func fail(_ s: String) -> Never {
     FileHandle.standardError.write(Data("mugvpn: \(s)\n".utf8))
@@ -218,6 +219,11 @@ case "parse":
         out = ["ok": false, "error": "\(error)"]
     }
     print(String(decoding: try! JSONSerialization.data(withJSONObject: out, options: [.sortedKeys]), as: UTF8.self))
+case "restart-if-idle":
+    if let err = wait({ helper().restartIfIdle(reply: $0) }) { fail(err) }
+    print("restarting")
+case "helper-version":
+    print(wait { helper().version(reply: $0) })
 case "list":
     let data = wait { helper().list(reply: $0) }
     let list = (try? JSONDecoder().decode([ConnectionInfo].self, from: data)) ?? []

@@ -236,7 +236,7 @@ enum SettingsWindow {
                     n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
                 }
                 let login = checked(w, "launch_at_login")
-                if login != services.launchAtLogin { services.launchAtLogin = login }
+                if login != services.launchAtLogin { try services.setLaunchAtLogin(login) }
             } catch {
                 let e = w.control("error_text") as? NSTextField
                 e?.stringValue = "\(error)"

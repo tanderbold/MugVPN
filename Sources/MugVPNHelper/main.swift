@@ -108,6 +108,16 @@ final class Service: NSObject, MugVPNHelperProtocol {
         queue.async { reply(core.unblock(uid: uid)) }
     }
 
+    func restartIfIdle(reply: @escaping (String?) -> Void) {
+        queue.async {
+            guard core.idleForRestart else { return reply("in use: it is updated once no connection or block needs it") }
+            reply(nil)
+            log("idle: exiting so that the updated helper starts")
+            // A clean exit: launchd starts the helper again on the next call (from the app's bundle).
+            DispatchQueue.global().asyncAfter(deadline: .now() + 0.5) { exit(0) }
+        }
+    }
+
     func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void) {
         let uid = caller
         queue.async { reply(core.suspendBlocks(uid: uid, seconds: TimeInterval(seconds))) }

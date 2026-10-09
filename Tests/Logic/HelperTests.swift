@@ -413,6 +413,22 @@ func registerCleanupTests() {
 // MARK: - L-HLP
 
 func registerHelperTests() {
+    test("HLP-33", "started again for an update only when nobody's connection or block needs it") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        expect(h.idleForRestart, "nothing at all")
+        let (id, _) = try h.start(bundle: bundle(), uid: 502)
+        expect(!h.idleForRestart, "another user's tunnel")
+        sys.launched[0].process.onExit(.exited(0))
+        expect(h.idleForRestart)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote a 1194", files: [:])
+        b.protection = ProtectionOptions(killSwitch: true)
+        let (k, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, k, uid: 501)
+        sys.launched[1].process.onExit(.signaled(9))
+        expect(!h.idleForRestart, "a block in force: PF is watched while it lasts")
+        _ = id
+    }
     test("HLP-01", "openvpn arguments") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
@@ -1078,6 +1094,22 @@ func registerPersistentHelperTests() {
         sys.pf = []
         try makeHelper(sys).prepareRunDirectory()
         expect((sys.pf.last ?? "").contains(blocked))
+    }
+    test("PER-22", "a persistent tunnel's block is everyone's: every user sees it, only an administrator lifts it") {
+        let sys = FakeSystem()
+        try autoProfile(sys, "site")
+        try sys.writeFile("/L/auto/site.json", Data(#"{"kill_switch": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        h.startPersistentProfiles()
+        try bringUp(sys, h, h.list(uid: 0)[0].id, uid: 0)
+        sys.timers = []
+        sys.launched[0].process.onExit(.signaled(9))
+        expectEqual(h.locks(uid: 502), ["site"], "a standard user is blocked by it: told why")
+        expectEqual(h.unblock(uid: 502), "only its owner or an administrator can lift the block")
+        expectEqual(h.suspendBlocks(uid: 502, seconds: 120), "only its owner or an administrator can lift the block")
+        expectEqual(h.locks(uid: 502), ["site"])
+        expectEqual(h.unblock(uid: 501), nil, "an administrator can")
+        expectEqual(h.locks(uid: 502), [])
     }
     test("PER-21", "a persistent tunnel that ends unasked starts again, waiting longer each time") {
         let sys = FakeSystem()

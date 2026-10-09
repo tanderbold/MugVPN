@@ -54,7 +54,9 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply([]) }
     var helperVersion = ProcessInfo.processInfo.environment["MUGVPN_E2E_HELPER_VERSION"] ?? MugVPNIDs.helperVersion
-    func version(reply: @escaping (String) -> Void) { reply(helperVersion) }
+    func version(reply: @escaping (String?) -> Void) { reply(helperVersion) }
+    /// The fake helper is always in use: an update waits.
+    func restartIfIdle(reply: @escaping (String?) -> Void) { reply("in use") }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
@@ -127,6 +129,11 @@ final class E2EServices: Services {
     var realHelperSetup: HelperSetup?
     var helperSetup: HelperSetup { realHelperSetup ?? backend }
     var launchAtLogin = false
+    var loginItemRefusal: String?
+    func setLaunchAtLogin(_ on: Bool) throws {
+        if let r = loginItemRefusal { throw E2EServer.E2EError(r) }
+        launchAtLogin = on
+    }
 
     init(backend: E2EBackend) {
         self.backend = backend
@@ -415,6 +422,9 @@ final class E2EServer {
         case "opened_urls": return ["urls": services.urls, "panels": services.panels]
         case "notifications": return ["items": services.notes]
         case "login_item": return ["enabled": services.launchAtLogin]
+        case "fake_login_item_refuses":
+            services.loginItemRefusal = r["message"] as? String
+            return [:]
         case "quit": return [:]
         default: throw E2EError("unknown command \(cmd)")
         }

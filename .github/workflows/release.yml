@@ -18,6 +18,8 @@ jobs:
       MUGVPN_TEAM: ${{ secrets.MUGVPN_TEAM }}
     steps:
       - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: The tag is the version the app and helper carry
+        run: tools/check-release-version.sh "$GITHUB_REF_NAME"
       - name: Signing secrets are there
         env:
           CERT: ${{ secrets.MUGVPN_DEVELOPER_ID_P12 }}

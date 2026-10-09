@@ -1335,8 +1335,13 @@ public final class HelperCore {
     /// not blocked by them and need not learn their profile names).
     public func locks(uid: UInt32) -> [String] {
         let admin = uid == 0 || system.isAdmin(uid: uid)
-        return locks.filter { !$0.armed && (admin || $0.owner == uid) }.map(\.name).sorted()
+        // A persistent tunnel's block is everyone's: everyone it blocks is told why (an administrator lifts it).
+        return locks.filter { !$0.armed && (admin || $0.owner == uid || $0.everyone) }.map(\.name).sorted()
     }
+
+    /// Nothing needs this helper to keep running: no connection of anyone's, no block (PF to watch).
+    /// Then it may exit for launchd to start the one an updated app came with.
+    public var idleForRestart: Bool { connections.isEmpty && locks.isEmpty && !closing }
 
     /// Fired blocks lifted for a while (to sign in to a network), until this time. Not on disk:
     /// a helper that starts again blocks again.

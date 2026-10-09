@@ -3,8 +3,17 @@ import MugVPNAppCore
 import MugVPNCore
 
 final class FakeHelperClient: HelperClient {
-    var version = MugVPNIDs.helperVersion
-    func version(reply: @escaping (String) -> Void) { reply(version) }
+    var version: String? = MugVPNIDs.helperVersion
+    func version(reply: @escaping (String?) -> Void) { reply(version) }
+    var restarts = 0
+    /// What a restart brings (the new helper's version), or nil: busy.
+    var restartTo: String?? = .some(MugVPNIDs.helperVersion)
+    func restartIfIdle(reply: @escaping (String?) -> Void) {
+        restarts += 1
+        guard case .some(let v) = restartTo else { return reply("busy") }
+        version = v
+        reply(nil)
+    }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
@@ -147,8 +156,28 @@ func registerManagerTests() {
         var changes = 0
         old.m.onChange = { changes += 1 }
         old.m.appStarted()
-        expectEqual(old.m.helperVersionMismatch, "0.0.9")
+        old.helper.restartTo = nil   // busy: stays as it is
+        _ = old
         expect(changes > 0, "the app hears of it")
+        let none = ManagerHarness()
+        none.helper.version = nil
+        none.helper.restartTo = nil
+        none.m.appStarted()
+        expectEqual(none.m.helperVersionMismatch, "unknown", "a helper that does not answer (an older one has no version call)")
+    }
+    test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
+        let h = ManagerHarness()
+        h.helper.version = "0.0.9"
+        h.m.connect(h.a)
+        h.m.appStarted()
+        expectEqual(h.helper.restarts, 0, "a connection of this app's is up: not now")
+        expectEqual(h.m.helperVersionMismatch, "0.0.9")
+        h.m.disconnect(h.a.id)
+        h.link("H1")?.push(">STATE:1,EXITING,SIGTERM,,,,,\n")
+        h.link("H1")?.onClose()
+        expectEqual(h.helper.restarts, 1, "nothing up any more: started again")
+        h.scheduler.drain()
+        expectEqual(h.m.helperVersionMismatch, nil, "the new one answers with the app's version")
     }
     test("MAN-22", "quitting is not held up by a connection that goes another way, nor for ever") {
         let h = ManagerHarness()

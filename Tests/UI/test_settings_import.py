@@ -250,3 +250,16 @@ def test_ui54_export_diagnostics(app, tmp_path):
     text = b"".join(z.read(n) for n in z.namelist() if not n.endswith("/"))
     assert b"TOPSECRET" not in text
     assert b"MugVPN:" in z.read(next(n for n in z.namelist() if n.endswith("summary.txt")))
+
+
+def test_ui60_open_at_login_refused(app):
+    """The system refuses the login item: the window stays, saying why; nothing is claimed done."""
+    app.call("fake_login_item_refuses", message="Operation not permitted")
+    app.click("Settings…")
+    w = app.window("settings")
+    app.set(w, "launch_at_login", True)
+    app.press(w, "ok")
+    w = app.window("settings")
+    e = app.control(w, "error_text")
+    assert e["visible"] and "Operation not permitted" in e["value"], e
+    assert not app.call("login_item")["enabled"]

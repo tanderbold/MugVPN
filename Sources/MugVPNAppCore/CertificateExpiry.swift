@@ -22,12 +22,41 @@ public enum CertificateExpiry {
         return d.args.first.flatMap(read)
     }
 
+    /// The PKCS#12 file a profile names (`pkcs12 file`; an inline one is left to openvpn).
+    public static func clientPKCS12(config: String) -> String? {
+        guard let d = (try? ConfigParser.parse(config))?.last(where: { $0.name == "pkcs12" }), d.inline == nil else { return nil }
+        return d.args.first
+    }
+
+    /// The end of a PKCS#12 file's certificate, when it opens without a password (one with a
+    /// password is known only once openvpn asks for it). The system's openssl reads it: Security
+    /// does not open a PKCS#12 with an empty password.
+    public static func notAfter(pkcs12File path: String) -> Date? {
+        guard FileManager.default.isReadableFile(atPath: path) else { return nil }
+        let p = Process()
+        p.executableURL = URL(fileURLWithPath: "/usr/bin/openssl")
+        p.arguments = ["pkcs12", "-in", path, "-nokeys", "-clcerts", "-passin", "pass:"]
+        let out = Pipe()
+        p.standardOutput = out
+        p.standardError = FileHandle.nullDevice
+        p.standardInput = FileHandle.nullDevice
+        guard (try? p.run()) != nil else { return nil }
+        let d = out.fileHandleForReading.readDataToEndOfFile()
+        p.waitUntilExit()
+        guard p.terminationStatus == 0 else { return nil }
+        return notAfter(pem: String(decoding: d, as: UTF8.self))
+    }
+
     /// The end of the first certificate of a PEM text (its validity's notAfter).
     public static func notAfter(pem: String) -> Date? {
         let begin = "-----BEGIN CERTIFICATE-----", end = "-----END CERTIFICATE-----"
         guard let b = pem.range(of: begin), let e = pem.range(of: end, range: b.upperBound..<pem.endIndex),
               let der = Data(base64Encoded: String(pem[b.upperBound..<e.lowerBound]), options: .ignoreUnknownCharacters)
         else { return nil }
+        return notAfter(der: der)
+    }
+
+    static func notAfter(der: Data) -> Date? {
         var r = DER(Array(der))
         // Certificate ::= SEQUENCE { tbsCertificate SEQUENCE { [0] version?, serial, signature, issuer, validity, ... } }
         guard var cert = r.enter(0x30), var tbs = cert.enter(0x30) else { return nil }

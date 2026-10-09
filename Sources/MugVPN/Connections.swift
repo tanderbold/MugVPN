@@ -355,7 +355,11 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         let selected = current >= 0 && current < rows.count ? rows[current] : nil
         let before = rows
         reloadRows()
-        guard rows != before else { return }
+        guard rows != before else {
+            // The same rows: the selection (reloading drops it) stays where it was.
+            if current >= 0, current < rows.count { list.selectRowIndexes([current], byExtendingSelection: false) }
+            return
+        }
         if let selected, let i = rows.firstIndex(where: { sameRow($0, selected) }) {
             current = i
             list.selectRowIndexes([i], byExtendingSelection: false)
@@ -378,7 +382,10 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
 
     private func reloadRows() {
         let hasNew = rows.contains(.new)
-        rows = ProfileStore.matching(app.manager.profiles, search.stringValue).map { .profile($0) } + (hasNew ? [.new] : [])
+        // The one being edited stays listed whatever the search: what was typed into it is not dropped.
+        let found = Set(ProfileStore.matching(app.manager.profiles, search.stringValue).map(\.id))
+        let keep = dirty ? selected?.profile?.id : nil
+        rows = app.manager.profiles.filter { found.contains($0.id) || $0.id == keep }.map { .profile($0) } + (hasNew ? [.new] : [])
         list.titles = rows.map(title)
         list.reloadData()
     }

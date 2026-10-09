@@ -51,8 +51,21 @@ final class XPCHelperClient: HelperClient {
         }
     }
 
-    func version(reply: @escaping (String) -> Void) {
-        proxy({ _ in })?.version { v in DispatchQueue.main.async { reply(v) } }
+    /// nil when the helper does not answer (an older one has no version call): at most 5 s.
+    func version(reply: @escaping (String?) -> Void) {
+        var done = false
+        let once: (String?) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once(nil) }
+        guard let p = proxy({ _ in once(nil) }) else { return once(nil) }
+        p.version { once($0) }
+    }
+
+    func restartIfIdle(reply: @escaping (String?) -> Void) {
+        var done = false
+        let once: (String?) -> Void = { v in DispatchQueue.main.async { if !done { done = true; reply(v) } } }
+        DispatchQueue.main.asyncAfter(deadline: .now() + 5) { once("the helper did not answer") }
+        guard let p = proxy({ once("\($0.localizedDescription)") }) else { return once("no helper") }
+        p.restartIfIdle { once($0) }
     }
 
     func blocks(reply: @escaping ([String]) -> Void) {

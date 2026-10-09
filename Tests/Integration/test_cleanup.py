@@ -73,3 +73,20 @@ def test_int35_helper_stays_responsive_through_cleanups(vpn, mac):
         r = vpn.cli("list")
         assert r.returncode == 0 and time.time() - start < 5, "the helper answers at once after a cleanup"
     wait_for(lambda: vpn.primary_dns() == vpn.baseline_dns, 15, "DNS back")
+
+
+
+def test_int46_helper_restarts_for_an_update_only_when_idle(vpn, mac):
+    """INT-46: the helper exits for launchd to start the updated one only when nothing needs it."""
+    import re
+    pid = lambda: mac.out("pgrep -f Contents/MacOS/MugVPNHelper || true").split()
+    vpn.connected("stand-a")
+    r = vpn.cli("restart-if-idle")
+    assert r.returncode != 0 and "in use" in r.stderr, r.stdout + r.stderr
+    vpn.disconnect_all()
+    before = pid()
+    assert vpn.cli("restart-if-idle").returncode == 0
+    wait_for(lambda: pid() != before, 10, "the old helper to exit")
+    out = vpn.cli("helper-version").stdout.strip()
+    assert re.fullmatch(r"\d+\.\d+\.\d+", out), out
+    assert pid() and pid() != before, "launchd started it again on the next call"

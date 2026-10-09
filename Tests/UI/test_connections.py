@@ -383,3 +383,16 @@ def test_ui53_drop_profiles_on_the_window(app, tmp_path):
     assert r["accepted"] == [str(good)], r
     wait_for(lambda: "dropped" in app.control(app.window("connections"), "list")["items"], 5, "the dropped profile")
     assert "notes" not in app.control(app.window("connections"), "list")["items"]
+
+
+def test_ui57_search_keeps_the_profile_being_edited(app):
+    """A search that leaves out the profile being edited does not drop what was typed."""
+    w = open_window(app, "stand-a")
+    app.set(w, "servers", "edited.example.com")
+    app.set(app.window("connections"), "search", "stand-b")
+    w = app.window("connections")
+    assert app.control(w, "list")["items"] == ["stand-a", "stand-b"], "the one being edited stays listed"
+    assert app.control(w, "list")["value"] == "stand-a"
+    assert app.control(w, "servers")["value"] == "edited.example.com"
+    app.press(w, "save")
+    assert "edited.example.com" in cfg(app, "stand-a")

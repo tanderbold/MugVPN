@@ -20,6 +20,8 @@ jobs:
         run: |
           cp tools/ci/BuildPins.swift.example Sources/MugVPNHelper/BuildPins.swift
           swift build -c release
+      - name: App and helper versions agree
+        run: tools/check-release-version.sh
       - name: Translations are up to date
         run: |
           python3 tools/l10n/l10n.py build

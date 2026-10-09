@@ -46,7 +46,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - Coloured live log with a light/dark switch, View Log in Console; notifications.
 - Reconnects at once after sleep and on network changes (another Wi-Fi, a new router or lease); optional disconnect on sleep.
 - Networks that ask for a sign-in first (hotels, airports): the menu offers it, lifting a kill switch's block for two minutes so the page can load.
-- Opens at login if you like; **Export Diagnostics…** makes a zip for a bug report — versions, routes, DNS, logs and the profiles without their keys and passwords.
+- Opens at login if you like; **Export Diagnostics…** makes a zip for a bug report — versions, routes, DNS, logs, and the profiles reduced to settings known to hold no secrets (keys, passwords, `setenv` values and the like are left out).
 - Persistent connections that an administrator puts in `config-auto` start at boot, before anyone logs in.
 - Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root;
   variables a server pushes (`echo setenv NAME value`) reach them as `PUSHED_NAME`.

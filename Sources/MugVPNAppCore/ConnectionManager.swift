@@ -4,7 +4,10 @@ import MugVPNCore
 /// The helper as the app sees it (XPC in the app, a fake in tests).
 public protocol HelperClient: AnyObject {
     /// The helper's version (MugVPNIDs.helperVersion of the build it came with).
-    func version(reply: @escaping (String) -> Void)
+    func version(reply: @escaping (String?) -> Void)
+    /// Exit if no connection or block of anyone's needs it (launchd then starts the helper the
+    /// app came with); nil when it does, or why not.
+    func restartIfIdle(reply: @escaping (String?) -> Void)
     func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
     func stop(_ id: String, reply: @escaping (String?) -> Void)
     func list(reply: @escaping ([ConnectionInfo]) -> Void)
@@ -92,11 +95,41 @@ public final class ConnectionManager {
     public var splitDNS: (Profile) -> Bool = { _ in false }
     /// The protection a connection asks the helper for.
     public var protection: (Profile) -> ProtectionOptions = { _ in ProtectionOptions() }
-    public private(set) var active: [String: ActiveConnection] = [:]
+    public private(set) var active: [String: ActiveConnection] = [:] {
+        didSet { if active.isEmpty, !oldValue.isEmpty { restartOutdatedHelper() } }
+    }
     public private(set) var lastError: [String: String] = [:]
     public var onChange: () -> Void = {}
     /// The helper's version when it is not the app's (an update not yet taken by the running helper).
     public private(set) var helperVersionMismatch: String?
+    private var helperRestartAsked = false
+
+    /// nil (no answer: an older helper has no version call) counts as another version.
+    private func checkHelperVersion() {
+        helper.version { [weak self] v in
+            guard let self else { return }
+            let now: String? = v == MugVPNIDs.helperVersion ? nil : (v ?? "unknown")
+            guard now != self.helperVersionMismatch else { return }
+            self.helperVersionMismatch = now
+            self.onChange()
+            self.restartOutdatedHelper()
+        }
+    }
+
+    /// Another helper version, and nothing of this app's uses it: it is asked to start again
+    /// (it does only if no one's connection or block needs it), then asked its version again.
+    private func restartOutdatedHelper() {
+        guard helperVersionMismatch != nil, active.isEmpty, !helperRestartAsked else { return }
+        helperRestartAsked = true
+        helper.restartIfIdle { [weak self] err in
+            guard let self else { return }
+            if err != nil { self.helperRestartAsked = false; return }
+            self.scheduler.after(2) { [weak self] in
+                self?.helperRestartAsked = false
+                self?.checkHelperVersion()
+            }
+        }
+    }
 
     private let helper: HelperClient
     public var helperClient: HelperClient { helper }
@@ -280,11 +313,7 @@ public final class ConnectionManager {
     /// crashed), stop those for profiles that are gone, then reconnect the
     /// ones that were up when the app last quit.
     public func appStarted() {
-        helper.version { [weak self] v in
-            guard let self, v != MugVPNIDs.helperVersion else { return }
-            self.helperVersionMismatch = v
-            self.onChange()
-        }
+        checkHelperVersion()
         helper.list { [weak self] running in
             guard let self else { return }
             for info in running {

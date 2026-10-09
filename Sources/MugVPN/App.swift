@@ -27,7 +27,8 @@ protocol Services: AnyObject {
     var helperSetup: HelperSetup { get }
     var http: HTTPFetcher { get }
     /// MugVPN starts at login (the system's login item for it).
-    var launchAtLogin: Bool { get set }
+    var launchAtLogin: Bool { get }
+    func setLaunchAtLogin(_ on: Bool) throws
     /// Ask where to save a file; nil on Cancel.
     func chooseSaveLocation(suggested: String) -> String?
     /// Uninstalling: the user's files, settings and passwords; then the app itself.
@@ -38,11 +39,9 @@ protocol Services: AnyObject {
 final class RealServices: Services {
     let helperSetup: HelperSetup = SMHelperSetup()
     let http: HTTPFetcher = URLSessionFetcher()
-    var launchAtLogin: Bool {
-        get { SMAppService.mainApp.status == .enabled }
-        set {
-            if newValue { try? SMAppService.mainApp.register() } else { try? SMAppService.mainApp.unregister() }
-        }
+    var launchAtLogin: Bool { SMAppService.mainApp.status == .enabled }
+    func setLaunchAtLogin(_ on: Bool) throws {
+        if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
     }
 
     func removeUserData(_ paths: [String]) {
@@ -140,15 +139,20 @@ final class AppController: NSObject, NSMenuDelegate {
         }
     }
 
-    /// The network asks for a sign-in first (captive.apple.com answers with another page).
-    private(set) var captivePortal = false
+    /// The network asks for a sign-in first (captive.apple.com answers with another page);
+    /// nil: no answer to tell by (a kill switch's block keeps the probe out too).
+    private(set) var captivePortal: Bool? = false
+    /// Offered when a sign-in page answers, or while blocked and nothing could be asked.
+    var offerSignIn: Bool { captivePortal == true || (captivePortal == nil && !blockedBy.isEmpty) }
 
     /// Asked as macOS asks; the answer (or none) is kept until the next network change.
     func probeCaptivePortal() {
         services.http.get(CaptivePortal.probeURL, username: "", password: "") { [weak self] r in
-            guard let self, let v = CaptivePortal.verdict(r) ?? (self.blockedBy.isEmpty ? false : nil), v != self.captivePortal else { return }
+            guard let self else { return }
+            let v = CaptivePortal.verdict(r)
+            guard v != self.captivePortal else { return }
             self.captivePortal = v
-            if v { self.services.notify(title: L("MugVPN"), text: L("This network asks you to sign in first.")) }
+            if v == true { self.services.notify(title: L("MugVPN"), text: L("This network asks you to sign in first.")) }
             self.rebuildMenu()
         }
     }
@@ -157,9 +161,11 @@ final class AppController: NSObject, NSMenuDelegate {
     @objc func signInToNetwork() {
         let open: () -> Void = { [weak self] in self?.services.open(CaptivePortal.probeURL.absoluteString) }
         guard !blockedBy.isEmpty else { return open() }
-        manager.helperClient.suspendBlocks(seconds: CaptivePortal.signInSeconds) { err in
+        manager.helperClient.suspendBlocks(seconds: CaptivePortal.signInSeconds) { [weak self] err in
             if let err { return showError(err) }
             open()
+            // Lifted: now the probe can tell whether there is anything to sign in to.
+            DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self?.probeCaptivePortal() }
         }
     }
 
@@ -309,12 +315,12 @@ final class AppController: NSObject, NSMenuDelegate {
     private func warnCertificate(_ p: Profile) {
         guard !certificateWarned.contains(p.id), let config = store.config(of: p) else { return }
         let dir = (p.path as NSString).deletingLastPathComponent
-        guard let pem = CertificateExpiry.clientCertificate(config: config, read: { f in
-                  let path = f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f)
-                  return try? String(contentsOfFile: path, encoding: .utf8)
-              }),
-              let end = CertificateExpiry.notAfter(pem: pem),
-              let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
+        func path(_ f: String) -> String { f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f) }
+        let pemEnd = CertificateExpiry.clientCertificate(config: config, read: { try? String(contentsOfFile: path($0), encoding: .utf8) })
+            .flatMap(CertificateExpiry.notAfter(pem:))
+        let p12End = CertificateExpiry.clientPKCS12(config: config)
+            .flatMap { CertificateExpiry.notAfter(pkcs12File: path($0)) }
+        guard let end = pemEnd ?? p12End, let w = CertificateExpiry.warning(notAfter: end, now: Date()) else { return }
         certificateWarned.insert(p.id)
         let day = DateFormatter.localizedString(from: end, dateStyle: .medium, timeStyle: .none)
         switch w {
@@ -468,8 +474,8 @@ final class AppController: NSObject, NSMenuDelegate {
             i.isEnabled = false
             menu.addItem(i)
         }
-        if captivePortal { menu.addItem(action(L("Sign in to This Network…"), #selector(signInToNetwork))) }
-        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || captivePortal { menu.addItem(.separator()) }
+        if offerSignIn { menu.addItem(action(L("Sign in to This Network…"), #selector(signInToNetwork))) }
+        if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || offerSignIn { menu.addItem(.separator()) }
         let profiles = manager.profiles
         if profiles.isEmpty {
             let i = NSMenuItem(title: L("No profiles yet"), action: nil, keyEquivalent: "")
@@ -565,6 +571,8 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     func connect(_ p: Profile) {
+        // Before it starts: a server refuses an expired certificate long before anything is up.
+        warnCertificate(p)
         let setup = services.helperSetup
         if setup.state == .notRegistered {
             if HelperRegistration.problem(bundlePath: Bundle.main.bundlePath) != nil, !setup.isTestDouble {
@@ -627,7 +635,7 @@ final class AppController: NSObject, NSMenuDelegate {
                 }
                 let openvpn = run(MugVPNIDs.libexecDir + "/openvpn", ["--version"]).components(separatedBy: "\n").first ?? ""
                 let files = Diagnostics.files(
-                    summary: ["MugVPN": appVersion, "helper": helperVersion, "openvpn": openvpn, "macOS": os,
+                    summary: ["MugVPN": appVersion, "helper": helperVersion ?? "not answering", "openvpn": openvpn, "macOS": os,
                               "connections": connected.isEmpty ? "none" : connected.joined(separator: "; ")],
                     commands: ["routes.txt": run("/usr/sbin/netstat", ["-rn"]), "dns.txt": run("/usr/sbin/scutil", ["--dns"]),
                                "interfaces.txt": run("/sbin/ifconfig", [])],

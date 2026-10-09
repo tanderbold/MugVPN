@@ -143,3 +143,14 @@ def test_ui56_sign_in_to_a_network(app):
     app.call("fake_http", responses=[{"status": 200, "body": "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>"}])
     app.call("system_event", event="networkChanged")
     wait_for(lambda: "Sign in to This Network…" not in [i["title"] for i in app.menu()], 5, "signed in")
+
+
+def test_ui58_sign_in_offered_while_blocked_even_without_an_answer(app):
+    """A kill switch's block keeps the probe from getting an answer: signing in is offered all the same."""
+    app.call("fake_blocks", names=["stand-a"])          # the probe gets no answer (503 from the fake)
+    wait_for(lambda: "Sign in to This Network…" in [i["title"] for i in app.menu()], 5, "the offer")
+    app.call("fake_http", responses=[{"status": 200, "body": "<HTML><HEAD><TITLE>Success</TITLE></HEAD><BODY>Success</BODY></HTML>"}])
+    app.click("Sign in to This Network…")
+    wait_for(lambda: app.call("fake_helper")["suspends"] == [120], 5, "the block lifted for a while")
+    # Looked at again once lifted: the network lets everything through, nothing more to offer.
+    wait_for(lambda: "Sign in to This Network…" not in [i["title"] for i in app.menu()], 10, "nothing to sign in to")

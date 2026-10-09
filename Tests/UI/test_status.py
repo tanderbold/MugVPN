@@ -233,3 +233,24 @@ def test_ui55_helper_of_another_version(home):
     with launched(home) as b:
         b.connect("stand-a")
         assert not any("version" in n["text"] for n in b.call("notifications")["items"])
+
+
+
+EXPIRED_CERT = """-----BEGIN CERTIFICATE-----
+MIIBeTCCAR+gAwIBAgIUHA0JhZP9nGDU+Fu7tTTnY8ihsF8wCgYIKoZIzj0EAwIw
+EjEQMA4GA1UEAwwHZXhwaXJlZDAeFw0yNDAxMDEwMDAwMDBaFw0yNTAxMDEwMDAw
+MDBaMBIxEDAOBgNVBAMMB2V4cGlyZWQwWTATBgcqhkjOPQIBBggqhkjOPQMBBwNC
+AAQorViZxatob+n+682MKXJ9qF1uHXo5eYchBURUEuOnuizxMwqHZ88zA6Y1LWQB
+rWgCZ3Z5Udu2bSUKsONlZfJAo1MwUTAdBgNVHQ4EFgQUvpl4O2aNaI+rtJgOPyAc
+rzIuXfIwHwYDVR0jBBgwFoAUvpl4O2aNaI+rtJgOPyAcrzIuXfIwDwYDVR0TAQH/
+BAUwAwEB/zAKBggqhkjOPQQDAgNIADBFAiB+u+NwEO8WkG1OfwO7YezUCjsuhHhb
+x8vdTbuTm32sNAIhAPECcIp0nOAM2IjVGagEtD7UR2yroQd8bctvgn+xyZ5Z
+-----END CERTIFICATE-----"""
+
+
+def test_ui59_expired_certificate_said_before_connecting(app):
+    """An expired client certificate: said when connecting starts (the server refuses it before any
+    connected state)."""
+    app.add_profile("expired", MINIMAL + "<cert>\n" + EXPIRED_CERT + "\n</cert>\n")
+    app.click("expired", "Connect")
+    wait_for(lambda: any("expired" in n["text"] for n in app.call("notifications")["items"]), 5, "the warning")
