@@ -40,7 +40,9 @@ final class RealServices: Services {
     let http: HTTPFetcher = URLSessionFetcher()
     var launchAtLogin: Bool {
         get { SMAppService.mainApp.status == .enabled }
-        set { _ = try? newValue ? SMAppService.mainApp.register() : SMAppService.mainApp.unregister() }
+        set {
+            if newValue { try? SMAppService.mainApp.register() } else { try? SMAppService.mainApp.unregister() }
+        }
     }
 
     func removeUserData(_ paths: [String]) {
