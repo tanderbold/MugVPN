@@ -53,8 +53,8 @@ public protocol HelperSystem: AnyObject {
     func localIPv6Networks() -> [String]
     /// IPv4 networks ("address/bits") of the Mac's interfaces other than utun and loopback.
     func localIPv4Networks() -> [String]
-    /// The DNS servers the Mac itself uses.
-    func systemDNSServers() -> [String]
+    /// The DNS servers the Mac itself uses (but those MugVPN set for that device); nil: not known.
+    func systemDNSServers(excluding device: String) -> [String]?
     /// Seconds, for rationing requests.
     func now() -> TimeInterval
     /// A new utun device: its descriptor and name.
@@ -978,9 +978,13 @@ public final class HelperCore {
             if c.restricted {
                 let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
                 let mine = c.tunnel.networks
-                let system = Set(self.system.systemDNSServers())
+                guard let known = self.system.systemDNSServers(excluding: plan.device) else {
+                    throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
+                }
+                // As numbers: one address has more than one spelling.
+                let system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
                 for srv in plan.servers {
-                    guard let a = TunnelState.ipv4(Substring(srv)), !system.contains(srv),
+                    guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
                           !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
                         throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
                     }
@@ -1017,10 +1021,15 @@ public final class HelperCore {
     }
 
     /// At once, not after openvpn's grace: its routes, DNS and addresses go, then openvpn.
+    /// Not asked for by its owner: a kill switch it armed fires (and stays on disk).
     private func failClosed(_ c: Connection) {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
+        if c.protection.killSwitch, c.wasFull || c.tunnel.takesAllTraffic {
+            addLock(Lock(name: HelperCore.lockName(c.info.name), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN))
+            saveLocks()
+        }
         undo(c.tunnel, others: others)
-        takeDown(c.tunnel)
+        release(c.tunnel, others: others)
         c.tunnel = TunnelState()
         try? saveTunnel(c)
         c.stopping = true
@@ -1179,12 +1188,13 @@ public final class HelperCore {
         if !stillArmed { locks.removeAll { $0.name == name && $0.owner == owner && $0.armed } }
     }
 
+    /// Armed and fired are kept apart: one tunnel of a name dropping leaves another's arming.
     private func addLock(_ l: Lock) {
-        locks.removeAll { $0.name == l.name && $0.owner == l.owner }
+        locks.removeAll { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed }
         locks.append(l)
-        // A user cannot pile blocks up: the oldest go.
-        while locks.filter({ $0.owner == l.owner }).count > HelperCore.maxLocksPerUser,
-              let i = locks.firstIndex(where: { $0.owner == l.owner }) {
+        // A user cannot pile blocks up: the oldest fired ones go (armings are bounded by connections).
+        while locks.filter({ $0.owner == l.owner && !$0.armed }).count > HelperCore.maxLocksPerUser,
+              let i = locks.firstIndex(where: { $0.owner == l.owner && !$0.armed }) {
             locks.remove(at: i)
         }
     }
@@ -1207,12 +1217,12 @@ public final class HelperCore {
                 }
             }
             guard c.protection.any else { continue }
-            if full, !c.wasFull {
-                c.wasFull = true
-                if c.protection.killSwitch {
+            if full, !c.wasFull { c.wasFull = true }
+            if c.wasFull, !c.exited, c.protection.killSwitch {
+                let name = HelperCore.lockName(c.info.name)
+                if !locks.contains(where: { $0.armed && $0.name == name && $0.owner == c.info.ownerUID }) {
                     // Armed on disk: if the helper dies with the tunnel, the next one blocks.
-                    addLock(Lock(name: HelperCore.lockName(c.info.name), owner: c.info.ownerUID,
-                                 allowLAN: c.protection.allowLAN, armed: true))
+                    addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true))
                     changedArming = true
                 }
             }

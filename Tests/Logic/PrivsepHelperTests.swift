@@ -361,6 +361,7 @@ func registerPrivsepHelperTests() {
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "IFCONFIG", message: "10.8.0.2 255.255.255.0 1500 subnet")
             sys.clock += 5
+            defer { sys.launched.last!.process.onExit(.exited(0)) }
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=\(domain)")
             _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
@@ -727,6 +728,67 @@ func registerPrivsepHelperTests() {
         }
         try dns("10.8.0.53")
         try dns("10.20.0.53", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+    }
+    test("PS-47", "the Mac's resolver in another spelling is still the Mac's; no list of them, no DNS (ext. audit 6: P1)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        sys.systemDNS = ["10.0.0.2"]
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.internal"]}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        func dns(_ server: String) throws {
+            let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+            try bringUp(sys, h, id, uid: 502, device: "utun\(sys.launched.count + 4)", routes: ["10.0.0.0 255.255.255.0 10.8.0.1"])
+            sys.clock += 5
+            for v in ["dns_server_1_address_1=\(server)", "dns_server_1_resolve_domain_1=corp.internal"] {
+                _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: v)
+            }
+            defer { sys.launched.last!.process.onExit(.exited(0)) }
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: sys.utunName)
+        }
+        for bad in ["010.000.000.002", "10.0.0.02"] {
+            expectThrows(bad, matching: "DNS") { try dns(bad) }
+        }
+        try dns("10.0.0.53")
+        sys.systemDNS = nil
+        expectThrows("the Mac's resolvers unknown", matching: "DNS") { try dns("10.0.0.53") }
+    }
+    test("PS-48", "a standard user's DNS set again with the same server: its own is not the Mac's (ext. audit 6: P3)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"allowedDomains": ["corp.internal"]}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: [])
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_server_1_resolve_domain_1=corp.internal"] {
+            _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: v)
+        }
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
+    }
+    test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
+        let sys = FakeSystem()
+        sys.admins = []
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayRouteAllTraffic": true}"#.utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(kill: true), uid: 502)
+        try bringUp(sys, h, id, uid: 502, device: "utun5", routes: ["0.0.0.0 128.0.0.0 10.8.0.1", "128.0.0.0 128.0.0.0 10.8.0.1"])
+        sys.pfIntactAnswer = false
+        sys.pfApplyFails = true
+        h.refreshProtection()
+        expect(sys.releasedDevices.contains("utun5"), "its utun is given back: \(sys.releasedDevices)")
+        sys.launched[0].process.onExit(.signaled(9))
+        expectEqual(h.locks(uid: 502), ["office"], "the kill switch fired")
+        sys.pfIntactAnswer = true
+        sys.pfApplyFails = false
+        h.refreshProtection()
+        expect((sys.pf.last ?? "").contains("user 502"), "and holds once PF is back: \(sys.pf.last ?? "")")
+        sys.pf = []
+        try makeHelper(sys).prepareRunDirectory()
+        expect((sys.pf.last ?? "").contains("user 502"), "and after the helper starts again")
     }
     test("PS-45", "a standard user routes nothing into the Mac's own networks (ext. audit 5: P1)") {
         let sys = FakeSystem()

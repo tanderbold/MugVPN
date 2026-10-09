@@ -254,14 +254,16 @@ final class RealSystem: HelperSystem {
 
     func now() -> TimeInterval { ProcessInfo.processInfo.systemUptime }
 
-    func systemDNSServers() -> [String] {
-        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil) else { return [] }
+    func systemDNSServers(excluding device: String) -> [String]? {
+        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil),
+              let keys = SCDynamicStoreCopyKeyList(store, "State:/Network/Service/.*/DNS" as CFString) as? [String] else { return nil }
+        let own = "State:/Network/Service/openvpn-\(device)/DNS"
         var servers: [String] = []
         if let g = SCDynamicStoreCopyValue(store, "State:/Network/Global/DNS" as CFString) as? [String: Any] {
             servers += g["ServerAddresses"] as? [String] ?? []
         }
         // Every service's own (a resolver scoped to an interface, a supplemental one).
-        for key in SCDynamicStoreCopyKeyList(store, "State:/Network/Service/.*/DNS" as CFString) as? [String] ?? [] {
+        for key in keys where key != own {
             if let d = SCDynamicStoreCopyValue(store, key as CFString) as? [String: Any] { servers += d["ServerAddresses"] as? [String] ?? [] }
         }
         return Array(Set(servers))

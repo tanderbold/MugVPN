@@ -119,6 +119,19 @@ func registerProtectionHelperTests() {
         let after = String(decoding: sys.files["/L/locks.json"]?.data ?? Data(), as: UTF8.self)
         expect(after.contains("office"), "the other still takes all traffic: still armed: \(after)")
     }
+    test("PROT-12", "a same-named tunnel that drops does not take the arming of the one still up (ext. audit 6: P2)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try upFull(sys, h)                                    // office, armed
+        let (b, _) = try h.start(bundle: protectedBundle(), uid: 501)
+        try bringUp(sys, h, b, uid: 501, device: "utun6")
+        sys.launched[1].process.onExit(.exited(1))                // the second drops: fired
+        _ = try h.start(bundle: protectedBundle(), uid: 501)      // connecting again lifts the fired block
+        // The helper dies with the first tunnel up.
+        sys.pf = []
+        try makeHelper(sys).prepareRunDirectory()
+        expect(lastAnchor(sys).contains("user 501"), "the first's arming was kept and fires: \(sys.files["/L/locks.json"].map { String(decoding: $0.data, as: UTF8.self) } ?? "none")")
+    }
     test("PROT-07", "connecting the same profile again lifts its block") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

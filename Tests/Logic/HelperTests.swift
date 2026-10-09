@@ -82,8 +82,11 @@ final class FakeSystem: HelperSystem {
     /// Every write fails after this many more succeed (nil: none fail).
     var failAfterWrites: Int?
     /// The Mac's own DNS servers.
-    var systemDNS: [String] = []
-    func systemDNSServers() -> [String] { systemDNS }
+    var systemDNS: [String]? = []
+    /// The Mac's resolvers, with what MugVPN's own tunnels set (but the excluded one's).
+    func systemDNSServers(excluding device: String) -> [String]? {
+        systemDNS.map { $0 + dnsSet.filter { $0.device != device && !dnsRestored.contains($0.device) }.flatMap(\.servers) }
+    }
     func localIPv6Networks() -> [String] { localIPv6 }
     var clock: TimeInterval = 1000
     func now() -> TimeInterval { clock }
