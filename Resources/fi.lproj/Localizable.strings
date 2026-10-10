@@ -113,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-asetukset";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
+"MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).";
 "MugVPN's helper was not updated: %@" = "MugVPN:n apuohjelmaa ei päivitetty: %@";

@@ -113,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 设置";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其辅助程序来启动隧道。";
+"MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。";
 "MugVPN's helper was not updated: %@" = "MugVPN 助手未更新：%@";

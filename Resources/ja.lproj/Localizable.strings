@@ -113,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
+"MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN のヘルパーが応答しませんでした（%@）。代わりに管理者パスワードで MugVPN のシステム部分を削除しますか？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN のヘルパーはバージョン %@ で、このアプリ（%@）より新しいです。MugVPN をアップデートしてください。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。";
 "MugVPN's helper was not updated: %@" = "MugVPN のヘルパーをアップデートできませんでした: %@";

@@ -128,7 +128,41 @@ public enum ExitKind: Equatable, Sendable {
     public var needsCleanup: Bool { self != .exited(0) }
 }
 
+/// The app was dragged to the Trash: noticed by the helper (macOS tells nobody). Only once it has
+/// been there a minute: an update replaces the app by moving the old one away and the new one in.
+public struct TrashWatch: Sendable {
+    public static let grace: TimeInterval = 60
+    private var since: TimeInterval?
+    public init() {}
+
+    /// - bundleInPlace: the app is where the helper started from. - runningFrom: the helper's path now.
+    /// - Returns: true when it is time to take MugVPN's system part away.
+    public mutating func look(bundleInPlace: Bool, runningFrom: String, now: TimeInterval) -> Bool {
+        guard !bundleInPlace, runningFrom.contains("/.Trash/") else { since = nil; return false }
+        let start = since ?? now
+        since = start
+        return now - start >= TrashWatch.grace
+    }
+}
+
 public struct HelperPaths: Sendable {
+    /// `<bundle>/Contents` for an executable at `<bundle>/Contents/MacOS/<name>`; nil for a relative
+    /// path (launchd gives a registered service's argv[0] relative to its bundle) or one outside a bundle.
+    public static func contentsDirectory(ofExecutable path: String) -> String? {
+        guard path.hasPrefix("/") else { return nil }
+        let macos = (path as NSString).deletingLastPathComponent
+        guard (macos as NSString).lastPathComponent == "MacOS" else { return nil }
+        let contents = (macos as NSString).deletingLastPathComponent
+        return (contents as NSString).lastPathComponent == "Contents" ? contents : nil
+    }
+
+    /// This process's executable, from the kernel (not argv[0]), links resolved.
+    public static func executablePath() -> String? {
+        var buf = [CChar](repeating: 0, count: Int(MAXPATHLEN) * 4)
+        guard proc_pidpath(getpid(), &buf, UInt32(buf.count)) > 0 else { return nil }
+        return URL(fileURLWithPath: String(cString: buf)).resolvingSymlinksInPath().path
+    }
+
     /// openvpn built for privilege separation (asks for its tunnel).
     public var openvpn: String
     public var runDir: String
@@ -299,6 +333,16 @@ public final class HelperCore {
         uninstallReplies.append(done)
         stopAll()
         if connections.isEmpty { finishUninstall() }
+    }
+
+    /// The app went to the Trash: what MugVPN put on the Mac goes, with every user's logs and settings;
+    /// profiles stay (administrators' and users' own, and policy.json), for a reinstall to find.
+    public func uninstallMovedToTrash(homes: [String]) {
+        for home in homes {
+            system.remove(home + "/Library/Logs/MugVPN")
+            system.remove(home + "/Library/Preferences/com.mugvpn.app.plist")
+        }
+        try? uninstall(uid: 0, keepProfiles: true)
     }
 
     private func finishUninstall() {

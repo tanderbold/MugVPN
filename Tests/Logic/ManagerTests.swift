@@ -308,6 +308,30 @@ func registerManagerTests() {
         s.m.appStarted()
         expectEqual(sa, ["a"])
     }
+    test("MAN-35", "a helper that never answers the start: the connection ends with an error, not silence") {
+        let h = ManagerHarness()
+        h.helper.deferStarts = true            // no answer
+        h.m.connect(h.a)
+        expect(h.m.active[h.a.id] != nil)
+        let waits = h.scheduler.pending.map(\.0)
+        expect(waits.contains(ConnectionManager.helperStartTimeout), "\(waits)")
+        h.scheduler.drain(limit: 5)
+        expect(h.m.active[h.a.id] == nil, "given up")
+        expect(h.m.lastError[h.a.id]?.contains("helper") == true, "\(h.m.lastError)")
+        h.helper.answerStarts()               // a late answer: stopped, nothing left
+        expect(h.m.active[h.a.id] == nil)
+        expectEqual(h.helper.stops.count, 1, "the late tunnel is stopped")
+    }
+    test("MAN-36", "quitting is not held up by a start the helper has not answered (found in 0.2.2)") {
+        let h = ManagerHarness()
+        h.helper.deferStarts = true
+        h.m.connect(h.a)
+        var quit = false
+        h.m.appQuitting { quit = true }
+        expect(quit, "nothing of it to stop yet: quit at once")
+        h.helper.answerStarts()
+        expectEqual(h.helper.stops.count, 1, "a late answer: that tunnel is stopped")
+    }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()
         h.helper.version = "0.0.9"
@@ -624,7 +648,7 @@ func registerPowerTests() {
         h.m.handle(.networkChanged, disconnectOnSleep: false)
         h.m.handle(.networkChanged, disconnectOnSleep: false)
         expect(h.link("H1")?.written.last != "signal SIGUSR1", "not at once")
-        expectEqual(h.scheduler.pending.map(\.0), [2], "one timer")
+        expectEqual(h.scheduler.pending.map(\.0).filter { $0 != ConnectionManager.helperStartTimeout }, [2], "one timer")
         h.scheduler.drain()
         expectEqual(h.link("H1")?.written.filter { $0 == "signal SIGUSR1" }.count, 1)
     }

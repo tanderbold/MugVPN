@@ -396,6 +396,18 @@ func registerAppLogicTests() {
 }
 
 func registerUninstallAppTests() {
+    test("UNI-07", "the system part removed without the helper (it does not answer): one command for an administrator") {
+        let keep = UninstallPlan.systemRemovalScript(keepProfiles: true)
+        expect(keep.hasPrefix("launchctl bootout system/com.mugvpn.helper"), keep)
+        for p in ["'/Library/Application Support/MugVPN/libexec'", "'/Library/Application Support/MugVPN/run'",
+                  "'/Library/Logs/MugVPN'", "'/Library/LaunchDaemons/com.mugvpn.helper.plist'"] {
+            expect(keep.contains(p), "\(p) in \(keep)")
+        }
+        expect(!keep.contains("'/Library/Application Support/MugVPN' "), "profiles kept: not the whole folder")
+        let all = UninstallPlan.systemRemovalScript(keepProfiles: false)
+        expect(all.contains("'/Library/Application Support/MugVPN'"), all)
+        expect(!all.contains("\"") && !all.contains("$"), "nothing for a shell to expand")
+    }
     test("UNI-04", "what the app removes for the user") {
         let all = UninstallPlan.userPaths(home: "/Users/u", keepProfiles: false)
         expectEqual(all, ["/Users/u/Library/Application Support/MugVPN", "/Users/u/Library/Logs/MugVPN",

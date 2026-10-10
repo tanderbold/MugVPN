@@ -35,9 +35,13 @@ core.onUninstalled = {
     }
 }
 
-/// The helper's own bundle: Contents/MacOS/MugVPNHelper -> Contents.
-let contentsDir = URL(fileURLWithPath: CommandLine.arguments[0]).resolvingSymlinksInPath()
-    .deletingLastPathComponent().deletingLastPathComponent()
+/// The helper's own bundle: <app>/Contents/MacOS/MugVPNHelper -> <app>/Contents, from the process's real
+/// path (launchd gives a registered service a relative argv[0]: that made it /Contents in 0.2.2).
+let contentsDir = URL(fileURLWithPath: HelperPaths.executablePath().flatMap(HelperPaths.contentsDirectory(ofExecutable:)) ?? {
+    // Not inside a bundle: nothing to install from.
+    FileHandle.standardError.write(Data("[helper] cannot find its own bundle\n".utf8))
+    exit(0)
+}())
 
 func checkSignature(_ requirement: String) -> (String) throws -> Void {
     return { path in
@@ -203,5 +207,21 @@ let listener = NSXPCListener(machServiceName: MugVPNIDs.helperLabel)
 listener.setConnectionCodeSigningRequirement(BuildPins.clientRequirement)
 listener.delegate = delegate
 listener.resume()
+
+// Dragged to the Trash: the system part goes with it (macOS runs no uninstaller). Looked at every 15 s.
+var trashWatch = TrashWatch()
+let trashTimer = DispatchSource.makeTimerSource(queue: queue)
+trashTimer.schedule(deadline: .now() + 15, repeating: 15)
+trashTimer.setEventHandler {
+    let inPlace = FileManager.default.fileExists(atPath: contentsDir.appendingPathComponent("Info.plist").path)
+    guard trashWatch.look(bundleInPlace: inPlace, runningFrom: HelperPaths.executablePath() ?? "",
+                          now: ProcessInfo.processInfo.systemUptime) else { return }
+    trashTimer.cancel()
+    log("the app is in the Trash: removing MugVPN's system part (profiles stay)")
+    let homes = ((try? FileManager.default.contentsOfDirectory(atPath: "/Users")) ?? [])
+        .filter { !$0.hasPrefix(".") && $0 != "Shared" }.map { "/Users/" + $0 }
+    core.uninstallMovedToTrash(homes: homes)
+}
+trashTimer.resume()
 log("listening as \(MugVPNIDs.helperLabel), version \(MugVPNIDs.helperVersion)")
 dispatchMain()

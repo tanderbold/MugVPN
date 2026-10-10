@@ -342,6 +342,9 @@
   "key": "MugVPN needs its helper to start tunnels."
  },
  {
+  "key": "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?"
+ },
+ {
   "key": "MugVPN's helper is version %@, newer than this app (%@): update MugVPN."
  },
  {

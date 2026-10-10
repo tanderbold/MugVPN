@@ -195,11 +195,19 @@ is named as MugVPN shows it, by its file path, or by its name when only one prof
 
 ## Uninstall
 
+**Drag MugVPN to the Trash**: a minute later its helper removes what MugVPN put on the Mac — the
+helper itself, its files and logs, and every user's MugVPN logs and settings. Profiles stay (yours and
+those administrators installed, and `policy.json`), for a reinstall to find.
+
 **About MugVPN > Uninstall MugVPN…**, or `MugVPN --uninstall --yes` in Terminal (`--uninstall` alone
-lists what would go); an administrator's. It disconnects every tunnel and removes the helper, its
-files and logs, the profiles administrators installed (`config`, `config-auto`) and `policy.json`,
-your own profiles, settings and saved passwords, and moves the app to the Trash; other users' own
-profiles and passwords stay. *Keep my profiles* (`--keep-profiles`) keeps every profile and `policy.json`.
+lists what would go), removes everything; an administrator's. It disconnects every tunnel and removes
+the helper, its files and logs, the profiles administrators installed (`config`, `config-auto`) and
+`policy.json`, your own profiles, settings and saved passwords, and moves the app to the Trash; other
+users' own profiles and passwords stay. *Keep my profiles* (`--keep-profiles`) keeps every profile and
+`policy.json`. If the helper does not answer, MugVPN asks for an administrator's password to remove
+its system part itself (the command line prints the command instead).
+
+With Homebrew: `brew uninstall --cask mugvpn`; `--zap` removes your profiles and settings too.
 
 ## How it works
 

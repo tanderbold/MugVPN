@@ -10,8 +10,11 @@ sudo /usr/bin/python3 - "$A" <<'EOF'
 import plistlib, sys
 app = sys.argv[1]
 p = plistlib.load(open(app + "/Contents/Library/LaunchDaemons/com.mugvpn.helper.plist", "rb"))
-del p["BundleProgram"]
-p["Program"] = app + "/Contents/MacOS/MugVPNHelper"
+bundle_program = p.pop("BundleProgram")
+p["Program"] = app + "/" + bundle_program
+# argv[0] as SMAppService gives it: relative to the bundle (0.2.2 took its bundle from argv[0] and
+# found /Contents; the stand's absolute path had hidden that).
+p["ProgramArguments"] = [bundle_program]
 p["RunAtLoad"] = True
 p["KeepAlive"] = {"SuccessfulExit": False}
 # Not tied to the app's Login Items entry: an unapproved SMAppService

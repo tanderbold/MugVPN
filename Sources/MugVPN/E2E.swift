@@ -80,9 +80,10 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     func releaseManagement(_ id: String, reply: @escaping (String?) -> Void) { reply(nil) }
     var uninstallRequests: [[String: Any]] = []
+    var uninstallRefusal: String?
     func uninstall(keepProfiles: Bool, reply: @escaping (String?) -> Void) {
         uninstallRequests.append(["keepProfiles": keepProfiles])
-        reply(nil)
+        reply(uninstallRefusal)
     }
     var setupCalls: [String] = []
     func unregister() { setupCalls.append("unregister") }
@@ -139,7 +140,8 @@ final class E2EServices: Services {
         trashed = Bundle.main.bundlePath
         // The app quits right after this: leave the record for the test in its home.
         let home = ProcessInfo.processInfo.environment["MUGVPN_E2E_HOME"] ?? NSTemporaryDirectory()
-        let record: [String: Any] = ["helper": backend.uninstallRequests, "removed": removed, "trashed": trashed]
+        let record: [String: Any] = ["helper": backend.uninstallRequests, "removed": removed, "trashed": trashed,
+                                     "admin": adminScripts]
         if let d = try? JSONSerialization.data(withJSONObject: record) {
             FileManager.default.createFile(atPath: home + "/uninstall.json", contents: d)
         }
@@ -165,6 +167,8 @@ final class E2EServices: Services {
     func notify(title: String, text: String) { notes.append(["title": title, "text": text]) }
     func showMessage(profile: String, title: String, text: String) { showMessageWindow(profile: profile, title: title, text: text) }
     func reveal(_ path: String) { urls.append("reveal:" + path) }
+    var adminScripts: [String] = []
+    func runAsAdministrator(_ script: String) throws { adminScripts.append(script) }
     var nextSave: String?
     func chooseSaveLocation(suggested: String) -> String? {
         panels += 1
@@ -445,6 +449,9 @@ final class E2EServer {
         case "opened_urls": return ["urls": services.urls, "panels": services.panels]
         case "notifications": return ["items": services.notes]
         case "login_item": return ["enabled": services.launchAtLogin]
+        case "fake_uninstall_fails":
+            backend.uninstallRefusal = r["message"] as? String
+            return [:]
         case "fake_reregister_fails":
             backend.reregisterRefusal = r["message"] as? String
             return [:]

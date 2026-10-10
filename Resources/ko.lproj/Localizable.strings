@@ -113,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 설정";
 "MugVPN needs its helper to start tunnels." = "MugVPN이 터널을 시작하려면 도우미가 필요합니다.";
+"MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 도우미는 버전 %@로, 이 앱의 %@가 아닙니다. 사용하는 연결이 없을 때(또는 재시동 후) 업데이트됩니다.";
 "MugVPN's helper was not updated: %@" = "MugVPN 도우미가 업데이트되지 않았습니다: %@";

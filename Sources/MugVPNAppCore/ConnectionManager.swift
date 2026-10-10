@@ -370,10 +370,26 @@ public final class ConnectionManager {
         }
     }
 
+    /// How long the helper may take to answer a start (one that does not start at all never answers).
+    public static let helperStartTimeout: TimeInterval = 30
+
     private func start(_ c: ActiveConnection, _ bundle: ProfileBundle) {
         let profile = c.profile
+        var answered = false, gaveUp = false
+        scheduler.after(ConnectionManager.helperStartTimeout) { [weak self] in
+            guard let self, !answered, self.active[profile.id] === c else { return }
+            gaveUp = true
+            self.active[profile.id] = nil
+            self.fail(profile.id, "MugVPN's helper does not answer (its log: /Library/Logs/MugVPN/helper.log)")
+        }
         helper.start(bundle) { [weak self] result in
             guard let self else { return }
+            answered = true
+            if gaveUp {
+                // Too late: given up on already; a tunnel it started anyway is stopped.
+                if case .success(let r) = result { self.helper.stop(r.id) { _ in } }
+                return
+            }
             switch result {
             case .success(let r):
                 c.helperID = r.id
@@ -497,6 +513,11 @@ public final class ConnectionManager {
             active[c.profile.id] = nil
         }
         memory.remembered = active.keys.sorted()
+        // A start the helper has not answered: nothing to stop or wait for yet (a late answer stops it).
+        for c in active.values where c.helperID == nil && c.link == nil {
+            c.stopRequested = true
+            active[c.profile.id] = nil
+        }
         guard !active.isEmpty else { return done() }
         quitDone = done
         disconnectAll()

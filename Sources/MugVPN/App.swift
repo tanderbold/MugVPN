@@ -29,6 +29,8 @@ protocol Services: AnyObject {
     /// MugVPN starts at login (the system's login item for it).
     var launchAtLogin: Bool { get }
     func setLaunchAtLogin(_ on: Bool) throws
+    /// Run a shell command as root, after the system asks for an administrator's password.
+    func runAsAdministrator(_ script: String) throws
     /// Ask where to save a file; nil on Cancel.
     func chooseSaveLocation(suggested: String) -> String?
     /// Uninstalling: the user's files, settings and passwords; then the app itself.
@@ -75,6 +77,13 @@ final class RealServices: Services {
 
     func reveal(_ path: String) {
         NSWorkspace.shared.activateFileViewerSelecting([URL(fileURLWithPath: path)])
+    }
+
+    func runAsAdministrator(_ script: String) throws {
+        let escaped = script.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
+        var err: NSDictionary?
+        _ = NSAppleScript(source: "do shell script \"\(escaped)\" with administrator privileges")?.executeAndReturnError(&err)
+        if let err { throw ProfileError(err[NSAppleScript.errorMessage] as? String ?? "not done") }
     }
 
     func chooseSaveLocation(suggested: String) -> String? {
@@ -966,8 +975,32 @@ final class AppController: NSObject, NSMenuDelegate {
                                     id: "prompt_text"),
                          Form.checkbox("keep_profiles", L("Keep my profiles"))],
                  okTitle: L("Uninstall"), ok: { [weak self] w in
-            self?.uninstall(keepProfiles: checked(w, "keep_profiles")) { err in
-                if let err { showError(L("Cannot uninstall: %@", err)) } else { self?.onQuit() }
+            let keep = checked(w, "keep_profiles")
+            self?.uninstall(keepProfiles: keep) { err in
+                guard let err else { self?.onQuit(); return }
+                // The helper does not answer (a broken install): an administrator removes the system part.
+                DispatchQueue.main.async { self?.uninstallWithoutHelper(keepProfiles: keep, helperError: err) }
+            }
+            return true
+        })
+    }
+
+    private func uninstallWithoutHelper(keepProfiles: Bool, helperError: String) {
+        showForm(kind: "confirm", profile: "", title: L("Uninstall MugVPN"),
+                 views: [Form.label(L("MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?", helperError),
+                                    id: "prompt_text")],
+                 okTitle: L("Uninstall"), ok: { [weak self] _ in
+            DispatchQueue.main.async {
+                guard let self else { return }
+                do {
+                    try self.services.runAsAdministrator(UninstallPlan.systemRemovalScript(keepProfiles: keepProfiles))
+                } catch {
+                    return showError(L("Cannot uninstall: %@", "\(error)"))
+                }
+                self.services.helperSetup.unregister()
+                self.services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
+                self.services.moveAppToTrash()
+                self.onQuit()
             }
             return true
         })

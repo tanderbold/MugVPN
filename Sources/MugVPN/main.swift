@@ -72,7 +72,9 @@ case .uninstall(let confirmed, let keep):
     while result == nil && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.1)) }
     withExtendedLifetime(client) {}
     if let err = result ?? "the helper did not answer" {
-        FileHandle.standardError.write(Data("MugVPN: cannot uninstall: \(err)\n".utf8))
+        FileHandle.standardError.write(Data(("MugVPN: cannot uninstall: \(err)\n"
+            + "To remove MugVPN's system part without the helper, as an administrator:\n  sudo sh -c \""
+            + UninstallPlan.systemRemovalScript(keepProfiles: keep) + "\"\n").utf8))
         exit(1)
     }
     services.helperSetup.unregister()

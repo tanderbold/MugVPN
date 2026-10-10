@@ -413,6 +413,53 @@ func registerCleanupTests() {
 // MARK: - L-HLP
 
 func registerHelperTests() {
+    test("HLP-37", "the app in the Trash for a minute (not put back, not replaced by an update): time to go") {
+        var w = TrashWatch()
+        let trash = "/Users/u/.Trash/MugVPN.app/Contents/MacOS/MugVPNHelper"
+        expect(!w.look(bundleInPlace: true, runningFrom: "/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper", now: 0))
+        expect(!w.look(bundleInPlace: false, runningFrom: trash, now: 10), "just moved: an update may put a new one back")
+        expect(!w.look(bundleInPlace: true, runningFrom: trash, now: 40), "replaced by an update: stays")
+        expect(!w.look(bundleInPlace: false, runningFrom: trash, now: 50))
+        expect(!w.look(bundleInPlace: false, runningFrom: trash, now: 100))
+        expect(w.look(bundleInPlace: false, runningFrom: trash, now: 111), "a minute in the Trash")
+        var m = TrashWatch()
+        expect(!m.look(bundleInPlace: false, runningFrom: "/Users/u/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper", now: 0))
+        expect(!m.look(bundleInPlace: false, runningFrom: "/Users/u/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper", now: 500),
+               "moved elsewhere, not to the Trash: not an uninstall")
+    }
+    test("HLP-38", "moved to the Trash: the system part and every user's logs and settings go; profiles stay") {
+        let sys = FakeSystem()
+        for d in ["/L", "/L/run", "/L/libexec", "/Logs", "/L/config", "/L/auto",
+                  "/Users/a/Library/Logs/MugVPN", "/Users/a/Library/Application Support/MugVPN",
+                  "/Users/b/Library/Logs/MugVPN"] {
+            try sys.makeDirectory(d, mode: 0o755)
+        }
+        try sys.writeFile("/L/policy.json", Data("{}".utf8), mode: 0o644)
+        try sys.writeFile("/Users/a/Library/Preferences/com.mugvpn.app.plist", Data(), mode: 0o600)
+        let h = makeHelper(sys)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        _ = try h.start(bundle: bundle(), uid: 501)
+        h.uninstallMovedToTrash(homes: ["/Users/a", "/Users/b"])
+        sys.launched[0].process.onExit(.exited(0))
+        expect(gone, "the service leaves launchd")
+        for p in ["/L/run", "/L/libexec", "/Logs", "/Users/a/Library/Logs/MugVPN", "/Users/b/Library/Logs/MugVPN",
+                  "/Users/a/Library/Preferences/com.mugvpn.app.plist"] {
+            expect(sys.fileInfo(p) == nil, "\(p) gone")
+        }
+        for p in ["/L/config", "/L/auto", "/L/policy.json", "/Users/a/Library/Application Support/MugVPN"] {
+            expect(sys.fileInfo(p) != nil, "\(p) stays")
+        }
+    }
+    test("HLP-36", "the helper's bundle from its own path, as launchd gives it (relative for a registered service)") {
+        expectEqual(HelperPaths.contentsDirectory(ofExecutable: "/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper"),
+                    "/Applications/MugVPN.app/Contents")
+        expectEqual(HelperPaths.contentsDirectory(ofExecutable: "Contents/MacOS/MugVPNHelper"), nil,
+                    "SMAppService's argv[0] (found in 0.2.2: it became /Contents): never used")
+        expectEqual(HelperPaths.contentsDirectory(ofExecutable: "/usr/local/bin/MugVPNHelper"), nil, "not inside a bundle")
+        let mine = HelperPaths.executablePath()
+        expect(mine?.hasPrefix("/") == true, "the running process's real path: \(mine ?? "nil")")
+    }
     test("HLP-35", "exits for an update only if the helper on disk is newer than the one running") {
         let h = makeHelper(FakeSystem())
         expectEqual(h.beginRestartIfIdle(installed: MugVPNIDs.helperVersion), .notNewer, "the same: an older app asked")

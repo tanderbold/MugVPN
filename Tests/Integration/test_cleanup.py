@@ -103,3 +103,28 @@ def test_int46_helper_restarts_for_an_update_only_when_idle(vpn, mac):
         mac.run(f"sudo rm -f {pretend}")
         restart()
         wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
+
+
+def test_int47_dragged_to_the_trash(vpn, mac):
+    """INT-47: the app dragged to the Trash: after a minute the helper removes MugVPN's system part and
+    the users' logs and settings; profiles stay."""
+    from conftest import APP
+    support = "'/Library/Application Support/MugVPN'"
+    user_cfg = "'/Users/tester/Library/Application Support/MugVPN/config'"
+    trashed = "/Users/tester/.Trash/MugVPN.app"
+    helper_up = lambda: mac.run("pgrep -f Contents/MacOS/MugVPNHelper").returncode == 0
+    wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
+    mac.run(f"mkdir -p {user_cfg} ~/Library/Logs/MugVPN && cp /Users/tester/stand/stand-a.ovpn {user_cfg}/keep.ovpn"
+            f" && echo x > ~/Library/Logs/MugVPN/old.log && sudo mkdir -p {support}/config", check=True)
+    try:
+        mac.run(f"rm -rf {trashed} && mv {APP} {trashed}", check=True)
+        wait_for(lambda: not helper_up(), 150, "the helper to take MugVPN away")
+        assert mac.run(f"sudo test -e {support}/libexec").returncode != 0, "its files are gone"
+        assert mac.run("sudo test -e /Library/Logs/MugVPN").returncode != 0
+        assert mac.run("test -e ~/Library/Logs/MugVPN").returncode != 0, "the user's logs too"
+        assert mac.run(f"test -f {user_cfg}/keep.ovpn").returncode == 0, "the user's profiles stay"
+        assert mac.run(f"sudo test -d {support}/config").returncode == 0, "administrators' profiles stay"
+        assert mac.run("sudo launchctl print system/com.mugvpn.helper").returncode != 0, "the service is gone"
+    finally:
+        mac.run(f"test -e {APP} || mv {trashed} {APP}; rm -rf {user_cfg}/keep.ovpn; bash /tmp/install-helper.sh")
+        wait_for(lambda: vpn.cli("list").returncode == 0, 60, "the helper back")

@@ -113,6 +113,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
+"MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).";
 "MugVPN's helper was not updated: %@" = "Ο βοηθός του MugVPN δεν ενημερώθηκε: %@";

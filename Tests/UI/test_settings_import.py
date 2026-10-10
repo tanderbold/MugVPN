@@ -268,3 +268,22 @@ def test_ui60_open_at_login_refused(app):
     app.press(w, "cancel")
     app.no_window("settings")
     assert read_default("log_append") != "1"
+
+
+
+def test_ui68_uninstall_when_the_helper_does_not_answer(home):
+    """The helper does not answer (a broken install): uninstalling asks to remove the system part with an
+    administrator's password, then goes on as usual."""
+    import json
+    with launched(home) as a:
+        a.call("fake_uninstall_fails", message="the helper did not answer")
+        a.click("About MugVPN")
+        a.press(a.window("about"), "uninstall")
+        a.press(a.window("uninstall"), "ok")
+        c = a.window("confirm")
+        assert "administrator" in a.control(c, "prompt_text")["value"]
+        a.press(c, "ok")
+        a.proc.wait(timeout=10)
+    log = json.load(open(os.path.join(home, "uninstall.json")))
+    assert any("launchctl bootout system/com.mugvpn.helper" in s for s in log["admin"]), log
+    assert log["trashed"].endswith("MugVPN.app")
