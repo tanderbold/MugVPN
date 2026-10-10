@@ -12,8 +12,11 @@
 - On the road: reconnects after sleep and on network changes (another Wi-Fi, router or lease); captive-portal sign-in from the menu, lifting a kill switch's block for two minutes.
 - For admins and scripts: persistent connections at boot with their own kill switch (settings beside the profile); command line with exit codes and JSON (connect, disconnect, reconnect, status, list, --wait); diagnostics archive without keys or passwords; opens at login if asked.
 
-## Compared with other clients
-- OpenVPN Connect on macOS keeps one connection at a time; Tunnelblick and Viscosity can run several. MugVPN is built around several: per-connection split DNS, conflict and leak warnings, a kill switch that works with several tunnels, a connection editor; free and open source (MIT); imports Tunnelblick configurations.
+## Compared with other clients (as their docs say, 2026-10-10)
+- OpenVPN Connect 3.8 (macOS): one connection at a time; Seamless Tunnel; captive portal detection; free, proprietary.
+- Tunnelblick 9: several connections ("for experts only"); no documented split DNS; kill switch turns off all network services and is not advised with several VPNs; openvpn runs as root; free, GPL.
+- Viscosity 1.13: several connections, split DNS, connection editor; no built-in kill switch; US$16.
+- MugVPN: several connections with split DNS each; per-connection kill switch that blocks only traffic outside the tunnels; IPv6/DNS kept inside the VPN; leak check incl. TunnelVision; collision warnings; openvpn without root; editor; captive-portal sign-in; CLI with exit codes and JSON; free, MIT.
 
 ## Security
 - openvpn runs without root: a small helper does what needs root after checking each request; profiles that would run programs or load code are refused.

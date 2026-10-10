@@ -118,7 +118,25 @@
   </div>
 
   <h2 id="compare">MugVPN vs Tunnelblick, Viscosity and OpenVPN Connect</h2>
-  <p>OpenVPN Connect on macOS keeps one connection at a time. Tunnelblick and Viscosity can run several; MugVPN is built around it: per-connection split DNS, conflict and leak warnings, a kill switch that works with several tunnels, and a window to create and edit connections. It is free and open source (MIT), imports Tunnelblick configurations and standard <code>.ovpn</code> files, and its <code>openvpn</code> runs without root — an open-source alternative to Tunnelblick and Viscosity for people who need more than one VPN at a time.</p>
+  <p>MugVPN is an open-source alternative to Tunnelblick, Viscosity and OpenVPN Connect made for more than one VPN at a time: each connection keeps its own routes and DNS, and the kill switch, leak protection and leak check work with all of them together.</p>
+  <div class="compare"><table>
+<tr><th></th><th>MugVPN</th><th>Tunnelblick 9</th><th>Viscosity 1.13</th><th>OpenVPN Connect 3.8</th></tr>
+<tr><th scope="row">Several OpenVPN connections at once</th><td><strong>Yes</strong></td><td>Yes ("for experts only")</td><td>Yes</td><td>No: one at a time</td></tr>
+<tr><th scope="row">Split DNS for several VPNs at once</th><td><strong>Yes</strong></td><td>Not documented</td><td>Yes</td><td>One connection only</td></tr>
+<tr><th scope="row">Kill switch with several tunnels</th><td><strong>Yes</strong>: per connection, blocks only traffic outside the tunnels</td><td>Turns off all network services; not advised with several VPNs</td><td>No built-in</td><td>Seamless Tunnel (one connection)</td></tr>
+<tr><th scope="row">IPv6 and DNS kept inside the VPN (firewall)</th><td><strong>Yes</strong> (macOS packet filter)</td><td>IPv6 off</td><td>IPv6 blocked</td><td>IPv6 blocked</td></tr>
+<tr><th scope="row">Leak check after connecting, incl. TunnelVision</th><td><strong>Yes</strong></td><td>Public IP check</td><td>DNS problems in the log</td><td>No</td></tr>
+<tr><th scope="row">Warnings when connections collide</th><td><strong>Yes</strong>: both take all traffic, overlapping routes, DNS</td><td>Generic warning</td><td>No</td><td>—</td></tr>
+<tr><th scope="row">openvpn runs without root</th><td><strong>Yes</strong></td><td>No (root)</td><td>Not documented</td><td>Not documented</td></tr>
+<tr><th scope="row">Editor for servers, certificates, keys</th><td><strong>Yes</strong></td><td>No (text files)</td><td>Yes</td><td>Name, server, proxy only</td></tr>
+<tr><th scope="row">Hotel/airport Wi-Fi sign-in</th><td><strong>Yes</strong>, even while the kill switch blocks</td><td>Not documented</td><td>Not documented</td><td>Yes</td></tr>
+<tr><th scope="row">Command line</th><td><strong>connect/disconnect/status/list, exit codes, JSON</strong></td><td>AppleScript</td><td>AppleScript</td><td>No connect/disconnect on macOS</td></tr>
+<tr><th scope="row">Connections at boot, before login</th><td><strong>Yes</strong></td><td>Yes</td><td>No</td><td>No (Windows only)</td></tr>
+<tr><th scope="row">Managed settings (MDM)</th><td><strong>Yes</strong></td><td>Partial</td><td>Yes</td><td>Yes</td></tr>
+<tr><th scope="row">Price, license</th><td><strong>Free, MIT</strong></td><td>Free, GPL v2</td><td>US$16, proprietary</td><td>Free, proprietary</td></tr>
+<tr><th scope="row">macOS</th><td>13+</td><td>13+</td><td>14+</td><td>11+</td></tr>
+</table></div>
+  <p class="sources">As documented by each product on 2026-10-10: <a href="https://tunnelblick.net/czUsing.html">Tunnelblick</a> (<a href="https://tunnelblick.net/cKillSwitch.html">kill switch</a>, <a href="https://tunnelblick.net/cBackgroundPrograms.html">background programs</a>), <a href="https://www.sparklabs.com/viscosity/">Viscosity</a> (<a href="https://www.sparklabs.com/support/kb/article/using-multiple-vpn-connections-simultaneously/">multiple connections</a>, <a href="https://www.sparklabs.com/support/kb/article/preventing-network-and-dns-traffic-leaks/">leaks</a>), <a href="https://openvpn.net/connect-docs/app-settings-macos.html">OpenVPN Connect</a> (<a href="https://openvpn.net/as-docs/faq-simultaneous-openvpn-server-connections.html">one connection</a>, <a href="https://openvpn.net/connect-docs/command-line-functionality-macos.html">command line</a>). Corrections welcome in an issue.</p>
 
   <h2 id="build">Get it</h2>
   <p>With <a href="https://brew.sh">Homebrew</a>:</p>

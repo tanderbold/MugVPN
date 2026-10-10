@@ -63,10 +63,27 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 
 ## Compared with other OpenVPN clients for Mac
 
-OpenVPN Connect on macOS keeps one connection at a time. Tunnelblick and Viscosity can run several;
-MugVPN is built around it: per-connection split DNS, conflict and leak warnings, a kill switch that
-works with several tunnels, and a window to create and edit connections. It is free and open source
-(MIT), imports Tunnelblick configurations and standard `.ovpn` files, and its `openvpn` runs without root.
+MugVPN is made for more than one VPN at a time: each connection keeps its own routes and DNS, and the
+kill switch, leak protection and leak check work with all of them together.
+
+| | MugVPN | Tunnelblick 9 | Viscosity 1.13 | OpenVPN Connect 3.8 |
+|---|---|---|---|---|
+| Several OpenVPN connections at once | **Yes** | Yes ("for experts only") | Yes | No: one at a time |
+| Split DNS for several VPNs at once | **Yes** | Not documented | Yes | One connection only |
+| Kill switch with several tunnels | **Yes**: per connection, blocks only traffic outside the tunnels | Turns off all network services; not advised with several VPNs | No built-in | Seamless Tunnel (one connection) |
+| IPv6 and DNS kept inside the VPN (firewall) | **Yes** (macOS packet filter) | IPv6 off | IPv6 blocked | IPv6 blocked |
+| Leak check after connecting, incl. TunnelVision | **Yes** | Public IP check | DNS problems in the log | No |
+| Warnings when connections collide | **Yes**: both take all traffic, overlapping routes, DNS | Generic warning | No | — |
+| openvpn runs without root | **Yes** | No (root) | Not documented | Not documented |
+| Editor for servers, certificates, keys | **Yes** | No (text files) | Yes | Name, server, proxy only |
+| Hotel/airport Wi-Fi sign-in | **Yes**, even while the kill switch blocks | Not documented | Not documented | Yes |
+| Command line | **connect/disconnect/status/list, exit codes, JSON** | AppleScript | AppleScript | No connect/disconnect on macOS |
+| Connections at boot, before login | **Yes** | Yes | No | No (Windows only) |
+| Managed settings (MDM) | **Yes** | Partial | Yes | Yes |
+| Price, license | **Free, MIT** | Free, GPL v2 | US$16, proprietary | Free, proprietary |
+| macOS | 13+ | 13+ | 14+ | 11+ |
+
+As documented by each product on 2026-10-10: [Tunnelblick](https://tunnelblick.net/czUsing.html) ([kill switch](https://tunnelblick.net/cKillSwitch.html), [background programs](https://tunnelblick.net/cBackgroundPrograms.html)), [Viscosity](https://www.sparklabs.com/viscosity/) ([multiple connections](https://www.sparklabs.com/support/kb/article/using-multiple-vpn-connections-simultaneously/), [leaks](https://www.sparklabs.com/support/kb/article/preventing-network-and-dns-traffic-leaks/)), [OpenVPN Connect](https://openvpn.net/connect-docs/app-settings-macos.html) ([one connection](https://openvpn.net/as-docs/faq-simultaneous-openvpn-server-connections.html), [command line](https://openvpn.net/connect-docs/command-line-functionality-macos.html)). Corrections welcome in an issue.
 
 ## Security
 

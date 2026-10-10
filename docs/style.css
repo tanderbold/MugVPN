@@ -30,3 +30,10 @@ pre code { padding: 0; }
 footer { color: var(--muted); font-size: 14px; text-align: center; margin-top: 50px; }
 details { border-bottom: 1px solid var(--line); padding: 10px 0; }
 summary { cursor: pointer; font-weight: 600; }
+
+.compare { overflow-x: auto; margin: 16px 0; }
+.compare table { border-collapse: collapse; width: 100%; font-size: 14px; }
+.compare th, .compare td { border-bottom: 1px solid var(--line, rgba(127,127,127,.25)); padding: 7px 8px; text-align: left; vertical-align: top; }
+.compare thead th, .compare tr:first-child th { font-weight: 600; }
+.compare td:nth-child(2) { background: rgba(255, 166, 0, .08); }
+.sources { color: var(--muted); font-size: 13px; }
