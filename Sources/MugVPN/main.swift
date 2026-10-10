@@ -105,7 +105,14 @@ case .command(let c, let wait):
     if case .importFile = c { within = 600 } else { within = (wait ?? 20) + 10 }
     exit(sendCommand(Array(CommandLineRequest.ownArguments(rawArgs).dropFirst()), answerWithin: within))
 default:
-    break
+    // Already running (one app per user: a second would take the command socket over): hand it on.
+    // (Not the test mode's app: tests run it beside a real one.)
+    if !e2e, let forward = CommandLineRequest.forwardedToRunning(startRequest),
+       !NSRunningApplication.runningApplications(withBundleIdentifier: MugVPNIDs.appBundleID)
+           .filter({ $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }).isEmpty {
+        if forward.isEmpty { exit(0) }
+        exit(sendCommand(forward, answerWithin: forward.first == "import" ? 600 : 30))
+    }
 }
 
 final class AppDelegate: NSObject, NSApplicationDelegate {

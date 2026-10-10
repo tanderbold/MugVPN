@@ -12,12 +12,15 @@
 - On the road: reconnects after sleep and on network changes (another Wi-Fi, router or lease); captive-portal sign-in from the menu, lifting a kill switch's block for two minutes.
 - For admins and scripts: persistent connections at boot with their own kill switch (settings beside the profile); command line with exit codes and JSON (connect, disconnect, reconnect, status, list, --wait); diagnostics archive without keys or passwords; opens at login if asked.
 
+## Compared with other clients
+- OpenVPN Connect on macOS keeps one connection at a time; Tunnelblick and Viscosity can run several. MugVPN is built around several: per-connection split DNS, conflict and leak warnings, a kill switch that works with several tunnels, a connection editor; free and open source (MIT); imports Tunnelblick configurations.
+
 ## Security
 - openvpn runs without root: a small helper does what needs root after checking each request; profiles that would run programs or load code are refused.
 
 ## Links
-- Source and README: https://github.com/tanderbold/MugVPN
+- Source and README: https://github.com/tanderbold/MugVPN (raw: https://raw.githubusercontent.com/tanderbold/MugVPN/main/README.md)
 - FAQ: https://tanderbold.github.io/MugVPN/faq.html
-- Download: https://github.com/tanderbold/MugVPN/releases/latest (DMG signed with a Developer ID and notarized)
+- Current version: 0.2.1. Install: `brew install --cask tanderbold/tap/mugvpn`, or the DMG from https://github.com/tanderbold/MugVPN/releases/latest (signed with a Developer ID and notarized)
 - Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh
 - License: MIT. "OpenVPN" is a trademark of OpenVPN Inc.; MugVPN is not affiliated with it.

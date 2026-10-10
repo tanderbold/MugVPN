@@ -105,6 +105,17 @@ public enum CommandLineRequest: Equatable, Sendable {
 
     public static let defaultWait: TimeInterval = 60
 
+    /// MugVPN is already running: what a start hands over to it (`--command` arguments; empty: nothing,
+    /// the app is there). nil: not a start (help, errors, uninstall, commands).
+    public static func forwardedToRunning(_ r: CommandLineRequest) -> [String]? {
+        switch r {
+        case .launch: return []
+        case .connectOnStart(let p): return ["connect", p]
+        case .launchAndImport(let p): return ["import", p]
+        default: return nil
+        }
+    }
+
     /// With no MugVPN running.
     public enum WithoutInstance: Equatable, Sendable {
         /// Start it, then send the command (and report its result).

@@ -19,6 +19,7 @@ pre code { padding: 0; }
 .shots { display: flex; flex-wrap: wrap; gap: 14px; justify-content: center; margin: 20px 0; }
 .shots figure { margin: 0; flex: 1 1 440px; max-width: 100%; text-align: center; }
 .shots img { max-width: 100%; height: auto; border-radius: 10px; }
+.shots figure.single { flex: 0 1 640px; }
 .shots figcaption { color: var(--muted); font-size: 14px; }
 .grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(270px, 1fr)); gap: 14px; }
 .card { background: var(--card); border: 1px solid var(--line); border-radius: 12px; padding: 14px 18px; }

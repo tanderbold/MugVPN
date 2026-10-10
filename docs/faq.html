@@ -10,32 +10,121 @@
 <meta property="og:description" content="Several OpenVPN connections at once on macOS: how MugVPN does it, split DNS, kill switch, import, security.">
 <meta property="og:image" content="https://tanderbold.github.io/MugVPN/social-preview.png">
 <meta property="og:url" content="https://tanderbold.github.io/MugVPN/faq.html">
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="MugVPN">
+<meta property="og:image:width" content="1280">
+<meta property="og:image:height" content="640">
+<meta property="og:image:alt" content="MugVPN — several OpenVPN connections at once on macOS">
 <meta name="twitter:card" content="summary_large_image">
-<link rel="icon" type="image/png" href="icon.png">
+<meta name="twitter:title" content="MugVPN FAQ — multiple OpenVPN connections on a Mac">
+<meta name="twitter:image" content="https://tanderbold.github.io/MugVPN/social-preview.png">
+<meta name="twitter:image:alt" content="MugVPN — several OpenVPN connections at once on macOS">
+<meta name="theme-color" content="#17110d">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="alternate" type="text/plain" title="LLM summary" href="llms.txt">
 <link rel="canonical" href="https://tanderbold.github.io/MugVPN/faq.html">
 <script type="application/ld+json">
 {
   "@context": "https://schema.org",
   "@type": "FAQPage",
   "mainEntity": [
-    {"@type": "Question", "name": "Can I have more than one OpenVPN connection at the same time on a Mac?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes. MugVPN runs every connection as its own openvpn process with its own utun interface, routes and DNS, so several VPNs can be up at once."}},
-    {"@type": "Question", "name": "How does split DNS work with several VPNs?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Each connection's DNS answers only for the domains its server names (or the domains you list); other names resolve as before. Only one connection at a time can take all names."}},
-    {"@type": "Question", "name": "Does MugVPN have a kill switch?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes, per connection. If a connection that carries all traffic drops unexpectedly, MugVPN blocks your TCP and UDP traffic outside the VPN with the macOS packet filter until you reconnect or unblock it from the menu."}},
-    {"@type": "Question", "name": "Can I import my Tunnelblick or Viscosity configurations?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Tunnelblick .tblk folders and standard .ovpn files (Viscosity exports them) import directly, with the keys and certificates they name."}},
-    {"@type": "Question", "name": "Does MugVPN work on hotel and airport Wi-Fi?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes. When a network asks for a sign-in page first, MugVPN offers it from the menu; if its kill switch is blocking the Internet, it lifts the block for two minutes so the page can load. It reconnects the tunnels when the network changes."}},
-    {"@type": "Question", "name": "Can I control MugVPN from scripts?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes. MugVPN --command connect, disconnect, reconnect, status and list answer once done, with exit codes and JSON; --wait waits for the connection to come up or go down."}},
-    {"@type": "Question", "name": "Is MugVPN free?",
-     "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is free and open source under the MIT License."}},
-    {"@type": "Question", "name": "Where do I download MugVPN? Is it signed?",
-     "acceptedAnswer": {"@type": "Answer", "text": "From the latest release on GitHub: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. You can also build it from source."}},
-    {"@type": "Question", "name": "Does openvpn run as root in MugVPN?",
-     "acceptedAnswer": {"@type": "Answer", "text": "No. Each tunnel's openvpn runs unprivileged; a small helper does what needs root, after checking each request."}}
+    {
+      "@type": "Question",
+      "name": "Can I have more than one OpenVPN connection at the same time on a Mac?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes — that is what MugVPN is for. Every connection runs its own openvpn with its own utun interface, routes and DNS. Connect the office VPN, a client's VPN and your home lab together; each has its own submenu. If two connections want the same thing (both take all traffic, overlapping routes), MugVPN warns you."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does split DNS work with several VPNs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "When a server names its domains (dns … resolve-domains, or with the per-connection switch also the old dhcp-option DOMAIN), only those names go to that VPN's DNS; everything else resolves as before. You can also set a connection's own DNS servers for domains you list. Several connections can each answer for their own domains; only one can take all names."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does MugVPN have a kill switch? Does it stop DNS and IPv6 leaks?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Per connection (switch it on in the connection's Options), a kill switch blocks your TCP and UDP traffic outside the VPN (with the macOS packet filter, PF) if a connection that carries all traffic drops unexpectedly, until you reconnect it or choose Unblock Internet in the menu. While such a connection is up, IPv6 and DNS outside the VPN are blocked. After connecting, and on every network change, a leak check warns if the default route, a public network or DNS goes around the tunnel — including routes a rogue DHCP server pushes (TunnelVision)."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "How does MugVPN compare to Tunnelblick, Viscosity and OpenVPN Connect?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "OpenVPN Connect on macOS keeps one connection at a time. Tunnelblick and Viscosity can run several; MugVPN is built around it: per-connection split DNS, conflict and leak warnings, a kill switch that works with several tunnels, and a window to create and edit connections. It is free and open source (MIT), and it imports Tunnelblick configurations and standard .ovpn files."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which profiles work?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Standard OpenVPN 2.x client profiles (.ovpn, .conf), with inline or separate certificates and keys, tls-auth, tls-crypt, tls-crypt-v2, PKCS#12, passwords, OTP, web sign-in and proxies. For safety, options that would run programs or load code (up/down scripts, plug-ins) are refused, with the line that caused it. Your own scripts beside the profile (<name>_up.sh …) run as you."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is it safe to give a VPN app root? Does openvpn run as root?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Something has to be root to create tunnels, routes and DNS — but not openvpn itself. In MugVPN each tunnel's openvpn runs unprivileged, and a small helper does what needs root after checking each request. Profiles are checked before they run."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Where do I download it? Is it signed?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "With Homebrew: brew install --cask tanderbold/tap/mugvpn. Or from the latest release: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. Open it, drag MugVPN to Applications, and allow its helper when macOS asks on the first connection. You can also build it from source."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Does it work on hotel and airport Wi-Fi?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. When a network asks for a sign-in page first, MugVPN offers Sign in to This Network… in its menu; if the kill switch is blocking the Internet, the block is lifted for two minutes so the page can load. When you move to another network, the tunnels reconnect at once."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I control it from scripts?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes: MugVPN --command connect|disconnect|reconnect|status|list answers once the command is done, with exit codes and JSON output; --wait waits until the connection is up (or down). See the README."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Can I import my Tunnelblick or Viscosity configurations?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. Tunnelblick .tblk folders and standard .ovpn files (Viscosity exports them) import directly, with the keys and certificates they name; profiles from a URL or an OpenVPN Access Server too."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Is MugVPN free?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "Yes. It is free and open source under the MIT License, with no account, no tracking and no paid tier."
+      }
+    },
+    {
+      "@type": "Question",
+      "name": "Which macOS versions and Macs?",
+      "acceptedAnswer": {
+        "@type": "Answer",
+        "text": "macOS 13 Ventura or later, on Apple silicon and Intel Macs. The interface is in 22 languages."
+      }
+    }
   ]
 }
 </script>
@@ -44,7 +133,7 @@
 <body>
 <main>
   <p><a href="./">← MugVPN</a></p>
-  <h1>FAQ</h1>
+  <h1>MugVPN FAQ: multiple OpenVPN connections on a Mac</h1>
 
   <details open><summary>Can I have more than one OpenVPN connection at the same time on a Mac?</summary>
   <p>Yes — that is what MugVPN is for. Every connection runs its own <code>openvpn</code> with its own <code>utun</code> interface, routes and DNS. Connect the office VPN, a client's VPN and your home lab together; each has its own submenu. If two connections want the same thing (both take all traffic, overlapping routes), MugVPN warns you.</p></details>
@@ -65,13 +154,19 @@
   <p>Something has to be root to create tunnels, routes and DNS — but not openvpn itself. In MugVPN each tunnel's <code>openvpn</code> runs unprivileged, and a small helper does what needs root after checking each request. Profiles are checked before they run.</p></details>
 
   <details><summary>Where do I download it? Is it signed?</summary>
-  <p>From the <a href="https://github.com/tanderbold/MugVPN/releases/latest">latest release</a>: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. Open it, drag MugVPN to Applications, and allow its helper when macOS asks on the first connection. You can also <a href="./#build">build it from source</a>.</p></details>
+  <p>With Homebrew: <code>brew install --cask tanderbold/tap/mugvpn</code>. Or from the <a href="https://github.com/tanderbold/MugVPN/releases/latest">latest release</a>: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. Open it, drag MugVPN to Applications, and allow its helper when macOS asks on the first connection. You can also <a href="./#build">build it from source</a>.</p></details>
 
   <details><summary>Does it work on hotel and airport Wi-Fi?</summary>
   <p>Yes. When a network asks for a sign-in page first, MugVPN offers <b>Sign in to This Network…</b> in its menu; if the kill switch is blocking the Internet, the block is lifted for two minutes so the page can load. When you move to another network, the tunnels reconnect at once.</p></details>
 
   <details><summary>Can I control it from scripts?</summary>
   <p>Yes: <code>MugVPN --command connect|disconnect|reconnect|status|list</code> answers once the command is done, with exit codes and JSON output; <code>--wait</code> waits until the connection is up (or down). See the <a href="https://github.com/tanderbold/MugVPN#command-line">README</a>.</p></details>
+
+  <details><summary>Can I import my Tunnelblick or Viscosity configurations?</summary>
+  <p>Yes. Tunnelblick <code>.tblk</code> folders and standard <code>.ovpn</code> files (Viscosity exports them) import directly, with the keys and certificates they name; profiles from a URL or an OpenVPN Access Server too.</p></details>
+
+  <details><summary>Is MugVPN free?</summary>
+  <p>Yes. It is free and open source under the MIT License, with no account, no tracking and no paid tier.</p></details>
 
   <details><summary>Which macOS versions and Macs?</summary>
   <p>macOS 13 Ventura or later, on Apple silicon and Intel Macs. The interface is in 22 languages.</p></details>

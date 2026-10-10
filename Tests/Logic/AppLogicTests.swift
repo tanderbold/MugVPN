@@ -195,6 +195,13 @@ func registerAppLogicTests() {
         expectEqual(CommandReply.check(.gone, name: "a", status: .disconnecting, connectedSince: nil), nil)
         expectEqual(CommandReply.check(.gone, name: "a", status: nil, connectedSince: nil), .ok)
     }
+    test("CLI-10", "MugVPN already running: a start hands its request over instead of starting a second app") {
+        expectEqual(CommandLineRequest.forwardedToRunning(.connectOnStart("office")), ["connect", "office"])
+        expectEqual(CommandLineRequest.forwardedToRunning(.launchAndImport("/a.ovpn")), ["import", "/a.ovpn"])
+        expectEqual(CommandLineRequest.forwardedToRunning(.launch), [], "nothing to hand over: done")
+        expectEqual(CommandLineRequest.forwardedToRunning(.help), nil)
+        expectEqual(CommandLineRequest.forwardedToRunning(.uninstall(confirmed: true, keepProfiles: false)), nil)
+    }
     test("CLI-04", "errors") {
         for bad in [["--command"], ["--command", "frob"], ["--command", "connect"], ["--command", "silent_connection", "2"],
                     ["--frob"], ["--connect"]] {

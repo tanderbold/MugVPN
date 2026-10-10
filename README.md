@@ -1,4 +1,4 @@
-<p align="center"><img src="docs/icon.png" width="160" alt="MugVPN icon: a steaming mug with VPN written on it"></p>
+<p align="center"><img src="docs/icon-256.png" width="160" alt="MugVPN icon: a steaming mug with VPN written on it"></p>
 
 <h1 align="center">MugVPN</h1>
 
@@ -42,13 +42,16 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - **Leak protection** while a connection carries all traffic: no IPv6 and no DNS outside the VPN; the local network can be allowed.
 - **Leak check** after connecting and on every network change: warns if the default route, a public network (as a rogue DHCP server would push — TunnelVision) or the DNS goes around the tunnel.
 
+<p><img src="docs/screenshots/menu-protection.png" alt="MugVPN's menu after a kill switch fired: Internet blocked, Unblock Internet and Sign in to This Network" width="60%"></p>
+
 **Signing in**
 - Username and password, private-key passwords, static and dynamic challenges (OTP), web/SSO sign-in, PKCS#12 certificates, HTTP proxies. Passwords are kept in your login Keychain, per connection.
+- A warning when a connection's client certificate expires within 30 days, or has expired — before it connects.
 
 **Everyday**
-- Coloured live log with a light/dark switch, View Log in Console; notifications.
+- Coloured live log with a light/dark switch; View Log opens the log file (in Console by default); notifications.
 - Reconnects at once after sleep and on network changes (another Wi-Fi, a new router or lease); optional disconnect on sleep.
-- Networks that ask for a sign-in first (hotels, airports): the menu offers it, lifting a kill switch's block for two minutes so the page can load.
+- Networks that ask for a sign-in first (hotels, airports): the menu offers it, lifting a kill switch's block for two minutes so the page can load (a persistent connection's block: administrators only).
 - Opens at login if you like; **Export Diagnostics…** makes a zip for a bug report — versions, routes, DNS, logs, and the profiles reduced to settings known to hold no secrets (keys, passwords, `setenv` values and the like are left out).
 - Persistent connections that an administrator puts in `config-auto` start at boot, before anyone logs in.
 - Your own scripts beside a profile (`<name>_pre.sh`, `_up.sh`, `_down.sh`) — run as you, never as root;
@@ -57,6 +60,13 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 - 22 languages, VoiceOver labels, light and dark appearance, an uninstaller.
 
 <p><img src="docs/screenshots/connections-auth.png" alt="The Authentication tab: certificates embedded in the profile" width="49%"> <img src="docs/screenshots/status-dark.png" alt="The status window in the dark appearance" width="49%"></p>
+
+## Compared with other OpenVPN clients for Mac
+
+OpenVPN Connect on macOS keeps one connection at a time. Tunnelblick and Viscosity can run several;
+MugVPN is built around it: per-connection split DNS, conflict and leak warnings, a kill switch that
+works with several tunnels, and a window to create and edit connections. It is free and open source
+(MIT), imports Tunnelblick configurations and standard `.ovpn` files, and its `openvpn` runs without root.
 
 ## Security
 
@@ -76,12 +86,17 @@ macOS 13 Ventura or later, Apple silicon or Intel.
 
 ## Install
 
-Download `MugVPN-<version>.dmg` from the [latest release](https://github.com/tanderbold/MugVPN/releases/latest)
+```
+brew install --cask tanderbold/tap/mugvpn
+```
+
+or download `MugVPN-<version>.dmg` from the [latest release](https://github.com/tanderbold/MugVPN/releases/latest)
 (signed with a Developer ID and notarized by Apple; its SHA-256 is beside it), open it and drag
 MugVPN to **Applications**, then open it from there. The first time you connect, macOS asks you to
 allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN opens that page for you.
-Install it as an administrator. A newer version replaces the app in the same way; its helper is
-updated once no connection needs it.
+Install it as an administrator. A newer version replaces the app in the same way (`brew upgrade`);
+its helper is updated once no connection needs it. A helper too old to update itself is offered from
+the menu (**Update MugVPN's Helper…**, which stops every user's MugVPN connections).
 
 Or build it yourself ([Building](#building)): copy `build/MugVPN.app` to `/Applications`. The first
 build makes a code-signing certificate of your own, kept in `~/Library/Application Support/MugVPN Build`;
@@ -106,8 +121,14 @@ reach, in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 }
 ```
 
-`usersMayRouteAllTraffic` and `usersMayChangeDNS` allow all traffic and DNS for all names;
-`trustedUsers` are treated as administrators.
+`usersMayRouteAllTraffic` lets standard users send all traffic through a VPN; `usersMayChangeDNS`
+lets them set DNS for any names, all names included; `trustedUsers` are treated as administrators.
+
+**Managed settings.** A configuration profile (MDM) for `com.mugvpn.app` can set and lock any of
+MugVPN's settings; MugVPN then shows them as set by the administrator. Among them:
+`require_kill_switch`, `require_leak_protection` (IPv6 and DNS only through the VPN),
+`disable_save_passwords`, `allow_lan_when_blocked`, `persistent_connections` (`auto`, `manual`,
+`disable`) and the proxy.
 
 ## Profiles
 
@@ -117,8 +138,10 @@ reach, in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 | `/Library/Application Support/MugVPN/config` | profiles an administrator installs for every user |
 | `/Library/Application Support/MugVPN/config-auto` | persistent profiles, started by the system at boot |
 
-A persistent profile's settings go beside it, as `<name>.json` (owned by root, not writable by
-others); MugVPN's window shows them but does not change them:
+A persistent profile is `config-auto/<name>.ovpn`; it and the files it names (inside `config-auto`)
+must be root's and readable only by root (`chmod 600`). Its settings go beside it, as `<name>.json`
+(root's, not writable by group or others; without it, all of these are off); MugVPN's window shows
+them but does not change them:
 
 ```json
 { "kill_switch": true, "allow_lan": false, "block_ipv6": true, "dns_only_tunnel": true, "split_dns": false }
@@ -127,8 +150,8 @@ others); MugVPN's window shows them but does not change them:
 Its kill switch blocks the whole Mac's traffic outside the tunnel until the tunnel is back; a
 persistent tunnel that ends unexpectedly is started again, waiting longer each time (up to 5 minutes).
 
-Standard `.ovpn` profiles work as they are. For safety, a profile from a user may not
-run programs as root: `up`, `down`, `plugin`, `script-security 2` and the like are refused, with
+Standard `.ovpn` profiles work as they are. For safety, no profile — not even an administrator's —
+may run programs as root: `up`, `down`, `plugin`, `script-security 2` and the like are refused, with
 the line that caused it. Use the `_pre/_up/_down.sh` scripts instead; they run as you.
 
 ## Command line
@@ -143,18 +166,23 @@ MugVPN --command import <path>
 MugVPN --uninstall [--keep-profiles] [--yes]
 ```
 
-`MugVPN` here is `/Applications/MugVPN.app/Contents/MacOS/MugVPN`. A command returns once MugVPN has
-carried it out (with `--wait`, once the connection is up or down), with exit code 0 on success,
-1 if it failed (an unknown profile, a connection that did not come up), 2 for a usage error,
-3 if MugVPN is not running (`connect` and `import` start it) and 4 on timeout. `list` and `status`
-print JSON. A profile is named as MugVPN shows it, by its file path, or by its name when only one
-profile has it.
+`MugVPN` here is `/Applications/MugVPN.app/Contents/MacOS/MugVPN`. `--connect` starts MugVPN and
+connects the profile (if MugVPN is running, it connects it there). A command returns once MugVPN has
+started it; with `--wait` (60 s) or `--timeout <seconds>`, once the connection is up or down.
+Exit codes: 0 done, 1 failed (an unknown profile, a connection that did not come up), 2 a usage
+error, 3 MugVPN is not running or does not answer (`connect` and `import` start it; `exit` just
+succeeds), 4 timed out. `list` prints every profile and `status` the connected ones (or the one
+named), as JSON: `name`, `path`, `source` (user, system, persistent), `status` (disconnected,
+connecting, waiting_for_web_auth, connected, reconnecting, disconnecting), `ip`, `ipv6`. A profile
+is named as MugVPN shows it, by its file path, or by its name when only one profile has it.
 
 ## Uninstall
 
-**About MugVPN > Uninstall MugVPN…**, or `MugVPN --uninstall --yes` in Terminal. It disconnects
-every tunnel and removes the helper, its files and logs, your settings and saved passwords, and
-moves the app to the Trash. *Keep my profiles* (`--keep-profiles`) leaves the profiles in place.
+**About MugVPN > Uninstall MugVPN…**, or `MugVPN --uninstall --yes` in Terminal (`--uninstall` alone
+lists what would go); an administrator's. It disconnects every tunnel and removes the helper, its
+files and logs, the profiles administrators installed (`config`, `config-auto`) and `policy.json`,
+your own profiles, settings and saved passwords, and moves the app to the Trash; other users' own
+profiles and passwords stay. *Keep my profiles* (`--keep-profiles`) keeps every profile and `policy.json`.
 
 ## How it works
 
@@ -169,7 +197,7 @@ moves the app to the Trash. *Keep my profiles* (`--keep-profiles`) leaves the pr
 Only the Xcode Command Line Tools are needed.
 
 ```
-tools/build-openvpn.sh            # openvpn and its libraries (once)
+tools/build-openvpn.sh            # openvpn and its libraries (build.sh also runs it when needed)
 MUGVPN_ARCH=native tools/build.sh # build/MugVPN.app (omit MUGVPN_ARCH for a universal build)
 ```
 

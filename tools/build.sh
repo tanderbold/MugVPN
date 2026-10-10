@@ -4,8 +4,8 @@
 #   tools/build.sh                      universal (arm64 + x86_64)
 #   MUGVPN_ARCH=native tools/build.sh   host architecture only
 #
-# Requires only the Xcode Command Line Tools. Signing is ad-hoc unless
-# MUGVPN_SIGN_ID names a Developer ID identity and MUGVPN_TEAM its team.
+# Requires only the Xcode Command Line Tools. Signed with a Developer ID when MUGVPN_SIGN_ID names
+# its identity and MUGVPN_TEAM its team; otherwise with a certificate of this Mac's own (made once).
 # Output: build/MugVPN.app
 set -euo pipefail
 

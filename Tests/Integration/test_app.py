@@ -150,3 +150,14 @@ def test_int27f_network_change_reconnects(vpn, mac, gui_app):
         wait_for(lambda: dhcp_server() == original, 30, "the stand's own lease back")
         mac.run(f"{CLI} --command disconnect_all; true")
         wait_for(lambda: not vpn.list(), 30, "it to stop")
+
+
+
+def test_int27g_connect_option_while_running(vpn, mac, gui_app):
+    """INT-27g: --connect with MugVPN already running goes to that app: no second one."""
+    r = mac.run(f"{CLI} --connect stand-a", timeout=60)
+    assert r.returncode == 0, r.stdout + r.stderr
+    wait_for(lambda: "stand-a" in vpn.list().values(), 30, "stand-a to start")
+    assert len(mac.out("pgrep -x MugVPN").split()) == 1, "one MugVPN"
+    mac.run(f"{CLI} --command disconnect_all; true")
+    wait_for(lambda: not vpn.list(), 30, "it to stop")

@@ -83,3 +83,9 @@ def test_screenshots(home):
             if not suffix:
                 a.click("Settings…")
                 snap(a, "settings", "settings")
+            # Protection at work: a kill switch that fired, and a network that asks for a sign-in.
+            a.call("fake_http", responses=[{"status": 200, "body": "<html>Accept the terms</html>"}])
+            a.call("fake_blocks", names=["Travel (all traffic)"])
+            a.call("system_event", event="networkChanged")
+            wait_for(lambda: "Sign in to This Network…" in [i["title"] for i in a.menu()], 5, "the sign-in offer")
+            a.call("snapshot_menu", path=f"{OUT}/menu-protection{suffix}.png")
