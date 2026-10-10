@@ -1,10 +1,11 @@
 name: Release
 
-# A tag v* builds, signs (Developer ID), notarizes and staples the DMG and publishes it, with
-# its SHA-256, as a release with generated notes (edit them after if they deserve better). A tag
-# whose release already exists is left alone: a re-pushed tag must not replace assets whose
-# SHA-256 the Homebrew cask pins. Without the signing secrets it stops at once: an ad-hoc build
-# is never packaged (tools/make-dmg.sh refuses it too).
+# A tag v* builds, signs (Developer ID), notarizes and staples the DMG, publishes it, with its
+# SHA-256, as a release with generated notes (edit them after if they deserve better), and points
+# the Homebrew cask (tanderbold/homebrew-tap) at the new image. A tag whose release already
+# exists is left alone: a re-pushed tag must not replace assets whose SHA-256 the cask pins.
+# Without the signing secrets it stops at once: an ad-hoc build is never packaged
+# (tools/make-dmg.sh refuses it too).
 on:
   push:
     tags: ["v*"]
@@ -62,14 +63,38 @@ jobs:
           tools/notarize.sh
           rm -f "$MUGVPN_NOTARY_KEY"
       - name: Publish release
+        id: publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
           if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
             echo "release $GITHUB_REF_NAME already exists; not touching its assets"
+            echo "created=false" >> "$GITHUB_OUTPUT"
           else
             gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+            echo "created=true" >> "$GITHUB_OUTPUT"
           fi
+      - name: Point the Homebrew cask at this release
+        if: steps.publish.outputs.created == 'true'
+        env:
+          # A fine-grained PAT for tanderbold/homebrew-tap alone (Contents: read and write);
+          # github.token cannot write to another repository.
+          TAP_TOKEN: ${{ secrets.MUGVPN_TAP_TOKEN }}
+        run: |
+          if [ -z "$TAP_TOKEN" ]; then
+            echo "::warning::MUGVPN_TAP_TOKEN is not set: bump Casks/mugvpn.rb in tanderbold/homebrew-tap by hand"
+            exit 0
+          fi
+          VERSION="${GITHUB_REF_NAME#v}"
+          SHA=$(cut -d' ' -f1 "build/MugVPN-$VERSION.dmg.sha256")
+          git clone --depth 1 "https://x-access-token:${TAP_TOKEN}@github.com/tanderbold/homebrew-tap.git" "$RUNNER_TEMP/tap"
+          cd "$RUNNER_TEMP/tap"
+          sed -i '' -e "s/^  version \".*\"/  version \"$VERSION\"/" \
+                    -e "s/^  sha256 \".*\"/  sha256 \"$SHA\"/" Casks/mugvpn.rb
+          git diff --quiet && { echo "cask already at $VERSION"; exit 0; }
+          git -c user.name=tanderbold -c user.email=18721315+tanderbold@users.noreply.github.com \
+              commit -am "mugvpn $VERSION"
+          git push
       - name: Keychain away
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" 2>/dev/null || true
