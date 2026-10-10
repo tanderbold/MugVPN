@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "Το %@ δεν είναι αρχείο κειμένου (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "Το %@ αναφέρεται σε αρχεία εκτός του φακέλου του. Αντιγραφή τους στο προφίλ; Ο διακομιστής VPN μπορεί να λάβει το περιεχόμενό τους.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS μόνο για τους δικούς του τομείς, άλλη σύνδεση παίρνει όλα τα ονόματα";
+"%@: DNS not set, another connection takes all names" = "%@: Το DNS δεν ορίστηκε, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Πρόγραμμα για προφίλ OpenVPN που διατηρεί πολλές συνδέσεις ταυτόχρονα. Άδεια MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Ένα πρόγραμμα ζήτησε από το MugVPN να εισαγάγει το %@. Εισαγωγή;";
 "About MugVPN" = "Σχετικά με το MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Προσθήκη στο τέλος του log αντί για αντικατάσταση";
 "As in Settings" = "Όπως στις Ρυθμίσεις";
 "Ask for a username and password" = "Ερώτηση για όνομα χρήστη και σύνθημα";
+"At most %d domains for the server's DNS." = "Το πολύ %d τομείς για το DNS του διακομιστή.";
 "Attach automatically" = "Αυτόματη προσάρτηση";
 "Authentication" = "Ταυτοποίηση";
 "Authentication failed" = "Η ταυτοποίηση απέτυχε";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Επιλέξτε το πιστοποιητικό για το %@:";
 "Choose the server's CA certificate." = "Επιλέξτε το πιστοποιητικό CA του διακομιστή.";
 "Clear Saved Passwords" = "Διαγραφή αποθηκευμένων συνθημάτων";
+"Close" = "Κλείσιμο";
 "Configuration" = "Διαμόρφωση";
 "Connect" = "Σύνδεση";
 "Connect script (s):" = "Σενάριο σύνδεσης (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Συνδέσεις";
 "Connections…" = "Συνδέσεις…";
 "Copy" = "Αντιγραφή";
+"Copy Details" = "Αντιγραφή λεπτομερειών";
 "Copy and Import" = "Αντιγραφή και εισαγωγή";
 "Cut" = "Αποκοπή";
 "DNS server %@ is not an IP address." = "Ο διακομιστής DNS %@ δεν είναι διεύθυνση IP.";
@@ -140,6 +145,7 @@
 "Off" = "Ανενεργό";
 "One server per line: host port udp|tcp" = "Ένας διακομιστής ανά γραμμή: κεντρικός υπολογιστής θύρα udp|tcp";
 "Only for domains:" = "Μόνο για τομείς:";
+"Open Connection Settings" = "Άνοιγμα ρυθμίσεων σύνδεσης";
 "Open MugVPN at login" = "Άνοιγμα του MugVPN κατά τη σύνδεση";
 "Open System Settings" = "Άνοιγμα Ρυθμίσεων συστήματος";
 "Open in Text Editor" = "Άνοιγμα σε επεξεργαστή κειμένου";
@@ -222,6 +228,7 @@
 "connected" = "συνδεδεμένο";
 "connecting" = "σύνδεση σε εξέλιξη";
 "empty: all names" = "κενό: όλα τα ονόματα";
+"empty: as the server sends it" = "κενό: όπως το στέλνει ο διακομιστής";
 "enter a host name or address" = "εισαγάγετε όνομα ή διεύθυνση κεντρικού υπολογιστή";
 "not connected" = "μη συνδεδεμένο";
 "nothing" = "τίποτα";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "η μόνιμη σύνδεση δεν εκτελείται";
 "the port must be 1–65535" = "η θύρα πρέπει να είναι 1–65535";
 "the pre-connect script failed" = "το σενάριο πριν τη σύνδεση απέτυχε";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "η βοηθητική υπηρεσία που εκτελείται είναι παλαιότερη και θα αγνοούσε τους τομείς για το DNS του διακομιστή: συνδεθείτε ξανά μόλις ενημερωθεί";
 "username %@" = "όνομα χρήστη %@";
 "write a server as: host port udp|tcp" = "γράψτε τον διακομιστή ως: κεντρικός υπολογιστής θύρα udp|tcp";

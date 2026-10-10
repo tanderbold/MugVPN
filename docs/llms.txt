@@ -4,7 +4,7 @@
 
 ## What it does
 - Several simultaneous OpenVPN connections (OpenVPN Connect on macOS allows one); conflict warnings when two connections collide.
-- Split DNS per connection; a connection's own DNS servers for listed domains or all names; "don't change DNS".
+- Split DNS per connection (the domains a server pushes, or ones you list for its DNS); a connection's own DNS servers for listed domains or all names; "don't change DNS".
 - Kill switch per connection (macOS PF): if a connection carrying all traffic drops, the user's TCP and UDP traffic outside the VPN stays blocked until reconnect or "Unblock Internet".
 - Leak protection while a connection carries all traffic: no IPv6 and no DNS outside the VPN; leak check warns about routes or DNS around the tunnel (TunnelVision).
 - Connections window: create, edit (form or text), duplicate, rename, delete; import .ovpn, Tunnelblick .tblk, URL, OpenVPN Access Server.
@@ -24,6 +24,6 @@
 ## Links
 - Source and README: https://github.com/tanderbold/MugVPN (raw: https://raw.githubusercontent.com/tanderbold/MugVPN/main/README.md)
 - FAQ: https://tanderbold.github.io/MugVPN/faq.html
-- Current version: 0.2.5. Install: `brew install --cask tanderbold/tap/mugvpn`, or the DMG from https://github.com/tanderbold/MugVPN/releases/latest (signed with a Developer ID and notarized)
+- Current version: 0.2.6. Install: `brew install --cask tanderbold/tap/mugvpn`, or the DMG from https://github.com/tanderbold/MugVPN/releases/latest (signed with a Developer ID and notarized)
 - Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh
 - License: MIT. "OpenVPN" is a trademark of OpenVPN Inc.; MugVPN is not affiliated with it.

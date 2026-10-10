@@ -1,5 +1,6 @@
 """UI-06..10: what openvpn asks, as the user sees it."""
 import base64
+import time
 
 from conftest import wait_for
 
@@ -140,15 +141,17 @@ def test_ui10c_pkcs11_choice(app):
 
 def test_ui70_menu_bar_icon_brings_windows_forward(app):
     """A password prompt lost behind other apps: clicking MugVPN's menu bar icon brings its windows
-    forward, the prompt on top."""
+    forward, the prompt on top, without taking the keyboard from the app in use."""
     app.click("stand-a", "Connect")
     app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
     app.window("credentials")
     app.call("send_windows_back")
+    wait_for(lambda: not app.call("status")["active"], 5, "another app in use")
     app.call("menu_will_open")
     w = app.window("credentials")
     assert w["front_index"] == 0, w["front_index"]
-    assert app.call("status")["active"], "MugVPN is the active app"
+    time.sleep(0.5)
+    assert not app.call("status")["active"], "only shown: the keyboard stays with the app in use"
 
 
 def test_ui71_paste_into_the_password_field(app):
@@ -163,3 +166,26 @@ def test_ui71_paste_into_the_password_field(app):
     assert r["handled"], "the Edit menu takes Cmd+V"
     app.press(app.window("credentials"), "ok")
     assert app.sent("stand-a")[-1] == 'password "Auth" "s3cret-from-the-clipboard"', app.sent("stand-a")[-2:]
+
+
+def test_ui77_a_prompt_stays_above_windows_opened_after_it(app):
+    """A password prompt is up; the user opens Connections from the menu: the prompt stays above it
+    (the connection would look stuck behind it), without floating over other apps."""
+    app.click("stand-a", "Connect")
+    app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
+    app.window("credentials")
+    app.click("Connections…")
+    app.window("connections")
+    w = app.window("credentials")
+    assert w["front_index"] == 0, w["front_index"]
+    assert not w["floating"]
+
+
+def test_ui82_a_window_shown_again_stays_where_it_was_put(app):
+    """Settings, Status, Connections opened again: not moved back to the centre (nor to another screen)."""
+    app.click("Connections…")
+    w = app.window("connections")
+    app.call("move", window=w["id"], x=40.0, y=60.0)
+    before = app.window("connections")["origin"]
+    app.click("Connections…")
+    assert app.window("connections")["origin"] == before

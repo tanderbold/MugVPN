@@ -81,6 +81,8 @@ final class FakeSystem: HelperSystem {
     var failWrites: Set<String> = []
     /// Every write fails after this many more succeed (nil: none fail).
     var failAfterWrites: Int?
+    /// Only the nth write from now fails (1: the next one).
+    var failNthWrite: Int?
     /// The Mac's own DNS servers.
     var systemDNS: [String]? = []
     /// The Mac's resolvers, with what MugVPN's own tunnels set (but the excluded one's).
@@ -122,7 +124,26 @@ final class FakeSystem: HelperSystem {
         return true
     }
     func defaultGateway() -> DefaultGateway? { gateway }
+    /// Devices whose DNS cannot be set (a refusal of SystemConfiguration).
+    var failDNSFor: Set<String> = []
+    /// Only DNS for all names refused (split DNS still set).
+    var failAllNamesDNS = false
+    /// Only split DNS refused.
+    var failSplitDNS = false
+    /// What is set on the Mac, per device: split resolvers and the primary's DNS replaced for all
+    /// names are different keys (as in SystemConfiguration); one tunnel at a time has all names.
+    var splitResolvers: [String: DNSPlan] = [:]
+    var allNames: [String: DNSPlan] = [:]
+    /// Taking a device's DNS off refused.
+    var failRestoreFor: Set<String> = []
     func setDNS(_ plan: DNSPlan) -> Bool {
+        guard !failDNSFor.contains(plan.device), !(failAllNamesDNS && !plan.split), !(failSplitDNS && plan.split) else { return false }
+        if plan.split {
+            splitResolvers[plan.device] = plan
+        } else {
+            guard allNames.keys.allSatisfy({ $0 == plan.device }) else { return false }
+            allNames[plan.device] = plan
+        }
         dnsSet.append(plan)
         return true
     }
@@ -160,6 +181,10 @@ final class FakeSystem: HelperSystem {
     }
     func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
         if failWrites.contains(where: { path.hasSuffix($0) }) { throw CocoaError(.fileWriteOutOfSpace) }
+        if let n = failNthWrite {
+            failNthWrite = n > 1 ? n - 1 : nil
+            if n == 1 { throw CocoaError(.fileWriteOutOfSpace) }
+        }
         if let n = failAfterWrites {
             if n <= 0 { throw CocoaError(.fileWriteOutOfSpace) }
             failAfterWrites = n - 1
@@ -223,7 +248,13 @@ final class FakeSystem: HelperSystem {
         return p
     }
     func killStrayOpenVPN(path: String) { strayKills.append(path) }
-    func restoreDNS(device: String) { dnsRestored.append(device) }
+    func restoreDNS(device: String) -> Bool {
+        guard !failRestoreFor.contains(device) else { return false }
+        dnsRestored.append(device)
+        splitResolvers[device] = nil
+        allNames[device] = nil
+        return true
+    }
     func deleteRoute(_ args: [String]) { routesDeleted.append(args) }
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void) { timers.append((seconds, f)) }
     func userName(uid: UInt32) -> String? { users[uid] }

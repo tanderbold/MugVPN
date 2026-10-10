@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ bir metin dosyası (PEM) değil.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ kendi klasörü dışındaki dosyalara başvuruyor. Profile kopyalansın mı? VPN sunucusu içeriklerini alabilir.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS yalnızca kendi alan adları için, başka bir bağlantı tüm adları alıyor";
+"%@: DNS not set, another connection takes all names" = "%@: DNS ayarlanmadı, başka bir bağlantı tüm adları alıyor";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Birden çok bağlantıyı aynı anda açık tutan, OpenVPN profilleri için bir istemci. MIT Lisansı.";
 "A program asked MugVPN to import %@. Import it?" = "Bir program MugVPN’den %@ dosyasını içe aktarmasını istedi. İçe aktarılsın mı?";
 "About MugVPN" = "MugVPN Hakkında";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Günlüğün üzerine yazmak yerine sonuna ekle";
 "As in Settings" = "Ayarlar'daki gibi";
 "Ask for a username and password" = "Kullanıcı adı ve şifre sor";
+"At most %d domains for the server's DNS." = "Sunucunun DNS’i için en fazla %d alan adı.";
 "Attach automatically" = "Otomatik olarak bağlan";
 "Authentication" = "Kimlik doğrulama";
 "Authentication failed" = "Kimlik doğrulama başarısız";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "%@ için sertifikayı seçin:";
 "Choose the server's CA certificate." = "Sunucunun CA sertifikasını seçin.";
 "Clear Saved Passwords" = "Kayıtlı parolaları sil";
+"Close" = "Kapat";
 "Configuration" = "Yapılandırma";
 "Connect" = "Bağlan";
 "Connect script (s):" = "Bağlantı betiği (sn):";
@@ -57,6 +61,7 @@
 "Connections" = "Bağlantılar";
 "Connections…" = "Bağlantılar…";
 "Copy" = "Kopyala";
+"Copy Details" = "Ayrıntıları Kopyala";
 "Copy and Import" = "Kopyala ve İçe Aktar";
 "Cut" = "Kes";
 "DNS server %@ is not an IP address." = "DNS sunucusu %@ bir IP adresi değil.";
@@ -140,6 +145,7 @@
 "Off" = "Kapalı";
 "One server per line: host port udp|tcp" = "Her satıra bir sunucu: ana bilgisayar port udp|tcp";
 "Only for domains:" = "Yalnızca şu alan adları için:";
+"Open Connection Settings" = "Bağlantı Ayarlarını Aç";
 "Open MugVPN at login" = "Oturum açıldığında MugVPN'i aç";
 "Open System Settings" = "Sistem Ayarları'nı aç";
 "Open in Text Editor" = "Metin düzenleyicide aç";
@@ -222,6 +228,7 @@
 "connected" = "bağlı";
 "connecting" = "bağlanıyor";
 "empty: all names" = "boş: tüm adlar";
+"empty: as the server sends it" = "boş: sunucunun gönderdiği gibi";
 "enter a host name or address" = "bir ana bilgisayar adı veya adres girin";
 "not connected" = "bağlı değil";
 "nothing" = "hiçbir şey";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "kalıcı bağlantı çalışmıyor";
 "the port must be 1–65535" = "port 1–65535 olmalıdır";
 "the pre-connect script failed" = "bağlantı öncesi betik başarısız oldu";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "çalışan yardımcı daha eski ve sunucunun DNS’i için alan adlarını yok sayar: güncellendikten sonra yeniden bağlanın";
 "username %@" = "kullanıcı adı %@";
 "write a server as: host port udp|tcp" = "sunucuyu şöyle yazın: ana bilgisayar port udp|tcp";

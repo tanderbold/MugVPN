@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ är inte en textfil (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ hänvisar till filer utanför sin mapp. Kopiera dem till profilen? VPN-servern kan få deras innehåll.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS bara för egna domäner, en annan anslutning tar alla namn";
+"%@: DNS not set, another connection takes all names" = "%@: DNS inte inställd, en annan anslutning tar alla namn";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "En klient för OpenVPN-profiler som håller flera anslutningar uppe samtidigt. MIT-licens.";
 "A program asked MugVPN to import %@. Import it?" = "Ett program bad MugVPN importera %@. Importera?";
 "About MugVPN" = "Om MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Lägg till i loggen i stället för att ersätta den";
 "As in Settings" = "Som i Inställningar";
 "Ask for a username and password" = "Fråga efter användarnamn och lösenord";
+"At most %d domains for the server's DNS." = "Högst %d domäner för serverns DNS.";
 "Attach automatically" = "Anslut automatiskt";
 "Authentication" = "Autentisering";
 "Authentication failed" = "Autentiseringen misslyckades";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Välj certifikat för %@:";
 "Choose the server's CA certificate." = "Välj serverns CA-certifikat.";
 "Clear Saved Passwords" = "Rensa sparade lösenord";
+"Close" = "Stäng";
 "Configuration" = "Konfiguration";
 "Connect" = "Anslut";
 "Connect script (s):" = "Anslutningsskript (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Anslutningar";
 "Connections…" = "Anslutningar…";
 "Copy" = "Kopiera";
+"Copy Details" = "Kopiera detaljer";
 "Copy and Import" = "Kopiera och importera";
 "Cut" = "Klipp ut";
 "DNS server %@ is not an IP address." = "DNS-servern %@ är inte en IP-adress.";
@@ -140,6 +145,7 @@
 "Off" = "Av";
 "One server per line: host port udp|tcp" = "En server per rad: värd port udp|tcp";
 "Only for domains:" = "Endast för domäner:";
+"Open Connection Settings" = "Öppna anslutningsinställningar";
 "Open MugVPN at login" = "Öppna MugVPN vid inloggning";
 "Open System Settings" = "Öppna Systeminställningar";
 "Open in Text Editor" = "Öppna i textredigerare";
@@ -222,6 +228,7 @@
 "connected" = "ansluten";
 "connecting" = "ansluter";
 "empty: all names" = "tomt: alla namn";
+"empty: as the server sends it" = "tomt: som servern skickar det";
 "enter a host name or address" = "ange ett värdnamn eller en adress";
 "not connected" = "inte ansluten";
 "nothing" = "inget";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "den beständiga anslutningen körs inte";
 "the port must be 1–65535" = "porten måste vara 1–65535";
 "the pre-connect script failed" = "föranslutningsskriptet misslyckades";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "den körande hjälparen är äldre och skulle ignorera domänerna för serverns DNS: anslut igen när den har uppdaterats";
 "username %@" = "användarnamn %@";
 "write a server as: host port udp|tcp" = "skriv en server som: värd port udp|tcp";

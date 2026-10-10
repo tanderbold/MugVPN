@@ -171,3 +171,44 @@ def test_ui72_narrower_routes_one_quiet_line(app):
     lines = [i["title"] for i in app.menu() if "networks out of" in i["title"] or "both route" in i["title"]]
     assert lines == ["ⓘ stand-b takes 3 networks out of stand-a's routes (the more specific route wins)"], lines
     assert not any("networks out of" in n["text"] for n in app.call("notifications")["items"]), "no notification for it"
+
+
+def test_ui75_warnings_are_items_with_details(app):
+    """A warning in the menu is an item, not a greyed-out command: short, and a click shows the details
+    with what to do (for DNS: the connection's options)."""
+    app.connect("stand-a")
+    app.connect("stand-b")
+    app.call("fake_dns_state", profile="stand-a", state="all")
+    app.call("fake_dns_state", profile="stand-b", state="waiting")
+    app.feed("stand-b", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
+    item = lambda: next((i for i in app.menu() if "DNS" in i["title"] and i["title"].startswith("⚠︎")), None)
+    wait_for(item, 5, "the warning")
+    w = item()
+    assert w["enabled"], "an item to click"
+    assert len(w["title"]) <= 80, w["title"]
+    app.click(w["title"])
+    d = app.window("warning")
+    assert "Only for domains" in app.control(d, "text")["value"]
+    app.press(d, "ok")                          # Open Connection Settings
+    c = app.window("connections")
+    assert app.control(c, "list")["value"] == "stand-b"
+    assert app.control(c, "tabs")["value"] == "options"
+
+
+def test_ui79_open_settings_from_a_warning_finds_its_connection_whatever_the_search(app):
+    """Open Connection Settings from a warning shows that connection even if the list's search hides it."""
+    app.click("Connections…")
+    c = app.window("connections")
+    app.set(c, "search", "stand-a")
+    app.connect("stand-a")
+    app.connect("stand-b")
+    app.call("fake_dns_state", profile="stand-a", state="all")
+    app.call("fake_dns_state", profile="stand-b", state="waiting")
+    app.feed("stand-b", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
+    item = lambda: next((i for i in app.menu() if "DNS" in i["title"] and i["title"].startswith("⚠︎")), None)
+    wait_for(item, 5, "the warning")
+    app.click(item()["title"])
+    app.press(app.window("warning"), "ok")      # Open Connection Settings
+    c = app.window("connections")
+    assert app.control(c, "list")["value"] == "stand-b"
+    assert app.control(c, "search")["value"] == "", "the search that hid it is cleared"

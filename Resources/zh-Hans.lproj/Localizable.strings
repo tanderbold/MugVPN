@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ 不是文本文件（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 引用了其文件夹以外的文件。要将它们复制到配置文件中吗？VPN 服务器可能会收到其内容。\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）";
+"%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 仅用于其自身域名，另一个连接已接管所有名称";
+"%@: DNS not set, another connection takes all names" = "%@：未设置 DNS，另一个连接已接管所有名称";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同时保持多个连接的 OpenVPN 配置文件客户端。MIT 许可证。";
 "A program asked MugVPN to import %@. Import it?" = "某个程序请求 MugVPN 导入 %@。要导入吗？";
 "About MugVPN" = "关于 MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "追加到日志，而非覆盖";
 "As in Settings" = "与设置相同";
 "Ask for a username and password" = "询问用户名和密码";
+"At most %d domains for the server's DNS." = "用于服务器 DNS 的域名最多 %d 个。";
 "Attach automatically" = "自动附加";
 "Authentication" = "认证";
 "Authentication failed" = "认证失败";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "选择 %@ 的证书：";
 "Choose the server's CA certificate." = "选择服务器的 CA 证书。";
 "Clear Saved Passwords" = "清除存储的密码";
+"Close" = "关闭";
 "Configuration" = "配置";
 "Connect" = "连接";
 "Connect script (s):" = "连接脚本（秒）：";
@@ -57,6 +61,7 @@
 "Connections" = "连接";
 "Connections…" = "连接…";
 "Copy" = "拷贝";
+"Copy Details" = "拷贝详细信息";
 "Copy and Import" = "复制并导入";
 "Cut" = "剪切";
 "DNS server %@ is not an IP address." = "DNS 服务器 %@ 不是 IP 地址。";
@@ -140,6 +145,7 @@
 "Off" = "关闭";
 "One server per line: host port udp|tcp" = "每行一个服务器：主机 端口 udp|tcp";
 "Only for domains:" = "仅用于域：";
+"Open Connection Settings" = "打开连接设置";
 "Open MugVPN at login" = "登录时打开 MugVPN";
 "Open System Settings" = "打开系统设置";
 "Open in Text Editor" = "在文本编辑器中打开";
@@ -222,6 +228,7 @@
 "connected" = "已连接";
 "connecting" = "正在连接";
 "empty: all names" = "留空：所有名称";
+"empty: as the server sends it" = "留空：按服务器发送的设置";
 "enter a host name or address" = "请输入主机名或地址";
 "not connected" = "未连接";
 "nothing" = "无";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "持久连接未运行";
 "the port must be 1–65535" = "端口必须为 1–65535";
 "the pre-connect script failed" = "预连接脚本失败";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "正在运行的辅助程序较旧，会忽略用于服务器 DNS 的域名：请在其更新后重新连接";
 "username %@" = "用户名 %@";
 "write a server as: host port udp|tcp" = "服务器格式应为：主机 端口 udp|tcp";

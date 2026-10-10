@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ ei ole tekstitiedosto (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ viittaa kansionsa ulkopuolisiin tiedostoihin. Kopioidaanko ne profiiliin? VPN-palvelin voi saada niiden sisällön.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS vain omille verkkotunnuksille, toinen yhteys ottaa kaikki nimet";
+"%@: DNS not set, another connection takes all names" = "%@: DNS:ää ei asetettu, toinen yhteys ottaa kaikki nimet";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "OpenVPN-profiilien asiakasohjelma, joka pitää useita yhteyksiä yllä yhtä aikaa. MIT-lisenssi.";
 "A program asked MugVPN to import %@. Import it?" = "Ohjelma pyysi MugVPN:ää tuomaan kohteen %@. Tuodaanko?";
 "About MugVPN" = "Tietoja MugVPN:stä";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Lisää lokitiedostoon korvaamisen sijaan";
 "As in Settings" = "Kuten asetuksissa";
 "Ask for a username and password" = "Kysy käyttäjänimeä ja salasanaa";
+"At most %d domains for the server's DNS." = "Enintään %d verkkotunnusta palvelimen DNS:lle.";
 "Attach automatically" = "Liitä automaattisesti";
 "Authentication" = "Todennus";
 "Authentication failed" = "Todennus epäonnistui";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Valitse varmenne profiilille %@:";
 "Choose the server's CA certificate." = "Valitse palvelimen CA-varmenne.";
 "Clear Saved Passwords" = "Tyhjennä tallennetut salasanat";
+"Close" = "Sulje";
 "Configuration" = "Määritykset";
 "Connect" = "Yhdistä";
 "Connect script (s):" = "Yhdistämisen komentosarja (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Yhteydet";
 "Connections…" = "Yhteydet…";
 "Copy" = "Kopioi";
+"Copy Details" = "Kopioi tiedot";
 "Copy and Import" = "Kopioi ja tuo";
 "Cut" = "Leikkaa";
 "DNS server %@ is not an IP address." = "DNS-palvelin %@ ei ole IP-osoite.";
@@ -140,6 +145,7 @@
 "Off" = "Pois";
 "One server per line: host port udp|tcp" = "Yksi palvelin riviä kohden: isäntä portti udp|tcp";
 "Only for domains:" = "Vain verkkotunnuksille:";
+"Open Connection Settings" = "Avaa yhteyden asetukset";
 "Open MugVPN at login" = "Avaa MugVPN kirjautuessa";
 "Open System Settings" = "Avaa Järjestelmäasetukset";
 "Open in Text Editor" = "Avaa tekstieditorissa";
@@ -222,6 +228,7 @@
 "connected" = "yhdistetty";
 "connecting" = "yhdistetään";
 "empty: all names" = "tyhjä: kaikki nimet";
+"empty: as the server sends it" = "tyhjä: kuten palvelin sen lähettää";
 "enter a host name or address" = "anna isäntänimi tai osoite";
 "not connected" = "ei yhdistetty";
 "nothing" = "ei mitään";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "pysyvä yhteys ei ole käynnissä";
 "the port must be 1–65535" = "portin on oltava 1–65535";
 "the pre-connect script failed" = "yhdistämistä edeltävä komentosarja epäonnistui";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "käynnissä oleva apupalvelu on vanhempi ja ohittaisi palvelimen DNS:n verkkotunnukset: yhdistä uudelleen, kun se on päivittynyt";
 "username %@" = "käyttäjänimi %@";
 "write a server as: host port udp|tcp" = "kirjoita palvelin muodossa: isäntä portti udp|tcp";

@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ nie jest plikiem tekstowym (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ odwołuje się do plików spoza swojego folderu. Skopiować je do profilu? Serwer VPN może otrzymać ich zawartość.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ przejmuje %@ sieci z tras %@ (wygrywa bardziej szczegółowa trasa)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS tylko dla własnych domen, inne połączenie przejmuje wszystkie nazwy";
+"%@: DNS not set, another connection takes all names" = "%@: DNS nie ustawiony, inne połączenie przejmuje wszystkie nazwy";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Klient profili OpenVPN, który utrzymuje kilka połączeń jednocześnie. Licencja MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Program poprosił MugVPN o zaimportowanie %@. Zaimportować?";
 "About MugVPN" = "O programie MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Dodawaj do dziennika zamiast go zastępować";
 "As in Settings" = "Jak w ustawieniach";
 "Ask for a username and password" = "Pytaj o nazwę użytkownika i hasło";
+"At most %d domains for the server's DNS." = "Najwyżej %d domen dla DNS serwera.";
 "Attach automatically" = "Dołączaj automatycznie";
 "Authentication" = "Uwierzytelnianie";
 "Authentication failed" = "Uwierzytelnienie nie powiodło się";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Wybierz certyfikat dla %@:";
 "Choose the server's CA certificate." = "Wybierz certyfikat CA serwera.";
 "Clear Saved Passwords" = "Wyczyść zapisane hasła";
+"Close" = "Zamknij";
 "Configuration" = "Konfiguracja";
 "Connect" = "Połącz";
 "Connect script (s):" = "Skrypt połączenia (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Połączenia";
 "Connections…" = "Połączenia…";
 "Copy" = "Kopiuj";
+"Copy Details" = "Kopiuj szczegóły";
 "Copy and Import" = "Kopiuj i importuj";
 "Cut" = "Wytnij";
 "DNS server %@ is not an IP address." = "Serwer DNS %@ nie jest adresem IP.";
@@ -140,6 +145,7 @@
 "Off" = "Wyłączone";
 "One server per line: host port udp|tcp" = "Jeden serwer w wierszu: host port udp|tcp";
 "Only for domains:" = "Tylko dla domen:";
+"Open Connection Settings" = "Otwórz ustawienia połączenia";
 "Open MugVPN at login" = "Otwieraj MugVPN po zalogowaniu";
 "Open System Settings" = "Otwórz Ustawienia systemowe";
 "Open in Text Editor" = "Otwórz w edytorze tekstu";
@@ -222,6 +228,7 @@
 "connected" = "połączony";
 "connecting" = "łączenie";
 "empty: all names" = "puste: wszystkie nazwy";
+"empty: as the server sends it" = "puste: tak, jak wysyła serwer";
 "enter a host name or address" = "wprowadź nazwę hosta lub adres";
 "not connected" = "niepołączony";
 "nothing" = "nic";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "stałe połączenie nie jest uruchomione";
 "the port must be 1–65535" = "port musi mieścić się w zakresie 1–65535";
 "the pre-connect script failed" = "skrypt przed połączeniem nie powiódł się";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "działająca usługa pomocnicza jest starsza i zignorowałaby domeny dla DNS serwera: połącz ponownie po jej aktualizacji";
 "username %@" = "nazwa użytkownika %@";
 "write a server as: host port udp|tcp" = "wpisz serwer jako: host port udp|tcp";

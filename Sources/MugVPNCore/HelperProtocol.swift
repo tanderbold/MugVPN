@@ -11,7 +11,7 @@ public enum MugVPNIDs {
     public static let libexecDir = supportDir + "/libexec"
     /// Persistent profiles: started at boot by the helper.
     public static let autoDir = supportDir + "/config-auto"
-    public static let helperVersion = "0.2.5"
+    public static let helperVersion = "0.2.6"
 }
 
 /// The helper's XPC interface. Everything that crosses it is plain data: the
@@ -129,6 +129,10 @@ public struct ProfileBundle: Codable, Sendable {
     /// Pushed DNS search domains become split domains (MugVPN's DNS script).
     public var splitDNS: Bool
     public var protection = ProtectionOptions()
+    /// The server's DNS only for these domains (the user's list; the server may push none).
+    public var dnsDomains: [String] = []
+    /// The most domains for the server's DNS a profile may list.
+    public static let maxDNSDomains = 32
 
     public init(name: String, config: String, files: [String: Data], splitDNS: Bool = false) {
         self.name = name
@@ -144,6 +148,7 @@ public struct ProfileBundle: Codable, Sendable {
         files = try c.decode([String: Data].self, forKey: .files)
         splitDNS = try c.decodeIfPresent(Bool.self, forKey: .splitDNS) ?? false
         protection = try c.decodeIfPresent(ProtectionOptions.self, forKey: .protection) ?? ProtectionOptions()
+        dnsDomains = try c.decodeIfPresent([String].self, forKey: .dnsDomains) ?? []
     }
 }
 
@@ -157,6 +162,9 @@ public struct ConnectionInfo: Codable, Sendable {
     public var persistent: Bool
     /// The management password of a persistent connection, for administrators only.
     public var managementPassword: String?
+    /// Its DNS as the helper has set it: "all" names, "split" (its domains), "limited" (its domains,
+    /// all names being another's), "waiting" (none: all names another's, no domains); nil: none asked.
+    public var dns: String?
 
     public init(id: String, name: String, pid: Int32, managementSocket: String, ownerUID: UInt32, persistent: Bool = false,
                 managementPassword: String? = nil) {
@@ -178,6 +186,7 @@ public struct ConnectionInfo: Codable, Sendable {
         ownerUID = try c.decode(UInt32.self, forKey: .ownerUID)
         persistent = try c.decodeIfPresent(Bool.self, forKey: .persistent) ?? false
         managementPassword = try c.decodeIfPresent(String.self, forKey: .managementPassword)
+        dns = try c.decodeIfPresent(String.self, forKey: .dns)
     }
 }
 

@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ はテキストファイル（PEM）ではありません。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ はフォルダ外のファイルを参照しています。プロファイルにコピーしますか？ その内容がVPNサーバに送られる可能性があります。\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS は自身のドメインのみ、別の接続がすべての名前を引き受けています";
+"%@: DNS not set, another connection takes all names" = "%@: DNS は未設定、別の接続がすべての名前を引き受けています";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "複数の接続を同時に維持できる OpenVPN プロファイル用クライアント。MIT ライセンス。";
 "A program asked MugVPN to import %@. Import it?" = "あるプログラムが MugVPN に %@ の読み込みを求めています。読み込みますか？";
 "About MugVPN" = "MugVPNについて";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "ログを置き換えずに追記する";
 "As in Settings" = "設定に従う";
 "Ask for a username and password" = "ユーザー名とパスワードを要求";
+"At most %d domains for the server's DNS." = "サーバーの DNS 用ドメインは最大 %d 個です。";
 "Attach automatically" = "自動的にアタッチ";
 "Authentication" = "認証";
 "Authentication failed" = "認証に失敗しました";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "%@ の証明書を選択:";
 "Choose the server's CA certificate." = "サーバーの CA 証明書を選択してください。";
 "Clear Saved Passwords" = "保存したパスワードを消去";
+"Close" = "閉じる";
 "Configuration" = "設定ファイル";
 "Connect" = "接続";
 "Connect script (s):" = "接続スクリプト (秒):";
@@ -57,6 +61,7 @@
 "Connections" = "接続一覧";
 "Connections…" = "接続一覧…";
 "Copy" = "コピー";
+"Copy Details" = "詳細をコピー";
 "Copy and Import" = "コピーして読み込む";
 "Cut" = "カット";
 "DNS server %@ is not an IP address." = "DNSサーバ %@ はIPアドレスではありません。";
@@ -140,6 +145,7 @@
 "Off" = "オフ";
 "One server per line: host port udp|tcp" = "1行に1サーバー: ホスト ポート udp|tcp";
 "Only for domains:" = "対象ドメイン:";
+"Open Connection Settings" = "接続の設定を開く";
 "Open MugVPN at login" = "ログイン時に MugVPN を開く";
 "Open System Settings" = "システム設定を開く";
 "Open in Text Editor" = "テキストエディタで開く";
@@ -222,6 +228,7 @@
 "connected" = "接続済み";
 "connecting" = "接続中";
 "empty: all names" = "空欄: すべての名前";
+"empty: as the server sends it" = "空欄: サーバーが送るとおり";
 "enter a host name or address" = "ホスト名またはアドレスを入力してください";
 "not connected" = "未接続";
 "nothing" = "なし";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "永続的な接続が実行されていません";
 "the port must be 1–65535" = "ポートは 1–65535 の範囲で指定してください";
 "the pre-connect script failed" = "接続前スクリプトが失敗しました";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "実行中のヘルパーは古く、サーバーの DNS 用ドメインを無視します。更新後にもう一度接続してください";
 "username %@" = "ユーザー名 %@";
 "write a server as: host port udp|tcp" = "サーバーは「ホスト ポート udp|tcp」の形式で記述してください";

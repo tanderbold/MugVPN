@@ -17,6 +17,7 @@ func localizedCore(_ s: String) -> String {
     case "cannot reach openvpn's management socket": return L("cannot reach openvpn's management socket")
     case "the persistent connection is not running": return L("the persistent connection is not running")
     case "the pre-connect script failed": return L("the pre-connect script failed")
+    case ConnectionManager.helperTooOldForDNSDomains: return L("the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated")
     default: return s
     }
 }
@@ -48,10 +49,31 @@ final class DropView: NSView {
 
 final class AppWindow: NSWindow {
     /// Windows that ask something and wait for the answer.
-    static let dialogKinds: Set<String> = ["confirm", "error", "message", "credentials", "secret", "challenge",
-                                           "pkcs11", "uninstall", "import_as", "import_url"]
+    static let dialogKinds: Set<String> = ["confirm", "error", "message", "warning", "credentials", "secret", "challenge", "string",
+                                           "pkcs11", "uninstall", "import_as", "import_url", "helper_setup"]
+    /// Questions a connection waits on (it looks stuck while one is hidden): kept above MugVPN's other windows.
+    static let waitingKinds: Set<String> = ["credentials", "secret", "challenge", "string", "pkcs11"]
     let kind: String
     let profile: String
+    /// Placed on the screen once: shown again, it stays where the user put it.
+    private var placed = false
+
+    private func keepDialogsAbove() {
+        guard !AppWindow.waitingKinds.contains(kind) else { return }
+        for d in WindowRegistry.shared.windows where d !== self && d.isVisible && d.sheetParent == nil
+            && AppWindow.waitingKinds.contains(d.kind) {
+            d.order(.above, relativeTo: windowNumber)
+        }
+    }
+
+    /// An ordinary window coming forward (Connections opened from the menu) keeps a connection's standing
+    /// question (a password prompt) above it: within MugVPN, not over other apps.
+    override func becomeKey() {
+        super.becomeKey()
+        // AppKit can finish ordering the new key window after this callback. Repeat on the next
+        // main-loop turn so a click on an existing ordinary window cannot cover a standing prompt.
+        DispatchQueue.main.async { [weak self] in self?.keepDialogsAbove() }
+    }
     var onClose: () -> Void = {}
     private static var counter = 0
     let windowID: String
@@ -65,9 +87,6 @@ final class AppWindow: NSWindow {
                    styleMask: [.titled, .closable], backing: .buffered, defer: false)
         self.title = title
         isReleasedWhenClosed = false
-        // Dialogs float above MugVPN's other windows: a click on the window behind (Connections)
-        // must not hide the question it asked.
-        if AppWindow.dialogKinds.contains(kind) { level = .floating }
         // The form sits in a container with 20 pt margins on every side; a stack
         // view's own trailing inset is not kept when its rows align leading.
         let container = NSView()
@@ -85,7 +104,19 @@ final class AppWindow: NSWindow {
     }
 
     func present() {
-        // Size to the laid-out content: translations and filled-in values make it grow.
+        fitToContent()
+        if !placed {
+            center()
+            placed = true
+        }
+        NSApp.activate(ignoringOtherApps: true)
+        makeKeyAndOrderFront(nil)
+        // This covers windows opened through our own menu without waiting for another event-loop turn.
+        keepDialogsAbove()
+    }
+
+    /// Size to the laid-out content: translations and filled-in values make it grow (a sheet too).
+    func fitToContent() {
         if let content = contentView {
             // fittingSize can come out a little short (a row of buttons with a minimum width ignores the
             // right margin), so grow to what the laid-out controls really cover, plus the margin.
@@ -102,9 +133,6 @@ final class AppWindow: NSWindow {
             }
             contentMinSize = size
         }
-        center()
-        NSApp.activate(ignoringOtherApps: true)
-        makeKeyAndOrderFront(nil)
     }
 
     override func close() {
@@ -258,8 +286,10 @@ final class FormActions: NSObject, NSWindowDelegate {
 
 /// Builds and shows a modal-ish form; `ok` returns false to keep it open.
 @discardableResult
+/// - parent: the window the question is about: shown as its sheet (it cannot go behind it, and the
+///   parent waits while the rest of the app and other apps stay usable).
 func showForm(kind: String, profile: String, title: String, views: [NSView], okTitle: String = L("OK"),
-              cancelTitle: String? = L("Cancel"), ok: @escaping (AppWindow) -> Bool,
+              cancelTitle: String? = L("Cancel"), parent: NSWindow? = nil, ok: @escaping (AppWindow) -> Bool,
               cancel: @escaping () -> Void = {}) -> AppWindow {
     let actions = FormActions()
     var bs: [NSButton] = []
@@ -270,17 +300,26 @@ func showForm(kind: String, profile: String, title: String, views: [NSView], okT
     w.delegate = actions
     objc_setAssociatedObject(w, "actions", actions, .OBJC_ASSOCIATION_RETAIN)
     var finished = false
+    func dismiss(_ w: AppWindow) {
+        w.sheetParent?.endSheet(w)
+        w.close()
+    }
     actions.ok = { [weak w] in
         guard let w, !finished else { return }
-        if ok(w) { finished = true; w.close() }
+        if ok(w) { finished = true; dismiss(w) }
     }
     actions.cancel = { [weak w] in
         guard let w, !finished else { return }
         finished = true
-        w.close()
+        dismiss(w)
         cancel()
     }
-    w.present()
+    if let parent, parent.isVisible {
+        w.fitToContent()
+        parent.beginSheet(w)
+    } else {
+        w.present()
+    }
     return w
 }
 

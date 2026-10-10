@@ -67,7 +67,8 @@ public protocol HelperSystem: AnyObject {
     func setDNS(_ plan: DNSPlan) -> Bool
     /// SIGKILL every process running the executable at `path`.
     func killStrayOpenVPN(path: String)
-    func restoreDNS(device: String)
+    /// False when what it set could not all be taken off.
+    @discardableResult func restoreDNS(device: String) -> Bool
     func deleteRoute(_ args: [String])
     /// Run `f` after `seconds` on the caller's serial queue.
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void)
@@ -229,6 +230,14 @@ public final class HelperCore {
         /// It has taken all traffic (the kill switch applies to it).
         var wasFull = false
         var splitDNS = false
+        /// The server's DNS only for these domains (the profile's options).
+        var dnsDomains: [String] = []
+        /// DNS for all names asked while another tunnel had them: next in line for them.
+        var dnsWantsAll: DNSPlan?
+        /// When it asked (in order: who has waited longest goes first).
+        var dnsAskOrder = 0
+        /// Its DNS on the Mac now, whole (search domains too); nil: none of its own. Its record says the same.
+        var appliedDNS: DNSPlan?
         /// When it was started (a persistent tunnel up a long time starts again soon).
         var startedAt: TimeInterval = 0
         /// The id its openvpn runs as (privilege separation).
@@ -587,6 +596,13 @@ public final class HelperCore {
 
     private func launch(_ bundle: ProfileBundle, owner uid: UInt32, management: [String],
                         persistent: Bool) throws -> (id: String, socket: String) {
+        // Before anything is made or started: a refusal leaves nothing behind.
+        guard bundle.dnsDomains.count <= ProfileBundle.maxDNSDomains else {
+            throw HelperCoreError.message("DNS domains: at most \(ProfileBundle.maxDNSDomains)")
+        }
+        guard bundle.dnsDomains.allSatisfy(TunnelState.isDomain) else {
+            throw HelperCoreError.message("DNS domains: not domain names")
+        }
         let checked = try ProfilePolicy.check(try ConfigParser.parse(bundle.config),
                                               bundleFiles: Set(bundle.files.keys))
         let limit = limits(for: uid, persistent: persistent)
@@ -662,6 +678,7 @@ public final class HelperCore {
             c.startedAt = system.now()
             c.serviceID = user?.uid
             c.splitDNS = bundle.splitDNS
+            c.dnsDomains = bundle.dnsDomains
             c.mayRouteAll = limit.mayRouteAll
             c.mayChangeDNS = limit.mayChangeDNS
             c.allowed = limit.allowed
@@ -721,6 +738,10 @@ public final class HelperCore {
             .map { i in
                 var i = i
                 i.managementPassword = admin ? passwords[i.id] : nil
+                if let c = connections[i.id] {
+                    if c.dnsWantsAll != nil { i.dns = c.tunnel.dnsApplied ? "limited" : "waiting" }
+                    else if c.tunnel.dnsApplied { i.dns = c.tunnel.dnsDomains.isEmpty ? "all" : "split" }
+                }
                 // Anyone who can reach a persistent tunnel's socket can hold its only management
                 // slot, and the socket's path follows from the id: neither goes to non-admins.
                 if i.persistent && !admin {
@@ -768,6 +789,8 @@ public final class HelperCore {
             // Dropped without being asked to: keep its owner's traffic from going around the tunnel.
             addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, everyone: c.info.persistent))
         }
+        // It had all names: the next in line gets them.
+        if c.tunnel.dnsApplied && c.tunnel.dnsDomains.isEmpty { reassignAllNames() }
         if c.info.persistent, !c.stopping, !closing {
             // Ended unasked: started again, after a wait that grows (a tunnel up a long time starts the count again).
             let n = system.now() - c.startedAt > 120 ? 0 : persistentRestarts[c.info.name] ?? 0
@@ -840,18 +863,35 @@ public final class HelperCore {
         bucket.tokens -= 1
         requestTokens[c.info.ownerUID] = bucket
         var reply = TunnelReply()
+        reassignAfterRequest = false
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         // All or nothing: a refused or failed request leaves the records as they were.
-        let before = c.tunnel
+        var before = c.tunnel
         let wasFullBefore = c.wasFull
+        let dnsBefore = c.appliedDNS
+        let queueBefore = (c.dnsWantsAll, c.dnsAskOrder)
+        /// Its DNS on the Mac as before the request (the new one off, the old one back); the record
+        /// says what is set whatever could not be.
+        func putDNSBack() {
+            if c.appliedDNS != dnsBefore {
+                replaceDNS(c, with: dnsBefore.flatMap { system.interfaceExists($0.device) ? $0 : nil })
+            }
+            before.dnsApplied = c.appliedDNS != nil
+            before.dnsServers = c.appliedDNS?.servers ?? []
+            before.dnsDomains = c.appliedDNS?.matchDomains ?? []
+        }
         do {
             try carryOut(c, kind, message, others: others, reply: &reply)
         } catch {
             // Nothing done: the record (written ahead) says so again; if it cannot, the
             // connection is undone and stopped rather than left with a record of the future.
+            putDNSBack()
             c.tunnel = before
+            // Asked for all names while another has them: in line for them (that is the answer, not a failure).
+            if !(error is DNSWaiting) { (c.dnsWantsAll, c.dnsAskOrder) = queueBefore }
             do { try saveTunnel(c) } catch { failClosed(c) }
             if let e = error as? TunnelRequestError { throw HelperCoreError.message(e.description) }
+            if let e = error as? DNSWaiting { throw HelperCoreError.message(e.description) }
             throw error
         }
         /// Take back what this request did.
@@ -863,14 +903,16 @@ public final class HelperCore {
                     _ = system.runNetwork(["ifconfig", dev, "inet6", String(a6), "delete"])
                 }
             }
-            if c.tunnel.dnsApplied, !before.dnsApplied, let dev = c.tunnel.device { system.restoreDNS(device: dev) }
+            putDNSBack()
+            (c.dnsWantsAll, c.dnsAskOrder) = queueBefore
             if let dev = c.tunnel.device, dev != before.device {
                 takeDown(c.tunnel)
                 system.releaseDevice(dev)
             }
             if let fd = reply.fd { system.closeDescriptor(fd) }
             c.tunnel = before
-            try? saveTunnel(c)
+            // Undone but not recorded: a record of what is no longer there is not kept running.
+            do { try saveTunnel(c) } catch { failClosed(c) }
         }
         // On disk before it counts: a change the helper could not undo after a crash is undone now.
         do {
@@ -894,6 +936,11 @@ public final class HelperCore {
             refreshProtection()
             throw HelperCoreError.message("the kill switch could not be recorded: not taking all traffic")
         }
+        // Recorded: all names it let go of go to the next in line now.
+        if reassignAfterRequest {
+            reassignAfterRequest = false
+            reassignAllNames()
+        }
         return reply
     }
 
@@ -911,8 +958,16 @@ public final class HelperCore {
             let (fd, name) = try system.openUtun()
             if let old = c.tunnel.device {
                 if c.tunnel.dnsApplied {
-                    system.restoreDNS(device: old)
+                    let heldAll = c.tunnel.dnsDomains.isEmpty
+                    guard replaceDNS(c, with: nil) else {
+                        system.releaseDevice(name)
+                        system.closeDescriptor(fd)
+                        throw HelperCoreError.message("the DNS it had could not be taken off")
+                    }
                     c.tunnel.dnsApplied = false
+                    c.tunnel.clearDNS()
+                    // All names free while it reconnects: the next in line gets them (its own DNSUP may not come).
+                    if heldAll { reassignAfterRequest = true }
                 }
                 for r in c.tunnel.dropDevice(old) { remove(r, others: others) }
                 if old != name {
@@ -1056,44 +1111,24 @@ public final class HelperCore {
             if let last = c.lastDNSUp, t - last < 1 { throw HelperCoreError.message("DNS changed too soon again") }
             c.lastDNSUp = t
             var plan = try c.tunnel.dnsPlan(device: message, splitMarker: c.splitDNS)
-            // All names are another tunnel's already (one at a time): its own domains, split, rather than no
-            // DNS; none of its own: said so (the app warns, and says where to give it domains).
-            if !plan.split, connections.values.contains(where: { $0 !== c && !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) {
-                guard !plan.searchDomains.isEmpty else {
-                    throw HelperCoreError.message("DNS for all names is already another tunnel's")
-                }
-                plan = DNSPlan(device: plan.device, servers: plan.servers, matchDomains: plan.searchDomains,
+            // The user's own list of domains for the server's DNS: split on those.
+            if !c.dnsDomains.isEmpty {
+                plan = DNSPlan(device: plan.device, servers: plan.servers, matchDomains: c.dnsDomains,
                                searchDomains: plan.searchDomains, split: true)
             }
-            // Its own domains are its business; all names are everyone's on the Mac.
-            if !c.mayChangeDNS {
-                // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.
-                if !plan.split { throw HelperCoreError.message("DNS for all names: \(policy)") }
-                if let d = plan.matchDomains.first(where: { !c.allowed.allows(domain: $0) }) {
-                    throw HelperCoreError.message("DNS for \(d): \(policy)")
-                }
-            }
-            // A standard user's DNS servers: inside its own tunnel, never the Mac's own resolvers or
-            // networks (the system resolver would send everyone's queries there, whatever the name).
-            if c.restricted {
-                let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
-                let mine = c.tunnel.networks
-                // (An administrator who lets users change the Mac's DNS lets them replace its resolvers too;
-                // their own, set for all names, is then the Mac's.)
-                var system = Set<UInt32>()
-                if !c.mayChangeDNS {
-                    guard let known = self.system.systemDNSServers(excluding: plan.device) else {
-                        throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
-                    }
-                    // As numbers: one address has more than one spelling.
-                    system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
-                }
-                for srv in plan.servers {
-                    guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
-                          !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
-                        throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
-                    }
-                }
+            try checkDNS(c, plan, policy: policy)
+            let heldAll = c.tunnel.dnsApplied && c.tunnel.dnsDomains.isEmpty
+            // All names are one tunnel's at a time. Asked while another has them: its own domains, split, if
+            // it has some, or nothing yet; either way it is next in line when the owner lets go (not the
+            // order of connecting).
+            c.dnsWantsAll = nil
+            if !plan.split, connections.values.contains(where: { $0 !== c && !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) {
+                c.dnsWantsAll = plan
+                dnsAsks += 1
+                c.dnsAskOrder = dnsAsks
+                guard !plan.searchDomains.isEmpty else { throw DNSWaiting() }
+                plan = DNSPlan(device: plan.device, servers: plan.servers, matchDomains: plan.searchDomains,
+                               searchDomains: plan.searchDomains, split: true)
             }
             // A domain another user's tunnel answers for, or a part of it: the more specific one wins.
             let theirDomains = connections.values.filter { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.tunnel.dnsApplied }
@@ -1106,13 +1141,112 @@ public final class HelperCore {
             c.tunnel.dnsDomains = plan.matchDomains
             c.tunnel.dnsServers = plan.servers
             try record(c)
-            guard system.setDNS(plan) else { throw HelperCoreError.message("DNS not set") }
+            guard replaceDNS(c, with: plan) else { throw HelperCoreError.message("DNS not set") }
+            // All names it had, now split: free for the next in line.
+            if heldAll, plan.split { reassignAfterRequest = true }
         case "DNSDOWN":
-            if c.tunnel.dnsApplied, let dev = c.tunnel.device { system.restoreDNS(device: dev) }
+            let heldAll = c.tunnel.dnsApplied && c.tunnel.dnsDomains.isEmpty
+            guard replaceDNS(c, with: nil) else { throw HelperCoreError.message("the DNS it had could not be taken off") }
             c.tunnel.dnsApplied = false
             c.tunnel.clearDNS()
+            c.dnsWantsAll = nil
+            if heldAll { reassignAfterRequest = true }
         default:
             throw HelperCoreError.message("unknown request \(kind)")
+        }
+    }
+
+
+    /// A request freed all names: handed on once its own change is recorded (not before: a rollback
+    /// of it must not leave two owners).
+    private var reassignAfterRequest = false
+    /// Asked for all names while another tunnel has them: in line (the request's answer, not a failure).
+    private struct DNSWaiting: Error, CustomStringConvertible {
+        var description: String { "DNS for all names is already another tunnel's" }
+    }
+    /// The connection's DNS on the Mac made `plan` (nil: none of its own): the old one taken off first
+    /// (split and all names are different keys), then the new one set; refused, the old one back.
+    /// `appliedDNS` says what is set afterwards, whatever happened.
+    @discardableResult private func replaceDNS(_ c: Connection, with plan: DNSPlan?) -> Bool {
+        let old = c.appliedDNS
+        if let plan, plan == old { return system.setDNS(plan) }
+        if let old {
+            guard system.restoreDNS(device: old.device) else { return false }
+            c.appliedDNS = nil
+        }
+        guard let plan else { return true }
+        guard system.setDNS(plan) else {
+            if let old, system.setDNS(old) { c.appliedDNS = old }
+            return false
+        }
+        c.appliedDNS = plan
+        return true
+    }
+
+    /// May `c` have `plan` set now (asked for, or its turn come): the policy, and a standard user's
+    /// servers inside its own tunnel as it is now.
+    private func checkDNS(_ c: Connection, _ plan: DNSPlan, policy: String) throws {
+        // Its own domains are its business; all names are everyone's on the Mac.
+        if !c.mayChangeDNS {
+            // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.
+            if !plan.split { throw HelperCoreError.message("DNS for all names: \(policy)") }
+            if let d = plan.matchDomains.first(where: { !c.allowed.allows(domain: $0) }) {
+                throw HelperCoreError.message("DNS for \(d): \(policy)")
+            }
+        }
+        // A standard user's DNS servers: inside its own tunnel, never the Mac's own resolvers or
+        // networks (the system resolver would send everyone's queries there, whatever the name).
+        if c.restricted {
+            let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
+            let mine = c.tunnel.networks
+            // (An administrator who lets users change the Mac's DNS lets them replace its resolvers too;
+            // their own, set for all names, is then the Mac's.)
+            var system = Set<UInt32>()
+            if !c.mayChangeDNS {
+                guard let known = self.system.systemDNSServers(excluding: plan.device) else {
+                    throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
+                }
+                // As numbers: one address has more than one spelling.
+                system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
+            }
+            for srv in plan.servers {
+                guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
+                      !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
+                    throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
+                }
+            }
+        }
+    }
+
+    private var dnsAsks = 0
+    /// DNS for all names free again: to the tunnel that has asked for them longest (its split DNS, if it
+    /// had its own domains meanwhile, taken off first).
+    private func reassignAllNames() {
+        guard !connections.values.contains(where: { !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) else { return }
+        let next = connections.values.filter { !$0.exited && $0.dnsWantsAll != nil && $0.tunnel.device != nil }
+            .sorted { $0.dnsAskOrder < $1.dnsAskOrder }
+        for c in next {
+            guard let plan = c.dnsWantsAll, plan.device == c.tunnel.device else { continue }
+            // Asked a while ago: the checks again, on its tunnel as it is now.
+            guard (try? checkDNS(c, plan, policy: "")) != nil else { c.dnsWantsAll = nil; continue }
+            let before = c.tunnel
+            // The record first (what a helper that dies meanwhile undoes), the system after.
+            c.tunnel.dnsApplied = true
+            c.tunnel.dnsDomains = []
+            c.tunnel.dnsServers = plan.servers
+            do { try saveTunnel(c) } catch { c.tunnel = before; continue }
+            guard replaceDNS(c, with: plan) else {
+                // Refused: its split DNS back (or, if that cannot be, none), and the record with it.
+                c.tunnel = before
+                c.tunnel.dnsApplied = c.appliedDNS != nil
+                c.tunnel.dnsServers = c.appliedDNS?.servers ?? []
+                c.tunnel.dnsDomains = c.appliedDNS?.matchDomains ?? []
+                if (try? saveTunnel(c)) == nil { failClosed(c) }
+                continue
+            }
+            c.dnsWantsAll = nil
+            refreshProtection()
+            return
         }
     }
 

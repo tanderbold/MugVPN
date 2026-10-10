@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ 不是文字檔案（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 參照了其檔案夾以外的檔案。要將它們拷貝到描述檔中嗎？VPN 伺服器可能會收到其內容。\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）";
+"%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 僅用於其自身網域，另一個連線已接手所有名稱";
+"%@: DNS not set, another connection takes all names" = "%@：未設定 DNS，另一個連線已接手所有名稱";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同時維持多個連線的 OpenVPN 設定檔用戶端。MIT 授權。";
 "A program asked MugVPN to import %@. Import it?" = "某個程式要求 MugVPN 輸入 %@。要輸入嗎？";
 "About MugVPN" = "關於 MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "附加至記錄檔，而非取代";
 "As in Settings" = "與設定相同";
 "Ask for a username and password" = "詢問使用者名稱和密碼";
+"At most %d domains for the server's DNS." = "用於伺服器 DNS 的網域最多 %d 個。";
 "Attach automatically" = "自動附加";
 "Authentication" = "驗證";
 "Authentication failed" = "驗證失敗";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "選擇 %@ 的憑證：";
 "Choose the server's CA certificate." = "選擇伺服器的 CA 憑證。";
 "Clear Saved Passwords" = "清除儲存的密碼";
+"Close" = "關閉";
 "Configuration" = "組態";
 "Connect" = "連線";
 "Connect script (s):" = "連線指令碼（秒）：";
@@ -57,6 +61,7 @@
 "Connections" = "連線";
 "Connections…" = "連線…";
 "Copy" = "拷貝";
+"Copy Details" = "拷貝詳細資訊";
 "Copy and Import" = "拷貝並輸入";
 "Cut" = "剪下";
 "DNS server %@ is not an IP address." = "DNS 伺服器 %@ 不是 IP 位址。";
@@ -140,6 +145,7 @@
 "Off" = "關閉";
 "One server per line: host port udp|tcp" = "每行一個伺服器：主機 連接埠 udp|tcp";
 "Only for domains:" = "僅用於網域：";
+"Open Connection Settings" = "打開連線設定";
 "Open MugVPN at login" = "登入時開啟 MugVPN";
 "Open System Settings" = "打開「系統設定」";
 "Open in Text Editor" = "在文字編輯器中打開";
@@ -222,6 +228,7 @@
 "connected" = "已連線";
 "connecting" = "連線中";
 "empty: all names" = "留空：所有名稱";
+"empty: as the server sends it" = "留空：依伺服器傳送的設定";
 "enter a host name or address" = "請輸入主機名稱或位址";
 "not connected" = "未連線";
 "nothing" = "無";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "持續連線未執行";
 "the port must be 1–65535" = "連接埠必須為 1–65535";
 "the pre-connect script failed" = "連線前指令碼失敗";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "正在執行的輔助程式較舊，會忽略用於伺服器 DNS 的網域：請在其更新後重新連線";
 "username %@" = "使用者名稱 %@";
 "write a server as: host port udp|tcp" = "伺服器格式應為：主機 連接埠 udp|tcp";

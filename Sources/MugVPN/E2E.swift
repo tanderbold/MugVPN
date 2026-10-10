@@ -54,7 +54,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         }
         warnedBeforeStart[bundle.name] = services?.notes.contains { $0["title"] == bundle.name && ($0["text"] ?? "").contains("certificate") } ?? false
         let p = bundle.protection
-        bundles[bundle.name] = ["split_dns": bundle.splitDNS,
+        bundles[bundle.name] = ["split_dns": bundle.splitDNS, "dns_domains": bundle.dnsDomains,
                                 "protection": ["killSwitch": p.killSwitch, "blockIPv6": p.blockIPv6,
                                                "dnsOnlyTunnel": p.dnsOnlyTunnel, "allowLAN": p.allowLAN]]
         reply(.success(("F-\(bundle.name)", "fake:\(bundle.name)")))
@@ -63,7 +63,15 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         stops.append(String(id.dropFirst(2)))
         reply(nil)
     }
-    func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply([]) }
+    /// DNS states a test gives the fake helper's connections (ConnectionInfo.dns), by profile.
+    var dnsStates: [String: String] = [:]
+    func list(reply: @escaping ([ConnectionInfo]) -> Void) {
+        reply(dnsStates.map { name, state in
+            var i = ConnectionInfo(id: "F-" + name, name: name, pid: 1, managementSocket: "fake:" + name, ownerUID: getuid())
+            i.dns = state
+            return i
+        })
+    }
     var helperVersion = ProcessInfo.processInfo.environment["MUGVPN_E2E_HELPER_VERSION"] ?? MugVPNIDs.helperVersion
     func version(reply: @escaping (String?) -> Void) {
         reply(helperVersion == "none" || (helperVersion == "unreachable" && setupCalls.isEmpty) ? nil : helperVersion == "unreachable" ? MugVPNIDs.helperVersion : helperVersion)
@@ -316,6 +324,8 @@ final class E2EServer {
             return [:]
         case "send_windows_back":
             WindowRegistry.shared.windows.filter(\.isVisible).forEach { $0.orderBack(nil) }
+            // Another app in use (Finder): deactivating alone leaves MugVPN active when nothing else takes over.
+            NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.activate()
             NSApp.deactivate()
             return [:]
         case "menu_will_open":
@@ -369,6 +379,10 @@ final class E2EServer {
             return [:]
         case "close":
             try window().performClose(nil)
+            return [:]
+        case "move":
+            guard let x = r["x"] as? Double, let y = r["y"] as? Double else { throw E2EError("x and y") }
+            try window().setFrameOrigin(NSPoint(x: x, y: y))
             return [:]
         case "fake_feed":
             guard let l = backend.links[try str("profile")], let lines = r["lines"] as? [String] else { throw E2EError("no link") }
@@ -482,6 +496,9 @@ final class E2EServer {
         case "fake_uninstall_fails":
             backend.uninstallRefusal = r["message"] as? String
             return [:]
+        case "fake_dns_state":
+            backend.dnsStates[try str("profile")] = try str("state")
+            return [:]
         case "fake_reregister_fails":
             backend.reregisterRefusal = r["message"] as? String
             return [:]
@@ -550,7 +567,7 @@ final class E2EServer {
                     c["type"] = "secure"; c["value"] = f.stringValue; c["enabled"] = f.isEnabled; c["label"] = f.accessibilityLabel() ?? ""
                 case let f as NSTextField:
                     c["type"] = f.isEditable ? "text" : "label"; c["value"] = f.stringValue; c["enabled"] = f.isEnabled
-                    c["label"] = f.accessibilityLabel() ?? ""
+                    c["label"] = f.accessibilityLabel() ?? ""; c["placeholder"] = f.placeholderString ?? ""
                 case let t as NSTextView:
                     c["type"] = "text"; c["value"] = t.string; c["enabled"] = t.isEditable; c["label"] = t.accessibilityLabel() ?? ""
                     var kinds = Set<String>()
@@ -591,7 +608,8 @@ final class E2EServer {
         return ["id": w.windowID, "kind": w.kind, "title": w.title, "profile": w.profile,
                 "appearance": dark ? "darkAqua" : "aqua", "controls": controls,
                 // Among MugVPN's windows on screen, front to back.
-                "floating": w.level == .floating,
+                "floating": w.level == .floating, "origin": [Double(w.frame.minX), Double(w.frame.minY)],
+                "sheet_of": ((w.sheetParent as? AppWindow)?.kind).map { $0 as Any } ?? NSNull(),
                 "front_index": NSApp.orderedWindows.filter { $0.isVisible && $0 is AppWindow }.firstIndex(of: w) ?? -1]
     }
 }
