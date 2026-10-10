@@ -12,7 +12,7 @@
   "key": "%@ copy"
  },
  {
-  "key": "%@ could not set its DNS: another tunnel already redirects all DNS"
+  "key": "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)."
  },
  {
   "key": "%@ is not a domain name."

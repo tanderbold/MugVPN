@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ and %@ both route %@";
 "%@ and %@ both route all traffic" = "%@ and %@ both route all traffic";
 "%@ copy" = "%@ copy";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ could not set its DNS: another tunnel already redirects all DNS";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).";
 "%@ is not a domain name." = "%@ is not a domain name.";
 "%@ is not a text file (PEM)." = "%@ is not a text file (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@";

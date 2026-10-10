@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "Τα %@ και %@ δρομολογούν και τα δύο το %@";
 "%@ and %@ both route all traffic" = "Τα %@ και %@ δρομολογούν και τα δύο όλη την κίνηση";
 "%@ copy" = "%@ αντίγραφο";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "Το %@ δεν μπόρεσε να ορίσει το DNS του: άλλο τούνελ ανακατευθύνει ήδη όλο το DNS";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "Το %@ δεν μπόρεσε να ορίσει το DNS του: μια άλλη σύνδεση παίρνει ήδη όλα τα ονόματα. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).";
 "%@ is not a domain name." = "Το %@ δεν είναι όνομα τομέα.";
 "%@ is not a text file (PEM)." = "Το %@ δεν είναι αρχείο κειμένου (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "Το %@ αναφέρεται σε αρχεία εκτός του φακέλου του. Αντιγραφή τους στο προφίλ; Ο διακομιστής VPN μπορεί να λάβει το περιεχόμενό τους.\n\n%@";

@@ -311,6 +311,9 @@ final class E2EServer {
                                            characters: try str("key"), charactersIgnoringModifiers: try str("key"),
                                            isARepeat: false, keyCode: 9) else { throw E2EError("no event") }
             return ["handled": NSApp.mainMenu?.performKeyEquivalent(with: e) ?? false]
+        case "order_front":
+            try window().orderFrontRegardless()
+            return [:]
         case "send_windows_back":
             WindowRegistry.shared.windows.filter(\.isVisible).forEach { $0.orderBack(nil) }
             NSApp.deactivate()
@@ -588,6 +591,7 @@ final class E2EServer {
         return ["id": w.windowID, "kind": w.kind, "title": w.title, "profile": w.profile,
                 "appearance": dark ? "darkAqua" : "aqua", "controls": controls,
                 // Among MugVPN's windows on screen, front to back.
+                "floating": w.level == .floating,
                 "front_index": NSApp.orderedWindows.filter { $0.isVisible && $0 is AppWindow }.firstIndex(of: w) ?? -1]
     }
 }

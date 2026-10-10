@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ ja %@ reitittävät molemmat verkon %@";
 "%@ and %@ both route all traffic" = "%@ ja %@ reitittävät molemmat kaiken liikenteen";
 "%@ copy" = "%@ kopio";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ ei voinut asettaa DNS:ää: toinen tunneli ohjaa jo kaiken DNS-liikenteen";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ ei voinut asettaa DNS:äänsä: toinen yhteys ottaa jo kaikki nimet. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille).";
 "%@ is not a domain name." = "%@ ei ole verkkotunnus.";
 "%@ is not a text file (PEM)." = "%@ ei ole tekstitiedosto (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ viittaa kansionsa ulkopuolisiin tiedostoihin. Kopioidaanko ne profiiliin? VPN-palvelin voi saada niiden sisällön.\n\n%@";

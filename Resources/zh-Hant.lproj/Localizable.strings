@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ 和 %@ 都在路由 %@";
 "%@ and %@ both route all traffic" = "%@ 和 %@ 都在路由所有流量";
 "%@ copy" = "%@ 拷貝";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ 無法設定其 DNS：另一個通道已重新導向所有 DNS";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ 無法設定其 DNS：另一個連線已接手所有名稱。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。";
 "%@ is not a domain name." = "%@ 不是網域名稱。";
 "%@ is not a text file (PEM)." = "%@ 不是文字檔案（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 參照了其檔案夾以外的檔案。要將它們拷貝到描述檔中嗎？VPN 伺服器可能會收到其內容。\n\n%@";

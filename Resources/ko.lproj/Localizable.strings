@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@와(과) %@ 모두 %@을(를) 라우팅합니다";
 "%@ and %@ both route all traffic" = "%@와(과) %@ 모두 모든 트래픽을 라우팅합니다";
 "%@ copy" = "%@ 사본";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@의 DNS를 설정할 수 없습니다: 다른 터널이 이미 모든 DNS를 리디렉션하고 있습니다";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@의 DNS를 설정할 수 없습니다: 다른 연결이 이미 모든 이름을 담당합니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.";
 "%@ is not a domain name." = "%@은(는) 도메인 이름이 아닙니다.";
 "%@ is not a text file (PEM)." = "%@은(는) 텍스트 파일(PEM)이 아닙니다.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@이(가) 폴더 밖의 파일을 참조합니다. 프로필로 복사하겠습니까? VPN 서버가 해당 내용을 받을 수 있습니다.\n\n%@";

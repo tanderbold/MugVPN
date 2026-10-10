@@ -47,6 +47,9 @@ final class DropView: NSView {
 }
 
 final class AppWindow: NSWindow {
+    /// Windows that ask something and wait for the answer.
+    static let dialogKinds: Set<String> = ["confirm", "error", "message", "credentials", "secret", "challenge",
+                                           "pkcs11", "uninstall", "import_as", "import_url"]
     let kind: String
     let profile: String
     var onClose: () -> Void = {}
@@ -62,6 +65,9 @@ final class AppWindow: NSWindow {
                    styleMask: [.titled, .closable], backing: .buffered, defer: false)
         self.title = title
         isReleasedWhenClosed = false
+        // Dialogs float above MugVPN's other windows: a click on the window behind (Connections)
+        // must not hide the question it asked.
+        if AppWindow.dialogKinds.contains(kind) { level = .floating }
         // The form sits in a container with 20 pt margins on every side; a stack
         // view's own trailing inset is not kept when its rows align leading.
         let container = NSView()

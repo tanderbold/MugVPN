@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ ve %@ aynı anda %@ ağını yönlendiriyor";
 "%@ and %@ both route all traffic" = "%@ ve %@ aynı anda tüm trafiği yönlendiriyor";
 "%@ copy" = "%@ kopyası";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ DNS ayarını yapamadı: başka bir tünel zaten tüm DNS trafiğini yönlendiriyor";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ DNS'ini ayarlayamadı: başka bir bağlantı zaten tüm adları alıyor. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.";
 "%@ is not a domain name." = "%@ bir alan adı değil.";
 "%@ is not a text file (PEM)." = "%@ bir metin dosyası (PEM) değil.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ kendi klasörü dışındaki dosyalara başvuruyor. Profile kopyalansın mı? VPN sunucusu içeriklerini alabilir.\n\n%@";

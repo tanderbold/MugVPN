@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ と %@ の両方が %@ をルーティングしています";
 "%@ and %@ both route all traffic" = "%@ と %@ の両方がすべてのトラフィックをルーティングしています";
 "%@ copy" = "%@ のコピー";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ の DNS を設定できませんでした: 別のトンネルがすでにすべての DNS をリダイレクトしています";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ の DNS を設定できませんでした: 別の接続がすでにすべての名前を引き受けています。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。";
 "%@ is not a domain name." = "%@ はドメイン名ではありません。";
 "%@ is not a text file (PEM)." = "%@ はテキストファイル（PEM）ではありません。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ はフォルダ外のファイルを参照しています。プロファイルにコピーしますか？ その内容がVPNサーバに送られる可能性があります。\n\n%@";

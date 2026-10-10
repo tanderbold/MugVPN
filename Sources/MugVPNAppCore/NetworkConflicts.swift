@@ -56,7 +56,8 @@ public enum NetworkConflicts {
                 if iInJ > 0 { out.append(.narrowerRoutes(broad: b, narrow: a, count: iInJ)) }
             }
         }
-        for t in tunnels where t.2.contains("setting DNS failed, already redirecting") {
+        for t in tunnels where t.2.contains("setting DNS failed, already redirecting")
+            || t.2.contains("DNS for all names is already another tunnel's") {
             out.append(.dnsTakenByAnother(t.0))
         }
         return out

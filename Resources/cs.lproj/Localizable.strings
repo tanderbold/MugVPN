@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ i %@ směrují %@";
 "%@ and %@ both route all traffic" = "%@ i %@ směrují veškerý provoz";
 "%@ copy" = "%@ kopie";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@: nelze nastavit DNS, jiný tunel již přesměrovává veškeré DNS";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ nemohl nastavit svůj DNS: jiné připojení už převzalo všechna jména. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).";
 "%@ is not a domain name." = "%@ není název domény.";
 "%@ is not a text file (PEM)." = "%@ není textový soubor (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ odkazuje na soubory mimo svou složku. Zkopírovat je do profilu? VPN server může získat jejich obsah.\n\n%@";

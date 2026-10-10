@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ و %@ هر دو %@ را مسیریابی می‌کنند";
 "%@ and %@ both route all traffic" = "%@ و %@ هر دو همهٔ ترافیک را مسیریابی می‌کنند";
 "%@ copy" = "%@ کپی";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ نتوانست DNS خود را تنظیم کند: تونل دیگری از قبل همهٔ DNS را هدایت می‌کند";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ نتوانست DNS خود را تنظیم کند: اتصال دیگری از قبل همهٔ نام‌ها را گرفته است. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).";
 "%@ is not a domain name." = "%@ نام دامنه نیست.";
 "%@ is not a text file (PEM)." = "%@ فایل متنی (PEM) نیست.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ به فایل‌هایی بیرون از پوشهٔ خود اشاره می‌کند. آن‌ها را در نمایه کپی کنیم؟ سرور VPN ممکن است محتوای آن‌ها را دریافت کند.\n\n%@";

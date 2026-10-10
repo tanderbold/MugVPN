@@ -396,3 +396,17 @@ def test_ui57_search_keeps_the_profile_being_edited(app):
     assert app.control(w, "servers")["value"] == "edited.example.com"
     app.press(w, "save")
     assert "edited.example.com" in cfg(app, "stand-a")
+
+
+def test_ui73_dialogs_stay_in_front(app):
+    """A dialog (here: unsaved changes) stays above MugVPN's windows, even when the window behind it
+    is clicked (it went behind the Connections window)."""
+    w = open_window(app, "stand-a")
+    app.set(w, "servers", "edited.example.com")
+    select(app, "stand-b")
+    c = app.window("confirm")
+    app.call("order_front", window=app.window("connections")["id"])
+    assert app.window("confirm")["front_index"] == 0, "the dialog still on top"
+    assert app.window("confirm")["floating"]
+    assert not app.window("connections")["floating"], "an ordinary window is not"
+    app.press(app.window("confirm"), "cancel")

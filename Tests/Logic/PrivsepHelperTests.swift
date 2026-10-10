@@ -782,6 +782,41 @@ func registerPrivsepHelperTests() {
         sys.clock += 5
         _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: "utun5")
     }
+    test("PS-51", "DNS for all names already another tunnel's: one with its own domains gets them split instead") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, a, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        expectEqual(sys.dnsSet.last?.split, false, "the first takes all names")
+        let (b, _) = try h.start(bundle: psBundle(), uid: 501)
+        sys.utunName = "utun6"
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        for v in ["dns_server_1_address_1=10.9.0.53", "dns_search_domain_1=corp.lan"] {
+            _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSVAR", message: v)
+        }
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6")
+        let p = sys.dnsSet.last
+        expect(p?.device == "utun6" && p?.split == true && p?.matchDomains == ["corp.lan"], "its own domains, split: \(String(describing: p))")
+    }
+    test("PS-52", "DNS for all names already another tunnel's and no domains of its own: said so (the app warns)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (a, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, a, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_server_1_address_1=10.8.0.53")
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        let (b, _) = try h.start(bundle: psBundle(), uid: 501)
+        sys.utunName = "utun6"
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSVAR", message: "dns_server_1_address_1=10.9.0.53")
+        let before = sys.dnsSet.count
+        expectThrows("taken", matching: "already another tunnel's") { _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6") }
+        expectEqual(sys.dnsSet.count, before, "nothing set")
+    }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

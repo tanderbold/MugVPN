@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ и %@ одновременно маршрутизируют %@";
 "%@ and %@ both route all traffic" = "%@ и %@ одновременно маршрутизируют весь трафик";
 "%@ copy" = "%@ копия";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ не может задать свой DNS: другой туннель уже перенаправляет все DNS-запросы";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ не смог поставить свой DNS: все имена уже взяло другое подключение. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов).";
 "%@ is not a domain name." = "%@ — не доменное имя.";
 "%@ is not a text file (PEM)." = "%@ не является текстовым файлом (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ ссылается на файлы вне своей папки. Скопировать их в профиль? Их содержимое может получить VPN-сервер.\n\n%@";

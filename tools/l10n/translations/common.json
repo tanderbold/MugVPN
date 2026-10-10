@@ -56,7 +56,8 @@
   "Copy": "Kopírovat",
   "Paste": "Vložit",
   "Select All": "Vybrat vše",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl nastavit svůj DNS: jiné připojení už převzalo všechna jména. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény)."
  },
  "de": {
   "OK": "OK",
@@ -115,7 +116,8 @@
   "Copy": "Kopieren",
   "Paste": "Einsetzen",
   "Select All": "Alles auswählen",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht setzen: Eine andere Verbindung übernimmt bereits alle Namen. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains)."
  },
  "da": {
   "OK": "OK",
@@ -174,7 +176,8 @@
   "Copy": "Kopiér",
   "Paste": "Sæt ind",
   "Select All": "Vælg alt",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ overtager %@ netværk fra %@s ruter (den mere specifikke rute vinder)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ overtager %@ netværk fra %@s ruter (den mere specifikke rute vinder)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sætte sin DNS: en anden forbindelse tager allerede alle navne. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner)."
  },
  "el": {
   "OK": "OK",
@@ -233,7 +236,8 @@
   "Copy": "Αντιγραφή",
   "Paste": "Επικόλληση",
   "Select All": "Επιλογή όλων",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να ορίσει το DNS του: μια άλλη σύνδεση παίρνει ήδη όλα τα ονόματα. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς)."
  },
  "es": {
   "OK": "Aceptar",
@@ -292,7 +296,8 @@
   "Copy": "Copiar",
   "Paste": "Pegar",
   "Select All": "Seleccionar todo",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ toma %@ redes de las rutas de %@ (gana la ruta más específica)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ toma %@ redes de las rutas de %@ (gana la ruta más específica)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo establecer su DNS: otra conexión ya toma todos los nombres. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios)."
  },
  "fa": {
   "OK": "تأیید",
@@ -351,7 +356,8 @@
   "Copy": "کپی",
   "Paste": "چسباندن",
   "Select All": "انتخاب همه",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست DNS خود را تنظیم کند: اتصال دیگری از قبل همهٔ نام‌ها را گرفته است. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها)."
  },
  "fi": {
   "OK": "OK",
@@ -410,7 +416,8 @@
   "Copy": "Kopioi",
   "Paste": "Sijoita",
   "Select All": "Valitse kaikki",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut asettaa DNS:äänsä: toinen yhteys ottaa jo kaikki nimet. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille)."
  },
  "fr": {
   "OK": "OK",
@@ -469,7 +476,8 @@
   "Copy": "Copier",
   "Paste": "Coller",
   "Select All": "Tout sélectionner",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prend %@ réseaux sur les routes de %@ (la route la plus précise l'emporte)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prend %@ réseaux sur les routes de %@ (la route la plus précise l'emporte)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu définir son DNS : une autre connexion prend déjà tous les noms. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines)."
  },
  "it": {
   "OK": "OK",
@@ -528,7 +536,8 @@
   "Copy": "Copia",
   "Paste": "Incolla",
   "Select All": "Seleziona tutto",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prende %@ reti dalle rotte di %@ (vince la rotta più specifica)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prende %@ reti dalle rotte di %@ (vince la rotta più specifica)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto impostare il suo DNS: un'altra connessione prende già tutti i nomi. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini)."
  },
  "ja": {
   "OK": "OK",
@@ -587,7 +596,8 @@
   "Copy": "コピー",
   "Paste": "ペースト",
   "Select All": "すべてを選択",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を設定できませんでした: 別の接続がすでにすべての名前を引き受けています。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。"
  },
  "ko": {
   "OK": "확인",
@@ -646,7 +656,8 @@
   "Copy": "복사하기",
   "Paste": "붙여넣기",
   "Select All": "전체 선택",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 설정할 수 없습니다: 다른 연결이 이미 모든 이름을 담당합니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요."
  },
  "nl": {
   "OK": "OK",
@@ -705,7 +716,8 @@
   "Copy": "Kopieer",
   "Paste": "Plak",
   "Select All": "Selecteer alles",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet instellen: een andere verbinding neemt al alle namen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen)."
  },
  "nb": {
   "OK": "OK",
@@ -764,7 +776,8 @@
   "Copy": "Kopier",
   "Paste": "Lim inn",
   "Select All": "Merk alt",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar over %@ nettverk fra rutene til %@ (den mer spesifikke ruten vinner)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar over %@ nettverk fra rutene til %@ (den mer spesifikke ruten vinner)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sette sin DNS: en annen tilkobling tar allerede alle navn. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener)."
  },
  "pl": {
   "OK": "OK",
@@ -823,7 +836,8 @@
   "Copy": "Kopiuj",
   "Paste": "Wklej",
   "Select All": "Zaznacz wszystko",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ przejmuje %@ sieci z tras %@ (wygrywa bardziej szczegółowa trasa)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ przejmuje %@ sieci z tras %@ (wygrywa bardziej szczegółowa trasa)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł ustawić swojego DNS: inne połączenie już przejmuje wszystkie nazwy. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen)."
  },
  "pt-BR": {
   "OK": "OK",
@@ -882,7 +896,8 @@
   "Copy": "Copiar",
   "Paste": "Colar",
   "Select All": "Selecionar Tudo",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ assume %@ redes das rotas de %@ (a rota mais específica vence)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ assume %@ redes das rotas de %@ (a rota mais específica vence)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde definir seu DNS: outra conexão já assume todos os nomes. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios)."
  },
  "ru": {
   "OK": "ОК",
@@ -941,7 +956,8 @@
   "Copy": "Копировать",
   "Paste": "Вставить",
   "Select All": "Выбрать все",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирает %@ сетей из маршрутов %@ (побеждает более узкий маршрут)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирает %@ сетей из маршрутов %@ (побеждает более узкий маршрут)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог поставить свой DNS: все имена уже взяло другое подключение. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов)."
  },
  "sv": {
   "OK": "OK",
@@ -1000,7 +1016,8 @@
   "Copy": "Kopiera",
   "Paste": "Klistra in",
   "Select All": "Markera allt",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte ställa in sin DNS: en annan anslutning tar redan alla namn. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner)."
  },
  "tr": {
   "OK": "Tamam",
@@ -1059,7 +1076,8 @@
   "Copy": "Kopyala",
   "Paste": "Yapıştır",
   "Select All": "Tümünü Seç",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini ayarlayamadı: başka bir bağlantı zaten tüm adları alıyor. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin."
  },
  "uk": {
   "OK": "OK",
@@ -1118,7 +1136,8 @@
   "Copy": "Копіювати",
   "Paste": "Вставити",
   "Select All": "Вибрати все",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг встановити свій DNS: усі імена вже взяло інше підключення. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів)."
  },
  "zh-Hans": {
   "OK": "好",
@@ -1177,7 +1196,8 @@
   "Copy": "拷贝",
   "Paste": "粘贴",
   "Select All": "全选",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法设置其 DNS：另一个连接已接管所有名称。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1236,6 +1256,7 @@
   "Copy": "拷貝",
   "Paste": "貼上",
   "Select All": "全選",
-  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）"
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）",
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法設定其 DNS：另一個連線已接手所有名稱。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。"
  }
 }

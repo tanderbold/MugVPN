@@ -419,7 +419,8 @@ final class AppController: NSObject, NSMenuDelegate {
         let up = manager.active.values.filter { if case .connected = $0.controller.status { return true }; return false }
             .sorted { $0.profile.displayName < $1.profile.displayName }
         let found = NetworkConflicts.find(up.map { c in
-            let log = logText(c)
+            // openvpn's log, and the app's own lines about the connection (what the helper refused).
+            let log = logText(c) + "\n" + c.controller.log.joined(separator: "\n")
             return (c.profile.displayName, OpenVPNLogFacts.parse(log), log)
         })
         // Narrower routes inside another's are usually meant so: said in the menu, not notified.
@@ -522,7 +523,8 @@ final class AppController: NSObject, NSMenuDelegate {
         case .overlappingRoutes(let a, let b, let net): return L("%@ and %@ both route %@", a, b, net)
         case .narrowerRoutes(let broad, let narrow, let n):
             return L("%@ takes %@ networks out of %@'s routes (the more specific route wins)", narrow, String(n), broad)
-        case .dnsTakenByAnother(let a): return L("%@ could not set its DNS: another tunnel already redirects all DNS", a)
+        case .dnsTakenByAnother(let a):
+            return L("%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).", a)
         }
     }
 

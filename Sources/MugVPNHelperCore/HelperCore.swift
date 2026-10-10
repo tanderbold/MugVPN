@@ -1055,7 +1055,16 @@ public final class HelperCore {
             let t = system.now()
             if let last = c.lastDNSUp, t - last < 1 { throw HelperCoreError.message("DNS changed too soon again") }
             c.lastDNSUp = t
-            let plan = try c.tunnel.dnsPlan(device: message, splitMarker: c.splitDNS)
+            var plan = try c.tunnel.dnsPlan(device: message, splitMarker: c.splitDNS)
+            // All names are another tunnel's already (one at a time): its own domains, split, rather than no
+            // DNS; none of its own: said so (the app warns, and says where to give it domains).
+            if !plan.split, connections.values.contains(where: { $0 !== c && !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) {
+                guard !plan.searchDomains.isEmpty else {
+                    throw HelperCoreError.message("DNS for all names is already another tunnel's")
+                }
+                plan = DNSPlan(device: plan.device, servers: plan.servers, matchDomains: plan.searchDomains,
+                               searchDomains: plan.searchDomains, split: true)
+            }
             // Its own domains are its business; all names are everyone's on the Mac.
             if !c.mayChangeDNS {
                 // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.

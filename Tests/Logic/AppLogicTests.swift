@@ -405,6 +405,9 @@ func registerAppLogicTests() {
     test("NET-03", "DNS refused by the script") {
         let log = "2026-10-06 05:46:44 setting DNS failed, already redirecting to another tunnel\n"
         expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), log)]), [.dnsTakenByAnother("d")])
+        // Without root (privilege separation): the helper says so, in the app's log of the connection.
+        let helper = "MugVPN: the helper refused DNSUP utun6: DNS for all names is already another tunnel's\n"
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), helper)]), [.dnsTakenByAnother("d")])
     }
 }
 

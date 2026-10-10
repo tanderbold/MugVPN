@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "Både %@ och %@ dirigerar %@";
 "%@ and %@ both route all traffic" = "Både %@ och %@ dirigerar all trafik";
 "%@ copy" = "%@ kopia";
-"%@ could not set its DNS: another tunnel already redirects all DNS" = "%@ kunde inte ställa in sin DNS: en annan tunnel omdirigerar redan all DNS";
+"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ kunde inte ställa in sin DNS: en annan anslutning tar redan alla namn. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner).";
 "%@ is not a domain name." = "%@ är inte ett domännamn.";
 "%@ is not a text file (PEM)." = "%@ är inte en textfil (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ hänvisar till filer utanför sin mapp. Kopiera dem till profilen? VPN-servern kan få deras innehåll.\n\n%@";
