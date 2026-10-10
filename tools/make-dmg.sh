@@ -1,6 +1,6 @@
 #!/bin/bash
 # Package build/MugVPN.app as build/MugVPN-<version>.dmg (drag to Applications).
-# Not notarized until there is an Apple Developer ID (see README).
+# Only from a Developer ID build; tools/notarize.sh then notarizes and staples it (release.yml does both).
 set -euo pipefail
 ROOT="$(cd "$(dirname "${BASH_SOURCE[0]}")/.." && pwd)"
 APP="$ROOT/build/MugVPN.app"

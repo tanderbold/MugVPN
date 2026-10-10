@@ -8,7 +8,9 @@
 - Kill switch per connection (macOS PF): if a connection carrying all traffic drops, the user's TCP and UDP traffic outside the VPN stays blocked until reconnect or "Unblock Internet".
 - Leak protection while a connection carries all traffic: no IPv6 and no DNS outside the VPN; leak check warns about routes or DNS around the tunnel (TunnelVision).
 - Connections window: create, edit (form or text), duplicate, rename, delete; import .ovpn, Tunnelblick .tblk, URL, OpenVPN Access Server.
-- Sign-in: passwords in the Keychain, OTP challenges, web/SSO, PKCS#12, HTTP proxies. Persistent connections at boot. Command line control.
+- Sign-in: passwords in the Keychain, OTP challenges, web/SSO, PKCS#12, HTTP proxies; a warning before a client certificate expires.
+- On the road: reconnects after sleep and on network changes (another Wi-Fi, router or lease); captive-portal sign-in from the menu, lifting a kill switch's block for two minutes.
+- For admins and scripts: persistent connections at boot with their own kill switch (settings beside the profile); command line with exit codes and JSON (connect, disconnect, reconnect, status, list, --wait); diagnostics archive without keys or passwords; opens at login if asked.
 
 ## Security
 - openvpn runs without root: a small helper does what needs root after checking each request; profiles that would run programs or load code are refused.
@@ -16,5 +18,6 @@
 ## Links
 - Source and README: https://github.com/tanderbold/MugVPN
 - FAQ: https://tanderbold.github.io/MugVPN/faq.html
-- Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh (no signed release yet)
+- Download: https://github.com/tanderbold/MugVPN/releases/latest (DMG signed with a Developer ID and notarized)
+- Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh
 - License: MIT. "OpenVPN" is a trademark of OpenVPN Inc.; MugVPN is not affiliated with it.

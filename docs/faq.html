@@ -26,10 +26,14 @@
      "acceptedAnswer": {"@type": "Answer", "text": "Yes, per connection. If a connection that carries all traffic drops unexpectedly, MugVPN blocks your TCP and UDP traffic outside the VPN with the macOS packet filter until you reconnect or unblock it from the menu."}},
     {"@type": "Question", "name": "Can I import my Tunnelblick or Viscosity configurations?",
      "acceptedAnswer": {"@type": "Answer", "text": "Tunnelblick .tblk folders and standard .ovpn files (Viscosity exports them) import directly, with the keys and certificates they name."}},
+    {"@type": "Question", "name": "Does MugVPN work on hotel and airport Wi-Fi?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. When a network asks for a sign-in page first, MugVPN offers it from the menu; if its kill switch is blocking the Internet, it lifts the block for two minutes so the page can load. It reconnects the tunnels when the network changes."}},
+    {"@type": "Question", "name": "Can I control MugVPN from scripts?",
+     "acceptedAnswer": {"@type": "Answer", "text": "Yes. MugVPN --command connect, disconnect, reconnect, status and list answer once done, with exit codes and JSON; --wait waits for the connection to come up or go down."}},
     {"@type": "Question", "name": "Is MugVPN free?",
      "acceptedAnswer": {"@type": "Answer", "text": "Yes, it is free and open source under the MIT License."}},
-    {"@type": "Question", "name": "Why is there no download yet?",
-     "acceptedAnswer": {"@type": "Answer", "text": "MugVPN installs a helper that runs as root. Until it is signed with an Apple Developer ID and notarized, it should be built from source."}},
+    {"@type": "Question", "name": "Where do I download MugVPN? Is it signed?",
+     "acceptedAnswer": {"@type": "Answer", "text": "From the latest release on GitHub: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. You can also build it from source."}},
     {"@type": "Question", "name": "Does openvpn run as root in MugVPN?",
      "acceptedAnswer": {"@type": "Answer", "text": "No. Each tunnel's openvpn runs unprivileged; a small helper does what needs root, after checking each request."}}
   ]
@@ -60,8 +64,14 @@
   <details><summary>Is it safe to give a VPN app root? Does openvpn run as root?</summary>
   <p>Something has to be root to create tunnels, routes and DNS — but not openvpn itself. In MugVPN each tunnel's <code>openvpn</code> runs unprivileged, and a small helper does what needs root after checking each request. Profiles are checked before they run.</p></details>
 
-  <details><summary>Why is there no download?</summary>
-  <p>Because MugVPN installs a helper that runs as root, its builds should be signed with an Apple Developer ID and notarized. Until then, build it from source — a few minutes with the Xcode Command Line Tools (see the <a href="./#build">instructions</a>).</p></details>
+  <details><summary>Where do I download it? Is it signed?</summary>
+  <p>From the <a href="https://github.com/tanderbold/MugVPN/releases/latest">latest release</a>: a DMG signed with an Apple Developer ID and notarized by Apple, with its SHA-256 beside it. Open it, drag MugVPN to Applications, and allow its helper when macOS asks on the first connection. You can also <a href="./#build">build it from source</a>.</p></details>
+
+  <details><summary>Does it work on hotel and airport Wi-Fi?</summary>
+  <p>Yes. When a network asks for a sign-in page first, MugVPN offers <b>Sign in to This Network…</b> in its menu; if the kill switch is blocking the Internet, the block is lifted for two minutes so the page can load. When you move to another network, the tunnels reconnect at once.</p></details>
+
+  <details><summary>Can I control it from scripts?</summary>
+  <p>Yes: <code>MugVPN --command connect|disconnect|reconnect|status|list</code> answers once the command is done, with exit codes and JSON output; <code>--wait</code> waits until the connection is up (or down). See the <a href="https://github.com/tanderbold/MugVPN#command-line">README</a>.</p></details>
 
   <details><summary>Which macOS versions and Macs?</summary>
   <p>macOS 13 Ventura or later, on Apple silicon and Intel Macs. The interface is in 22 languages.</p></details>

@@ -46,6 +46,8 @@
     "Persistent connections at boot"
   ],
   "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
+  "softwareVersion": "0.2.0",
+  "downloadUrl": "https://github.com/tanderbold/MugVPN/releases/latest",
   "isAccessibleForFree": true,
   "license": "https://opensource.org/licenses/MIT",
   "url": "https://tanderbold.github.io/MugVPN/",
@@ -76,7 +78,7 @@
     <span>◆ macOS 13+</span>
     <span>◆ 22 languages</span>
   </p>
-  <p class="cta"><a href="https://github.com/tanderbold/MugVPN">Source on GitHub</a><a href="#build">Build it</a><a href="faq.html">FAQ</a></p>
+  <p class="cta"><a href="https://github.com/tanderbold/MugVPN/releases/latest">Download</a><a href="https://github.com/tanderbold/MugVPN">Source on GitHub</a><a href="faq.html">FAQ</a></p>
 
   <div class="shots">
     <figure><img src="screenshots/menu.png" alt="The MugVPN menu with three VPN connections up at once" loading="lazy"><figcaption>Three connections up at once, each in its own submenu</figcaption></figure>
@@ -94,6 +96,8 @@
     <div class="card"><h3>Connections window</h3><p>Create, edit, duplicate and delete connections in a form or as text: servers, certificates, keys, sign-in.</p></div>
     <div class="card"><h3>Easy import</h3><p><code>.ovpn</code> files with their keys, Tunnelblick <code>.tblk</code> folders, profiles from a URL or an OpenVPN Access Server.</p></div>
     <div class="card"><h3>Every way to sign in</h3><p>Passwords (in the Keychain), OTP challenges, web/SSO sign-in, PKCS#12 certificates, HTTP proxies.</p></div>
+    <div class="card"><h3>On the road</h3><p>Reconnects at once after sleep and when the network changes — another Wi-Fi, a new router; hotel and airport sign-in pages are offered from the menu, even while the kill switch blocks.</p></div>
+    <div class="card"><h3>For admins and scripts</h3><p>Persistent connections that start at boot with their own kill switch; a command line with exit codes and JSON; a diagnostics archive without keys or passwords.</p></div>
     <div class="card"><h3>openvpn without root</h3><p>openvpn runs unprivileged; a small helper does what needs root, and checks what it is asked.</p></div>
   </div>
 
@@ -103,7 +107,7 @@
   </div>
 
   <h2 id="build">Get it</h2>
-  <p>There is no signed download yet — MugVPN waits for an Apple Developer ID, and a VPN helper that runs as root should not come from an unsigned download. Building takes a few minutes and needs only the Xcode Command Line Tools:</p>
+  <p>Download the latest <a href="https://github.com/tanderbold/MugVPN/releases/latest">MugVPN DMG</a> — signed with a Developer ID and notarized by Apple — open it and drag MugVPN to Applications. Or build it yourself; that takes a few minutes and needs only the Xcode Command Line Tools:</p>
   <pre><code>git clone https://github.com/tanderbold/MugVPN.git
 cd MugVPN
 tools/build-openvpn.sh             # openvpn 2.7 and its libraries, from pinned sources

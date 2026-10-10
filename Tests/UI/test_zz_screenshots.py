@@ -21,7 +21,7 @@ PROFILES = {
     "Travel (all traffic)": ("remote travel.example.com 443 tcp\nredirect-gateway def1\n", ""),
 }
 LOG = [
-    "OpenVPN 2.7.7 aarch64-apple-darwin [SSL (OpenSSL)] [LZO] [LZ4] [AEAD]",
+    "OpenVPN 2.7.8 aarch64-apple-darwin [SSL (OpenSSL)] [LZO] [LZ4] [MH/RECVDA] [AEAD]",
     "TCP/UDP: Preserving recently used remote address: [AF_INET]203.0.113.10:1194",
     "UDPv4 link remote: [AF_INET]203.0.113.10:1194",
     "VERIFY OK: depth=1, CN=Office VPN CA",

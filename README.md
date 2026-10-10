@@ -73,15 +73,17 @@ macOS 13 Ventura or later, Apple silicon or Intel.
 
 ## Install
 
-There is no signed release yet: MugVPN is waiting for an Apple Developer ID, and a root helper
-from an unsigned build is not something to install from a download. Build it from source (below),
-copy `build/MugVPN.app` to `/Applications` and open it. The first time you connect, macOS asks you to
+Download `MugVPN-<version>.dmg` from the [latest release](https://github.com/tanderbold/MugVPN/releases/latest)
+(signed with a Developer ID and notarized by Apple; its SHA-256 is beside it), open it and drag
+MugVPN to **Applications**, then open it from there. The first time you connect, macOS asks you to
 allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN opens that page for you.
+Install it as an administrator. A newer version replaces the app in the same way; its helper is
+updated once no connection needs it.
 
-The first build makes a code-signing certificate of your own, kept in
-`~/Library/Application Support/MugVPN Build`; MugVPN's helper then works only with an app signed
-with it, so it trusts what runs as your account (the uninstaller leaves that folder; delete it when
-you no longer build MugVPN). Install the build as an administrator.
+Or build it yourself ([Building](#building)): copy `build/MugVPN.app` to `/Applications`. The first
+build makes a code-signing certificate of your own, kept in `~/Library/Application Support/MugVPN Build`;
+MugVPN's helper then works only with an app signed with it, so it trusts what runs as your account
+(the uninstaller leaves that folder; delete it when you no longer build MugVPN).
 
 **Macs with standard users.** Routes and DNS are the whole Mac's, so by default a standard
 (non-administrator) user's connections reach only private networks (10/8, 172.16/12, 192.168/16,

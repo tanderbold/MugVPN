@@ -299,6 +299,8 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
             return take
         }
         window.contentView = container
+        // The list has the keyboard first (arrows pick a connection); the search field when clicked.
+        window.initialFirstResponder = list
         all.translatesAutoresizingMaskIntoConstraints = false
         container.addSubview(all)
         NSLayoutConstraint.activate([
