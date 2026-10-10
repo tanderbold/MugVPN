@@ -154,3 +154,20 @@ def test_ui58_sign_in_offered_while_blocked_even_without_an_answer(app):
     wait_for(lambda: app.call("fake_helper")["suspends"] == [120], 5, "the block lifted for a while")
     # Looked at again once lifted: the network lets everything through, nothing more to offer.
     wait_for(lambda: "Sign in to This Network…" not in [i["title"] for i in app.menu()], 10, "nothing to sign in to")
+
+
+def test_ui72_narrower_routes_one_quiet_line(app):
+    """One VPN routes 10/8, the other subnets inside it: one quiet line in the menu, no notification
+    (found with two real VPNs: a pile of warnings)."""
+    def log(routes):
+        return "".join(f"2026-10-10 05:46:44 MugVPN: route add {r}\n" for r in routes)
+    app.connect("stand-a")
+    app.call("fake_log", profile="stand-a", text=log(["10.0.0.0 255.0.0.0 10.8.0.1", "192.168.0.0 255.255.0.0 10.8.0.1"]))
+    app.connect("stand-b")
+    app.call("fake_log", profile="stand-b", text=log(["10.32.32.0 255.255.240.0 10.9.0.1", "10.40.16.0 255.255.248.0 10.9.0.1",
+                                                      "192.168.192.0 255.255.255.128 10.9.0.1"]))
+    app.feed("stand-b", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
+    wait_for(lambda: any("networks out of" in i["title"] for i in app.menu()), 5, "the line")
+    lines = [i["title"] for i in app.menu() if "networks out of" in i["title"] or "both route" in i["title"]]
+    assert lines == ["ⓘ stand-b takes 3 networks out of stand-a's routes (the more specific route wins)"], lines
+    assert not any("networks out of" in n["text"] for n in app.call("notifications")["items"]), "no notification for it"

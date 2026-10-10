@@ -7,6 +7,7 @@
 "%@ is not a domain name." = "%@ 不是網域名稱。";
 "%@ is not a text file (PEM)." = "%@ 不是文字檔案（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 參照了其檔案夾以外的檔案。要將它們拷貝到描述檔中嗎？VPN 伺服器可能會收到其內容。\n\n%@";
+"%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同時維持多個連線的 OpenVPN 設定檔用戶端。MIT 授權。";
 "A program asked MugVPN to import %@. Import it?" = "某個程式要求 MugVPN 輸入 %@。要輸入嗎？";
 "About MugVPN" = "關於 MugVPN";

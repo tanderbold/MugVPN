@@ -7,6 +7,7 @@
 "%@ is not a domain name." = "%@ ist kein Domainname.";
 "%@ is not a text file (PEM)." = "%@ ist keine Textdatei (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ verweist auf Dateien außerhalb seines Ordners. In das Profil kopieren? Der VPN-Server kann ihren Inhalt erhalten.\n\n%@";
+"%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Ein Client für OpenVPN-Profile, der mehrere Verbindungen gleichzeitig hält. MIT-Lizenz.";
 "A program asked MugVPN to import %@. Import it?" = "Ein Programm bittet MugVPN, %@ zu importieren. Importieren?";
 "About MugVPN" = "Über MugVPN";

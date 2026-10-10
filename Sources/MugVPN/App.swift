@@ -422,7 +422,9 @@ final class AppController: NSObject, NSMenuDelegate {
             let log = logText(c)
             return (c.profile.displayName, OpenVPNLogFacts.parse(log), log)
         })
+        // Narrower routes inside another's are usually meant so: said in the menu, not notified.
         for c in found where !conflictsShown.contains(c) {
+            if case .narrowerRoutes = c { continue }
             services.notify(title: L("MugVPN"), text: conflictText(c))
         }
         conflictsShown = found
@@ -518,6 +520,8 @@ final class AppController: NSObject, NSMenuDelegate {
         switch c {
         case .bothTakeDefaultRoute(let a, let b): return L("%@ and %@ both route all traffic", a, b)
         case .overlappingRoutes(let a, let b, let net): return L("%@ and %@ both route %@", a, b, net)
+        case .narrowerRoutes(let broad, let narrow, let n):
+            return L("%@ takes %@ networks out of %@'s routes (the more specific route wins)", narrow, String(n), broad)
         case .dnsTakenByAnother(let a): return L("%@ could not set its DNS: another tunnel already redirects all DNS", a)
         }
     }
@@ -579,7 +583,9 @@ final class AppController: NSObject, NSMenuDelegate {
     func rebuildMenu() {
         menu.removeAllItems()
         for c in conflictsShown {
-            let i = NSMenuItem(title: "⚠︎ " + conflictText(c), action: nil, keyEquivalent: "")
+            let mark: String
+            if case .narrowerRoutes = c { mark = "ⓘ " } else { mark = "⚠︎ " }
+            let i = NSMenuItem(title: mark + conflictText(c), action: nil, keyEquivalent: "")
             i.isEnabled = false
             menu.addItem(i)
         }

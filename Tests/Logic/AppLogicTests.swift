@@ -321,12 +321,14 @@ func registerAppLogicTests() {
                                        ("c", facts([["-net", "10.91.0.0", "10.81.0.1", "255.255.255.0"]]), "")])
         expectEqual(c, [.bothTakeDefaultRoute("a", "b")])
     }
-    test("NET-02", "overlapping routes") {
+    test("NET-02", "the same network routed by two tunnels: a conflict; a narrower one inside another's: said apart") {
         let a = facts([["-net", "10.91.0.0", "10.81.0.1", "255.255.255.0"]])
         let b = facts([["-net", "10.91.0.128", "10.82.0.1", "255.255.255.128"]])
         let c = facts([["-net", "10.92.0.0", "10.83.0.1", "255.255.255.0"]])
         expectEqual(NetworkConflicts.find([("a", a, ""), ("b", b, ""), ("c", c, "")]),
-                    [.overlappingRoutes("a", "b", "10.91.0.128/25")])
+                    [.narrowerRoutes(broad: "a", narrow: "b", count: 1)])
+        let same = facts([["-net", "10.91.0.0", "10.82.0.1", "255.255.255.0"]])
+        expectEqual(NetworkConflicts.find([("a", a, ""), ("b", same, "")]), [.overlappingRoutes("a", "b", "10.91.0.0/24")])
         let host = facts([["-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]])
         expectEqual(NetworkConflicts.find([("a", host, ""), ("b", host, "")]), [],
                     "the same host route to a shared server is not a conflict")
@@ -381,13 +383,24 @@ func registerAppLogicTests() {
         let b = facts([r6("2001:db8:1::", "48")])
         let c = facts([r6("2001:db9::", "32")])
         expectEqual(NetworkConflicts.find([("a", a, ""), ("b", b, ""), ("c", c, "")]),
-                    [.overlappingRoutes("a", "b", "2001:db8:1::/48")])
+                    [.narrowerRoutes(broad: "a", narrow: "b", count: 1)])
         let all6 = facts([r6("2000::", "4"), r6("3000::", "4"), r6("fc00::", "7")])
         expectEqual(NetworkConflicts.find([("x", all6, ""), ("y", all6, "")]), [.bothTakeDefaultRoute("x", "y")])
         let both = facts(defaultHalves + [r6("::", "1"), r6("8000::", "1")])
         expectEqual(NetworkConflicts.find([("x", both, ""), ("y", both, "")]), [.bothTakeDefaultRoute("x", "y")], "once")
         let host = facts([["-inet6", "2001:db8::7", "-prefixlen", "128", "fe80::1"]])
         expectEqual(NetworkConflicts.find([("a", host, ""), ("b", host, "")]), [], "the same host route to a shared server")
+    }
+    test("NET-09", "one line per pair of connections, however many routes (found with two real VPNs: 26 lines)") {
+        func r(_ net: String, _ mask: String) -> [String] { ["-net", net, "10.8.0.1", mask] }
+        let broad = facts([r("10.0.0.0", "255.0.0.0"), r("192.168.0.0", "255.255.0.0")])
+        let narrow = facts([r("10.32.32.0", "255.255.240.0"), r("10.40.16.0", "255.255.248.0"), r("10.56.60.0", "255.255.255.0"),
+                            r("192.168.192.0", "255.255.255.128"), r("192.168.208.0", "255.255.254.0")])
+        expectEqual(NetworkConflicts.find([("Home", broad, ""), ("Office", narrow, "")]),
+                    [.narrowerRoutes(broad: "Home", narrow: "Office", count: 5)])
+        let dup1 = facts([r("10.1.0.0", "255.255.0.0"), r("10.2.0.0", "255.255.0.0"), r("10.3.0.0", "255.255.0.0"), r("10.4.0.0", "255.255.0.0")])
+        expectEqual(NetworkConflicts.find([("x", dup1, ""), ("y", dup1, "")]),
+                    [.overlappingRoutes("x", "y", "10.1.0.0/16, 10.2.0.0/16, 10.3.0.0/16 (+1)")], "the same networks: one line, a few named")
     }
     test("NET-03", "DNS refused by the script") {
         let log = "2026-10-06 05:46:44 setting DNS failed, already redirecting to another tunnel\n"

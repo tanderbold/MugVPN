@@ -24,6 +24,9 @@
   "key": "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@"
  },
  {
+  "key": "%@ takes %@ networks out of %@'s routes (the more specific route wins)"
+ },
+ {
   "key": "A client for OpenVPN profiles that keeps several connections up at once. MIT License."
  },
  {

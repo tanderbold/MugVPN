@@ -5,7 +5,11 @@ import MugVPNCore
 /// stopped: the user may want it so).
 public enum NetworkConflict: Equatable, Sendable {
     case bothTakeDefaultRoute(String, String)
+    /// Both route the same network (same prefix): which one gets the traffic is not clear.
     case overlappingRoutes(String, String, String)
+    /// The narrow one routes networks inside the broad one's routes: those go to it (the more specific
+    /// route wins), the rest of the broad one's as before. Usually meant so; said once per pair.
+    case narrowerRoutes(broad: String, narrow: String, count: Int)
     /// The DNS script refused: another tunnel already redirects all DNS.
     case dnsTakenByAnother(String)
 }
@@ -25,24 +29,31 @@ public enum NetworkConflicts {
         } else if takesAll6.count >= 2 {
             out.append(.bothTakeDefaultRoute(takesAll6[0], takesAll6[1]))
         }
-        for i in nets6.indices {
-            for j in nets6.indices where j > i {
-                for a in nets6[i].1 where a.prefix > 7 && a.prefix < 128 {
-                    for b in nets6[j].1 where b.prefix > 7 && b.prefix < 128 {
-                        if let o = a.overlap(b) { out.append(.overlappingRoutes(nets6[i].0, nets6[j].0, o.description)) }
-                    }
-                }
-            }
-        }
-        for i in nets.indices {
-            for j in nets.indices where j > i {
-                for a in nets[i].1 where a.prefix > 1 && a.prefix < 32 {
-                    for b in nets[j].1 where b.prefix > 1 && b.prefix < 32 {
-                        if let o = a.overlap(b) {
-                            out.append(.overlappingRoutes(nets[i].0, nets[j].0, o.description))
+        // Per pair of connections, IPv4 and IPv6 together: one line for the same networks, one per
+        // direction for narrower ones (however many routes: two real VPNs gave 26 lines before).
+        for i in tunnels.indices {
+            for j in tunnels.indices where j > i {
+                var same: [String] = [], iInJ = 0, jInI = 0
+                func look<N>(_ x: [N], _ y: [N], overlap: (N, N) -> N?, prefix: (N) -> Int, text: (N) -> String) {
+                    for a in x {
+                        for b in y {
+                            guard let o = overlap(a, b) else { continue }
+                            if prefix(a) == prefix(b) { if !same.contains(text(o)) { same.append(text(o)) } }
+                            else if prefix(a) < prefix(b) { jInI += 1 } else { iInJ += 1 }
                         }
                     }
                 }
+                look(nets[i].1.filter { $0.prefix > 1 && $0.prefix < 32 }, nets[j].1.filter { $0.prefix > 1 && $0.prefix < 32 },
+                     overlap: { $0.overlap($1) }, prefix: \.prefix, text: \.description)
+                look(nets6[i].1.filter { $0.prefix > 7 && $0.prefix < 128 }, nets6[j].1.filter { $0.prefix > 7 && $0.prefix < 128 },
+                     overlap: { $0.overlap($1) }, prefix: \.prefix, text: \.description)
+                let (a, b) = (tunnels[i].0, tunnels[j].0)
+                if !same.isEmpty {
+                    let shown = same.prefix(3).joined(separator: ", ") + (same.count > 3 ? " (+\(same.count - 3))" : "")
+                    out.append(.overlappingRoutes(a, b, shown))
+                }
+                if jInI > 0 { out.append(.narrowerRoutes(broad: a, narrow: b, count: jInI)) }
+                if iInJ > 0 { out.append(.narrowerRoutes(broad: b, narrow: a, count: iInJ)) }
             }
         }
         for t in tunnels where t.2.contains("setting DNS failed, already redirecting") {

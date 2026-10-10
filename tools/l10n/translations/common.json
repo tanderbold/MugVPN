@@ -55,7 +55,8 @@
   "Cut": "Vyjmout",
   "Copy": "Kopírovat",
   "Paste": "Vložit",
-  "Select All": "Vybrat vše"
+  "Select All": "Vybrat vše",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)"
  },
  "de": {
   "OK": "OK",
@@ -113,7 +114,8 @@
   "Cut": "Ausschneiden",
   "Copy": "Kopieren",
   "Paste": "Einsetzen",
-  "Select All": "Alles auswählen"
+  "Select All": "Alles auswählen",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)"
  },
  "da": {
   "OK": "OK",
@@ -171,7 +173,8 @@
   "Cut": "Klip",
   "Copy": "Kopiér",
   "Paste": "Sæt ind",
-  "Select All": "Vælg alt"
+  "Select All": "Vælg alt",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ overtager %@ netværk fra %@s ruter (den mere specifikke rute vinder)"
  },
  "el": {
   "OK": "OK",
@@ -229,7 +232,8 @@
   "Cut": "Αποκοπή",
   "Copy": "Αντιγραφή",
   "Paste": "Επικόλληση",
-  "Select All": "Επιλογή όλων"
+  "Select All": "Επιλογή όλων",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)"
  },
  "es": {
   "OK": "Aceptar",
@@ -287,7 +291,8 @@
   "Cut": "Cortar",
   "Copy": "Copiar",
   "Paste": "Pegar",
-  "Select All": "Seleccionar todo"
+  "Select All": "Seleccionar todo",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ toma %@ redes de las rutas de %@ (gana la ruta más específica)"
  },
  "fa": {
   "OK": "تأیید",
@@ -345,7 +350,8 @@
   "Cut": "برش",
   "Copy": "کپی",
   "Paste": "چسباندن",
-  "Select All": "انتخاب همه"
+  "Select All": "انتخاب همه",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)"
  },
  "fi": {
   "OK": "OK",
@@ -403,7 +409,8 @@
   "Cut": "Leikkaa",
   "Copy": "Kopioi",
   "Paste": "Sijoita",
-  "Select All": "Valitse kaikki"
+  "Select All": "Valitse kaikki",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)"
  },
  "fr": {
   "OK": "OK",
@@ -461,7 +468,8 @@
   "Cut": "Couper",
   "Copy": "Copier",
   "Paste": "Coller",
-  "Select All": "Tout sélectionner"
+  "Select All": "Tout sélectionner",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prend %@ réseaux sur les routes de %@ (la route la plus précise l'emporte)"
  },
  "it": {
   "OK": "OK",
@@ -519,7 +527,8 @@
   "Cut": "Taglia",
   "Copy": "Copia",
   "Paste": "Incolla",
-  "Select All": "Seleziona tutto"
+  "Select All": "Seleziona tutto",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prende %@ reti dalle rotte di %@ (vince la rotta più specifica)"
  },
  "ja": {
   "OK": "OK",
@@ -577,7 +586,8 @@
   "Cut": "カット",
   "Copy": "コピー",
   "Paste": "ペースト",
-  "Select All": "すべてを選択"
+  "Select All": "すべてを選択",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）"
  },
  "ko": {
   "OK": "확인",
@@ -635,7 +645,8 @@
   "Cut": "오려두기",
   "Copy": "복사하기",
   "Paste": "붙여넣기",
-  "Select All": "전체 선택"
+  "Select All": "전체 선택",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)"
  },
  "nl": {
   "OK": "OK",
@@ -693,7 +704,8 @@
   "Cut": "Knip",
   "Copy": "Kopieer",
   "Paste": "Plak",
-  "Select All": "Selecteer alles"
+  "Select All": "Selecteer alles",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)"
  },
  "nb": {
   "OK": "OK",
@@ -751,7 +763,8 @@
   "Cut": "Klipp ut",
   "Copy": "Kopier",
   "Paste": "Lim inn",
-  "Select All": "Merk alt"
+  "Select All": "Merk alt",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar over %@ nettverk fra rutene til %@ (den mer spesifikke ruten vinner)"
  },
  "pl": {
   "OK": "OK",
@@ -809,7 +822,8 @@
   "Cut": "Wytnij",
   "Copy": "Kopiuj",
   "Paste": "Wklej",
-  "Select All": "Zaznacz wszystko"
+  "Select All": "Zaznacz wszystko",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ przejmuje %@ sieci z tras %@ (wygrywa bardziej szczegółowa trasa)"
  },
  "pt-BR": {
   "OK": "OK",
@@ -867,7 +881,8 @@
   "Cut": "Recortar",
   "Copy": "Copiar",
   "Paste": "Colar",
-  "Select All": "Selecionar Tudo"
+  "Select All": "Selecionar Tudo",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ assume %@ redes das rotas de %@ (a rota mais específica vence)"
  },
  "ru": {
   "OK": "ОК",
@@ -925,7 +940,8 @@
   "Cut": "Вырезать",
   "Copy": "Копировать",
   "Paste": "Вставить",
-  "Select All": "Выбрать все"
+  "Select All": "Выбрать все",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирает %@ сетей из маршрутов %@ (побеждает более узкий маршрут)"
  },
  "sv": {
   "OK": "OK",
@@ -983,7 +999,8 @@
   "Cut": "Klipp ut",
   "Copy": "Kopiera",
   "Paste": "Klistra in",
-  "Select All": "Markera allt"
+  "Select All": "Markera allt",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)"
  },
  "tr": {
   "OK": "Tamam",
@@ -1041,7 +1058,8 @@
   "Cut": "Kes",
   "Copy": "Kopyala",
   "Paste": "Yapıştır",
-  "Select All": "Tümünü Seç"
+  "Select All": "Tümünü Seç",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)"
  },
  "uk": {
   "OK": "OK",
@@ -1099,7 +1117,8 @@
   "Cut": "Вирізати",
   "Copy": "Копіювати",
   "Paste": "Вставити",
-  "Select All": "Вибрати все"
+  "Select All": "Вибрати все",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)"
  },
  "zh-Hans": {
   "OK": "好",
@@ -1157,7 +1176,8 @@
   "Cut": "剪切",
   "Copy": "拷贝",
   "Paste": "粘贴",
-  "Select All": "全选"
+  "Select All": "全选",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1215,6 +1235,7 @@
   "Cut": "剪下",
   "Copy": "拷貝",
   "Paste": "貼上",
-  "Select All": "全選"
+  "Select All": "全選",
+  "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）"
  }
 }
