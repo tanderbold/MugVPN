@@ -1,8 +1,10 @@
 name: Release
 
-# A tag v* builds, signs (Developer ID), notarizes and staples the DMG and puts it, with its
-# SHA-256, in a draft release to be checked and published by hand. Without the signing secrets
-# it stops at once: an ad-hoc build is never packaged (tools/make-dmg.sh refuses it too).
+# A tag v* builds, signs (Developer ID), notarizes and staples the DMG and publishes it, with
+# its SHA-256, as a release with generated notes (edit them after if they deserve better). A tag
+# whose release already exists is left alone: a re-pushed tag must not replace assets whose
+# SHA-256 the Homebrew cask pins. Without the signing secrets it stops at once: an ad-hoc build
+# is never packaged (tools/make-dmg.sh refuses it too).
 on:
   push:
     tags: ["v*"]
@@ -59,10 +61,15 @@ jobs:
           echo "$NOTARY" | base64 --decode > "$MUGVPN_NOTARY_KEY"
           tools/notarize.sh
           rm -f "$MUGVPN_NOTARY_KEY"
-      - name: Draft release
+      - name: Publish release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 --draft --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+        run: |
+          if gh release view "$GITHUB_REF_NAME" --repo "$GITHUB_REPOSITORY" >/dev/null 2>&1; then
+            echo "release $GITHUB_REF_NAME already exists; not touching its assets"
+          else
+            gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+          fi
       - name: Keychain away
         if: always()
         run: security delete-keychain "$RUNNER_TEMP/release.keychain-db" 2>/dev/null || true
