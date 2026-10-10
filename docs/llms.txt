@@ -24,6 +24,6 @@
 ## Links
 - Source and README: https://github.com/tanderbold/MugVPN (raw: https://raw.githubusercontent.com/tanderbold/MugVPN/main/README.md)
 - FAQ: https://tanderbold.github.io/MugVPN/faq.html
-- Current version: 0.2.2. Install: `brew install --cask tanderbold/tap/mugvpn`, or the DMG from https://github.com/tanderbold/MugVPN/releases/latest (signed with a Developer ID and notarized)
+- Current version: 0.2.3. Install: `brew install --cask tanderbold/tap/mugvpn`, or the DMG from https://github.com/tanderbold/MugVPN/releases/latest (signed with a Developer ID and notarized)
 - Build: tools/build-openvpn.sh then MUGVPN_ARCH=native tools/build.sh
 - License: MIT. "OpenVPN" is a trademark of OpenVPN Inc.; MugVPN is not affiliated with it.
