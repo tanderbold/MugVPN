@@ -4,11 +4,13 @@
 
 <p align="center"><b>A free macOS menu-bar client for OpenVPN profiles that keeps several VPN connections up at the same time.</b></p>
 
-[![Build](https://img.shields.io/github/actions/workflow/status/tanderbold/MugVPN/macos.yml?branch=main&label=build)](https://github.com/tanderbold/MugVPN/actions/workflows/macos.yml)
 [![Release](https://img.shields.io/github/v/release/tanderbold/MugVPN?label=release)](https://github.com/tanderbold/MugVPN/releases/latest)
+[![Downloads](https://img.shields.io/github/downloads/tanderbold/MugVPN/total?label=downloads)](https://github.com/tanderbold/MugVPN/releases)
+[![Build](https://img.shields.io/github/actions/workflow/status/tanderbold/MugVPN/macos.yml?branch=main&label=build)](https://github.com/tanderbold/MugVPN/actions/workflows/macos.yml)
 [![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
 [![macOS 13+](https://img.shields.io/badge/macOS-13%2B-blue)](#requirements)
 [![Apple silicon and Intel](https://img.shields.io/badge/Apple%20silicon-%2B%20Intel-blue)](#requirements)
+[![Homebrew](https://img.shields.io/badge/Homebrew-tanderbold%2Ftap-orange)](https://github.com/tanderbold/homebrew-tap)
 [![openvpn 2.7](https://img.shields.io/badge/openvpn-2.7-orange)](#how-it-works)
 [![22 languages](https://img.shields.io/badge/languages-22-green)](#what-you-get)
 [![Swift](https://img.shields.io/badge/Swift-AppKit-F05138)](Sources)
