@@ -11,6 +11,16 @@ private func psBundle(kill: Bool = false) -> Data {
     return try! JSONEncoder().encode(b)
 }
 
+private func dnsUp(_ sys: FakeSystem, _ h: HelperCore, _ dev: String, _ net: String, _ vars: [String], dnsUp: Bool = true) throws -> String {
+    let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+    sys.utunName = dev
+    _ = try h.tunnelRequest(id: id, uid: 501, kind: "OPENTUN", message: "tun")
+    _ = try h.tunnelRequest(id: id, uid: 501, kind: "IFCONFIG", message: "\(net).2 255.255.255.0 1500 subnet")
+    for v in vars { _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSVAR", message: v) }
+    if dnsUp { _ = try? h.tunnelRequest(id: id, uid: 501, kind: "DNSUP", message: dev) }
+    return id
+}
+
 func registerPrivsepHelperTests() {
     test("PS-01", "openvpn runs as the unprivileged service user, not root") {
         let sys = FakeSystem()
@@ -816,6 +826,254 @@ func registerPrivsepHelperTests() {
         let before = sys.dnsSet.count
         expectThrows("taken", matching: "already another tunnel's") { _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6") }
         expectEqual(sys.dnsSet.count, before, "nothing set")
+    }
+    test("PS-53", "the server's DNS for the domains its user lists (none pushed): split on those") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.dnsDomains = ["cprserv.lan"]
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSVAR", message: "dns_server_1_address_1=10.40.22.1")
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSUP", message: "utun5")
+        let p = sys.dnsSet.last
+        expect(p?.split == true && p?.matchDomains == ["cprserv.lan"] && p?.servers == ["10.40.22.1"], "\(String(describing: p))")
+    }
+    test("PS-54", "who has DNS for all names is worked out again when its owner lets go (not by who came first)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        func up(_ dev: String, _ net: String, _ vars: [String]) throws -> String {
+            let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+            sys.utunName = dev
+            _ = try h.tunnelRequest(id: id, uid: 501, kind: "OPENTUN", message: "tun")
+            _ = try h.tunnelRequest(id: id, uid: 501, kind: "IFCONFIG", message: "\(net).2 255.255.255.0 1500 subnet")
+            for v in vars { _ = try h.tunnelRequest(id: id, uid: 501, kind: "DNSVAR", message: v) }
+            return id
+        }
+        let a = try up("utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        let b = try up("utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53", "dns_search_domain_1=corp.lan"])
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6")
+        let c = try up("utun7", "10.10.0", ["dns_server_1_address_1=10.10.0.53"])
+        expectThrows("waits", matching: "already another tunnel's") { _ = try h.tunnelRequest(id: c, uid: 501, kind: "DNSUP", message: "utun7") }
+        let states = { Dictionary(uniqueKeysWithValues: h.list(uid: 501).map { ($0.id, $0.dns ?? "-") }) }
+        expectEqual(states(), [a: "all", b: "limited", c: "waiting"])
+        // The owner lets go: the one asking longest gets all names (b, limited to its domains till now).
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(sys.dnsSet.last?.device, "utun6")
+        expectEqual(sys.dnsSet.last?.split, false, "all names now")
+        expect(sys.dnsRestored.contains("utun6"), "its split DNS taken off first")
+        expectEqual(states()[b], "all")
+        expectEqual(states()[c], "waiting")
+        // b ends: c, which got nothing, gets all names.
+        sys.launched[1].process.onExit(.exited(0))
+        expectEqual(sys.dnsSet.last?.device, "utun7")
+        expectEqual(states()[c], "all")
+    }
+    test("PS-55", "a DNS domain that is not a name: refused before openvpn is started (none left behind)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.dnsDomains = ["bad domain; rm -rf /"]
+        expectThrows("bad", matching: "domain") { _ = try h.start(bundle: try JSONEncoder().encode(b), uid: 501) }
+        expect(sys.launched.isEmpty, "no openvpn")
+        expect(h.isEmpty)
+    }
+    test("PS-66", "too many domains for the server's DNS: said as such (not as names that are not domains)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.dnsDomains = (1...33).map { "d\($0).example.com" }
+        expectThrows("33", matching: "at most 32") { _ = try h.start(bundle: try JSONEncoder().encode(b), uid: 501) }
+        expect(sys.launched.isEmpty)
+    }
+    test("PS-56", "the owner of all names reconnects (a new utun) and ends before its DNS: the next gets all names") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting")
+        sys.utunName = "utun7"
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "OPENTUN", message: "tun")   // a reconnect: its DNS goes
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all", "not left waiting for a DNSUP that may not come")
+        sys.launched[0].process.onExit(.exited(1))
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all")
+    }
+    test("PS-57", "handing all names on: the record first, the system after; a refusal of either leaves things as they were") {
+        // setDNS refused: the split DNS it had stays (put back), still limited.
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53", "dns_search_domain_1=corp.lan"])
+        sys.failAllNamesDNS = true
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "limited", "still its domains")
+        expectEqual(sys.dnsSet.last?.searchDomains, ["corp.lan"], "put back whole")
+        sys.failAllNamesDNS = false
+        let saved = String(decoding: sys.files["/L/run/\(b)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("corp.lan"), "the record says its split DNS: \(saved)")
+        // The record cannot be written: nothing changed on the system.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        let a2 = try dnsUp(s2, h2, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b2 = try dnsUp(s2, h2, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        s2.failWrites = ["/L/run/\(b2)/state.json"]
+        let setBefore = s2.dnsSet.count
+        s2.clock += 5
+        _ = try h2.tunnelRequest(id: a2, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(s2.dnsSet.count, setBefore, "no DNS set without its record")
+        expectEqual(h2.list(uid: 501).first { $0.id == b2 }?.dns, "waiting")
+    }
+    test("PS-57b", "handing all names on refused and its split DNS cannot be put back: not claimed as set") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53", "dns_search_domain_1=corp.lan"])
+        sys.failDNSFor = ["utun6"]
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting", "its DNS is off")
+    }
+    test("PS-58", "all names handed on only once the owner's own change is recorded: one owner at most") {
+        for kind in ["DNSDOWN", "OPENTUN"] {
+            let sys = FakeSystem()
+            let h = makeHelper(sys)
+            let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+            let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+            sys.failNthWrite = 1       // the owner's record of its own change fails (its rollback is recorded)
+            sys.utunName = "utun7"
+            sys.clock += 5
+            expectThrows(kind) { _ = try h.tunnelRequest(id: a, uid: 501, kind: kind, message: kind == "DNSDOWN" ? "utun5" : "tun") }
+            let owners = h.list(uid: 501).filter { $0.dns == "all" }.map(\.id)
+            expect(owners.count <= 1, "\(kind): \(owners)")
+            expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting", "\(kind): not handed on")
+            let last = sys.dnsSet.last
+            expect(last?.device == "utun5" && last?.split == false, "\(kind): the owner's DNS set again with its record: \(String(describing: last))")
+            sys.failWrites = []
+        }
+    }
+    test("PS-59", "a rolled-back DNS change puts back the whole plan it had; a refusal of that is not claimed as set") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        sys.failNthWrite = 1
+        sys.clock += 5
+        expectThrows("DNSDOWN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5") }
+        expectEqual(sys.dnsSet.last?.searchDomains, ["corp.lan"], "its search domains too")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+        // Putting it back refused: not shown as set.
+        sys.failDNSFor = ["utun5"]
+        sys.failNthWrite = 1
+        sys.clock += 5
+        expectThrows("DNSDOWN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5") }
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, nil, "no DNS claimed")
+    }
+    test("PS-60", "a DNS change that only moves its search domains, not recorded: the old plan back, on the Mac and as last set") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=a.lan"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_search_domain_1=b.lan")
+        sys.clock += 5
+        sys.failNthWrite = 2   // the record ahead is written, the final one is not
+        expectThrows("DNSUP") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5") }
+        expectEqual(sys.dnsSet.last?.searchDomains, ["a.lan"], "the Mac back on the old plan")
+        // What a later rollback puts back is the old plan too.
+        sys.clock += 5
+        sys.failNthWrite = 1
+        expectThrows("DNSDOWN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5") }
+        expectEqual(sys.dnsSet.last?.searchDomains, ["a.lan"])
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+    }
+    test("PS-61", "a rollback that cannot be recorded: the connection is undone and stopped (not left with a wrong record)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+        sys.failAfterWrites = 1   // the record ahead only: the final write and the rollback's fail
+        expectThrows("ROUTE") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "10.30.0.0 255.255.0.0 10.8.0.1") }
+        sys.failAfterWrites = nil
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "stopped")
+        expect(!sys.routeTable.contains { $0.contains("10.20.0.0") || $0.contains("10.30.0.0") }, "and undone")
+    }
+    test("PS-62", "DNS set again in another mode: the old one is taken off first (all names to split frees them)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.lan")
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        expectEqual(sys.splitResolvers["utun5"]?.matchDomains, ["corp.lan"])
+        expectEqual(sys.allNames["utun5"], nil, "the primary's DNS no longer a's")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "split")
+        expectEqual(sys.allNames["utun6"]?.servers, ["10.9.0.53"], "all names to the one waiting")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all")
+    }
+    test("PS-62b", "DNS set again refused: the old one back on, as it was") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.lan")
+        sys.clock += 5
+        // Split refused, all names still accepted: the old plan goes back.
+        let old = sys.allNames["utun5"]
+        sys.failSplitDNS = true
+        expectThrows("DNSUP") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5") }
+        expectEqual(sys.allNames["utun5"], old)
+        expectEqual(sys.splitResolvers["utun5"], nil)
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+    }
+    test("PS-63", "all names handed on only to a plan that still passes the checks (its DNS server still inside its tunnel)") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayChangeDNS": true}"#.utf8), mode: 0o644)
+        sys.systemDNS = ["192.168.64.1"]
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        sys.utunName = "utun6"
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "10.99.0.0 255.255.0.0 10.9.0.1")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.99.0.53")
+        _ = try? h.tunnelRequest(id: b, uid: 502, kind: "DNSUP", message: "utun6")
+        expectEqual(h.list(uid: 502).first { $0.id == b }?.dns, "waiting")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTEDEL", message: "10.99.0.0 255.255.0.0 10.9.0.1")
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(sys.allNames["utun6"], nil, "its DNS server is no longer inside its tunnel")
+        expect(h.list(uid: 502).first { $0.id == b }?.dns != "all")
+    }
+    test("PS-64", "a DNS change rolled back takes its place in the queue for all names back too") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53", "dns_search_domain_1=corp.lan"], dnsUp: false)
+        sys.failNthWrite = 2   // its record ahead written, the final one not
+        expectThrows("DNSUP") { _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6") }
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(sys.allNames["utun6"], nil, "not given all names for a request that failed")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, nil)
+    }
+    test("PS-65", "DNS that cannot be taken off: not claimed off, all names not handed on") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        sys.clock += 5
+        expectThrows("DNSDOWN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5") }
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting")
+        // A reconnect (a new utun) likewise.
+        sys.utunName = "utun7"
+        expectThrows("OPENTUN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "OPENTUN", message: "tun") }
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting")
+        expectEqual(sys.allNames["utun5"]?.servers, ["10.8.0.53"])
     }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()

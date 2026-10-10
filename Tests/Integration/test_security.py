@@ -3,7 +3,7 @@ import shlex
 
 import pytest
 
-from conftest import APP, CLI, wait_for
+from conftest import APP, CLI, PROFILES, wait_for
 
 FORBIDDEN = ["up /bin/sh", "down /bin/sh", "route-up /bin/sh", "tls-verify /bin/sh", "plugin /tmp/x.so",
              "script-security 2", "log /etc/evil", "status /tmp/x", "writepid /tmp/x", "cd /", "chroot /",
@@ -239,3 +239,17 @@ def test_int44_signature_holds_for_everyone(vpn, mac, second_user):
         assert r.returncode == 0, who + r.stdout + r.stderr
     for who in ("", f"sudo -u {second_user} "):
         assert "helper version" in mac.out(f"{who}{CLI} status --xpc"), who
+
+
+def test_int48_administrator_in_many_groups(vpn, mac):
+    """an administrator in more groups than a short list holds is still one: all traffic allowed."""
+    if mac.run("id tester3").returncode != 0:
+        mac.run('sudo sysadminctl -addUser tester3 -password "$(uuidgen)" -home /Users/tester3 -admin', check=True)
+    mac.run("for i in $(seq 1 80); do dseditgroup -o read mvg$i >/dev/null 2>&1 || sudo dseditgroup -o create mvg$i; "
+            "sudo dseditgroup -o edit -a tester3 -t user mvg$i; done", timeout=600, check=True)
+    assert int(mac.out("id -G tester3 | wc -w").strip()) > 64
+    mac.run(f"cp {PROFILES}/stand-d.ovpn /tmp/stand-d.ovpn && chmod 644 /tmp/stand-d.ovpn", check=True)
+    r, cid = vpn.connect("/tmp/stand-d.ovpn", as_user="tester3")
+    assert r.returncode == 0 and "connected, ip" in r.stdout, r.stdout + r.stderr
+    vpn.cli(f"disconnect {cid}", as_user="tester3")
+    wait_for(lambda: not vpn.list(), 30, "the connection to end")

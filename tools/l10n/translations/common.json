@@ -57,7 +57,15 @@
   "Paste": "Vložit",
   "Select All": "Vybrat vše",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl nastavit svůj DNS: jiné připojení už převzalo všechna jména. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl nastavit svůj DNS: jiné připojení už převzalo všechna jména. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS nenastaven, všechna jména převzalo jiné připojení",
+  "Open Connection Settings": "Otevřít nastavení připojení",
+  "Copy Details": "Kopírovat podrobnosti",
+  "Close": "Zavřít",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS jen pro vlastní domény, všechna jména převzalo jiné připojení",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "spuštěná pomocná služba je starší a domény pro DNS serveru by ignorovala: připojte se znovu, až se aktualizuje",
+  "At most %d domains for the server's DNS.": "Nejvýše %d domén pro DNS serveru.",
+  "empty: as the server sends it": "prázdné: jak to posílá server"
  },
  "de": {
   "OK": "OK",
@@ -117,7 +125,15 @@
   "Paste": "Einsetzen",
   "Select All": "Alles auswählen",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht setzen: Eine andere Verbindung übernimmt bereits alle Namen. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht setzen: Eine andere Verbindung übernimmt bereits alle Namen. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS nicht gesetzt, eine andere Verbindung übernimmt alle Namen",
+  "Open Connection Settings": "Verbindungseinstellungen öffnen",
+  "Copy Details": "Details kopieren",
+  "Close": "Schließen",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS nur für eigene Domains, eine andere Verbindung übernimmt alle Namen",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "der laufende Helfer ist älter und würde die Domains für den DNS des Servers ignorieren: erneut verbinden, sobald er aktualisiert ist",
+  "At most %d domains for the server's DNS.": "Höchstens %d Domains für den DNS des Servers.",
+  "empty: as the server sends it": "leer: wie der Server es sendet"
  },
  "da": {
   "OK": "OK",
@@ -177,7 +193,15 @@
   "Paste": "Sæt ind",
   "Select All": "Vælg alt",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ overtager %@ netværk fra %@s ruter (den mere specifikke rute vinder)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sætte sin DNS: en anden forbindelse tager allerede alle navne. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sætte sin DNS: en anden forbindelse tager allerede alle navne. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS ikke sat, en anden forbindelse tager alle navne",
+  "Open Connection Settings": "Åbn forbindelsesindstillinger",
+  "Copy Details": "Kopiér detaljer",
+  "Close": "Luk",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS kun for egne domæner, en anden forbindelse tager alle navne",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "den kørende hjælper er ældre og ville ignorere domænerne til serverens DNS: forbind igen, når den er opdateret",
+  "At most %d domains for the server's DNS.": "Højst %d domæner til serverens DNS.",
+  "empty: as the server sends it": "tom: som serveren sender det"
  },
  "el": {
   "OK": "OK",
@@ -237,7 +261,15 @@
   "Paste": "Επικόλληση",
   "Select All": "Επιλογή όλων",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να ορίσει το DNS του: μια άλλη σύνδεση παίρνει ήδη όλα τα ονόματα. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να ορίσει το DNS του: μια άλλη σύνδεση παίρνει ήδη όλα τα ονόματα. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).",
+  "%@: DNS not set, another connection takes all names": "%@: Το DNS δεν ορίστηκε, άλλη σύνδεση παίρνει όλα τα ονόματα",
+  "Open Connection Settings": "Άνοιγμα ρυθμίσεων σύνδεσης",
+  "Copy Details": "Αντιγραφή λεπτομερειών",
+  "Close": "Κλείσιμο",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS μόνο για τους δικούς του τομείς, άλλη σύνδεση παίρνει όλα τα ονόματα",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "η βοηθητική υπηρεσία που εκτελείται είναι παλαιότερη και θα αγνοούσε τους τομείς για το DNS του διακομιστή: συνδεθείτε ξανά μόλις ενημερωθεί",
+  "At most %d domains for the server's DNS.": "Το πολύ %d τομείς για το DNS του διακομιστή.",
+  "empty: as the server sends it": "κενό: όπως το στέλνει ο διακομιστής"
  },
  "es": {
   "OK": "Aceptar",
@@ -297,7 +329,15 @@
   "Paste": "Pegar",
   "Select All": "Seleccionar todo",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ toma %@ redes de las rutas de %@ (gana la ruta más específica)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo establecer su DNS: otra conexión ya toma todos los nombres. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo establecer su DNS: otra conexión ya toma todos los nombres. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS no establecido, otra conexión toma todos los nombres",
+  "Open Connection Settings": "Abrir ajustes de la conexión",
+  "Copy Details": "Copiar detalles",
+  "Close": "Cerrar",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS solo para sus dominios, otra conexión toma todos los nombres",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "el asistente en ejecución es más antiguo e ignoraría los dominios para el DNS del servidor: vuelva a conectar cuando se haya actualizado",
+  "At most %d domains for the server's DNS.": "Como máximo %d dominios para el DNS del servidor.",
+  "empty: as the server sends it": "vacío: como lo envía el servidor"
  },
  "fa": {
   "OK": "تأیید",
@@ -357,7 +397,15 @@
   "Paste": "چسباندن",
   "Select All": "انتخاب همه",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست DNS خود را تنظیم کند: اتصال دیگری از قبل همهٔ نام‌ها را گرفته است. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست DNS خود را تنظیم کند: اتصال دیگری از قبل همهٔ نام‌ها را گرفته است. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS تنظیم نشد، اتصال دیگری همهٔ نام‌ها را گرفته است",
+  "Open Connection Settings": "باز کردن تنظیمات اتصال",
+  "Copy Details": "کپی جزئیات",
+  "Close": "بستن",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS فقط برای دامنه‌های خودش، اتصال دیگری همهٔ نام‌ها را گرفته است",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "سرویس کمکی در حال اجرا قدیمی‌تر است و دامنه‌های DNS سرور را نادیده می‌گیرد: پس از به‌روزرسانی آن دوباره وصل شوید",
+  "At most %d domains for the server's DNS.": "حداکثر %d دامنه برای DNS سرور.",
+  "empty: as the server sends it": "خالی: همان‌طور که سرور می‌فرستد"
  },
  "fi": {
   "OK": "OK",
@@ -417,7 +465,15 @@
   "Paste": "Sijoita",
   "Select All": "Valitse kaikki",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut asettaa DNS:äänsä: toinen yhteys ottaa jo kaikki nimet. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut asettaa DNS:äänsä: toinen yhteys ottaa jo kaikki nimet. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS:ää ei asetettu, toinen yhteys ottaa kaikki nimet",
+  "Open Connection Settings": "Avaa yhteyden asetukset",
+  "Copy Details": "Kopioi tiedot",
+  "Close": "Sulje",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS vain omille verkkotunnuksille, toinen yhteys ottaa kaikki nimet",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "käynnissä oleva apupalvelu on vanhempi ja ohittaisi palvelimen DNS:n verkkotunnukset: yhdistä uudelleen, kun se on päivittynyt",
+  "At most %d domains for the server's DNS.": "Enintään %d verkkotunnusta palvelimen DNS:lle.",
+  "empty: as the server sends it": "tyhjä: kuten palvelin sen lähettää"
  },
  "fr": {
   "OK": "OK",
@@ -477,7 +533,15 @@
   "Paste": "Coller",
   "Select All": "Tout sélectionner",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prend %@ réseaux sur les routes de %@ (la route la plus précise l'emporte)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu définir son DNS : une autre connexion prend déjà tous les noms. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu définir son DNS : une autre connexion prend déjà tous les noms. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines).",
+  "%@: DNS not set, another connection takes all names": "%@ : DNS non défini, une autre connexion prend tous les noms",
+  "Open Connection Settings": "Ouvrir les réglages de la connexion",
+  "Copy Details": "Copier les détails",
+  "Close": "Fermer",
+  "%@: DNS for its own domains only, another connection takes all names": "%@ : DNS seulement pour ses domaines, une autre connexion prend tous les noms",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "l’assistant en cours d’exécution est plus ancien et ignorerait les domaines pour le DNS du serveur : reconnectez-vous une fois qu’il sera mis à jour",
+  "At most %d domains for the server's DNS.": "Au plus %d domaines pour le DNS du serveur.",
+  "empty: as the server sends it": "vide : tel que le serveur l’envoie"
  },
  "it": {
   "OK": "OK",
@@ -537,7 +601,15 @@
   "Paste": "Incolla",
   "Select All": "Seleziona tutto",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ prende %@ reti dalle rotte di %@ (vince la rotta più specifica)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto impostare il suo DNS: un'altra connessione prende già tutti i nomi. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto impostare il suo DNS: un'altra connessione prende già tutti i nomi. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS non impostato, un'altra connessione prende tutti i nomi",
+  "Open Connection Settings": "Apri impostazioni connessione",
+  "Copy Details": "Copia dettagli",
+  "Close": "Chiudi",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS solo per i suoi domini, un'altra connessione prende tutti i nomi",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "l’helper in esecuzione è più vecchio e ignorerebbe i domini per il DNS del server: riconnettiti quando sarà aggiornato",
+  "At most %d domains for the server's DNS.": "Al massimo %d domini per il DNS del server.",
+  "empty: as the server sends it": "vuoto: come lo invia il server"
  },
  "ja": {
   "OK": "OK",
@@ -597,7 +669,15 @@
   "Paste": "ペースト",
   "Select All": "すべてを選択",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を設定できませんでした: 別の接続がすでにすべての名前を引き受けています。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。"
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を設定できませんでした: 別の接続がすでにすべての名前を引き受けています。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。",
+  "%@: DNS not set, another connection takes all names": "%@: DNS は未設定、別の接続がすべての名前を引き受けています",
+  "Open Connection Settings": "接続の設定を開く",
+  "Copy Details": "詳細をコピー",
+  "Close": "閉じる",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS は自身のドメインのみ、別の接続がすべての名前を引き受けています",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "実行中のヘルパーは古く、サーバーの DNS 用ドメインを無視します。更新後にもう一度接続してください",
+  "At most %d domains for the server's DNS.": "サーバーの DNS 用ドメインは最大 %d 個です。",
+  "empty: as the server sends it": "空欄: サーバーが送るとおり"
  },
  "ko": {
   "OK": "확인",
@@ -657,7 +737,15 @@
   "Paste": "붙여넣기",
   "Select All": "전체 선택",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 설정할 수 없습니다: 다른 연결이 이미 모든 이름을 담당합니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 설정할 수 없습니다: 다른 연결이 이미 모든 이름을 담당합니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.",
+  "%@: DNS not set, another connection takes all names": "%@: DNS가 설정되지 않음, 다른 연결이 모든 이름을 담당",
+  "Open Connection Settings": "연결 설정 열기",
+  "Copy Details": "세부사항 복사",
+  "Close": "닫기",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: 자체 도메인에만 DNS 적용, 다른 연결이 모든 이름을 담당",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "실행 중인 도우미가 오래되어 서버 DNS용 도메인을 무시합니다. 업데이트된 후 다시 연결하세요",
+  "At most %d domains for the server's DNS.": "서버 DNS용 도메인은 최대 %d개입니다.",
+  "empty: as the server sends it": "비워 두면: 서버가 보내는 대로"
  },
  "nl": {
   "OK": "OK",
@@ -717,7 +805,15 @@
   "Paste": "Plak",
   "Select All": "Selecteer alles",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet instellen: een andere verbinding neemt al alle namen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet instellen: een andere verbinding neemt al alle namen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS niet ingesteld, een andere verbinding neemt alle namen",
+  "Open Connection Settings": "Open verbindingsinstellingen",
+  "Copy Details": "Kopieer details",
+  "Close": "Sluit",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS alleen voor eigen domeinen, een andere verbinding neemt alle namen",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "de actieve helper is ouder en zou de domeinen voor de DNS van de server negeren: maak opnieuw verbinding zodra hij is bijgewerkt",
+  "At most %d domains for the server's DNS.": "Hoogstens %d domeinen voor de DNS van de server.",
+  "empty: as the server sends it": "leeg: zoals de server het stuurt"
  },
  "nb": {
   "OK": "OK",
@@ -777,7 +873,15 @@
   "Paste": "Lim inn",
   "Select All": "Merk alt",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar over %@ nettverk fra rutene til %@ (den mer spesifikke ruten vinner)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sette sin DNS: en annen tilkobling tar allerede alle navn. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke sette sin DNS: en annen tilkobling tar allerede alle navn. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS ikke satt, en annen tilkobling tar alle navn",
+  "Open Connection Settings": "Åpne tilkoblingsinnstillinger",
+  "Copy Details": "Kopier detaljer",
+  "Close": "Lukk",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS bare for egne domener, en annen tilkobling tar alle navn",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "den kjørende hjelperen er eldre og ville ignorert domenene for serverens DNS: koble til igjen når den er oppdatert",
+  "At most %d domains for the server's DNS.": "Høyst %d domener for serverens DNS.",
+  "empty: as the server sends it": "tom: slik serveren sender det"
  },
  "pl": {
   "OK": "OK",
@@ -837,7 +941,15 @@
   "Paste": "Wklej",
   "Select All": "Zaznacz wszystko",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ przejmuje %@ sieci z tras %@ (wygrywa bardziej szczegółowa trasa)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł ustawić swojego DNS: inne połączenie już przejmuje wszystkie nazwy. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł ustawić swojego DNS: inne połączenie już przejmuje wszystkie nazwy. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS nie ustawiony, inne połączenie przejmuje wszystkie nazwy",
+  "Open Connection Settings": "Otwórz ustawienia połączenia",
+  "Copy Details": "Kopiuj szczegóły",
+  "Close": "Zamknij",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS tylko dla własnych domen, inne połączenie przejmuje wszystkie nazwy",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "działająca usługa pomocnicza jest starsza i zignorowałaby domeny dla DNS serwera: połącz ponownie po jej aktualizacji",
+  "At most %d domains for the server's DNS.": "Najwyżej %d domen dla DNS serwera.",
+  "empty: as the server sends it": "puste: tak, jak wysyła serwer"
  },
  "pt-BR": {
   "OK": "OK",
@@ -897,7 +1009,15 @@
   "Paste": "Colar",
   "Select All": "Selecionar Tudo",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ assume %@ redes das rotas de %@ (a rota mais específica vence)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde definir seu DNS: outra conexão já assume todos os nomes. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde definir seu DNS: outra conexão já assume todos os nomes. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS não definido, outra conexão assume todos os nomes",
+  "Open Connection Settings": "Abrir Ajustes da Conexão",
+  "Copy Details": "Copiar Detalhes",
+  "Close": "Fechar",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS só para seus domínios, outra conexão assume todos os nomes",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "o auxiliar em execução é mais antigo e ignoraria os domínios para o DNS do servidor: conecte novamente quando ele for atualizado",
+  "At most %d domains for the server's DNS.": "No máximo %d domínios para o DNS do servidor.",
+  "empty: as the server sends it": "vazio: como o servidor envia"
  },
  "ru": {
   "OK": "ОК",
@@ -957,7 +1077,15 @@
   "Paste": "Вставить",
   "Select All": "Выбрать все",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирает %@ сетей из маршрутов %@ (побеждает более узкий маршрут)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог поставить свой DNS: все имена уже взяло другое подключение. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог поставить свой DNS: все имена уже взяло другое подключение. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS не установлен, все имена у другого подключения",
+  "Open Connection Settings": "Открыть параметры подключения",
+  "Copy Details": "Скопировать подробности",
+  "Close": "Закрыть",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS только для своих доменов, все имена у другого подключения",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "запущенный помощник старее и проигнорирует домены для DNS сервера: подключитесь снова, когда он обновится",
+  "At most %d domains for the server's DNS.": "Не более %d доменов для DNS сервера.",
+  "empty: as the server sends it": "пусто: как присылает сервер"
  },
  "sv": {
   "OK": "OK",
@@ -1017,7 +1145,15 @@
   "Paste": "Klistra in",
   "Select All": "Markera allt",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte ställa in sin DNS: en annan anslutning tar redan alla namn. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte ställa in sin DNS: en annan anslutning tar redan alla namn. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS inte inställd, en annan anslutning tar alla namn",
+  "Open Connection Settings": "Öppna anslutningsinställningar",
+  "Copy Details": "Kopiera detaljer",
+  "Close": "Stäng",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS bara för egna domäner, en annan anslutning tar alla namn",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "den körande hjälparen är äldre och skulle ignorera domänerna för serverns DNS: anslut igen när den har uppdaterats",
+  "At most %d domains for the server's DNS.": "Högst %d domäner för serverns DNS.",
+  "empty: as the server sends it": "tomt: som servern skickar det"
  },
  "tr": {
   "OK": "Tamam",
@@ -1077,7 +1213,15 @@
   "Paste": "Yapıştır",
   "Select All": "Tümünü Seç",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini ayarlayamadı: başka bir bağlantı zaten tüm adları alıyor. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini ayarlayamadı: başka bir bağlantı zaten tüm adları alıyor. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.",
+  "%@: DNS not set, another connection takes all names": "%@: DNS ayarlanmadı, başka bir bağlantı tüm adları alıyor",
+  "Open Connection Settings": "Bağlantı Ayarlarını Aç",
+  "Copy Details": "Ayrıntıları Kopyala",
+  "Close": "Kapat",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS yalnızca kendi alan adları için, başka bir bağlantı tüm adları alıyor",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "çalışan yardımcı daha eski ve sunucunun DNS’i için alan adlarını yok sayar: güncellendikten sonra yeniden bağlanın",
+  "At most %d domains for the server's DNS.": "Sunucunun DNS’i için en fazla %d alan adı.",
+  "empty: as the server sends it": "boş: sunucunun gönderdiği gibi"
  },
  "uk": {
   "OK": "OK",
@@ -1137,7 +1281,15 @@
   "Paste": "Вставити",
   "Select All": "Вибрати все",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг встановити свій DNS: усі імена вже взяло інше підключення. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів)."
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг встановити свій DNS: усі імена вже взяло інше підключення. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).",
+  "%@: DNS not set, another connection takes all names": "%@: DNS не встановлено, усі імена в іншого підключення",
+  "Open Connection Settings": "Відкрити параметри підключення",
+  "Copy Details": "Копіювати подробиці",
+  "Close": "Закрити",
+  "%@: DNS for its own domains only, another connection takes all names": "%@: DNS лише для своїх доменів, усі імена в іншого підключення",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "запущений помічник старіший і проігнорує домени для DNS сервера: підключіться знову, коли він оновиться",
+  "At most %d domains for the server's DNS.": "Не більше %d доменів для DNS сервера.",
+  "empty: as the server sends it": "порожньо: як надсилає сервер"
  },
  "zh-Hans": {
   "OK": "好",
@@ -1197,7 +1349,15 @@
   "Paste": "粘贴",
   "Select All": "全选",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法设置其 DNS：另一个连接已接管所有名称。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。"
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法设置其 DNS：另一个连接已接管所有名称。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。",
+  "%@: DNS not set, another connection takes all names": "%@：未设置 DNS，另一个连接已接管所有名称",
+  "Open Connection Settings": "打开连接设置",
+  "Copy Details": "拷贝详细信息",
+  "Close": "关闭",
+  "%@: DNS for its own domains only, another connection takes all names": "%@：DNS 仅用于其自身域名，另一个连接已接管所有名称",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "正在运行的辅助程序较旧，会忽略用于服务器 DNS 的域名：请在其更新后重新连接",
+  "At most %d domains for the server's DNS.": "用于服务器 DNS 的域名最多 %d 个。",
+  "empty: as the server sends it": "留空：按服务器发送的设置"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1257,6 +1417,14 @@
   "Paste": "貼上",
   "Select All": "全選",
   "%@ takes %@ networks out of %@'s routes (the more specific route wins)": "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）",
-  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法設定其 DNS：另一個連線已接手所有名稱。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。"
+  "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法設定其 DNS：另一個連線已接手所有名稱。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。",
+  "%@: DNS not set, another connection takes all names": "%@：未設定 DNS，另一個連線已接手所有名稱",
+  "Open Connection Settings": "打開連線設定",
+  "Copy Details": "拷貝詳細資訊",
+  "Close": "關閉",
+  "%@: DNS for its own domains only, another connection takes all names": "%@：DNS 僅用於其自身網域，另一個連線已接手所有名稱",
+  "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated": "正在執行的輔助程式較舊，會忽略用於伺服器 DNS 的網域：請在其更新後重新連線",
+  "At most %d domains for the server's DNS.": "用於伺服器 DNS 的網域最多 %d 個。",
+  "empty: as the server sends it": "留空：依伺服器傳送的設定"
  }
 }

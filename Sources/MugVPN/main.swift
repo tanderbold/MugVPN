@@ -119,6 +119,18 @@ default:
 
 final class AppDelegate: NSObject, NSApplicationDelegate {
     var controller: AppController!
+
+    /// However the app is asked to end (logging out, a restart, terminate from elsewhere): tunnels
+    /// are disconnected and remembered first, as the Quit item does.
+    func applicationShouldTerminate(_ sender: NSApplication) -> NSApplication.TerminateReply {
+        guard let controller, !controller.quitApproved else { return .terminateNow }
+        controller.manager.appQuitting { [weak controller] in
+            controller?.quitApproved = true
+            // After .terminateLater has been returned (appQuitting may be done at once).
+            DispatchQueue.main.async { NSApp.reply(toApplicationShouldTerminate: true) }
+        }
+        return .terminateLater
+    }
     #if MUGVPN_TESTING
     var e2eServer: E2EServer?
     #endif
@@ -358,7 +370,9 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
             case .exit:
                 reply(.ok)
                 // The answer goes out first.
-                m.appQuitting { DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { NSApp.terminate(nil) } }
+                m.appQuitting { [weak controller] in
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) { controller?.onQuit() }
+                }
             case .rescan:
                 reply(.ok)
             case .importFile(let path):

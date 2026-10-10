@@ -26,7 +26,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 
 **Several connections at once**
 - Every connection has its own `utun`, routes and DNS; connect, disconnect and reconnect each on its own.
-- **Split DNS per connection**: names in the domains a server pushes go to that tunnel's DNS, everything else as before — so two VPNs can each answer for their own domains. For servers that push only `dhcp-option DOMAIN`, one switch makes those domains split too.
+- **Split DNS per connection**: names in the domains a server pushes go to that tunnel's DNS, everything else as before — so two VPNs can each answer for their own domains. For servers that push only `dhcp-option DOMAIN`, one switch makes those domains split too. A server that pushes no domains at all can still be used for the domains you list in the connection's options (the server's DNS, no addresses to type).
 - **Your own DNS for a connection**: its servers for the domains you list (or for all names), or leave the Mac's DNS alone.
 - Warnings when connections collide: two that both take all traffic, overlapping routes (IPv4 and IPv6), DNS already taken.
 

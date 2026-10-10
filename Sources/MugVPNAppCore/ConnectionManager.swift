@@ -108,6 +108,8 @@ public final class ConnectionManager {
     public var profileSettings: ((Profile) -> ConnectionSettings)?
     /// Profiles whose pushed DNS domains become split domains (NET-04).
     public var splitDNS: (Profile) -> Bool = { _ in false }
+    /// The domains a profile's options list for the server's DNS.
+    public var dnsDomains: (Profile) -> [String] = { _ in [] }
     /// The protection a connection asks the helper for.
     public var protection: (Profile) -> ProtectionOptions = { _ in ProtectionOptions() }
     public private(set) var active: [String: ActiveConnection] = [:] {
@@ -308,15 +310,43 @@ public final class ConnectionManager {
         }
     }
 
+    /// The first helper that sets the server's DNS for the domains a profile lists (older ones ignore them).
+    public static let dnsDomainsHelper = "0.2.6"
+    public static let helperTooOldForDNSDomains =
+        "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated"
+
+    /// Does the running helper report each connection's DNS (and take domains for the server's DNS)?
+    /// Unknown yet: taken to.
+    public var helperKnowsDNSDomains: Bool {
+        !(helperVersionMismatch.map { ConnectionManager.isOlder($0, than: ConnectionManager.dnsDomainsHelper) } ?? false)
+    }
+
     private func startConnection(_ profile: Profile) {
         guard active[profile.id] == nil else { return }
         lastError[profile.id] = nil
         if profile.source == .persistent { return connectPersistent(profile) }
+        // Domains for the server's DNS: only to a helper that knows them (an older one would set DNS
+        // for all names, or none, without a word). Asked now: the version seen at launch may be old news.
+        guard dnsDomains(profile).isEmpty else {
+            return helper.version { [weak self] v in
+                guard let self, self.active[profile.id] == nil else { return }
+                if ConnectionManager.isOlder(v ?? "unknown", than: ConnectionManager.dnsDomainsHelper) {
+                    if let v { self.versionKnown(v) }
+                    return self.fail(profile.id, ConnectionManager.helperTooOldForDNSDomains)
+                }
+                self.startChecked(profile)
+            }
+        }
+        startChecked(profile)
+    }
+
+    private func startChecked(_ profile: Profile) {
         var bundle: ProfileBundle
         do { bundle = try reader.bundle(for: profile) } catch {
             return fail(profile.id, "\(error)")
         }
         bundle.splitDNS = splitDNS(profile)
+        bundle.dnsDomains = dnsDomains(profile)
         bundle.protection = protection(profile)
         let c = makeConnection(profile)
         c.config = bundle.config

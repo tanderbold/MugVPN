@@ -173,7 +173,7 @@ public struct ConnectionDraft: Equatable, Sendable {
         return inet_pton(AF_INET, s, &v4) == 1 || inet_pton(AF_INET6, s, &v6) == 1
     }
 
-    static func isDomain(_ s: String) -> Bool {
+    public static func isDomain(_ s: String) -> Bool {
         let name = s.hasSuffix(".") ? String(s.dropLast()) : s
         guard !name.isEmpty, name.count <= 253 else { return false }
         let ok = CharacterSet(charactersIn: "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789-")

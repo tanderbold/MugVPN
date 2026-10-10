@@ -262,7 +262,8 @@ def test_ui42_dns_block(app):
     w = open_window(app, "stand-a")
     w = tab(app, "options")
     assert app.control(w, "dns_mode")["value"] == "server"
-    assert not app.control(w, "dns_servers")["enabled"] and not app.control(w, "dns_domains")["enabled"]
+    assert not app.control(w, "dns_servers")["enabled"]
+    assert app.control(w, "dns_domains")["enabled"], "the server's DNS may be limited to these domains"
     assert app.control(w, "split_dns")["enabled"], "split DNS applies to what the server pushes"
     app.set(w, "dns_mode", "own")
     w = app.window("connections")
@@ -398,15 +399,59 @@ def test_ui57_search_keeps_the_profile_being_edited(app):
     assert "edited.example.com" in cfg(app, "stand-a")
 
 
-def test_ui73_dialogs_stay_in_front(app):
-    """A dialog (here: unsaved changes) stays above MugVPN's windows, even when the window behind it
-    is clicked (it went behind the Connections window)."""
+def test_ui73_dialogs_stay_with_their_window(app):
+    """A question the Connections window asks (unsaved changes) is a sheet of that window: it cannot
+    go behind it, and other apps stay usable (no window floats above everything)."""
     w = open_window(app, "stand-a")
     app.set(w, "servers", "edited.example.com")
     select(app, "stand-b")
     c = app.window("confirm")
-    app.call("order_front", window=app.window("connections")["id"])
-    assert app.window("confirm")["front_index"] == 0, "the dialog still on top"
-    assert app.window("confirm")["floating"]
-    assert not app.window("connections")["floating"], "an ordinary window is not"
+    assert c["sheet_of"] == "connections", c.get("sheet_of")
+    assert not c["floating"] and not app.window("connections")["floating"]
     app.press(app.window("confirm"), "cancel")
+    app.no_window("confirm")
+    assert app.window("connections")["sheet_of"] is None
+
+
+def test_ui76_domains_for_the_servers_dns(app):
+    """DNS from the VPN server, for listed domains only: no server address to type (the user's case:
+    teamcity.cprserv.lan beside another VPN taking all names)."""
+    w = open_window(app, "stand-a")
+    w = tab(app, "options")
+    assert app.control(w, "dns_mode")["value"] == "server"
+    assert app.control(w, "dns_domains")["enabled"], "domains for the server's DNS"
+    assert not app.control(w, "dns_servers")["enabled"], "no addresses needed"
+    app.set(w, "dns_domains", "cprserv.lan")
+    app.press(app.window("connections"), "save")
+    app.call("close", window=app.window("connections")["id"])
+    app.click("stand-a", "Connect")
+    wait_for(lambda: "stand-a" in app.call("fake_helper")["starts"], 5, "the start")
+    assert app.call("fake_helper")["bundles"]["stand-a"]["dns_domains"] == ["cprserv.lan"]
+    assert "cprserv.lan" not in cfg(app, "stand-a"), "the profile itself stays as it is"
+
+
+def test_ui78_a_bad_domain_for_the_servers_dns_is_said_at_save(app):
+    open_window(app, "stand-a")
+    tab(app, "options")
+    app.set(app.window("connections"), "dns_domains", "not a domain!")
+    app.press(app.window("connections"), "save")
+    e = app.control(app.window("connections"), "error_text")
+    assert e["visible"] and "domain!" in e["value"], e
+
+
+def test_ui80_too_many_domains_for_the_servers_dns_said_at_save(app):
+    open_window(app, "stand-a")
+    tab(app, "options")
+    app.set(app.window("connections"), "dns_domains", ", ".join(f"d{i}.example.com" for i in range(33)))
+    app.press(app.window("connections"), "save")
+    e = app.control(app.window("connections"), "error_text")
+    assert e["visible"] and "32" in e["value"], e
+
+
+def test_ui81_the_empty_domains_field_says_what_empty_means_in_each_mode(app):
+    open_window(app, "stand-a")
+    w = tab(app, "options")
+    assert app.control(w, "dns_mode")["value"] == "server"
+    assert app.control(w, "dns_domains")["placeholder"] == "empty: as the server sends it"
+    app.set(w, "dns_mode", "own")
+    assert app.control(app.window("connections"), "dns_domains")["placeholder"] == "empty: all names"

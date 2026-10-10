@@ -418,3 +418,16 @@ def test_ui69_service_registered_but_not_loaded(home):
     """The helper's service is enabled but launchd lost it (booted out): MugVPN registers it again."""
     with launched(home, helper_version="unreachable") as a:
         wait_for(lambda: a.call("fake_helper")["setup"] == ["unregister", "register"], 10, "registered again")
+
+
+def test_ui74_cmd_q_asks_like_quit(app):
+    """Cmd+Q goes the way Quit does: with a tunnel up it asks first, and Cancel keeps everything
+    (it had ended the app at once, the tunnels left to the helper)."""
+    app.connect("stand-a")
+    r = app.call("key_equivalent", key="q")
+    assert r["handled"]
+    w = app.window("confirm")
+    assert "stand-a" in app.control(w, "prompt_text")["value"]
+    app.press(w, "cancel")
+    app.no_window("confirm")
+    assert app.call("status")["icon"] == "connected"

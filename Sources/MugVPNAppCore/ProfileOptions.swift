@@ -21,10 +21,12 @@ public struct ProfileOptions: Codable, Equatable, Sendable {
     public var blockIPv6 = true
     /// While it takes all traffic: no DNS outside the VPN.
     public var dnsOnlyTunnel = true
+    /// The server's DNS only for these domains (empty: as the server says).
+    public var serverDNSDomains: [String] = []
     public init() {}
 
     enum CodingKeys: String, CodingKey {
-        case autoConnect, splitDNS, silent, proxy, disconnectOnSleep, killSwitch, blockIPv6, dnsOnlyTunnel
+        case autoConnect, splitDNS, silent, proxy, disconnectOnSleep, killSwitch, blockIPv6, dnsOnlyTunnel, serverDNSDomains
     }
 
     /// A persistent profile: what the helper applies (its settings beside it in config-auto) in
@@ -51,6 +53,7 @@ public struct ProfileOptions: Codable, Equatable, Sendable {
         disconnectOnSleep = try c.decodeIfPresent(Bool.self, forKey: .disconnectOnSleep)
         killSwitch = try c.decodeIfPresent(Bool.self, forKey: .killSwitch) ?? d.killSwitch
         blockIPv6 = try c.decodeIfPresent(Bool.self, forKey: .blockIPv6) ?? d.blockIPv6
+        serverDNSDomains = try c.decodeIfPresent([String].self, forKey: .serverDNSDomains) ?? []
         dnsOnlyTunnel = try c.decodeIfPresent(Bool.self, forKey: .dnsOnlyTunnel) ?? d.dnsOnlyTunnel
     }
 }

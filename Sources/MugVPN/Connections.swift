@@ -1,5 +1,6 @@
 import AppKit
 import MugVPNAppCore
+import MugVPNCore
 
 /// The list of connections in the Connections window.
 final class ListView: NSTableView {
@@ -342,13 +343,24 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
 
     // MARK: - showing
 
-    func show(select profile: Profile?) {
+    /// - tab: the tab to show ("options" for a warning about the connection's DNS).
+    func show(select profile: Profile?, tab: String? = nil) {
+        // Asked for by name: a search that hides it is cleared (else another one's options would show).
+        if let profile, !ProfileStore.matching(app.manager.profiles, search.stringValue).contains(where: { $0.id == profile.id }) {
+            search.stringValue = ""
+        }
         reloadRows()
         if let profile, let i = rows.firstIndex(where: { $0.profile?.id == profile.id }) {
-            if i != current { list.pick(i) }
+            if i != current {
+                list.pick(i)
+            } else {
+                // reloadData clears NSTableView's selection even though our model selection is unchanged.
+                list.selectRowIndexes([i], byExtendingSelection: false)
+            }
         } else if current < 0, !rows.isEmpty {
             list.pick(0)
         }
+        if let tab { tabs.selectTabViewItem(withIdentifier: tab) }
         window.present()
     }
 
@@ -433,7 +445,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         let shownName = current >= 0 && current < rows.count ? title(rows[current]) : ""
         showForm(kind: "confirm", profile: shownName, title: L("Connections"),
                  views: [Form.label(L("Discard the changes to %@?", shownName), id: "prompt_text")],
-                 okTitle: L("Discard"), ok: { _ in DispatchQueue.main.async(execute: then); return true })
+                 okTitle: L("Discard"), parent: window, ok: { _ in DispatchQueue.main.async(execute: then); return true })
         return false
     }
 
@@ -506,7 +518,8 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         allTraffic.state = d.allTraffic ? .on : .off
         select(dnsMode, d.dns.mode.rawValue)
         dnsServers.stringValue = d.dns.servers.joined(separator: ", ")
-        dnsDomains.stringValue = d.dns.domains.joined(separator: ", ")
+        // Own servers: their domains are the profile's; the server's DNS: the domains are MugVPN's option.
+        dnsDomains.stringValue = (d.dns.mode == .server ? savedOptions.serverDNSDomains : d.dns.domains).joined(separator: ", ")
         askPassword.state = d.askPassword ? .on : .off
         config.string = baseText
         let o = savedOptions
@@ -573,6 +586,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         o.killSwitch = killSwitch.state == .on
         o.blockIPv6 = blockIPv6.state == .on
         o.dnsOnlyTunnel = dnsOnly.state == .on
+        o.serverDNSDomains = popup(dnsMode) == "server" ? ConnectionDraft.parseList(dnsDomains.stringValue) : []
         switch popup(silent) { case "on": o.silent = true; case "off": o.silent = false; default: o.silent = nil }
         switch popup(sleep) {
         case "disconnect": o.disconnectOnSleep = true
@@ -633,7 +647,11 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         dnsMode.isEnabled = canEdit
         let ownDNS = popup(dnsMode) == "own"
         dnsServers.isEnabled = canEdit && ownDNS
-        dnsDomains.isEnabled = canEdit && ownDNS
+        // Domains: with own servers (the profile's), or for the server's DNS (an option, any profile).
+        dnsDomains.isEnabled = (canEdit && ownDNS) || (has && !persistent && popup(dnsMode) == "server")
+        // Empty means what the mode does without it: own servers for all names; the server's DNS as it
+        // sends it (and Split DNS by Domain decides).
+        dnsDomains.placeholderString = ownDNS ? L("empty: all names") : L("empty: as the server sends it")
         splitDNS.isEnabled = has && !persistent && popup(dnsMode) == "server"
         let manual = popup(proxy) == "manual" && has
         proxyHost.isEnabled = manual
@@ -809,6 +827,12 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         if case .manual(let h, let p) = opts.proxy, !ConnectionController.isHost(h) || !(1...65535).contains(p) {
             return showError(L("Enter the proxy's address and a port from 1 to 65535."))
         }
+        if let bad = opts.serverDNSDomains.first(where: { !ConnectionDraft.isDomain($0) }) {
+            return showError(L("%@ is not a domain name.", bad))
+        }
+        if opts.serverDNSDomains.count > ProfileBundle.maxDNSDomains {
+            return showError(L("At most %d domains for the server's DNS.", ProfileBundle.maxDNSDomains))
+        }
         do {
             switch s {
             case .new:
@@ -899,7 +923,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         guard let p = s.profile else { return }
         showForm(kind: "confirm", profile: p.displayName, title: L("Connections"),
                  views: [Form.label(L("Delete %@? Its files, settings and saved passwords are removed.", p.displayName), id: "prompt_text")],
-                 okTitle: L("Delete"), ok: { [weak self] _ in
+                 okTitle: L("Delete"), parent: window, ok: { [weak self] _ in
             guard let self else { return true }
             do {
                 try self.app.store.delete(p, active: Set(self.app.manager.active.keys), secrets: self.app.secrets,

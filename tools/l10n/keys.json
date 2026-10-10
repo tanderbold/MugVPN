@@ -27,6 +27,12 @@
   "key": "%@ takes %@ networks out of %@'s routes (the more specific route wins)"
  },
  {
+  "key": "%@: DNS for its own domains only, another connection takes all names"
+ },
+ {
+  "key": "%@: DNS not set, another connection takes all names"
+ },
+ {
   "key": "A client for OpenVPN profiles that keeps several connections up at once. MIT License."
  },
  {
@@ -55,6 +61,9 @@
  },
  {
   "key": "Ask for a username and password"
+ },
+ {
+  "key": "At most %d domains for the server's DNS."
  },
  {
   "key": "Attach automatically"
@@ -120,6 +129,9 @@
   "key": "Clear Saved Passwords"
  },
  {
+  "key": "Close"
+ },
+ {
   "key": "Configuration"
  },
  {
@@ -172,6 +184,9 @@
  },
  {
   "key": "Copy"
+ },
+ {
+  "key": "Copy Details"
  },
  {
   "key": "Copy and Import"
@@ -423,6 +438,9 @@
   "key": "Only for domains:"
  },
  {
+  "key": "Open Connection Settings"
+ },
+ {
   "key": "Open MugVPN at login"
  },
  {
@@ -669,6 +687,9 @@
   "key": "empty: all names"
  },
  {
+  "key": "empty: as the server sends it"
+ },
+ {
   "key": "enter a host name or address"
  },
  {
@@ -691,6 +712,9 @@
  },
  {
   "key": "the pre-connect script failed"
+ },
+ {
+  "key": "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated"
  },
  {
   "key": "username %@"

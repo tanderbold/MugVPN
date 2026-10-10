@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@은(는) 텍스트 파일(PEM)이 아닙니다.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@이(가) 폴더 밖의 파일을 참조합니다. 프로필로 복사하겠습니까? VPN 서버가 해당 내용을 받을 수 있습니다.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: 자체 도메인에만 DNS 적용, 다른 연결이 모든 이름을 담당";
+"%@: DNS not set, another connection takes all names" = "%@: DNS가 설정되지 않음, 다른 연결이 모든 이름을 담당";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "여러 연결을 동시에 유지하는 OpenVPN 프로필용 클라이언트. MIT 라이선스.";
 "A program asked MugVPN to import %@. Import it?" = "한 프로그램이 MugVPN에 %@ 가져오기를 요청했습니다. 가져오겠습니까?";
 "About MugVPN" = "MugVPN에 관하여";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "로그를 덮어쓰지 않고 추가";
 "As in Settings" = "설정에 따름";
 "Ask for a username and password" = "사용자 이름 및 암호 묻기";
+"At most %d domains for the server's DNS." = "서버 DNS용 도메인은 최대 %d개입니다.";
 "Attach automatically" = "자동으로 연결";
 "Authentication" = "인증";
 "Authentication failed" = "인증 실패";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "%@의 인증서 선택:";
 "Choose the server's CA certificate." = "서버의 CA 인증서를 선택하십시오.";
 "Clear Saved Passwords" = "저장된 암호 지우기";
+"Close" = "닫기";
 "Configuration" = "구성";
 "Connect" = "연결";
 "Connect script (s):" = "연결 스크립트(초):";
@@ -57,6 +61,7 @@
 "Connections" = "연결 목록";
 "Connections…" = "연결 목록…";
 "Copy" = "복사하기";
+"Copy Details" = "세부사항 복사";
 "Copy and Import" = "복사 후 가져오기";
 "Cut" = "오려두기";
 "DNS server %@ is not an IP address." = "DNS 서버 %@은(는) IP 주소가 아닙니다.";
@@ -140,6 +145,7 @@
 "Off" = "끔";
 "One server per line: host port udp|tcp" = "한 줄에 서버 하나: 호스트 포트 udp|tcp";
 "Only for domains:" = "다음 도메인에만:";
+"Open Connection Settings" = "연결 설정 열기";
 "Open MugVPN at login" = "로그인 시 MugVPN 열기";
 "Open System Settings" = "시스템 설정 열기";
 "Open in Text Editor" = "텍스트 편집기에서 열기";
@@ -222,6 +228,7 @@
 "connected" = "연결됨";
 "connecting" = "연결 중";
 "empty: all names" = "비워 두면: 모든 이름";
+"empty: as the server sends it" = "비워 두면: 서버가 보내는 대로";
 "enter a host name or address" = "호스트 이름 또는 주소를 입력하십시오";
 "not connected" = "연결 안 됨";
 "nothing" = "없음";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "영구 연결이 실행 중이 아님";
 "the port must be 1–65535" = "포트는 1–65535 범위여야 합니다";
 "the pre-connect script failed" = "연결 전 스크립트 실패";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "실행 중인 도우미가 오래되어 서버 DNS용 도메인을 무시합니다. 업데이트된 후 다시 연결하세요";
 "username %@" = "사용자 이름 %@";
 "write a server as: host port udp|tcp" = "서버는 '호스트 포트 udp|tcp' 형식으로 작성하십시오";

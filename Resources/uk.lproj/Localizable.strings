@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ не є текстовим файлом (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ посилається на файли поза своєю папкою. Скопіювати їх у профіль? Їхній вміст може отримати VPN-сервер.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS лише для своїх доменів, усі імена в іншого підключення";
+"%@: DNS not set, another connection takes all names" = "%@: DNS не встановлено, усі імена в іншого підключення";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Клієнт для профілів OpenVPN, що тримає кілька підключень одночасно. Ліцензія MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Програма попросила MugVPN імпортувати %@. Імпортувати?";
 "About MugVPN" = "Про MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Додавати до журналу, а не перезаписувати його";
 "As in Settings" = "Як у налаштуваннях";
 "Ask for a username and password" = "Запитувати ім'я користувача та пароль";
+"At most %d domains for the server's DNS." = "Не більше %d доменів для DNS сервера.";
 "Attach automatically" = "Підключатися автоматично";
 "Authentication" = "Автентифікація";
 "Authentication failed" = "Помилка автентифікації";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Виберіть сертифікат для %@:";
 "Choose the server's CA certificate." = "Виберіть сертифікат CA сервера.";
 "Clear Saved Passwords" = "Видалити збережені паролі";
+"Close" = "Закрити";
 "Configuration" = "Конфігурація";
 "Connect" = "Підключити";
 "Connect script (s):" = "Скрипт підключення (с):";
@@ -57,6 +61,7 @@
 "Connections" = "Підключення";
 "Connections…" = "Підключення…";
 "Copy" = "Копіювати";
+"Copy Details" = "Копіювати подробиці";
 "Copy and Import" = "Скопіювати й імпортувати";
 "Cut" = "Вирізати";
 "DNS server %@ is not an IP address." = "DNS-сервер %@ — не IP-адреса.";
@@ -140,6 +145,7 @@
 "Off" = "Вимкнено";
 "One server per line: host port udp|tcp" = "Один сервер на рядок: хост порт udp|tcp";
 "Only for domains:" = "Лише для доменів:";
+"Open Connection Settings" = "Відкрити параметри підключення";
 "Open MugVPN at login" = "Відкривати MugVPN під час входу";
 "Open System Settings" = "Відкрити Системні параметри";
 "Open in Text Editor" = "Відкрити в текстовому редакторі";
@@ -222,6 +228,7 @@
 "connected" = "підключено";
 "connecting" = "підключення";
 "empty: all names" = "порожньо: усі імена";
+"empty: as the server sends it" = "порожньо: як надсилає сервер";
 "enter a host name or address" = "введіть ім'я хоста або адресу";
 "not connected" = "не підключено";
 "nothing" = "нічого";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "постійне підключення не запущено";
 "the port must be 1–65535" = "порт має бути в діапазоні 1–65535";
 "the pre-connect script failed" = "скрипт перед підключенням завершився з помилкою";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "запущений помічник старіший і проігнорує домени для DNS сервера: підключіться знову, коли він оновиться";
 "username %@" = "ім'я користувача %@";
 "write a server as: host port udp|tcp" = "вкажіть сервер у форматі: хост порт udp|tcp";

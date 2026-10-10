@@ -342,6 +342,29 @@ func registerManagerTests() {
         h.scheduler.drain(limit: 3)
         expectEqual(told, 1, "once, not on every retry")
     }
+    test("MAN-38", "the domains a profile's options list for the server's DNS go to the helper") {
+        let h = ManagerHarness()
+        h.m.dnsDomains = { $0.name == "a" ? ["cprserv.lan"] : [] }
+        h.m.connect(h.a)
+        expectEqual(h.helper.starts.last?.dnsDomains, ["cprserv.lan"])
+    }
+    test("MAN-39", "domains for the server's DNS with a helper too old to know them: not started, said why") {
+        let h = ManagerHarness()
+        h.helper.version = "0.2.5"
+        h.m.dnsDomains = { $0.name == "a" ? ["cprserv.lan"] : [] }
+        h.m.connect(h.a)
+        expect(h.helper.starts.isEmpty, "not started with DNS other than asked")
+        expectEqual(h.m.lastError[h.a.id], ConnectionManager.helperTooOldForDNSDomains)
+        h.m.connect(h.b)
+        expectEqual(h.helper.starts.count, 1, "without such domains: started as before")
+        h.helper.version = nil   // no version call at all: older still
+        h.m.disconnect(h.b.id)
+        let h2 = ManagerHarness()
+        h2.helper.version = nil
+        h2.m.dnsDomains = { _ in ["cprserv.lan"] }
+        h2.m.connect(h2.a)
+        expect(h2.helper.starts.isEmpty)
+    }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()
         h.helper.version = "0.0.9"

@@ -202,6 +202,24 @@ func registerAppLogicTests() {
         expectEqual(CommandLineRequest.forwardedToRunning(.help), nil)
         expectEqual(CommandLineRequest.forwardedToRunning(.uninstall(confirmed: true, keepProfiles: false)), nil)
     }
+    test("NOTE-01", "permission for notifications asked at the first notification, once; not at launch") {
+        var asked = 0, posted: [String] = []
+        var answer: ((Bool) -> Void)?
+        let g = NotificationGate(ask: { done in asked += 1; answer = done }, post: { posted.append($0) })
+        expectEqual(asked, 0, "nothing asked at launch")
+        g.notify("first")
+        g.notify("second")
+        expectEqual(asked, 1, "asked once")
+        expectEqual(posted, [], "waits for the answer")
+        answer?(true)
+        expectEqual(posted, ["first", "second"])
+        g.notify("third")
+        expectEqual(posted, ["first", "second", "third"])
+        expectEqual(asked, 1)
+        let no = NotificationGate(ask: { $0(false) }, post: { posted.append("x" + $0) })
+        no.notify("a")
+        expect(!posted.contains("xa"), "refused: nothing posted")
+    }
     test("CLI-04", "errors") {
         for bad in [["--command"], ["--command", "frob"], ["--command", "connect"], ["--command", "silent_connection", "2"],
                     ["--frob"], ["--connect"]] {
@@ -402,12 +420,21 @@ func registerAppLogicTests() {
         expectEqual(NetworkConflicts.find([("x", dup1, ""), ("y", dup1, "")]),
                     [.overlappingRoutes("x", "y", "10.1.0.0/16, 10.2.0.0/16, 10.3.0.0/16 (+1)")], "the same networks: one line, a few named")
     }
-    test("NET-03", "DNS refused by the script") {
-        let log = "2026-10-06 05:46:44 setting DNS failed, already redirecting to another tunnel\n"
-        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), log)]), [.dnsTakenByAnother("d")])
-        // Without root (privilege separation): the helper says so, in the app's log of the connection.
-        let helper = "MugVPN: the helper refused DNSUP utun6: DNS for all names is already another tunnel's\n"
-        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), helper)]), [.dnsTakenByAnother("d")])
+    test("NET-03", "DNS as the helper has it now: waiting is a warning, limited a note; an old log line is not") {
+        let old = "MugVPN: the helper refused DNSUP utun6: DNS for all names is already another tunnel's\n"
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), old)]), [], "the log is history, not the state")
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "all", "d": "waiting"]),
+                    [.dnsTakenByAnother("d")])
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "all", "d": "limited"]),
+                    [.dnsLimited("d")])
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "split", "d": "all"]), [])
+    }
+    test("NET-10", "an older helper that does not say its DNS state: the log says it (the refusal is the last word on DNS)") {
+        let old = "MugVPN: the helper refused DNSUP utun6: DNS for all names is already another tunnel's\n"
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), old)], dns: nil), [.dnsTakenByAnother("d")])
+        let legacy = "setting DNS failed, already redirecting\n"
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), legacy)], dns: nil), [.dnsTakenByAnother("d")])
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: nil), [])
     }
 }
 

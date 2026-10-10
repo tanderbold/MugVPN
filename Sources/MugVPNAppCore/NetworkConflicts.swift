@@ -10,13 +10,17 @@ public enum NetworkConflict: Equatable, Sendable {
     /// The narrow one routes networks inside the broad one's routes: those go to it (the more specific
     /// route wins), the rest of the broad one's as before. Usually meant so; said once per pair.
     case narrowerRoutes(broad: String, narrow: String, count: Int)
-    /// The DNS script refused: another tunnel already redirects all DNS.
+    /// No DNS: another connection has all names, and it has no domains of its own (next in line).
     case dnsTakenByAnother(String)
+    /// Only its own domains: another connection has all names (next in line).
+    case dnsLimited(String)
 }
 
 public enum NetworkConflicts {
     /// - tunnels: (profile name, facts from its log, the log text)
-    public static func find(_ tunnels: [(String, OpenVPNLogFacts, String)]) -> [NetworkConflict] {
+    /// - dns: each connection's DNS as the helper has it now (ConnectionInfo.dns), by name; nil: a helper
+    ///   older than 0.2.6 does not say, and the log's refusal is all there is to go by.
+    public static func find(_ tunnels: [(String, OpenVPNLogFacts, String)], dns: [String: String]? = [:]) -> [NetworkConflict] {
         var out: [NetworkConflict] = []
         // What each tunnel asked for: a route another tunnel already holds is the conflict itself.
         let nets = tunnels.map { t in (t.0, t.1.requestedRoutes.compactMap(IPv4Net.init(route:))) }
@@ -56,9 +60,19 @@ public enum NetworkConflicts {
                 if iInJ > 0 { out.append(.narrowerRoutes(broad: b, narrow: a, count: iInJ)) }
             }
         }
-        for t in tunnels where t.2.contains("setting DNS failed, already redirecting")
-            || t.2.contains("DNS for all names is already another tunnel's") {
-            out.append(.dnsTakenByAnother(t.0))
+        guard let dns else {
+            for t in tunnels where t.2.contains("setting DNS failed, already redirecting")
+                || t.2.contains("DNS for all names is already another tunnel's") {
+                out.append(.dnsTakenByAnother(t.0))
+            }
+            return out
+        }
+        for t in tunnels {
+            switch dns[t.0] {
+            case "waiting": out.append(.dnsTakenByAnother(t.0))
+            case "limited": out.append(.dnsLimited(t.0))
+            default: break
+            }
         }
         return out
     }

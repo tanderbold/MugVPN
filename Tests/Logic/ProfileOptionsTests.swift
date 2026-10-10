@@ -122,6 +122,14 @@ func registerProfileOptionsTests() {
                     ProtectionOptions(killSwitch: true, allowLAN: true))
         expectThrows { _ = try PersistentSettings.parse(Data(#"{"kill_switch": 1}"#.utf8)) }
     }
+    test("POPT-09", "domains for the server's DNS are kept with the profile's options; older options read without them") {
+        var o = ProfileOptions()
+        o.serverDNSDomains = ["cprserv.lan", "corp.example"]
+        let back = try JSONDecoder().decode(ProfileOptions.self, from: try JSONEncoder().encode(o))
+        expectEqual(back.serverDNSDomains, ["cprserv.lan", "corp.example"])
+        let old = try JSONDecoder().decode(ProfileOptions.self, from: Data(#"{"autoConnect": true}"#.utf8))
+        expectEqual(old.serverDNSDomains, [])
+    }
     test("POPT-05", "delete a user profile") {
         let fs = MemFS()
         fs.add("\(userDir)/work/work.ovpn", "client\nremote w 1194\n")

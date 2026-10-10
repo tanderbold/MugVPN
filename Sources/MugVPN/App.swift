@@ -56,20 +56,26 @@ final class RealServices: Services {
         try? FileManager.default.trashItem(at: Bundle.main.bundleURL, resultingItemURL: nil)
     }
 
-    init() {
-        UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { _, _ in }
-    }
+    /// Permission asked at the first notification, not at launch.
+    private lazy var notifications = NotificationGate(
+        ask: { done in
+            UNUserNotificationCenter.current().requestAuthorization(options: [.alert]) { ok, _ in
+                DispatchQueue.main.async { done(ok) }
+            }
+        },
+        post: { payload in
+            let parts = payload.components(separatedBy: "\u{1F}")
+            let c = UNMutableNotificationContent()
+            c.title = parts.first ?? ""
+            c.body = parts.dropFirst().joined(separator: "\u{1F}")
+            UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: UUID().uuidString, content: c, trigger: nil))
+        })
 
     func open(_ url: String) {
         if let u = URL(string: url) { NSWorkspace.shared.open(u) }
     }
 
-    func notify(title: String, text: String) {
-        let c = UNMutableNotificationContent()
-        c.title = title
-        c.body = text
-        UNUserNotificationCenter.current().add(UNNotificationRequest(identifier: UUID().uuidString, content: c, trigger: nil))
-    }
+    func notify(title: String, text: String) { notifications.notify(title + "\u{1F}" + text) }
 
     func showMessage(profile: String, title: String, text: String) {
         showMessageWindow(profile: profile, title: title, text: text)
@@ -217,7 +223,12 @@ final class AppController: NSObject, NSMenuDelegate {
     }
     private var connectionsWindow: ConnectionsWindow?
     // After the current event: quitting can be triggered from inside a callback.
-    var onQuit: () -> Void = { DispatchQueue.main.async { NSApp.terminate(nil) } }
+    /// Set once tunnels are down and remembered: terminating goes ahead without asking the manager again.
+    var quitApproved = false
+    lazy var onQuit: () -> Void = { [weak self] in
+        self?.quitApproved = true
+        DispatchQueue.main.async { NSApp.terminate(nil) }
+    }
 
     init(services: Services, settingsStore: SettingsStore, store: ProfileStore, manager: ConnectionManager,
          secrets: SecretStore, logsDir: String) {
@@ -229,7 +240,7 @@ final class AppController: NSObject, NSMenuDelegate {
         self.logsDir = logsDir
         super.init()
         menu.delegate = self
-        NSApp.mainMenu = AppController.editMenu()
+        NSApp.mainMenu = AppController.editMenu(target: self)
         menu.autoenablesItems = false
         statusItem.menu = menu
         statusItem.button?.setAccessibilityIdentifier("mugvpn_status_item")
@@ -241,6 +252,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     private func wireOptions() {
         manager.splitDNS = { [weak self] p in self?.options.options(p.id).splitDNS ?? false }
+        manager.dnsDomains = { [weak self] p in self?.options.options(p.id).serverDNSDomains ?? [] }
         // Before any start, whichever way it comes (menu, command line, auto-connect, wake): the certificate.
         manager.preflight = { [weak self] p, done in
             guard let self else { return done() }
@@ -415,21 +427,34 @@ final class AppController: NSObject, NSMenuDelegate {
     }
     private var shownErrors: Set<String> = []
 
-    private func checkConflicts() {
-        let up = manager.active.values.filter { if case .connected = $0.controller.status { return true }; return false }
-            .sorted { $0.profile.displayName < $1.profile.displayName }
-        let found = NetworkConflicts.find(up.map { c in
-            // openvpn's log, and the app's own lines about the connection (what the helper refused).
-            let log = logText(c) + "\n" + c.controller.log.joined(separator: "\n")
-            return (c.profile.displayName, OpenVPNLogFacts.parse(log), log)
-        })
-        // Narrower routes inside another's are usually meant so: said in the menu, not notified.
-        for c in found where !conflictsShown.contains(c) {
-            if case .narrowerRoutes = c { continue }
-            services.notify(title: L("MugVPN"), text: conflictText(c))
+    /// Routes from the logs; DNS as the helper has it now (it moves "all names" on when their owner
+    /// lets go: looked at again a moment after a change).
+    private func checkConflicts(again: Bool = true) {
+        manager.helperClient.list { [weak self] infos in
+            guard let self else { return }
+            let up = self.manager.active.values.filter { if case .connected = $0.controller.status { return true }; return false }
+                .sorted { $0.profile.displayName < $1.profile.displayName }
+            var dns: [String: String] = [:]
+            for c in up { if let id = c.helperID, let state = infos.first(where: { $0.id == id })?.dns { dns[c.profile.displayName] = state } }
+            let found = NetworkConflicts.find(up.map { c in
+                let log = self.logText(c)
+                return (c.profile.displayName, OpenVPNLogFacts.parse(log), log)
+            }, dns: self.manager.helperKnowsDNSDomains ? dns : nil)
+            // Notes (narrower routes, DNS limited to a connection's own domains) are in the menu, not notified.
+            for c in found where !self.conflictsShown.contains(c) {
+                switch c {
+                case .narrowerRoutes, .dnsLimited: continue
+                default: self.services.notify(title: L("MugVPN"), text: self.conflictText(c))
+                }
+            }
+            if found != self.conflictsShown {
+                self.conflictsShown = found
+                self.rebuildMenu()
+            }
+            if again { DispatchQueue.main.asyncAfter(deadline: .now() + 3) { [weak self] in self?.checkConflicts(again: false) } }
         }
-        conflictsShown = found
     }
+
 
     /// Connections that take all traffic: their utun devices, their servers' addresses,
     /// and whether IPv6 is blocked (as the helper does it).
@@ -523,6 +548,8 @@ final class AppController: NSObject, NSMenuDelegate {
         case .overlappingRoutes(let a, let b, let net): return L("%@ and %@ both route %@", a, b, net)
         case .narrowerRoutes(let broad, let narrow, let n):
             return L("%@ takes %@ networks out of %@'s routes (the more specific route wins)", narrow, String(n), broad)
+        case .dnsLimited(let a):
+            return L("%@: DNS for its own domains only, another connection takes all names", a)
         case .dnsTakenByAnother(let a):
             return L("%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).", a)
         }
@@ -543,11 +570,14 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// Never shown (an app without a Dock icon has no menu bar), but it is where Cmd+X/C/V/A and
     /// undo reach the fields: without it, pasting a password did nothing.
-    static func editMenu() -> NSMenu {
+    static func editMenu(target: AppController) -> NSMenu {
         let main = NSMenu()
         let appItem = NSMenuItem()
         appItem.submenu = NSMenu()
-        appItem.submenu?.addItem(withTitle: L("Quit MugVPN"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        // Cmd+Q the way the Quit item goes: asked first with tunnels up, then disconnected (not left to the helper).
+        let quitItem = NSMenuItem(title: L("Quit MugVPN"), action: #selector(AppController.quit), keyEquivalent: "q")
+        quitItem.target = target
+        appItem.submenu?.addItem(quitItem)
         main.addItem(appItem)
         let editItem = NSMenuItem()
         let edit = NSMenu(title: L("Edit"))
@@ -564,17 +594,19 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     /// The menu bar icon clicked: MugVPN's windows come forward (an app without a Dock icon has no
-    /// other way back to a window lost behind others), prompts that wait for an answer on top.
+    /// other way back to a window lost behind others), prompts that wait for an answer on top. Only
+    /// shown: the app the user is typing in keeps the keyboard until a window is clicked.
     func menuWillOpen(_ menu: NSMenu) { bringWindowsForward() }
 
     func bringWindowsForward() {
-        let open = WindowRegistry.shared.windows.filter(\.isVisible)
-        guard !open.isEmpty else { return }
-        NSApp.activate(ignoringOtherApps: true)
-        let prompts: Set<String> = ["credentials", "secret", "challenge", "confirm", "pkcs11", "webauth"]
+        let wasActive = NSApp.isActive
+        let open = WindowRegistry.shared.windows.filter { $0.isVisible && $0.sheetParent == nil }
+        let prompts = AppWindow.dialogKinds
         for w in open where !prompts.contains(w.kind) { w.orderFrontRegardless() }
         for w in open where prompts.contains(w.kind) { w.orderFrontRegardless() }
-        (open.last { prompts.contains($0.kind) } ?? open.last)?.makeKey()
+        // Ordering an existing key window can activate an accessory app on some event-loop turns.
+        // Opening the menu-bar menu must not take the keyboard from the app the user is in.
+        if !wasActive { NSApp.deactivate() }
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -584,25 +616,29 @@ final class AppController: NSObject, NSMenuDelegate {
 
     func rebuildMenu() {
         menu.removeAllItems()
+        // Warnings are items (not greyed-out commands): short in the menu, the details and what to do on a click.
+        func warning(_ title: String, _ details: String, settingsFor profile: String? = nil) {
+            let i = action(title, #selector(showWarning(_:)), Warning(details: details, profile: profile))
+            menu.addItem(i)
+        }
         for c in conflictsShown {
             let mark: String
-            if case .narrowerRoutes = c { mark = "ⓘ " } else { mark = "⚠︎ " }
-            let i = NSMenuItem(title: mark + conflictText(c), action: nil, keyEquivalent: "")
-            i.isEnabled = false
-            menu.addItem(i)
+            switch c {
+            case .narrowerRoutes, .dnsLimited: mark = "ⓘ "
+            default: mark = "⚠︎ "
+            }
+            if case .dnsTakenByAnother(let a) = c {
+                warning(mark + L("%@: DNS not set, another connection takes all names", a), conflictText(c), settingsFor: a)
+            } else {
+                warning(mark + conflictText(c), conflictText(c))
+            }
         }
         if !blockedBy.isEmpty {
-            let i = NSMenuItem(title: "⛔︎ " + L("Internet blocked: %@ dropped. Reconnect it or unblock.", blockedBy.joined(separator: ", ")),
-                               action: nil, keyEquivalent: "")
-            i.isEnabled = false
-            menu.addItem(i)
+            let text = L("Internet blocked: %@ dropped. Reconnect it or unblock.", blockedBy.joined(separator: ", "))
+            warning("⛔︎ " + text, text)
             menu.addItem(action(L("Unblock Internet"), #selector(unblockInternet)))
         }
-        for f in leaksShown {
-            let i = NSMenuItem(title: "⚠︎ " + leakText(f), action: nil, keyEquivalent: "")
-            i.isEnabled = false
-            menu.addItem(i)
-        }
+        for f in leaksShown { warning("⚠︎ " + leakText(f), leakText(f)) }
         if offerSignIn { menu.addItem(action(L("Sign in to This Network…"), #selector(signInToNetwork))) }
         if manager.helperNeedsManualUpdate { menu.addItem(action(L("Update MugVPN's Helper…"), #selector(updateHelper))) }
         if !conflictsShown.isEmpty || !leaksShown.isEmpty || !blockedBy.isEmpty || offerSignIn || manager.helperNeedsManualUpdate {
@@ -638,6 +674,33 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     @objc func disconnectAll() { disconnectEverything() }
+
+    final class Warning: NSObject {
+        let details: String
+        let profile: String?
+        init(details: String, profile: String?) { self.details = details; self.profile = profile }
+    }
+
+    /// A warning's details, with what to do: the connection's options, or its text to copy.
+    @objc func showWarning(_ sender: NSMenuItem) {
+        guard let w = sender.representedObject as? Warning else { return }
+        let profile = w.profile.flatMap { name in manager.profiles.first { $0.displayName == name } }
+        showForm(kind: "warning", profile: "", title: L("MugVPN"), views: [Form.label(w.details, id: "text")],
+                 okTitle: profile != nil ? L("Open Connection Settings") : L("Copy Details"), cancelTitle: L("Close"),
+                 ok: { [weak self] _ in
+            if let profile {
+                DispatchQueue.main.async { self?.connectionsWindowShow(profile) }
+            } else {
+                NSPasteboard.general.clearContents()
+                NSPasteboard.general.setString(w.details, forType: .string)
+            }
+            return true
+        })
+    }
+
+    private func connectionsWindowShow(_ p: Profile) {
+        showConnections(select: p, tab: "options")
+    }
 
     private func action(_ title: String, _ sel: Selector, _ obj: Any? = nil, enabled: Bool = true) -> NSMenuItem {
         let i = NSMenuItem(title: title, action: sel, keyEquivalent: "")
@@ -686,13 +749,13 @@ final class AppController: NSObject, NSMenuDelegate {
         showConnections(select: sender.representedObject as? Profile)
     }
 
-    func showConnections(select p: Profile?) {
+    func showConnections(select p: Profile?, tab: String? = nil) {
         if connectionsWindow == nil || WindowRegistry.shared.find(connectionsWindow!.window.windowID) == nil {
             let c = ConnectionsWindow(app: self)
             c.window.onClose = { [weak self] in self?.connectionsWindow = nil }
             connectionsWindow = c
         }
-        connectionsWindow?.show(select: p)
+        connectionsWindow?.show(select: p, tab: tab)
     }
 
     // MARK: - actions

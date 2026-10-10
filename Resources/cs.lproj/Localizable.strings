@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ není textový soubor (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ odkazuje na soubory mimo svou složku. Zkopírovat je do profilu? VPN server může získat jejich obsah.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS jen pro vlastní domény, všechna jména převzalo jiné připojení";
+"%@: DNS not set, another connection takes all names" = "%@: DNS nenastaven, všechna jména převzalo jiné připojení";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Klient pro profily OpenVPN, který udrží několik připojení najednou. Licence MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Program požádal MugVPN o import %@. Importovat?";
 "About MugVPN" = "O aplikaci MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Připojovat záznamy na konec logu místo jeho přepsání";
 "As in Settings" = "Podle nastavení";
 "Ask for a username and password" = "Žádat o uživatelské jméno a heslo";
+"At most %d domains for the server's DNS." = "Nejvýše %d domén pro DNS serveru.";
 "Attach automatically" = "Připojit automaticky";
 "Authentication" = "Ověření";
 "Authentication failed" = "Ověření selhalo";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Vyberte certifikát pro %@:";
 "Choose the server's CA certificate." = "Vyberte certifikát CA serveru.";
 "Clear Saved Passwords" = "Smazat uložená hesla";
+"Close" = "Zavřít";
 "Configuration" = "Konfigurace";
 "Connect" = "Připojit";
 "Connect script (s):" = "Skript při připojení (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Připojení";
 "Connections…" = "Připojení…";
 "Copy" = "Kopírovat";
+"Copy Details" = "Kopírovat podrobnosti";
 "Copy and Import" = "Zkopírovat a importovat";
 "Cut" = "Vyjmout";
 "DNS server %@ is not an IP address." = "DNS server %@ není IP adresa.";
@@ -140,6 +145,7 @@
 "Off" = "Vypnuto";
 "One server per line: host port udp|tcp" = "Jeden server na řádek: hostitel port udp|tcp";
 "Only for domains:" = "Jen pro domény:";
+"Open Connection Settings" = "Otevřít nastavení připojení";
 "Open MugVPN at login" = "Otevřít MugVPN po přihlášení";
 "Open System Settings" = "Otevřít Nastavení systému";
 "Open in Text Editor" = "Otevřít v textovém editoru";
@@ -222,6 +228,7 @@
 "connected" = "připojeno";
 "connecting" = "připojování";
 "empty: all names" = "prázdné: všechna jména";
+"empty: as the server sends it" = "prázdné: jak to posílá server";
 "enter a host name or address" = "zadejte název nebo adresu hostitele";
 "not connected" = "nepřipojeno";
 "nothing" = "nic";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "trvalé spojení neběží";
 "the port must be 1–65535" = "port musí být 1–65535";
 "the pre-connect script failed" = "skript před připojením selhal";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "spuštěná pomocná služba je starší a domény pro DNS serveru by ignorovala: připojte se znovu, až se aktualizuje";
 "username %@" = "uživatelské jméno %@";
 "write a server as: host port udp|tcp" = "zadejte server ve tvaru: hostitel port udp|tcp";

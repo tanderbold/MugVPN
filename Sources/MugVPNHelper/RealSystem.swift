@@ -414,11 +414,15 @@ final class RealSystem: HelperSystem {
         }
     }
 
-    /// The reverse of openvpn's macos-dns-updown.sh for one device.
-    func restoreDNS(device dev: String) {
-        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil) else { return }
+    /// The reverse of openvpn's macos-dns-updown.sh for one device. False when a key could not be
+    /// changed (the caller then keeps it as set).
+    @discardableResult func restoreDNS(device dev: String) -> Bool {
+        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil) else { return false }
+        defer { run("/usr/bin/dscacheutil", ["-flushcache"]); run("/usr/bin/killall", ["-HUP", "mDNSResponder"]) }
+        // Gone, or not there to begin with.
+        func remove(_ key: CFString) -> Bool { SCDynamicStoreRemoveValue(store, key) || SCDynamicStoreCopyValue(store, key) == nil }
         let base = "State:/Network/Service/openvpn-\(dev)"
-        SCDynamicStoreRemoveValue(store, "\(base)/DNS" as CFString)
+        guard remove("\(base)/DNS" as CFString) else { return false }
         let backupKey = "\(base)/DnsBackup" as CFString
         if var backup = SCDynamicStoreCopyValue(store, backupKey) as? [String: Any],
            let primary = backup.removeValue(forKey: RealSystem.backupServiceKey) as? String
@@ -426,16 +430,13 @@ final class RealSystem: HelperSystem {
             // The service whose DNS was replaced, even if another is primary now.
             let key = "Setup:/Network/Service/\(primary)/DNS" as CFString
             // An empty backup: there was no DNS of the service's own before.
-            if backup.isEmpty {
-                SCDynamicStoreRemoveValue(store, key)
-            } else {
-                SCDynamicStoreSetValue(store, key, backup as CFDictionary)
+            guard backup.isEmpty ? remove(key) : SCDynamicStoreSetValue(store, key, backup as CFDictionary) else {
+                log("could not restore the primary DNS from \(dev)'s backup")
+                return false   // the backup stays: what to put back, and all names still held
             }
             log("restored the primary DNS from \(dev)'s backup")
         }
-        SCDynamicStoreRemoveValue(store, backupKey)
-        run("/usr/bin/dscacheutil", ["-flushcache"])
-        run("/usr/bin/killall", ["-HUP", "mDNSResponder"])
+        return remove(backupKey)
     }
 
     func deleteRoute(_ args: [String]) {
@@ -451,13 +452,21 @@ final class RealSystem: HelperSystem {
         return String(cString: pw.pointee.pw_name)
     }
 
+    /// In the admin group (however many groups the user is in: the list grows until it fits).
     func isAdmin(uid: UInt32) -> Bool {
         guard let pw = getpwuid(uid), let admin = getgrnam("admin") else { return false }
-        let adminGID = admin.pointee.gr_gid
-        var count: Int32 = 64
-        var groups = [Int32](repeating: 0, count: Int(count))
-        guard getgrouplist(pw.pointee.pw_name, Int32(bitPattern: pw.pointee.pw_gid), &groups, &count) != -1 else { return false }
-        return groups.prefix(Int(count)).contains(Int32(bitPattern: adminGID))
+        let adminGID = Int32(bitPattern: admin.pointee.gr_gid)
+        var size = 64
+        while size <= 65_536 {
+            var count = Int32(size)
+            var groups = [Int32](repeating: 0, count: size)
+            if getgrouplist(pw.pointee.pw_name, Int32(bitPattern: pw.pointee.pw_gid), &groups, &count) != -1 {
+                return groups.prefix(Int(count)).contains(adminGID)
+            }
+            // Too small: as large as it says it needs, at least twice as large.
+            size = max(size * 2, Int(count))
+        }
+        return false
     }
 
     func fileInfo(_ path: String) -> FileInfo? {

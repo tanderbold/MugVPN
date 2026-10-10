@@ -8,6 +8,8 @@
 "%@ is not a text file (PEM)." = "%@ er ikke en tekstfil (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ viser til filer utenfor mappen sin. Kopiere dem inn i profilen? VPN-serveren kan motta innholdet.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ tar over %@ nettverk fra rutene til %@ (den mer spesifikke ruten vinner)";
+"%@: DNS for its own domains only, another connection takes all names" = "%@: DNS bare for egne domener, en annen tilkobling tar alle navn";
+"%@: DNS not set, another connection takes all names" = "%@: DNS ikke satt, en annen tilkobling tar alle navn";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "En klient for OpenVPN-profiler som holder flere tilkoblinger oppe samtidig. MIT-lisens.";
 "A program asked MugVPN to import %@. Import it?" = "Et program ba MugVPN importere %@. Importere?";
 "About MugVPN" = "Om MugVPN";
@@ -18,6 +20,7 @@
 "Append to the log instead of replacing it" = "Tilføy til loggen i stedet for å erstatte den";
 "As in Settings" = "Som i Innstillinger";
 "Ask for a username and password" = "Spør om brukernavn og passord";
+"At most %d domains for the server's DNS." = "Høyst %d domener for serverens DNS.";
 "Attach automatically" = "Koble til automatisk";
 "Authentication" = "Autentisering";
 "Authentication failed" = "Autentisering mislyktes";
@@ -39,6 +42,7 @@
 "Choose the certificate for %@:" = "Velg sertifikatet for %@:";
 "Choose the server's CA certificate." = "Velg serverens CA-sertifikat.";
 "Clear Saved Passwords" = "Fjern lagrede passord";
+"Close" = "Lukk";
 "Configuration" = "Konfigurasjon";
 "Connect" = "Koble til";
 "Connect script (s):" = "Skript ved tilkobling (s):";
@@ -57,6 +61,7 @@
 "Connections" = "Tilkoblinger";
 "Connections…" = "Tilkoblinger…";
 "Copy" = "Kopier";
+"Copy Details" = "Kopier detaljer";
 "Copy and Import" = "Kopier og importer";
 "Cut" = "Klipp ut";
 "DNS server %@ is not an IP address." = "DNS-serveren %@ er ikke en IP-adresse.";
@@ -140,6 +145,7 @@
 "Off" = "Av";
 "One server per line: host port udp|tcp" = "Én server per linje: vert port udp|tcp";
 "Only for domains:" = "Bare for domener:";
+"Open Connection Settings" = "Åpne tilkoblingsinnstillinger";
 "Open MugVPN at login" = "Åpne MugVPN ved pålogging";
 "Open System Settings" = "Åpne Systeminnstillinger";
 "Open in Text Editor" = "Åpne i tekstredigerer";
@@ -222,6 +228,7 @@
 "connected" = "tilkoblet";
 "connecting" = "kobler til";
 "empty: all names" = "tom: alle navn";
+"empty: as the server sends it" = "tom: slik serveren sender det";
 "enter a host name or address" = "skriv inn et vertsnavn eller en adresse";
 "not connected" = "ikke tilkoblet";
 "nothing" = "ingenting";
@@ -230,5 +237,6 @@
 "the persistent connection is not running" = "den vedvarende tilkoblingen kjører ikke";
 "the port must be 1–65535" = "porten må være 1–65535";
 "the pre-connect script failed" = "skriptet før tilkobling mislyktes";
+"the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "den kjørende hjelperen er eldre og ville ignorert domenene for serverens DNS: koble til igjen når den er oppdatert";
 "username %@" = "brukernavn %@";
 "write a server as: host port udp|tcp" = "skriv en server som: vert port udp|tcp";
