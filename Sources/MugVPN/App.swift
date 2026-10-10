@@ -109,6 +109,9 @@ func showError(_ text: String, profile: String = "") {
 
 /// The app: menu bar item, menus, windows; the logic is in MugVPNAppCore.
 final class AppController: NSObject, NSMenuDelegate {
+    /// The version Info.plist carries ("dev" when run without the bundle, as `swift run` does).
+    static let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+
     let services: Services
     let settingsStore: SettingsStore
     let store: ProfileStore
@@ -697,7 +700,7 @@ final class AppController: NSObject, NSMenuDelegate {
                                         exists: { FileManager.default.isReadableFile(atPath: $0) })
             return path.flatMap { try? String(contentsOfFile: $0, encoding: .utf8) }.map { (p.displayName, String($0.suffix(1 << 20))) }
         }
-        let appVersion = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+        let appVersion = Self.appVersion
         let os = ProcessInfo.processInfo.operatingSystemVersionString
         let connected = manager.active.values.map { "\($0.profile.displayName): \($0.controller.status)" }.sorted()
         manager.helperClient.version { [weak self] helperVersion in
@@ -931,7 +934,7 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     @objc func about() {
-        let v = Bundle.main.infoDictionary?["CFBundleShortVersionString"] as? String ?? "dev"
+        let v = Self.appVersion
         showForm(kind: "about", profile: "", title: L("About MugVPN"),
                  views: [Form.label(["MugVPN", v].joined(separator: " "), id: "version", bold: true),
                          {
