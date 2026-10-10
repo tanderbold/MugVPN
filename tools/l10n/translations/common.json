@@ -48,7 +48,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?",
   "MugVPN's helper was not updated: %@": "Pomocník MugVPN nebyl aktualizován: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Pomocník MugVPN má verzi %@, novější než tato aplikace (%@): aktualizujte MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Pomocník MugVPN neodpověděl (%@). Odstranit systémovou část MugVPN pomocí hesla správce?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Pomocník MugVPN neodpověděl (%@). Odstranit systémovou část MugVPN pomocí hesla správce?",
+  "Edit": "Úpravy",
+  "Undo": "Odvolat",
+  "Redo": "Znovu",
+  "Cut": "Vyjmout",
+  "Copy": "Kopírovat",
+  "Paste": "Vložit",
+  "Select All": "Vybrat vše"
  },
  "de": {
   "OK": "OK",
@@ -99,7 +106,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Der laufende Helfer ist älter und kann sich nicht selbst aktualisieren. Den neuen einzusetzen beendet alle MugVPN-Verbindungen auf diesem Mac, aller Benutzer. Fortfahren?",
   "MugVPN's helper was not updated: %@": "Der Helfer von MugVPN wurde nicht aktualisiert: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Der Helfer von MugVPN hat Version %@, neuer als diese App (%@): Aktualisieren Sie MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Der Helfer von MugVPN hat nicht geantwortet (%@). Den Systemteil von MugVPN stattdessen mit einem Administratorpasswort entfernen?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Der Helfer von MugVPN hat nicht geantwortet (%@). Den Systemteil von MugVPN stattdessen mit einem Administratorpasswort entfernen?",
+  "Edit": "Bearbeiten",
+  "Undo": "Widerrufen",
+  "Redo": "Wiederholen",
+  "Cut": "Ausschneiden",
+  "Copy": "Kopieren",
+  "Paste": "Einsetzen",
+  "Select All": "Alles auswählen"
  },
  "da": {
   "OK": "OK",
@@ -150,7 +164,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Den kørende hjælper er en ældre, der ikke kan opdatere sig selv. At sætte den nye i stedet stopper alle MugVPN-forbindelser på denne Mac for alle brugere. Fortsæt?",
   "MugVPN's helper was not updated: %@": "MugVPN's hjælper blev ikke opdateret: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN's hjælper er version %@, nyere end denne app (%@): opdater MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN's hjælper svarede ikke (%@). Fjern MugVPN's systemdel med en administratoradgangskode i stedet?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN's hjælper svarede ikke (%@). Fjern MugVPN's systemdel med en administratoradgangskode i stedet?",
+  "Edit": "Rediger",
+  "Undo": "Fortryd",
+  "Redo": "Annuller fortryd",
+  "Cut": "Klip",
+  "Copy": "Kopiér",
+  "Paste": "Sæt ind",
+  "Select All": "Vælg alt"
  },
  "el": {
   "OK": "OK",
@@ -201,7 +222,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;",
   "MugVPN's helper was not updated: %@": "Ο βοηθός του MugVPN δεν ενημερώθηκε: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;",
+  "Edit": "Επεξεργασία",
+  "Undo": "Αναίρεση",
+  "Redo": "Επανάληψη",
+  "Cut": "Αποκοπή",
+  "Copy": "Αντιγραφή",
+  "Paste": "Επικόλληση",
+  "Select All": "Επιλογή όλων"
  },
  "es": {
   "OK": "Aceptar",
@@ -252,7 +280,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "El asistente en ejecución es uno anterior que no puede actualizarse solo. Poner el nuevo detiene todas las conexiones de MugVPN de este Mac, de todos los usuarios. ¿Continuar?",
   "MugVPN's helper was not updated: %@": "No se actualizó el asistente de MugVPN: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "El asistente de MugVPN es la versión %@, más reciente que esta app (%@): actualice MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "El asistente de MugVPN no respondió (%@). ¿Eliminar la parte del sistema de MugVPN con una contraseña de administrador?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "El asistente de MugVPN no respondió (%@). ¿Eliminar la parte del sistema de MugVPN con una contraseña de administrador?",
+  "Edit": "Edición",
+  "Undo": "Deshacer",
+  "Redo": "Rehacer",
+  "Cut": "Cortar",
+  "Copy": "Copiar",
+  "Paste": "Pegar",
+  "Select All": "Seleccionar todo"
  },
  "fa": {
   "OK": "تأیید",
@@ -303,7 +338,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟",
   "MugVPN's helper was not updated: %@": "دستیار MugVPN به‌روز نشد: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "نسخهٔ دستیار MugVPN %@ است، جدیدتر از این برنامه (%@): MugVPN را به‌روز کنید.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "دستیار MugVPN پاسخ نداد (%@). بخش سیستمی MugVPN با رمز مدیر حذف شود؟"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "دستیار MugVPN پاسخ نداد (%@). بخش سیستمی MugVPN با رمز مدیر حذف شود؟",
+  "Edit": "ویرایش",
+  "Undo": "واگرد",
+  "Redo": "ازنو",
+  "Cut": "برش",
+  "Copy": "کپی",
+  "Paste": "چسباندن",
+  "Select All": "انتخاب همه"
  },
  "fi": {
   "OK": "OK",
@@ -354,7 +396,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?",
   "MugVPN's helper was not updated: %@": "MugVPN:n apuohjelmaa ei päivitetty: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?",
+  "Edit": "Muokkaa",
+  "Undo": "Kumoa",
+  "Redo": "Tee uudelleen",
+  "Cut": "Leikkaa",
+  "Copy": "Kopioi",
+  "Paste": "Sijoita",
+  "Select All": "Valitse kaikki"
  },
  "fr": {
   "OK": "OK",
@@ -405,7 +454,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?",
   "MugVPN's helper was not updated: %@": "L'assistant de MugVPN n'a pas été mis à jour : %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "L'assistant de MugVPN est en version %@, plus récente que cette app (%@) : mettez MugVPN à jour.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "L'assistant de MugVPN n'a pas répondu (%@). Supprimer la partie système de MugVPN avec un mot de passe administrateur ?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "L'assistant de MugVPN n'a pas répondu (%@). Supprimer la partie système de MugVPN avec un mot de passe administrateur ?",
+  "Edit": "Édition",
+  "Undo": "Annuler",
+  "Redo": "Rétablir",
+  "Cut": "Couper",
+  "Copy": "Copier",
+  "Paste": "Coller",
+  "Select All": "Tout sélectionner"
  },
  "it": {
   "OK": "OK",
@@ -456,7 +512,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?",
   "MugVPN's helper was not updated: %@": "L'helper di MugVPN non è stato aggiornato: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "L'helper di MugVPN è alla versione %@, più recente di questa app (%@): aggiorna MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "L'helper di MugVPN non ha risposto (%@). Rimuovere la parte di sistema di MugVPN con una password di amministratore?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "L'helper di MugVPN non ha risposto (%@). Rimuovere la parte di sistema di MugVPN con una password di amministratore?",
+  "Edit": "Modifica",
+  "Undo": "Annulla",
+  "Redo": "Ripristina",
+  "Cut": "Taglia",
+  "Copy": "Copia",
+  "Paste": "Incolla",
+  "Select All": "Seleziona tutto"
  },
  "ja": {
   "OK": "OK",
@@ -507,7 +570,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？",
   "MugVPN's helper was not updated: %@": "MugVPN のヘルパーをアップデートできませんでした: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN のヘルパーはバージョン %@ で、このアプリ（%@）より新しいです。MugVPN をアップデートしてください。",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN のヘルパーが応答しませんでした（%@）。代わりに管理者パスワードで MugVPN のシステム部分を削除しますか？"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN のヘルパーが応答しませんでした（%@）。代わりに管理者パスワードで MugVPN のシステム部分を削除しますか？",
+  "Edit": "編集",
+  "Undo": "取り消す",
+  "Redo": "やり直す",
+  "Cut": "カット",
+  "Copy": "コピー",
+  "Paste": "ペースト",
+  "Select All": "すべてを選択"
  },
  "ko": {
   "OK": "확인",
@@ -558,7 +628,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "실행 중인 도우미는 스스로 업데이트할 수 없는 이전 버전입니다. 새 도우미로 바꾸면 이 Mac의 모든 사용자의 MugVPN 연결이 중단됩니다. 계속하시겠습니까?",
   "MugVPN's helper was not updated: %@": "MugVPN 도우미가 업데이트되지 않았습니다: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?",
+  "Edit": "편집",
+  "Undo": "실행 취소",
+  "Redo": "실행 복귀",
+  "Cut": "오려두기",
+  "Copy": "복사하기",
+  "Paste": "붙여넣기",
+  "Select All": "전체 선택"
  },
  "nl": {
   "OK": "OK",
@@ -609,7 +686,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?",
   "MugVPN's helper was not updated: %@": "De helper van MugVPN is niet bijgewerkt: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "De helper van MugVPN is versie %@, nieuwer dan deze app (%@): werk MugVPN bij.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "De helper van MugVPN reageerde niet (%@). Het systeemdeel van MugVPN in plaats daarvan met een beheerderswachtwoord verwijderen?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "De helper van MugVPN reageerde niet (%@). Het systeemdeel van MugVPN in plaats daarvan met een beheerderswachtwoord verwijderen?",
+  "Edit": "Wijzig",
+  "Undo": "Herstel",
+  "Redo": "Opnieuw",
+  "Cut": "Knip",
+  "Copy": "Kopieer",
+  "Paste": "Plak",
+  "Select All": "Selecteer alles"
  },
  "nb": {
   "OK": "OK",
@@ -660,7 +744,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjelperen som kjører, er en eldre som ikke kan oppdatere seg selv. Å sette inn den nye stopper alle MugVPN-tilkoblinger på denne Macen, for alle brukere. Fortsette?",
   "MugVPN's helper was not updated: %@": "MugVPNs hjelper ble ikke oppdatert: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPNs hjelper er versjon %@, nyere enn denne appen (%@): oppdater MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPNs hjelper svarte ikke (%@). Fjerne MugVPNs systemdel med et administratorpassord i stedet?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPNs hjelper svarte ikke (%@). Fjerne MugVPNs systemdel med et administratorpassord i stedet?",
+  "Edit": "Rediger",
+  "Undo": "Angre",
+  "Redo": "Utfør på nytt",
+  "Cut": "Klipp ut",
+  "Copy": "Kopier",
+  "Paste": "Lim inn",
+  "Select All": "Merk alt"
  },
  "pl": {
   "OK": "OK",
@@ -711,7 +802,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?",
   "MugVPN's helper was not updated: %@": "Pomocnik MugVPN nie został zaktualizowany: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Pomocnik MugVPN ma wersję %@, nowszą niż ta aplikacja (%@): zaktualizuj MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Pomocnik MugVPN nie odpowiedział (%@). Usunąć część systemową MugVPN hasłem administratora?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Pomocnik MugVPN nie odpowiedział (%@). Usunąć część systemową MugVPN hasłem administratora?",
+  "Edit": "Edycja",
+  "Undo": "Cofnij",
+  "Redo": "Powtórz",
+  "Cut": "Wytnij",
+  "Copy": "Kopiuj",
+  "Paste": "Wklej",
+  "Select All": "Zaznacz wszystko"
  },
  "pt-BR": {
   "OK": "OK",
@@ -762,7 +860,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?",
   "MugVPN's helper was not updated: %@": "O auxiliar do MugVPN não foi atualizado: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "O auxiliar do MugVPN está na versão %@, mais nova que este app (%@): atualize o MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "O auxiliar do MugVPN não respondeu (%@). Remover a parte de sistema do MugVPN com uma senha de administrador?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "O auxiliar do MugVPN não respondeu (%@). Remover a parte de sistema do MugVPN com uma senha de administrador?",
+  "Edit": "Editar",
+  "Undo": "Desfazer",
+  "Redo": "Refazer",
+  "Cut": "Recortar",
+  "Copy": "Copiar",
+  "Paste": "Colar",
+  "Select All": "Selecionar Tudo"
  },
  "ru": {
   "OK": "ОК",
@@ -813,7 +918,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Работающий помощник — старый, сам обновиться он не может. Установка нового остановит все подключения MugVPN на этом Mac, у всех пользователей. Продолжить?",
   "MugVPN's helper was not updated: %@": "Помощник MugVPN не обновлён: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Помощник MugVPN версии %@ — новее, чем это приложение (%@): обновите MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Помощник MugVPN не ответил (%@). Удалить системную часть MugVPN с паролем администратора?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Помощник MugVPN не ответил (%@). Удалить системную часть MugVPN с паролем администратора?",
+  "Edit": "Правка",
+  "Undo": "Отменить",
+  "Redo": "Повторить",
+  "Cut": "Вырезать",
+  "Copy": "Копировать",
+  "Paste": "Вставить",
+  "Select All": "Выбрать все"
  },
  "sv": {
   "OK": "OK",
@@ -864,7 +976,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Hjälparen som körs är en äldre som inte kan uppdatera sig själv. Att sätta in den nya stoppar alla MugVPN-anslutningar på den här Macen, för alla användare. Fortsätta?",
   "MugVPN's helper was not updated: %@": "MugVPNs hjälpare uppdaterades inte: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPNs hjälpare är version %@, nyare än den här appen (%@): uppdatera MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPNs hjälpare svarade inte (%@). Ta bort MugVPNs systemdel med ett administratörslösenord i stället?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPNs hjälpare svarade inte (%@). Ta bort MugVPNs systemdel med ett administratörslösenord i stället?",
+  "Edit": "Redigera",
+  "Undo": "Ångra",
+  "Redo": "Gör om",
+  "Cut": "Klipp ut",
+  "Copy": "Kopiera",
+  "Paste": "Klistra in",
+  "Select All": "Markera allt"
  },
  "tr": {
   "OK": "Tamam",
@@ -915,7 +1034,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?",
   "MugVPN's helper was not updated: %@": "MugVPN yardımcısı güncellenmedi: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN yardımcısı %@ sürümünde, bu uygulamadan (%@) daha yeni: MugVPN'i güncelleyin.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN yardımcısı yanıt vermedi (%@). MugVPN'in sistem bölümü bunun yerine yönetici parolasıyla kaldırılsın mı?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN yardımcısı yanıt vermedi (%@). MugVPN'in sistem bölümü bunun yerine yönetici parolasıyla kaldırılsın mı?",
+  "Edit": "Düzen",
+  "Undo": "Geri Al",
+  "Redo": "Yinele",
+  "Cut": "Kes",
+  "Copy": "Kopyala",
+  "Paste": "Yapıştır",
+  "Select All": "Tümünü Seç"
  },
  "uk": {
   "OK": "OK",
@@ -966,7 +1092,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?",
   "MugVPN's helper was not updated: %@": "Помічник MugVPN не оновлено: %@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "Помічник MugVPN версії %@ — новіший за цей застосунок (%@): оновіть MugVPN.",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Помічник MugVPN не відповів (%@). Видалити системну частину MugVPN з паролем адміністратора?"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "Помічник MugVPN не відповів (%@). Видалити системну частину MugVPN з паролем адміністратора?",
+  "Edit": "Редагування",
+  "Undo": "Відмінити",
+  "Redo": "Повторити",
+  "Cut": "Вирізати",
+  "Copy": "Копіювати",
+  "Paste": "Вставити",
+  "Select All": "Вибрати все"
  },
  "zh-Hans": {
   "OK": "好",
@@ -1017,7 +1150,14 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在运行的助手是无法自行更新的旧版本。换上新版本会停止此 Mac 上所有用户的所有 MugVPN 连接。是否继续？",
   "MugVPN's helper was not updated: %@": "MugVPN 助手未更新：%@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？",
+  "Edit": "编辑",
+  "Undo": "撤销",
+  "Redo": "重做",
+  "Cut": "剪切",
+  "Copy": "拷贝",
+  "Paste": "粘贴",
+  "Select All": "全选"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1068,6 +1208,13 @@
   "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?": "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？",
   "MugVPN's helper was not updated: %@": "MugVPN 輔助程式未更新：%@",
   "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.": "MugVPN 輔助程式版本為 %@，比此 App（%@）新：請更新 MugVPN。",
-  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 輔助程式沒有回應（%@）。改用管理者密碼移除 MugVPN 的系統部分？"
+  "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?": "MugVPN 輔助程式沒有回應（%@）。改用管理者密碼移除 MugVPN 的系統部分？",
+  "Edit": "編輯",
+  "Undo": "還原",
+  "Redo": "重做",
+  "Cut": "剪下",
+  "Copy": "拷貝",
+  "Paste": "貼上",
+  "Select All": "全選"
  }
 }

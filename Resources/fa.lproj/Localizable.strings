@@ -55,7 +55,9 @@
 "Connection settings" = "تنظیمات اتصال";
 "Connections" = "اتصال‌ها";
 "Connections…" = "اتصال‌ها…";
+"Copy" = "کپی";
 "Copy and Import" = "کپی و وارد کردن";
+"Cut" = "برش";
 "DNS server %@ is not an IP address." = "سرور DNS %@ نشانی IP نیست.";
 "DNS server %@ is reached outside the VPN (through %@)" = "سرور DNS %@ بیرون از VPN در دسترس است (از طریق %@)";
 "DNS servers:" = "سرورهای DNS:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "در حال قطع اتصال";
 "Don't change DNS" = "DNS را تغییر نده";
 "Duplicate" = "تکثیر";
+"Edit" = "ویرایش";
 "Edit Config" = "ویرایش پیکربندی";
 "Embedded" = "جاسازی‌شده";
 "Enter at least one DNS server." = "دست‌کم یک سرور DNS وارد کنید.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN علامت تجاری ثبت‌شدهٔ OpenVPN Inc. است.";
 "Options" = "گزینه‌ها";
 "Password:" = "رمز عبور:";
+"Paste" = "چسباندن";
 "Persistent connections:" = "اتصال‌های دائمی:";
 "Port:" = "پورت:";
 "Pre-connect script (s):" = "اسکریپت پیش از اتصال (ثانیه):";
@@ -153,6 +157,7 @@
 "Received:" = "دریافت‌شده:";
 "Reconnect" = "اتصال دوباره";
 "Reconnecting" = "در حال اتصال دوباره";
+"Redo" = "ازنو";
 "Remove" = "برداشتن";
 "Response" = "پاسخ";
 "Revert" = "بازگرداندن";
@@ -160,6 +165,7 @@
 "Save password" = "ذخیرهٔ رمز عبور";
 "Saved:" = "ذخیره‌شده:";
 "Search" = "جستجو";
+"Select All" = "انتخاب همه";
 "Send DNS only through the VPN" = "ارسال DNS فقط از طریق VPN";
 "Send all traffic through the VPN" = "فرستادن همهٔ ترافیک از طریق VPN";
 "Sent:" = "ارسال‌شده:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "MugVPN را در System Settings > General > Login Items روشن کنید و سپس دوباره متصل شوید.";
 "URL:" = "URL:";
 "Unblock Internet" = "رفع مسدودی اینترنت";
+"Undo" = "واگرد";
 "Uninstall" = "حذف نصب";
 "Uninstall MugVPN" = "حذف نصب MugVPN";
 "Uninstall MugVPN…" = "حذف نصب MugVPN…";

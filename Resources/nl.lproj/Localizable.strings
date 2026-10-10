@@ -55,7 +55,9 @@
 "Connection settings" = "Verbindingsinstellingen";
 "Connections" = "Verbindingen";
 "Connections…" = "Verbindingen…";
+"Copy" = "Kopieer";
 "Copy and Import" = "Kopieer en importeer";
+"Cut" = "Knip";
 "DNS server %@ is not an IP address." = "DNS-server %@ is geen IP-adres.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-server %@ wordt buiten de VPN bereikt (via %@)";
 "DNS servers:" = "DNS-servers:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Verbinding verbreken";
 "Don't change DNS" = "DNS niet wijzigen";
 "Duplicate" = "Dupliceer";
+"Edit" = "Wijzig";
 "Edit Config" = "Configuratie wijzigen";
 "Embedded" = "Ingesloten";
 "Enter at least one DNS server." = "Voer minstens één DNS-server in.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN is een gedeponeerd handelsmerk van OpenVPN Inc.";
 "Options" = "Opties";
 "Password:" = "Wachtwoord:";
+"Paste" = "Plak";
 "Persistent connections:" = "Permanente verbindingen:";
 "Port:" = "Poort:";
 "Pre-connect script (s):" = "Script vóór verbinden (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Ontvangen:";
 "Reconnect" = "Opnieuw verbinden";
 "Reconnecting" = "Opnieuw verbinden";
+"Redo" = "Opnieuw";
 "Remove" = "Haal weg";
 "Response" = "Antwoord";
 "Revert" = "Herstel";
@@ -160,6 +165,7 @@
 "Save password" = "Wachtwoord opslaan";
 "Saved:" = "Bewaard:";
 "Search" = "Zoek";
+"Select All" = "Selecteer alles";
 "Send DNS only through the VPN" = "DNS alleen via de VPN sturen";
 "Send all traffic through the VPN" = "Stuur al het verkeer via de VPN";
 "Sent:" = "Verzonden:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Zet MugVPN aan in Systeeminstellingen > Algemeen > Inlogonderdelen en maak daarna opnieuw verbinding.";
 "URL:" = "URL:";
 "Unblock Internet" = "Internet deblokkeren";
+"Undo" = "Herstel";
 "Uninstall" = "Verwijder";
 "Uninstall MugVPN" = "Verwijder MugVPN";
 "Uninstall MugVPN…" = "Verwijder MugVPN…";

@@ -55,7 +55,9 @@
 "Connection settings" = "Nastavení připojení";
 "Connections" = "Připojení";
 "Connections…" = "Připojení…";
+"Copy" = "Kopírovat";
 "Copy and Import" = "Zkopírovat a importovat";
+"Cut" = "Vyjmout";
 "DNS server %@ is not an IP address." = "DNS server %@ není IP adresa.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS server %@ je dosažen mimo VPN (přes %@)";
 "DNS servers:" = "DNS servery:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Odpojování";
 "Don't change DNS" = "Neměnit DNS";
 "Duplicate" = "Duplikovat";
+"Edit" = "Úpravy";
 "Edit Config" = "Upravit konfiguraci";
 "Embedded" = "Vložený";
 "Enter at least one DNS server." = "Zadejte alespoň jeden DNS server.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN je registrovaná ochranná známka společnosti OpenVPN Inc.";
 "Options" = "Volby";
 "Password:" = "Heslo:";
+"Paste" = "Vložit";
 "Persistent connections:" = "Trvalá spojení:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Skript před připojením (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Přijato:";
 "Reconnect" = "Znovu připojit";
 "Reconnecting" = "Opětovné připojování";
+"Redo" = "Znovu";
 "Remove" = "Odstranit";
 "Response" = "Odpověď";
 "Revert" = "Vrátit";
@@ -160,6 +165,7 @@
 "Save password" = "Uložit heslo";
 "Saved:" = "Uloženo:";
 "Search" = "Hledat";
+"Select All" = "Vybrat vše";
 "Send DNS only through the VPN" = "Posílat DNS jen přes VPN";
 "Send all traffic through the VPN" = "Posílat veškerý provoz přes VPN";
 "Sent:" = "Odesláno:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Zapněte MugVPN v Nastavení systému > Obecné > Položky otevírané po přihlášení a pak se znovu připojte.";
 "URL:" = "URL:";
 "Unblock Internet" = "Odblokovat internet";
+"Undo" = "Odvolat";
 "Uninstall" = "Odinstalovat";
 "Uninstall MugVPN" = "Odinstalovat MugVPN";
 "Uninstall MugVPN…" = "Odinstalovat MugVPN…";

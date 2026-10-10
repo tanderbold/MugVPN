@@ -229,6 +229,7 @@ final class AppController: NSObject, NSMenuDelegate {
         self.logsDir = logsDir
         super.init()
         menu.delegate = self
+        NSApp.mainMenu = AppController.editMenu()
         menu.autoenablesItems = false
         statusItem.menu = menu
         statusItem.button?.setAccessibilityIdentifier("mugvpn_status_item")
@@ -533,6 +534,28 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     // MARK: - menu
+
+    /// Never shown (an app without a Dock icon has no menu bar), but it is where Cmd+X/C/V/A and
+    /// undo reach the fields: without it, pasting a password did nothing.
+    static func editMenu() -> NSMenu {
+        let main = NSMenu()
+        let appItem = NSMenuItem()
+        appItem.submenu = NSMenu()
+        appItem.submenu?.addItem(withTitle: L("Quit MugVPN"), action: #selector(NSApplication.terminate(_:)), keyEquivalent: "q")
+        main.addItem(appItem)
+        let editItem = NSMenuItem()
+        let edit = NSMenu(title: L("Edit"))
+        edit.addItem(withTitle: L("Undo"), action: Selector(("undo:")), keyEquivalent: "z")
+        edit.addItem(withTitle: L("Redo"), action: Selector(("redo:")), keyEquivalent: "Z")
+        edit.addItem(.separator())
+        edit.addItem(withTitle: L("Cut"), action: #selector(NSText.cut(_:)), keyEquivalent: "x")
+        edit.addItem(withTitle: L("Copy"), action: #selector(NSText.copy(_:)), keyEquivalent: "c")
+        edit.addItem(withTitle: L("Paste"), action: #selector(NSText.paste(_:)), keyEquivalent: "v")
+        edit.addItem(withTitle: L("Select All"), action: #selector(NSText.selectAll(_:)), keyEquivalent: "a")
+        editItem.submenu = edit
+        main.addItem(editItem)
+        return main
+    }
 
     /// The menu bar icon clicked: MugVPN's windows come forward (an app without a Dock icon has no
     /// other way back to a window lost behind others), prompts that wait for an answer on top.

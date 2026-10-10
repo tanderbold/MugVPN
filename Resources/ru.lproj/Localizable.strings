@@ -55,7 +55,9 @@
 "Connection settings" = "Настройки подключения";
 "Connections" = "Подключения";
 "Connections…" = "Подключения…";
+"Copy" = "Копировать";
 "Copy and Import" = "Скопировать и импортировать";
+"Cut" = "Вырезать";
 "DNS server %@ is not an IP address." = "DNS-сервер %@ — не IP-адрес.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-сервер %@ доступен мимо VPN (через %@)";
 "DNS servers:" = "DNS-серверы:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Отключение";
 "Don't change DNS" = "Не менять DNS";
 "Duplicate" = "Дублировать";
+"Edit" = "Правка";
 "Edit Config" = "Изменить конфигурацию";
 "Embedded" = "Встроенный";
 "Enter at least one DNS server." = "Укажите хотя бы один DNS-сервер.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN — зарегистрированный товарный знак OpenVPN Inc.";
 "Options" = "Параметры";
 "Password:" = "Пароль:";
+"Paste" = "Вставить";
 "Persistent connections:" = "Постоянные подключения:";
 "Port:" = "Порт:";
 "Pre-connect script (s):" = "Скрипт перед подключением (с):";
@@ -153,6 +157,7 @@
 "Received:" = "Получено:";
 "Reconnect" = "Переподключить";
 "Reconnecting" = "Переподключение";
+"Redo" = "Повторить";
 "Remove" = "Удалить";
 "Response" = "Ответ";
 "Revert" = "Вернуть";
@@ -160,6 +165,7 @@
 "Save password" = "Запомнить пароль";
 "Saved:" = "Сохранено:";
 "Search" = "Поиск";
+"Select All" = "Выбрать все";
 "Send DNS only through the VPN" = "Отправлять DNS только через VPN";
 "Send all traffic through the VPN" = "Направлять весь трафик через VPN";
 "Sent:" = "Отправлено:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Включите MugVPN в разделе «Системные настройки» > «Основные» > «Объекты входа», затем подключитесь снова.";
 "URL:" = "URL:";
 "Unblock Internet" = "Разблокировать интернет";
+"Undo" = "Отменить";
 "Uninstall" = "Удалить";
 "Uninstall MugVPN" = "Удалить MugVPN";
 "Uninstall MugVPN…" = "Удалить MugVPN…";

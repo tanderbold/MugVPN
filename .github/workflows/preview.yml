@@ -1,0 +1,47 @@
+name: Preview
+
+# A Developer ID–signed build of a branch for trying it on a Mac at once: no release, no
+# notarization, no Homebrew; the zipped app is a workflow artifact kept three days.
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  preview:
+    runs-on: macos-15
+    env:
+      MUGVPN_SIGN_ID: ${{ secrets.MUGVPN_SIGN_ID }}
+      MUGVPN_TEAM: ${{ secrets.MUGVPN_TEAM }}
+      MUGVPN_ARCH: native
+    steps:
+      - uses: actions/checkout@11bd71901bbe5b1630ceea73d27597364c9af683 # v4.2.2
+      - name: Developer ID certificate into a keychain of this run
+        env:
+          CERT: ${{ secrets.MUGVPN_DEVELOPER_ID_P12 }}
+          CERT_PASSWORD: ${{ secrets.MUGVPN_DEVELOPER_ID_P12_PASSWORD }}
+        run: |
+          [ -n "$CERT" ] && [ -n "$MUGVPN_SIGN_ID" ] || { echo "::error::no Developer ID secrets"; exit 1; }
+          KC="$RUNNER_TEMP/preview.keychain-db"
+          PW=$(openssl rand -hex 24)
+          echo "$CERT" | base64 --decode > "$RUNNER_TEMP/id.p12"
+          security create-keychain -p "$PW" "$KC"
+          security set-keychain-settings -lut 3600 "$KC"
+          security unlock-keychain -p "$PW" "$KC"
+          security import "$RUNNER_TEMP/id.p12" -k "$KC" -P "$CERT_PASSWORD" -T /usr/bin/codesign
+          security set-key-partition-list -S apple-tool:,apple: -s -k "$PW" "$KC" >/dev/null
+          security list-keychains -d user -s "$KC" $(security list-keychains -d user | tr -d '"')
+          rm -f "$RUNNER_TEMP/id.p12"
+      - name: Build (Developer ID, this Mac's architecture)
+        run: tools/build.sh
+      - name: Zip the app
+        run: ditto -c -k --keepParent build/MugVPN.app "build/MugVPN-preview-${GITHUB_SHA::7}.zip"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: MugVPN-preview
+          path: build/MugVPN-preview-*.zip
+          retention-days: 3
+      - name: Keychain away
+        if: always()
+        run: security delete-keychain "$RUNNER_TEMP/preview.keychain-db" 2>/dev/null || true

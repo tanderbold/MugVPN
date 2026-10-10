@@ -55,7 +55,9 @@
 "Connection settings" = "Налаштування підключення";
 "Connections" = "Підключення";
 "Connections…" = "Підключення…";
+"Copy" = "Копіювати";
 "Copy and Import" = "Скопіювати й імпортувати";
+"Cut" = "Вирізати";
 "DNS server %@ is not an IP address." = "DNS-сервер %@ — не IP-адреса.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-сервер %@ доступний повз VPN (через %@)";
 "DNS servers:" = "DNS-сервери:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Відключення";
 "Don't change DNS" = "Не змінювати DNS";
 "Duplicate" = "Дублювати";
+"Edit" = "Редагування";
 "Edit Config" = "Змінити конфігурацію";
 "Embedded" = "Вбудований";
 "Enter at least one DNS server." = "Вкажіть хоча б один DNS-сервер.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN — зареєстрована торговельна марка OpenVPN Inc.";
 "Options" = "Параметри";
 "Password:" = "Пароль:";
+"Paste" = "Вставити";
 "Persistent connections:" = "Постійні підключення:";
 "Port:" = "Порт:";
 "Pre-connect script (s):" = "Скрипт перед підключенням (с):";
@@ -153,6 +157,7 @@
 "Received:" = "Отримано:";
 "Reconnect" = "Перепідключити";
 "Reconnecting" = "Перепідключення";
+"Redo" = "Повторити";
 "Remove" = "Вилучити";
 "Response" = "Відповідь";
 "Revert" = "Повернути";
@@ -160,6 +165,7 @@
 "Save password" = "Запам'ятати пароль";
 "Saved:" = "Збережено:";
 "Search" = "Пошук";
+"Select All" = "Вибрати все";
 "Send DNS only through the VPN" = "Надсилати DNS лише через VPN";
 "Send all traffic through the VPN" = "Спрямовувати весь трафік через VPN";
 "Sent:" = "Надіслано:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Увімкніть MugVPN у розділі «Системні параметри» > «Загальні» > «Елементи входу», а потім підключіться знову.";
 "URL:" = "URL:";
 "Unblock Internet" = "Розблокувати інтернет";
+"Undo" = "Відмінити";
 "Uninstall" = "Видалити";
 "Uninstall MugVPN" = "Видалити MugVPN";
 "Uninstall MugVPN…" = "Видалити MugVPN…";

@@ -55,7 +55,9 @@
 "Connection settings" = "Yhteyden asetukset";
 "Connections" = "Yhteydet";
 "Connections…" = "Yhteydet…";
+"Copy" = "Kopioi";
 "Copy and Import" = "Kopioi ja tuo";
+"Cut" = "Leikkaa";
 "DNS server %@ is not an IP address." = "DNS-palvelin %@ ei ole IP-osoite.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-palvelin %@ tavoitetaan VPN:n ohi (kautta %@)";
 "DNS servers:" = "DNS-palvelimet:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Katkaistaan yhteyttä";
 "Don't change DNS" = "Älä muuta DNS:ää";
 "Duplicate" = "Monista";
+"Edit" = "Muokkaa";
 "Edit Config" = "Muokkaa asetustiedostoa";
 "Embedded" = "Upotettu";
 "Enter at least one DNS server." = "Anna vähintään yksi DNS-palvelin.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN on OpenVPN Inc.:n rekisteröity tavaramerkki.";
 "Options" = "Valinnat";
 "Password:" = "Salasana:";
+"Paste" = "Sijoita";
 "Persistent connections:" = "Pysyvät yhteydet:";
 "Port:" = "Portti:";
 "Pre-connect script (s):" = "Yhdistämistä edeltävä komentosarja (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Vastaanotettu:";
 "Reconnect" = "Yhdistä uudelleen";
 "Reconnecting" = "Yhdistetään uudelleen";
+"Redo" = "Tee uudelleen";
 "Remove" = "Poista";
 "Response" = "Vastaus";
 "Revert" = "Palauta";
@@ -160,6 +165,7 @@
 "Save password" = "Tallenna salasana";
 "Saved:" = "Tallennettu:";
 "Search" = "Haku";
+"Select All" = "Valitse kaikki";
 "Send DNS only through the VPN" = "Lähetä DNS vain VPN:n kautta";
 "Send all traffic through the VPN" = "Lähetä kaikki liikenne VPN:n kautta";
 "Sent:" = "Lähetetty:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Laita MugVPN päälle kohdassa Järjestelmäasetukset > Yleiset > Kirjautumiskohteet ja yhdistä sitten uudelleen.";
 "URL:" = "URL:";
 "Unblock Internet" = "Poista internetin esto";
+"Undo" = "Kumoa";
 "Uninstall" = "Poista asennus";
 "Uninstall MugVPN" = "Poista MugVPN";
 "Uninstall MugVPN…" = "Poista MugVPN…";

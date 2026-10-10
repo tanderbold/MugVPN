@@ -55,7 +55,9 @@
 "Connection settings" = "連線設定";
 "Connections" = "連線";
 "Connections…" = "連線…";
+"Copy" = "拷貝";
 "Copy and Import" = "拷貝並輸入";
+"Cut" = "剪下";
 "DNS server %@ is not an IP address." = "DNS 伺服器 %@ 不是 IP 位址。";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS 伺服器 %@ 在 VPN 之外被存取（經由 %@）";
 "DNS servers:" = "DNS 伺服器：";
@@ -77,6 +79,7 @@
 "Disconnecting" = "正在中斷連線";
 "Don't change DNS" = "不更改 DNS";
 "Duplicate" = "複製";
+"Edit" = "編輯";
 "Edit Config" = "編輯設定";
 "Embedded" = "內嵌";
 "Enter at least one DNS server." = "請至少輸入一個 DNS 伺服器。";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN 是 OpenVPN Inc. 的註冊商標。";
 "Options" = "選項";
 "Password:" = "密碼：";
+"Paste" = "貼上";
 "Persistent connections:" = "持續連線：";
 "Port:" = "通訊埠：";
 "Pre-connect script (s):" = "連線前指令碼（秒）：";
@@ -153,6 +157,7 @@
 "Received:" = "接收：";
 "Reconnect" = "重新連線";
 "Reconnecting" = "正在重新連線";
+"Redo" = "重做";
 "Remove" = "移除";
 "Response" = "回應";
 "Revert" = "回復";
@@ -160,6 +165,7 @@
 "Save password" = "儲存密碼";
 "Saved:" = "已儲存：";
 "Search" = "搜尋";
+"Select All" = "全選";
 "Send DNS only through the VPN" = "僅透過 VPN 傳送 DNS";
 "Send all traffic through the VPN" = "透過 VPN 傳送所有流量";
 "Sent:" = "傳送：";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "請在「系統設定」>「一般」>「登入項目」中開啟 MugVPN，然後重新連線。";
 "URL:" = "URL：";
 "Unblock Internet" = "解除網際網路阻擋";
+"Undo" = "還原";
 "Uninstall" = "解除安裝";
 "Uninstall MugVPN" = "解除安裝 MugVPN";
 "Uninstall MugVPN…" = "解除安裝 MugVPN…";

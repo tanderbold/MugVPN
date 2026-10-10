@@ -55,7 +55,9 @@
 "Connection settings" = "Verbindungseinstellungen";
 "Connections" = "Verbindungen";
 "Connections…" = "Verbindungen…";
+"Copy" = "Kopieren";
 "Copy and Import" = "Kopieren und importieren";
+"Cut" = "Ausschneiden";
 "DNS server %@ is not an IP address." = "DNS-Server %@ ist keine IP-Adresse.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-Server %@ wird außerhalb des VPN erreicht (über %@)";
 "DNS servers:" = "DNS-Server:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Verbindung wird getrennt";
 "Don't change DNS" = "DNS nicht ändern";
 "Duplicate" = "Duplizieren";
+"Edit" = "Bearbeiten";
 "Edit Config" = "Konfiguration bearbeiten";
 "Embedded" = "Eingebettet";
 "Enter at least one DNS server." = "Gib mindestens einen DNS-Server ein.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN ist eine eingetragene Marke von OpenVPN Inc.";
 "Options" = "Optionen";
 "Password:" = "Passwort:";
+"Paste" = "Einsetzen";
 "Persistent connections:" = "Dauerhafte Verbindungen:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Preconnect-Skript (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Empfangen:";
 "Reconnect" = "Erneut verbinden";
 "Reconnecting" = "Verbindung wird wiederhergestellt";
+"Redo" = "Wiederholen";
 "Remove" = "Entfernen";
 "Response" = "Antwort";
 "Revert" = "Zurücksetzen";
@@ -160,6 +165,7 @@
 "Save password" = "Passwort speichern";
 "Saved:" = "Gespeichert:";
 "Search" = "Suchen";
+"Select All" = "Alles auswählen";
 "Send DNS only through the VPN" = "DNS nur über das VPN senden";
 "Send all traffic through the VPN" = "Gesamten Datenverkehr über das VPN senden";
 "Sent:" = "Gesendet:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Aktiviere MugVPN unter Systemeinstellungen > Allgemein > Anmeldeobjekte und verbinde dich dann erneut.";
 "URL:" = "URL:";
 "Unblock Internet" = "Internet freigeben";
+"Undo" = "Widerrufen";
 "Uninstall" = "Deinstallieren";
 "Uninstall MugVPN" = "MugVPN deinstallieren";
 "Uninstall MugVPN…" = "MugVPN deinstallieren…";

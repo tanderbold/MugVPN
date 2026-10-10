@@ -168,7 +168,13 @@
   "key": "Connections…"
  },
  {
+  "key": "Copy"
+ },
+ {
   "key": "Copy and Import"
+ },
+ {
+  "key": "Cut"
  },
  {
   "key": "DNS server %@ is not an IP address."
@@ -232,6 +238,9 @@
  },
  {
   "key": "Duplicate"
+ },
+ {
+  "key": "Edit"
  },
  {
   "key": "Edit Config"
@@ -429,6 +438,9 @@
   "key": "Password:"
  },
  {
+  "key": "Paste"
+ },
+ {
   "key": "Persistent connections:"
  },
  {
@@ -462,6 +474,9 @@
   "key": "Reconnecting"
  },
  {
+  "key": "Redo"
+ },
+ {
   "key": "Remove"
  },
  {
@@ -481,6 +496,9 @@
  },
  {
   "key": "Search"
+ },
+ {
+  "key": "Select All"
  },
  {
   "key": "Send DNS only through the VPN"
@@ -586,6 +604,9 @@
  },
  {
   "key": "Unblock Internet"
+ },
+ {
+  "key": "Undo"
  },
  {
   "key": "Uninstall"

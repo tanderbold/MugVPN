@@ -55,7 +55,9 @@
 "Connection settings" = "Forbindelsesindstillinger";
 "Connections" = "Forbindelser";
 "Connections…" = "Forbindelser…";
+"Copy" = "Kopiér";
 "Copy and Import" = "Kopiér og importér";
+"Cut" = "Klip";
 "DNS server %@ is not an IP address." = "DNS-serveren %@ er ikke en IP-adresse.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-serveren %@ nås uden for VPN (via %@)";
 "DNS servers:" = "DNS-servere:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Afbryder";
 "Don't change DNS" = "Skift ikke DNS";
 "Duplicate" = "Dupliker";
+"Edit" = "Rediger";
 "Edit Config" = "Rediger konfiguration";
 "Embedded" = "Indlejret";
 "Enter at least one DNS server." = "Angiv mindst én DNS-server.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN er et registreret varemærke tilhørende OpenVPN Inc.";
 "Options" = "Valgmuligheder";
 "Password:" = "Kodeord:";
+"Paste" = "Sæt ind";
 "Persistent connections:" = "Vedvarende forbindelser:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Før-forbind-script (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Modtaget:";
 "Reconnect" = "Genopret forbindelse";
 "Reconnecting" = "Genopretter forbindelse";
+"Redo" = "Annuller fortryd";
 "Remove" = "Fjern";
 "Response" = "Svar";
 "Revert" = "Gendan";
@@ -160,6 +165,7 @@
 "Save password" = "Husk kodeord";
 "Saved:" = "Gemt:";
 "Search" = "Søg";
+"Select All" = "Vælg alt";
 "Send DNS only through the VPN" = "Send kun DNS gennem VPN";
 "Send all traffic through the VPN" = "Send al trafik gennem VPN";
 "Sent:" = "Sendt:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Slå MugVPN til i Systemindstillinger > Generelt > Login-emner, og forbind derefter igen.";
 "URL:" = "URL:";
 "Unblock Internet" = "Ophæv blokering af internet";
+"Undo" = "Fortryd";
 "Uninstall" = "Afinstaller";
 "Uninstall MugVPN" = "Afinstaller MugVPN";
 "Uninstall MugVPN…" = "Afinstaller MugVPN…";

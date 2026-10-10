@@ -55,7 +55,9 @@
 "Connection settings" = "Anslutningsinställningar";
 "Connections" = "Anslutningar";
 "Connections…" = "Anslutningar…";
+"Copy" = "Kopiera";
 "Copy and Import" = "Kopiera och importera";
+"Cut" = "Klipp ut";
 "DNS server %@ is not an IP address." = "DNS-servern %@ är inte en IP-adress.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS-servern %@ nås utanför VPN (via %@)";
 "DNS servers:" = "DNS-servrar:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Kopplar från";
 "Don't change DNS" = "Ändra inte DNS";
 "Duplicate" = "Duplicera";
+"Edit" = "Redigera";
 "Edit Config" = "Redigera konfiguration";
 "Embedded" = "Inbäddat";
 "Enter at least one DNS server." = "Ange minst en DNS-server.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN är ett registrerat varumärke som tillhör OpenVPN Inc.";
 "Options" = "Alternativ";
 "Password:" = "Lösenord:";
+"Paste" = "Klistra in";
 "Persistent connections:" = "Beständiga anslutningar:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Föranslutningsskript (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Mottaget:";
 "Reconnect" = "Anslut igen";
 "Reconnecting" = "Återansluter";
+"Redo" = "Gör om";
 "Remove" = "Ta bort";
 "Response" = "Svar";
 "Revert" = "Återställ";
@@ -160,6 +165,7 @@
 "Save password" = "Spara lösenord";
 "Saved:" = "Sparat:";
 "Search" = "Sök";
+"Select All" = "Markera allt";
 "Send DNS only through the VPN" = "Skicka DNS endast genom VPN";
 "Send all traffic through the VPN" = "Skicka all trafik via VPN";
 "Sent:" = "Skickat:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Slå på MugVPN i Systeminställningar > Allmänt > Inloggningsobjekt och anslut sedan igen.";
 "URL:" = "URL:";
 "Unblock Internet" = "Häv blockering av internet";
+"Undo" = "Ångra";
 "Uninstall" = "Avinstallera";
 "Uninstall MugVPN" = "Avinstallera MugVPN";
 "Uninstall MugVPN…" = "Avinstallera MugVPN…";

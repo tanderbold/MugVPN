@@ -55,7 +55,9 @@
 "Connection settings" = "接続設定";
 "Connections" = "接続一覧";
 "Connections…" = "接続一覧…";
+"Copy" = "コピー";
 "Copy and Import" = "コピーして読み込む";
+"Cut" = "カット";
 "DNS server %@ is not an IP address." = "DNSサーバ %@ はIPアドレスではありません。";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNSサーバ %@ にVPN外から到達しています（%@ 経由）";
 "DNS servers:" = "DNSサーバ:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "切断中";
 "Don't change DNS" = "DNSを変更しない";
 "Duplicate" = "複製";
+"Edit" = "編集";
 "Edit Config" = "設定ファイルを編集";
 "Embedded" = "埋め込み";
 "Enter at least one DNS server." = "DNSサーバを1つ以上入力してください。";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN は OpenVPN Inc. の登録商標です。";
 "Options" = "オプション";
 "Password:" = "パスワード:";
+"Paste" = "ペースト";
 "Persistent connections:" = "永続的な接続:";
 "Port:" = "ポート:";
 "Pre-connect script (s):" = "接続前スクリプト (秒):";
@@ -153,6 +157,7 @@
 "Received:" = "受信:";
 "Reconnect" = "再接続";
 "Reconnecting" = "再接続中";
+"Redo" = "やり直す";
 "Remove" = "取り除く";
 "Response" = "応答";
 "Revert" = "元に戻す";
@@ -160,6 +165,7 @@
 "Save password" = "パスワードを保存";
 "Saved:" = "保存済み:";
 "Search" = "検索";
+"Select All" = "すべてを選択";
 "Send DNS only through the VPN" = "DNSはVPN経由でのみ送信";
 "Send all traffic through the VPN" = "すべてのトラフィックを VPN 経由で送信";
 "Sent:" = "送信:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "システム設定 > 一般 > ログイン項目 で MugVPN をオンにしてから、もう一度接続してください。";
 "URL:" = "URL:";
 "Unblock Internet" = "インターネットのブロックを解除";
+"Undo" = "取り消す";
 "Uninstall" = "アンインストール";
 "Uninstall MugVPN" = "MugVPN をアンインストール";
 "Uninstall MugVPN…" = "MugVPN をアンインストール…";

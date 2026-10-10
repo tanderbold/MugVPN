@@ -55,7 +55,9 @@
 "Connection settings" = "연결 설정";
 "Connections" = "연결 목록";
 "Connections…" = "연결 목록…";
+"Copy" = "복사하기";
 "Copy and Import" = "복사 후 가져오기";
+"Cut" = "오려두기";
 "DNS server %@ is not an IP address." = "DNS 서버 %@은(는) IP 주소가 아닙니다.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS 서버 %@에 VPN 밖에서 연결됩니다(%@ 경유)";
 "DNS servers:" = "DNS 서버:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "연결 해제 중";
 "Don't change DNS" = "DNS 변경 안 함";
 "Duplicate" = "복제";
+"Edit" = "편집";
 "Edit Config" = "구성 편집";
 "Embedded" = "포함됨";
 "Enter at least one DNS server." = "DNS 서버를 하나 이상 입력하십시오.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN은 OpenVPN Inc.의 등록 상표입니다.";
 "Options" = "옵션";
 "Password:" = "암호:";
+"Paste" = "붙여넣기";
 "Persistent connections:" = "영구 연결:";
 "Port:" = "포트:";
 "Pre-connect script (s):" = "연결 전 스크립트(초):";
@@ -153,6 +157,7 @@
 "Received:" = "수신:";
 "Reconnect" = "다시 연결";
 "Reconnecting" = "다시 연결 중";
+"Redo" = "실행 복귀";
 "Remove" = "제거";
 "Response" = "응답";
 "Revert" = "되돌리기";
@@ -160,6 +165,7 @@
 "Save password" = "암호 저장";
 "Saved:" = "저장됨:";
 "Search" = "검색";
+"Select All" = "전체 선택";
 "Send DNS only through the VPN" = "DNS를 VPN으로만 보내기";
 "Send all traffic through the VPN" = "모든 트래픽을 VPN을 통해 전송";
 "Sent:" = "전송:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "시스템 설정 > 일반 > 로그인 항목에서 MugVPN을 켠 다음 다시 연결하십시오.";
 "URL:" = "URL:";
 "Unblock Internet" = "인터넷 차단 해제";
+"Undo" = "실행 취소";
 "Uninstall" = "제거";
 "Uninstall MugVPN" = "MugVPN 제거";
 "Uninstall MugVPN…" = "MugVPN 제거…";

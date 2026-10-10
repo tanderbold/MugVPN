@@ -149,3 +149,17 @@ def test_ui70_menu_bar_icon_brings_windows_forward(app):
     w = app.window("credentials")
     assert w["front_index"] == 0, w["front_index"]
     assert app.call("status")["active"], "MugVPN is the active app"
+
+
+def test_ui71_paste_into_the_password_field(app):
+    """Cmd+V (and the other Edit shortcuts) work in MugVPN's fields: an app without a Dock icon still
+    has an Edit menu for them (found in 0.2.4: pasting a password did nothing)."""
+    app.click("stand-a", "Connect")
+    app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
+    w = app.window("credentials")
+    app.call("pasteboard", text="s3cret-from-the-clipboard")
+    app.call("focus", window=w["id"], control="password")
+    r = app.call("key_equivalent", key="v")
+    assert r["handled"], "the Edit menu takes Cmd+V"
+    app.press(app.window("credentials"), "ok")
+    assert app.sent("stand-a")[-1] == 'password "Auth" "s3cret-from-the-clipboard"', app.sent("stand-a")[-2:]

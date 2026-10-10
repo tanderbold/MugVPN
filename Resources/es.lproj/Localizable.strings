@@ -55,7 +55,9 @@
 "Connection settings" = "Ajustes de conexión";
 "Connections" = "Conexiones";
 "Connections…" = "Conexiones…";
+"Copy" = "Copiar";
 "Copy and Import" = "Copiar e importar";
+"Cut" = "Cortar";
 "DNS server %@ is not an IP address." = "El servidor DNS %@ no es una dirección IP.";
 "DNS server %@ is reached outside the VPN (through %@)" = "El servidor DNS %@ se alcanza fuera de la VPN (a través de %@)";
 "DNS servers:" = "Servidores DNS:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Desconectando";
 "Don't change DNS" = "No cambiar el DNS";
 "Duplicate" = "Duplicar";
+"Edit" = "Edición";
 "Edit Config" = "Editar configuración";
 "Embedded" = "Incrustado";
 "Enter at least one DNS server." = "Introduce al menos un servidor DNS.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN es una marca registrada de OpenVPN Inc.";
 "Options" = "Opciones";
 "Password:" = "Clave:";
+"Paste" = "Pegar";
 "Persistent connections:" = "Conexiones persistentes:";
 "Port:" = "Puerto:";
 "Pre-connect script (s):" = "Script previo a la conexión (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Recibido:";
 "Reconnect" = "Reconectar";
 "Reconnecting" = "Reconectando";
+"Redo" = "Rehacer";
 "Remove" = "Quitar";
 "Response" = "Respuesta";
 "Revert" = "Revertir";
@@ -160,6 +165,7 @@
 "Save password" = "Guardar clave";
 "Saved:" = "Guardado:";
 "Search" = "Buscar";
+"Select All" = "Seleccionar todo";
 "Send DNS only through the VPN" = "Enviar el DNS solo a través de la VPN";
 "Send all traffic through the VPN" = "Enviar todo el tráfico a través de la VPN";
 "Sent:" = "Enviado:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Activa MugVPN en Ajustes del Sistema > General > Ítems de inicio y vuelve a conectar.";
 "URL:" = "URL:";
 "Unblock Internet" = "Desbloquear Internet";
+"Undo" = "Deshacer";
 "Uninstall" = "Desinstalar";
 "Uninstall MugVPN" = "Desinstalar MugVPN";
 "Uninstall MugVPN…" = "Desinstalar MugVPN…";

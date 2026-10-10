@@ -295,6 +295,22 @@ final class E2EServer {
             guard let i = item, let action = i.action, i.isEnabled else { throw E2EError("menu item \(path) is not actionable") }
             NSApp.sendAction(action, to: i.target, from: i)
             return [:]
+        case "pasteboard":
+            NSPasteboard.general.clearContents()
+            NSPasteboard.general.setString(try str("text"), forType: .string)
+            return [:]
+        case "focus":
+            let w = try window()
+            w.makeKeyAndOrderFront(nil)
+            NSApp.activate(ignoringOtherApps: true)
+            return ["focused": w.makeFirstResponder(try control(w))]
+        case "key_equivalent":
+            // As the key would reach it: through the app's main menu.
+            guard let e = NSEvent.keyEvent(with: .keyDown, location: .zero, modifierFlags: .command, timestamp: 0,
+                                           windowNumber: NSApp.keyWindow?.windowNumber ?? 0, context: nil,
+                                           characters: try str("key"), charactersIgnoringModifiers: try str("key"),
+                                           isARepeat: false, keyCode: 9) else { throw E2EError("no event") }
+            return ["handled": NSApp.mainMenu?.performKeyEquivalent(with: e) ?? false]
         case "send_windows_back":
             WindowRegistry.shared.windows.filter(\.isVisible).forEach { $0.orderBack(nil) }
             NSApp.deactivate()

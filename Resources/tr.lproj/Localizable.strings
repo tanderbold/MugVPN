@@ -55,7 +55,9 @@
 "Connection settings" = "Bağlantı ayarları";
 "Connections" = "Bağlantılar";
 "Connections…" = "Bağlantılar…";
+"Copy" = "Kopyala";
 "Copy and Import" = "Kopyala ve İçe Aktar";
+"Cut" = "Kes";
 "DNS server %@ is not an IP address." = "DNS sunucusu %@ bir IP adresi değil.";
 "DNS server %@ is reached outside the VPN (through %@)" = "DNS sunucusu %@ VPN dışından erişiliyor (%@ üzerinden)";
 "DNS servers:" = "DNS sunucuları:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Bağlantı kesiliyor";
 "Don't change DNS" = "DNS’i değiştirme";
 "Duplicate" = "Çoğalt";
+"Edit" = "Düzen";
 "Edit Config" = "Yapılandırmayı düzenle";
 "Embedded" = "Gömülü";
 "Enter at least one DNS server." = "En az bir DNS sunucusu girin.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN, OpenVPN Inc.'in tescilli ticari markasıdır.";
 "Options" = "Seçenekler";
 "Password:" = "Şifre:";
+"Paste" = "Yapıştır";
 "Persistent connections:" = "Kalıcı bağlantılar:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Bağlantı öncesi betik (sn):";
@@ -153,6 +157,7 @@
 "Received:" = "Alınan:";
 "Reconnect" = "Yeniden bağlan";
 "Reconnecting" = "Yeniden bağlanıyor";
+"Redo" = "Yinele";
 "Remove" = "Kaldır";
 "Response" = "Yanıt";
 "Revert" = "Geri döndür";
@@ -160,6 +165,7 @@
 "Save password" = "Şifreyi kaydet";
 "Saved:" = "Kayıtlı:";
 "Search" = "Ara";
+"Select All" = "Tümünü Seç";
 "Send DNS only through the VPN" = "DNS’i yalnızca VPN üzerinden gönder";
 "Send all traffic through the VPN" = "Tüm trafiği VPN üzerinden gönder";
 "Sent:" = "Gönderilen:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "MugVPN'i Sistem Ayarları > Genel > Giriş Öğeleri bölümünden açın, ardından yeniden bağlanın.";
 "URL:" = "URL:";
 "Unblock Internet" = "İnternet engelini kaldır";
+"Undo" = "Geri Al";
 "Uninstall" = "Kaldır";
 "Uninstall MugVPN" = "MugVPN’i Kaldır";
 "Uninstall MugVPN…" = "MugVPN’i Kaldır…";

@@ -55,7 +55,9 @@
 "Connection settings" = "Ρυθμίσεις σύνδεσης";
 "Connections" = "Συνδέσεις";
 "Connections…" = "Συνδέσεις…";
+"Copy" = "Αντιγραφή";
 "Copy and Import" = "Αντιγραφή και εισαγωγή";
+"Cut" = "Αποκοπή";
 "DNS server %@ is not an IP address." = "Ο διακομιστής DNS %@ δεν είναι διεύθυνση IP.";
 "DNS server %@ is reached outside the VPN (through %@)" = "Ο διακομιστής DNS %@ προσεγγίζεται εκτός VPN (μέσω %@)";
 "DNS servers:" = "Διακομιστές DNS:";
@@ -77,6 +79,7 @@
 "Disconnecting" = "Αποσύνδεση σε εξέλιξη";
 "Don't change DNS" = "Να μην αλλάζει το DNS";
 "Duplicate" = "Αναπαραγωγή";
+"Edit" = "Επεξεργασία";
 "Edit Config" = "Επεξεργασία ρυθμίσεων";
 "Embedded" = "Ενσωματωμένο";
 "Enter at least one DNS server." = "Εισαγάγετε τουλάχιστον έναν διακομιστή DNS.";
@@ -142,6 +145,7 @@
 "OpenVPN is a registered trademark of OpenVPN Inc." = "Το OpenVPN είναι σήμα κατατεθέν της OpenVPN Inc.";
 "Options" = "Επιλογές";
 "Password:" = "Σύνθημα:";
+"Paste" = "Επικόλληση";
 "Persistent connections:" = "Μόνιμες συνδέσεις:";
 "Port:" = "Θύρα:";
 "Pre-connect script (s):" = "Σενάριο πριν τη σύνδεση (s):";
@@ -153,6 +157,7 @@
 "Received:" = "Ελήφθησαν:";
 "Reconnect" = "Επανασύνδεση";
 "Reconnecting" = "Επανασύνδεση σε εξέλιξη";
+"Redo" = "Επανάληψη";
 "Remove" = "Αφαίρεση";
 "Response" = "Απάντηση";
 "Revert" = "Επαναφορά";
@@ -160,6 +165,7 @@
 "Save password" = "Αποθήκευση συνθήματος";
 "Saved:" = "Αποθηκευμένα:";
 "Search" = "Αναζήτηση";
+"Select All" = "Επιλογή όλων";
 "Send DNS only through the VPN" = "Αποστολή DNS μόνο μέσω VPN";
 "Send all traffic through the VPN" = "Αποστολή όλης της κίνησης μέσω του VPN";
 "Sent:" = "Εστάλησαν:";
@@ -195,6 +201,7 @@
 "Turn on MugVPN in System Settings > General > Login Items, then connect again." = "Ενεργοποιήστε το MugVPN στις Ρυθμίσεις συστήματος > Γενικά > Στοιχεία σύνδεσης και, στη συνέχεια, συνδεθείτε ξανά.";
 "URL:" = "URL:";
 "Unblock Internet" = "Άρση αποκλεισμού Διαδικτύου";
+"Undo" = "Αναίρεση";
 "Uninstall" = "Απεγκατάσταση";
 "Uninstall MugVPN" = "Απεγκατάσταση του MugVPN";
 "Uninstall MugVPN…" = "Απεγκατάσταση του MugVPN…";
