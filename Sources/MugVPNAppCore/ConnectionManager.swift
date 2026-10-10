@@ -119,6 +119,9 @@ public final class ConnectionManager {
     public var onKeyPassword: (Profile, String) -> Void = { _, _ in }
     /// The helper's version when it is not the app's (an update not yet taken by the running helper).
     public private(set) var helperVersionMismatch: String?
+    /// The helper does not answer at all (said once): its service may be registered but not loaded.
+    public var onHelperUnreachable: () -> Void = {}
+    private var unreachableTold = false
     private var helperRestartAsked = false
     /// Restart calls an older helper did not answer although it answered its version.
     private var silentRestarts = 0
@@ -169,7 +172,12 @@ public final class ConnectionManager {
             guard let v else {
                 return self.helper.reachable { [weak self] up in
                     guard let self else { return }
-                    if up { self.versionKnown("unknown") } else { self.retryLater { [weak self] in self?.checkHelperVersion() } }
+                    if up { return self.versionKnown("unknown") }
+                    if !self.unreachableTold {
+                        self.unreachableTold = true
+                        self.onHelperUnreachable()
+                    }
+                    self.retryLater { [weak self] in self?.checkHelperVersion() }
                 }
             }
             self.versionKnown(v)

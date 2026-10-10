@@ -65,10 +65,13 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     func list(reply: @escaping ([ConnectionInfo]) -> Void) { reply([]) }
     var helperVersion = ProcessInfo.processInfo.environment["MUGVPN_E2E_HELPER_VERSION"] ?? MugVPNIDs.helperVersion
-    func version(reply: @escaping (String?) -> Void) { reply(helperVersion == "none" ? nil : helperVersion) }
+    func version(reply: @escaping (String?) -> Void) {
+        reply(helperVersion == "none" || (helperVersion == "unreachable" && setupCalls.isEmpty) ? nil : helperVersion == "unreachable" ? MugVPNIDs.helperVersion : helperVersion)
+    }
     /// "none": an older helper (no version, no restart call); otherwise always in use: an update waits.
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void) { reply(helperVersion == "none" ? .unsupported : .inUse) }
-    func reachable(reply: @escaping (Bool) -> Void) { reply(true) }
+    /// "unreachable": a service launchd lost, until it is registered again.
+    func reachable(reply: @escaping (Bool) -> Void) { reply(!(helperVersion == "unreachable" && setupCalls.isEmpty)) }
     var blocked: [String] = []
     var unblocks = 0
     func blocks(reply: @escaping ([String]) -> Void) { reply(blocked) }
@@ -271,7 +274,8 @@ final class E2EServer {
                 for x in 0..<rep.pixelsWide { for y in 0..<rep.pixelsHigh where (rep.colorAt(x: x, y: y)?.alphaComponent ?? 0) > 0.5 { pixels += 1 } }
             }
             return ["icon": app.icon.rawValue, "tooltip": app.tooltip, "image": app.statusItem.button?.image?.name() ?? "",
-                    "button_width": Double(app.statusItem.button?.frame.width ?? 0), "image_pixels": pixels]
+                    "button_width": Double(app.statusItem.button?.frame.width ?? 0), "image_pixels": pixels,
+                    "active": NSApp.isActive]
         case "rescan":
             app.rescan()
             return [:]
@@ -290,6 +294,13 @@ final class E2EServer {
             }
             guard let i = item, let action = i.action, i.isEnabled else { throw E2EError("menu item \(path) is not actionable") }
             NSApp.sendAction(action, to: i.target, from: i)
+            return [:]
+        case "send_windows_back":
+            WindowRegistry.shared.windows.filter(\.isVisible).forEach { $0.orderBack(nil) }
+            NSApp.deactivate()
+            return [:]
+        case "menu_will_open":
+            app.menuWillOpen(app.menu)
             return [:]
         case "windows":
             return ["windows": WindowRegistry.shared.windows.filter(\.isVisible).map(describe)]
@@ -559,7 +570,9 @@ final class E2EServer {
         }
         let dark = w.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
         return ["id": w.windowID, "kind": w.kind, "title": w.title, "profile": w.profile,
-                "appearance": dark ? "darkAqua" : "aqua", "controls": controls]
+                "appearance": dark ? "darkAqua" : "aqua", "controls": controls,
+                // Among MugVPN's windows on screen, front to back.
+                "front_index": NSApp.orderedWindows.filter { $0.isVisible && $0 is AppWindow }.firstIndex(of: w) ?? -1]
     }
 }
 #endif

@@ -411,3 +411,10 @@ def test_ui67_quit_while_a_connection_is_still_checked(home, tmp_path):
     time.sleep(3)
     log = os.path.join(home, "starts.log")
     assert not os.path.exists(log) or "late" not in open(log).read(), "started as the app went"
+
+
+
+def test_ui69_service_registered_but_not_loaded(home):
+    """The helper's service is enabled but launchd lost it (booted out): MugVPN registers it again."""
+    with launched(home, helper_version="unreachable") as a:
+        wait_for(lambda: a.call("fake_helper")["setup"] == ["unregister", "register"], 10, "registered again")

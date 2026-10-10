@@ -332,6 +332,16 @@ func registerManagerTests() {
         h.helper.answerStarts()
         expectEqual(h.helper.stops.count, 1, "a late answer: that tunnel is stopped")
     }
+    test("MAN-37", "a helper that does not answer at all is said to the app once (it may re-register a service launchd lost)") {
+        let h = ManagerHarness()
+        h.helper.version = nil
+        h.helper.reachable = false
+        var told = 0
+        h.m.onHelperUnreachable = { told += 1 }
+        h.m.appStarted()
+        h.scheduler.drain(limit: 3)
+        expectEqual(told, 1, "once, not on every retry")
+    }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()
         h.helper.version = "0.0.9"

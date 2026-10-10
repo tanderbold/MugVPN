@@ -136,3 +136,16 @@ def test_ui10c_pkcs11_choice(app):
     app.set(w, "certificates", "1")
     app.press(w, "ok")
     assert app.sent("stand-a")[-1] == "needstr 'pkcs11-id-request' \"id1\""
+
+
+def test_ui70_menu_bar_icon_brings_windows_forward(app):
+    """A password prompt lost behind other apps: clicking MugVPN's menu bar icon brings its windows
+    forward, the prompt on top."""
+    app.click("stand-a", "Connect")
+    app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
+    app.window("credentials")
+    app.call("send_windows_back")
+    app.call("menu_will_open")
+    w = app.window("credentials")
+    assert w["front_index"] == 0, w["front_index"]
+    assert app.call("status")["active"], "MugVPN is the active app"

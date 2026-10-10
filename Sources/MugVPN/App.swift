@@ -245,6 +245,13 @@ final class AppController: NSObject, NSMenuDelegate {
             guard let self else { return done() }
             self.warnCertificate(p, then: done)
         }
+        // No helper answers although its service is enabled (launchd lost it, e.g. booted out): register it again.
+        manager.onHelperUnreachable = { [weak self] in
+            guard let self, self.services.helperSetup.state == .enabled else { return }
+            self.services.helperSetup.reregister { [weak self] err in
+                if err == nil { self?.manager.helperReplaced() }
+            }
+        }
         // A PKCS#12's key password as typed: its end can be read now.
         manager.onKeyPassword = { [weak self] p, pw in self?.warnCertificate(p, password: pw) }
         manager.protection = { [weak self] p in
@@ -526,6 +533,20 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     // MARK: - menu
+
+    /// The menu bar icon clicked: MugVPN's windows come forward (an app without a Dock icon has no
+    /// other way back to a window lost behind others), prompts that wait for an answer on top.
+    func menuWillOpen(_ menu: NSMenu) { bringWindowsForward() }
+
+    func bringWindowsForward() {
+        let open = WindowRegistry.shared.windows.filter(\.isVisible)
+        guard !open.isEmpty else { return }
+        NSApp.activate(ignoringOtherApps: true)
+        let prompts: Set<String> = ["credentials", "secret", "challenge", "confirm", "pkcs11", "webauth"]
+        for w in open where !prompts.contains(w.kind) { w.orderFrontRegardless() }
+        for w in open where prompts.contains(w.kind) { w.orderFrontRegardless() }
+        (open.last { prompts.contains($0.kind) } ?? open.last)?.makeKey()
+    }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
         rescan()
