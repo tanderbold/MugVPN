@@ -452,6 +452,26 @@ func registerUninstallAppTests() {
         expect(keep.contains("pfctl -X"), "and PF is given back with its token")
         expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all || exit 1"), "PF must let go, or nothing is removed: \(keep)")
         expect(keep.contains("launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1"), "the helper must be gone first")
+        for k in [keep, UninstallPlan.systemRemovalScript(keepProfiles: false)] {
+            let rm = k.components(separatedBy: "rm -rf ").last?.components(separatedBy: ";").first ?? ""
+            expect(!rm.contains("/run'") && !rm.contains("dns-left") && !rm.contains("'/Library/Application Support/MugVPN' ")
+                   && !rm.hasSuffix("'/Library/Application Support/MugVPN'"),
+                   "what a reinstall's helper undoes (run records, DNS on record) is not removed: \(rm)")
+            expect(k.contains("rmdir '/Library/Application Support/MugVPN/run'"), "the run folder only when empty")
+            expect(k.contains("pkill -9 -f '/Library/Application Support/MugVPN/libexec/openvpn'"), "its openvpn stopped")
+            expect(k.contains("ls -A '/Library/Application Support/MugVPN/run' 2>/dev/null | grep -q . && {"), "a run left: nothing removed")
+            expect(k.contains("[ -e '/Library/Application Support/MugVPN/dns-left.json' ] && {"), "DNS on record: nothing removed")
+            expect(k.range(of: "exit 2")!.lowerBound < k.range(of: "rm -rf")!.lowerBound, "checked before anything goes")
+            expect(!k.hasSuffix("; true"), "a failure is not hidden")
+            expect(k.contains("grep -q -f '/private/var/tmp/mugvpn-uninstall-boot'"), "this boot's token told apart")
+            expect(k.contains("xargs -n1 pfctl -X || {"), "this boot's token must be taken back")
+            let sh = Process()
+            sh.executableURL = URL(fileURLWithPath: "/bin/sh")
+            sh.arguments = ["-n", "-c", k]
+            try sh.run()
+            sh.waitUntilExit()
+            expectEqual(sh.terminationStatus, 0, "valid sh")
+        }
         let all = UninstallPlan.systemRemovalScript(keepProfiles: false)
         expect(all.contains("'/Library/Application Support/MugVPN'"), all)
         expect(!all.contains("\"") && !all.contains("$"), "nothing for a shell to expand")

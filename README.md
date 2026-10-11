@@ -38,7 +38,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 <p><img src="docs/screenshots/connections-general.png" alt="The Connections window: list of connections and the General tab with servers" width="49%"> <img src="docs/screenshots/connections-options.png" alt="The Options tab: DNS mode, split DNS, kill switch and leak protection" width="49%"></p>
 
 **Protection**
-- **Kill switch** (per connection, off by default): if a connection that carries all traffic drops unexpectedly, your TCP and UDP traffic outside the VPN stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper.
+- **Kill switch** (per connection, off by default): if a connection that carries all traffic drops unexpectedly, your TCP and UDP traffic outside the VPN stays blocked (PF) until you reconnect or unblock it from the menu — even across a restart of the helper. Name lookups through the Mac's resolver still go out, so the VPN can find its server again.
 - **Leak protection** while a connection carries all traffic: no IPv6 and no DNS outside the VPN; the local network can be allowed.
 - **Leak check** after connecting and on every network change: warns if the default route, a public network (as a rogue DHCP server would push — TunnelVision) or the DNS goes around the tunnel.
 

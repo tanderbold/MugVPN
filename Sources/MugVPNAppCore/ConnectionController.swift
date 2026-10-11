@@ -50,8 +50,9 @@ public protocol SecretStore: AnyObject {
     func get(_ profile: String, _ key: SecretKey) -> String?
     /// - Returns: false when it could not be saved (what was saved before stays).
     @discardableResult func set(_ profile: String, _ key: SecretKey, _ value: String) -> Bool
-    func remove(_ profile: String, _ key: SecretKey)
-    func removeAll(_ profile: String)
+    /// - Returns: false when it may still be there (the keychain refused).
+    @discardableResult func remove(_ profile: String, _ key: SecretKey) -> Bool
+    @discardableResult func removeAll(_ profile: String) -> Bool
 }
 
 public extension SecretStore {
@@ -99,6 +100,15 @@ public final class ConnectionController {
     public let profile: String
     /// Said when the keychain does not take a password (it is used for this connection all the same).
     public static let keychainSaveFailed = "The keychain did not save it: it is used for this connection only."
+    /// Once per connection (a server repeating forget-passwords does not flood the notifications).
+    private var keychainKeptWarned = false
+    private func warnKeychainKept() {
+        guard !keychainKeptWarned else { return }
+        keychainKeptWarned = true
+        ui.notify(title: displayName, text: ConnectionController.keychainRemoveFailed)
+    }
+    /// Said when the keychain keeps a password MugVPN was to forget (wrong, or the server said so).
+    public static let keychainRemoveFailed = "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access."
     /// How messages are titled (the profile's name).
     public var displayName: String
     /// Writes one management command. A command with a line break or NUL in it
@@ -314,13 +324,16 @@ public final class ConnectionController {
                 }
                 return
             }
+            // The saved one that failed goes (else it would be sent again next time); kept by the keychain: said.
+            let removed: Bool
             if type == "Private Key" {
-                secrets.remove(profile, .keyPassword)
+                removed = secrets.remove(profile, .keyPassword)
                 lastError[type] = "Wrong password"
             } else {
-                secrets.remove(profile, type == "HTTP Proxy" ? .proxyPassword : .password)
+                removed = secrets.remove(profile, type == "HTTP Proxy" ? .proxyPassword : .password)
                 lastError[type] = "Authentication failed"
             }
+            if !removed { warnKeychainKept() }
         case .authToken, .other: break
         }
     }
@@ -435,7 +448,9 @@ public final class ConnectionController {
         case .notify(let title):
             if shouldShow("notify", title, echoBuffer) { ui.notify(title: "\(displayName): \(title)", text: echoBuffer) }
             echoBuffer = ""
-        case .forgetPasswords: secrets.removeAll(profile)
+        case .forgetPasswords:
+            // The server asks it: kept by the keychain, said.
+            if !secrets.removeAll(profile) { warnKeychainKept() }
         case .other(let text):
             let f = text.split(separator: " ", maxSplits: 2).map(String.init)
             guard f.count == 3, f[0] == "setenv" else { break }

@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN 無法完成解除安裝（%@）。它會保持安裝：請一分鐘後再試。";
+"MugVPN in Login Items" = "登入項目中的 MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN 仍在移除 VPN 設定的 DNS 或路由，在此之前會保持安裝。請一分鐘後再試。";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN 已解除安裝，但以下項目無法移除：%@";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其輔助程式來啟動通道。";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "將移除 MugVPN、其輔助程式、紀錄、設定和儲存的密碼。通道將中斷連線。";
 "MugVPN: %@" = "MugVPN：%@";
 "Mute repeated messages (h):" = "重複訊息靜音時長（小時）：";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "透過 Mac 解析器的名稱查詢仍會送出，讓 VPN 能再次找到其伺服器。";
 "Name:" = "名稱：";
 "Never" = "永不";
 "New Connection" = "新增連線";
@@ -213,11 +215,13 @@
 "The first time" = "僅第一次";
 "The keychain did not remove the saved passwords of %@." = "鑰匙圈未移除 %@ 的儲存密碼。";
 "The keychain did not save it: it is used for this connection only." = "鑰匙圈未能儲存：僅用於此次連線。";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "鑰匙圈保留了 MugVPN 應忘記的儲存密碼：請在「鑰匙圈存取」中移除它。";
 "The network state (routes, DNS, network interfaces)" = "網路狀態（路由、DNS、網路介面）";
 "The private key needs its client certificate." = "私密金鑰需要其用戶端憑證。";
 "The proxy for %@ needs a username and password." = "%@ 的代理伺服器需要使用者名稱和密碼。";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "正在執行的輔助程式是無法自行更新的舊版本。換上新版本會停止此 Mac 上所有使用者的所有 MugVPN 連線。是否繼續？";
 "These DNS servers" = "以下 DNS 伺服器";
+"These could not be removed either: %@" = "以下項目也無法移除：%@";
 "Third-Party Notices" = "第三方聲明";
 "This network asks you to sign in first." = "此網路要求先登入。";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "此設定檔也透過其他方式登入（PKCS#12 或憑證指紋）：請參閱「進階」。";
@@ -229,6 +233,7 @@
 "Uninstall" = "解除安裝";
 "Uninstall MugVPN" = "解除安裝 MugVPN";
 "Uninstall MugVPN…" = "解除安裝 MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "解除安裝未完成：MugVPN 無法將自己移到垃圾桶。請手動將 %@ 移到垃圾桶。";
 "Update" = "更新";
 "Update MugVPN's Helper" = "更新 MugVPN 輔助程式";
 "Update MugVPN's Helper…" = "更新 MugVPN 輔助程式…";
@@ -252,6 +257,7 @@
 "passwords" = "密碼";
 "saved passwords" = "儲存的密碼";
 "the connection ended unexpectedly" = "連線意外結束";
+"the helper's entry in Login Items" = "登入項目中的輔助程式項目";
 "the persistent connection is not running" = "持續連線未執行";
 "the port must be 1–65535" = "連接埠必須為 1–65535";
 "the pre-connect script failed" = "連線前指令碼失敗";

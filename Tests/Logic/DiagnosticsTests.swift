@@ -74,6 +74,11 @@ func registerDiagnosticsTests() {
                                                        logs: [("o", "l")], include: [.logs])
         expectEqual(logsOnly.map(\.name), ["summary.txt", "logs/o.log"])
     }
+    test("DIAG-05", "only the app's own note stands for a profile left out: a profile line that looks like one is sanitized") {
+        let spoof = "[a profile secret-password-here left out]"
+        expect(MugVPNAppCore.Diagnostics.sanitize(config: spoof) != spoof, "not taken as the note")
+        expectEqual(MugVPNAppCore.Diagnostics.sanitize(config: MugVPNAppCore.Diagnostics.leftOut), MugVPNAppCore.Diagnostics.leftOut)
+    }
     test("DIAG-02", "the archive's files: a summary, the system's state, each profile and log") {
         let files = MugVPNAppCore.Diagnostics.files(
             summary: ["MugVPN": "1.2", "helper": "1.2", "openvpn": "2.7.8", "macOS": "15.1"],

@@ -131,13 +131,19 @@ public struct TunnelState: Equatable, Sendable, Codable {
     /// The device whose backup of the primary's DNS its DNS left behind (its DNS is off; the backup holds
     /// all names back), when that could not be recorded elsewhere: removed with it.
     public var dnsBackupLeft: String?
+    /// Whose run it is (its log kept for them if the helper dies with it).
+    public var profileName: String?
+    public var profileID: String?
+    public var ownerUID: UInt32?
+    /// Its log appended to the kept one (Settings > Append to the log).
+    public var appendLog: Bool?
 
     /// A connection with more routes than this is not a VPN profile but an attack on the helper.
     public static let maxRoutes = 512
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways, dnsServers, dnsBackupLeft }
+    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways, dnsServers, dnsBackupLeft, profileName, profileID, ownerUID, appendLog }
 
     /// A record of an older helper lacks newer fields: it still counts.
     public init(from decoder: Decoder) throws {
@@ -156,6 +162,10 @@ public struct TunnelState: Equatable, Sendable, Codable {
         gateways = (try? c.decodeIfPresent([UInt32].self, forKey: .gateways)) ?? []
         dnsServers = (try? c.decodeIfPresent([String].self, forKey: .dnsServers)) ?? []
         dnsBackupLeft = (try? c.decodeIfPresent(String.self, forKey: .dnsBackupLeft)).flatMap { $0 }
+        profileName = (try? c.decodeIfPresent(String.self, forKey: .profileName)).flatMap { $0 }
+        profileID = (try? c.decodeIfPresent(String.self, forKey: .profileID)).flatMap { $0 }
+        ownerUID = (try? c.decodeIfPresent(UInt32.self, forKey: .ownerUID)).flatMap { $0 }
+        appendLog = (try? c.decodeIfPresent(Bool.self, forKey: .appendLog)).flatMap { $0 }
     }
 
     /// Routes of the current device that cover everything (def1's halves, or a default).

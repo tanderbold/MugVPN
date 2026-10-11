@@ -247,14 +247,15 @@ final class KeychainStore: SecretStore {
         return SecItemAdd(add as CFDictionary, nil) == errSecSuccess
     }
 
-    func remove(_ profile: String, _ key: SecretKey) {
+    @discardableResult func remove(_ profile: String, _ key: SecretKey) -> Bool {
         let q: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service,
                                 kSecAttrAccount as String: account(profile, key)]
-        SecItemDelete(q as CFDictionary)
+        let status = SecItemDelete(q as CFDictionary)
+        return status == errSecSuccess || status == errSecItemNotFound
     }
 
-    func removeAll(_ profile: String) {
-        for k in [SecretKey.username, .password, .keyPassword, .proxyUsername, .proxyPassword] { remove(profile, k) }
+    @discardableResult func removeAll(_ profile: String) -> Bool {
+        [SecretKey.username, .password, .keyPassword, .proxyUsername, .proxyPassword].map { remove(profile, $0) }.allSatisfy { $0 }
     }
 
     /// Every MugVPN item, for uninstalling. - Returns: false when some are still there.
@@ -270,8 +271,8 @@ final class MemorySecrets: SecretStore {
     var items: [String: String] = [:]
     func get(_ p: String, _ k: SecretKey) -> String? { items["\(p)|\(k.rawValue)"] }
     func set(_ p: String, _ k: SecretKey, _ v: String) -> Bool { items["\(p)|\(k.rawValue)"] = v; return true }
-    func remove(_ p: String, _ k: SecretKey) { items["\(p)|\(k.rawValue)"] = nil }
-    func removeAll(_ p: String) { items = items.filter { !$0.key.hasPrefix(p + "|") } }
+    func remove(_ p: String, _ k: SecretKey) -> Bool { items["\(p)|\(k.rawValue)"] = nil; return true }
+    func removeAll(_ p: String) -> Bool { items = items.filter { !$0.key.hasPrefix(p + "|") }; return true }
 }
 
 /// UserDefaults for the user's choices; managed preferences for forced ones.
@@ -374,7 +375,8 @@ protocol HelperSetup: AnyObject {
     var isTestDouble: Bool { get }
     func register()
     func openLoginItems()
-    func unregister()
+    /// - Returns: false when the system kept it registered.
+    @discardableResult func unregister() -> Bool
 }
 
 final class SMHelperSetup: HelperSetup {
@@ -391,7 +393,9 @@ final class SMHelperSetup: HelperSetup {
         }
     }
     func register() { if !devInstall { try? service.register() } }
-    func unregister() { try? service.unregister() }
+    @discardableResult func unregister() -> Bool {
+        (try? service.unregister()) != nil || service.status == .notRegistered || service.status == .notFound
+    }
     /// Register again only from unregister's completion: the running daemon is gone by then.
     func reregister(completion: @escaping (Error?) -> Void) {
         if devInstall { return completion(ProfileError("a development install: run tools/stand/stand.sh helper")) }

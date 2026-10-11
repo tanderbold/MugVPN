@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-asetukset";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN ei voinut viedä poistoa loppuun (%@). Se pysyy asennettuna: yritä uudelleen minuutin kuluttua.";
+"MugVPN in Login Items" = "MugVPN kirjautumiskohteissa";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN poistaa vielä VPN:n asettamaa DNS:ää tai reittejä ja pysyy asennettuna siihen asti. Yritä uudelleen minuutin kuluttua.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN on poistettu, mutta näitä ei voitu poistaa: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, sen apuohjelma, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Mykistä toistuvat viestit (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Nimihaut Macin selvittimen kautta lähtevät yhä, jotta VPN löytää palvelimensa uudelleen.";
 "Name:" = "Nimi:";
 "Never" = "Ei koskaan";
 "New Connection" = "Uusi yhteys";
@@ -213,11 +215,13 @@
 "The first time" = "Ensimmäisellä kerralla";
 "The keychain did not remove the saved passwords of %@." = "Avainnippu ei poistanut kohteen %@ tallennettuja salasanoja.";
 "The keychain did not save it: it is used for this connection only." = "Avainnippu ei tallentanut sitä: sitä käytetään vain tähän yhteyteen.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Avainnippu säilytti tallennetun salasanan, joka MugVPN:n piti unohtaa: poista se Avainnippujen hallinnassa.";
 "The network state (routes, DNS, network interfaces)" = "Verkon tila (reitit, DNS, verkkoliitännät)";
 "The private key needs its client certificate." = "Yksityinen avain tarvitsee asiakasvarmenteensa.";
 "The proxy for %@ needs a username and password." = "Profiilin %@ välipalvelin vaatii käyttäjänimen ja salasanan.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?";
 "These DNS servers" = "Nämä DNS-palvelimet";
+"These could not be removed either: %@" = "Myöskään näitä ei voitu poistaa: %@";
 "Third-Party Notices" = "Kolmansien osapuolten ilmoitukset";
 "This network asks you to sign in first." = "Tämä verkko vaatii ensin kirjautumisen.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Tämä profiili kirjautuu myös muulla tavalla (PKCS#12 tai varmenteen sormenjälki): katso Lisäasetukset.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Poista asennus";
 "Uninstall MugVPN" = "Poista MugVPN";
 "Uninstall MugVPN…" = "Poista MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Poisto ei ole valmis: MugVPN ei voinut siirtää itseään roskakoriin. Siirrä %@ roskakoriin itse.";
 "Update" = "Päivitä";
 "Update MugVPN's Helper" = "Päivitä MugVPN:n apuohjelma";
 "Update MugVPN's Helper…" = "Päivitä MugVPN:n apuohjelma…";
@@ -252,6 +257,7 @@
 "passwords" = "salasanat";
 "saved passwords" = "tallennetut salasanat";
 "the connection ended unexpectedly" = "yhteys katkesi odottamatta";
+"the helper's entry in Login Items" = "apupalvelun kohde kirjautumiskohteissa";
 "the persistent connection is not running" = "pysyvä yhteys ei ole käynnissä";
 "the port must be 1–65535" = "portin on oltava 1–65535";
 "the pre-connect script failed" = "yhdistämistä edeltävä komentosarja epäonnistui";

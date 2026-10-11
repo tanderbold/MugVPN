@@ -18,6 +18,7 @@ func localizedCore(_ s: String) -> String {
     case "the persistent connection is not running": return L("the persistent connection is not running")
     case "the pre-connect script failed": return L("the pre-connect script failed")
     case ConnectionController.keychainSaveFailed: return L("The keychain did not save it: it is used for this connection only.")
+    case ConnectionController.keychainRemoveFailed: return L("The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.")
     case ConnectionManager.helperTooOldForDNSDomains: return L("the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated")
     default: return s
     }

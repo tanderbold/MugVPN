@@ -222,6 +222,9 @@ public final class ProfileStore {
         var n = 2
         while fs.exists("\(userDir)/\(finalName)") { finalName = "\(wanted) (\(n))"; n += 1 }
         let dir = "\(userDir)/\(finalName)"
+        // Whatever a removed profile with its key saved goes before it is there (else its passwords would go to
+        // this one's server); a keychain that refuses: not imported.
+        try clearSecrets(Profile(name: finalName, path: "", source: .user, folder: finalName).secretsKey, secrets)
         // Built in a hidden folder beside it, then moved into place in one step: a failure leaves nothing.
         try makeDirectories(userDir)
         let staging = "\(userDir)/.import-\(UUID().uuidString)"
@@ -310,8 +313,15 @@ public final class ProfileStore {
     /// A new user profile `<name>/<name>.ext` with this text.
     /// A new profile starts clean: nothing a removed one with the same key saved applies to it.
     private func forget(_ p: Profile, secrets: SecretStore?, options: ProfileOptionsStore?) {
-        if let secrets { ProfileSecrets.deleted(secrets, p.secretsKey) }
         options?.remove(p.id)
+    }
+
+    /// No saved passwords under `key` any more, or a refusal (nothing is made or removed then).
+    private func clearSecrets(_ key: String, _ secrets: SecretStore?) throws {
+        guard let secrets else { return }
+        guard secrets.removeAll(key) else {
+            throw ProfileError("the keychain did not remove the saved passwords filed under this name: try again")
+        }
     }
 
     public func create(name wanted: String, config: String, secrets: SecretStore? = nil,
@@ -320,6 +330,7 @@ public final class ProfileStore {
         let dir = "\(userDir)/\(name)"
         guard !fs.exists(dir) else { throw ProfileError("a profile named \(name) already exists") }
         try usable(config, dir: dir)
+        try clearSecrets(Profile(name: name, path: "", source: .user, folder: name).secretsKey, secrets)
         try makeDirectories(dir)
         let path = "\(dir)/\(name).\(ext)"
         do {
@@ -354,7 +365,8 @@ public final class ProfileStore {
         // (else they would be left under the old name, and asked for again).
         let oldKey = p.secretsKey
         let newKey = Profile(name: name, path: "", source: .user, folder: ownFolder ? name : p.folder).secretsKey
-        if let secrets, newKey != oldKey, !ProfileSecrets.copied(secrets, from: oldKey, to: newKey) {
+        // (A removed profile's passwords under the new name go first: never inherited.)
+        if let secrets, newKey != oldKey, !secrets.removeAll(newKey) || !ProfileSecrets.copied(secrets, from: oldKey, to: newKey) {
             secrets.removeAll(newKey)
             throw ProfileError("the keychain did not take the saved passwords under the new name: not renamed")
         }
@@ -403,12 +415,29 @@ public final class ProfileStore {
                        options: ProfileOptionsStore? = nil) throws {
         try modifiable(p, active: active)
         let dir = (p.path as NSString).deletingLastPathComponent
-        if p.folder == p.name, (dir as NSString).lastPathComponent == p.name {
-            try fs.remove(dir)
-        } else {
-            try fs.remove(p.path)
+        let ownFolder = p.folder == p.name && (dir as NSString).lastPathComponent == p.name
+        // Out of the way under a hidden name first, then its saved passwords; kept by the keychain: back as it was
+        // (a new profile with its name could get them), passwords and all. Only then removed.
+        let target = ownFolder ? dir : p.path
+        let aside = ((target as NSString).deletingLastPathComponent as NSString)
+            .appendingPathComponent(".deleting-\(UUID().uuidString)")
+        try fs.move(target, aside)
+        do {
+            try clearSecrets(p.secretsKey, secrets)
+        } catch {
+            // Back where it was; if even that fails, where it is now is said (not lost from sight).
+            do { try fs.move(aside, target) } catch {
+                throw ProfileError("the keychain kept its saved passwords, and the profile could not be put back: it is at \(aside)")
+            }
+            throw error
         }
-        if let secrets { ProfileSecrets.deleted(secrets, p.secretsKey) }
+        do {
+            try fs.remove(aside)
+        } catch {
+            // Its files still on disk: back in sight (its passwords are gone), said.
+            try? fs.move(aside, target)
+            throw ProfileError("its files could not be removed: \(error)")
+        }
         options?.remove(p.id)
     }
 

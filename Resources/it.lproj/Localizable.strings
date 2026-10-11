@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Impostazioni di MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN non ha potuto completare la disinstallazione (%@). Resta installato: riprova tra un minuto.";
+"MugVPN in Login Items" = "MugVPN negli elementi di login";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN sta ancora rimuovendo il DNS o gli instradamenti impostati da una VPN e resterà installato fino ad allora. Riprova tra un minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN è disinstallato, ma questi elementi non sono stati rimossi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necessita del suo componente di supporto per avviare i tunnel.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, il suo helper, i log, le impostazioni e le password salvate verranno rimossi. I tunnel verranno disconnessi.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenzia messaggi ripetuti (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Le risoluzioni dei nomi tramite il resolver del Mac continuano a uscire, così la VPN ritrova il suo server.";
 "Name:" = "Nome:";
 "Never" = "Mai";
 "New Connection" = "Nuova connessione";
@@ -213,11 +215,13 @@
 "The first time" = "La prima volta";
 "The keychain did not remove the saved passwords of %@." = "Il portachiavi non ha rimosso le password salvate di %@.";
 "The keychain did not save it: it is used for this connection only." = "Il portachiavi non l’ha salvato: viene usato solo per questa connessione.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Il portachiavi ha conservato una password salvata che MugVPN doveva dimenticare: rimuovila in Accesso Portachiavi.";
 "The network state (routes, DNS, network interfaces)" = "Lo stato della rete (instradamenti, DNS, interfacce di rete)";
 "The private key needs its client certificate." = "La chiave privata richiede il relativo certificato client.";
 "The proxy for %@ needs a username and password." = "Il proxy di %@ richiede nome utente e password.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?";
 "These DNS servers" = "Questi server DNS";
+"These could not be removed either: %@" = "Neanche questi sono stati rimossi: %@";
 "Third-Party Notices" = "Note di terze parti";
 "This network asks you to sign in first." = "Questa rete chiede prima di accedere.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Questo profilo accede anche in un altro modo (PKCS#12 o impronta del certificato): vedi Avanzate.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Disinstalla";
 "Uninstall MugVPN" = "Disinstalla MugVPN";
 "Uninstall MugVPN…" = "Disinstalla MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "La disinstallazione non è finita: MugVPN non è riuscito a spostarsi nel Cestino. Sposta %@ nel Cestino tu stesso.";
 "Update" = "Aggiorna";
 "Update MugVPN's Helper" = "Aggiorna l'helper di MugVPN";
 "Update MugVPN's Helper…" = "Aggiorna l'helper di MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "password";
 "saved passwords" = "password salvate";
 "the connection ended unexpectedly" = "la connessione è terminata inaspettatamente";
+"the helper's entry in Login Items" = "la voce dell’helper negli elementi di login";
 "the persistent connection is not running" = "la connessione persistente non è attiva";
 "the port must be 1–65535" = "la porta deve essere compresa nell'intervallo 1–65535";
 "the pre-connect script failed" = "lo script di preconnessione non è riuscito";

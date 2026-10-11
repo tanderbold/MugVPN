@@ -82,9 +82,22 @@ case .uninstall(let confirmed, let keep):
             + UninstallPlan.systemRemovalScript(keepProfiles: keep) + "\"\n").utf8))
         exit(1)
     }
-    services.helperSetup.unregister()
     var stayed = services.removeUserData(user)
-    if !services.moveAppToTrash() { stayed.append(Bundle.main.bundlePath) }
+    var registered: [String] = []
+    if !services.helperSetup.unregister() { registered.append("the helper's entry in Login Items") }
+    if services.launchAtLogin, (try? services.setLaunchAtLogin(false)) == nil || services.launchAtLogin {
+        registered.append("MugVPN in Login Items")
+    }
+    guard registered.isEmpty else {
+        // The app stays to try again: a registration left with no app could not be undone.
+        FileHandle.standardError.write(Data("MugVPN could not finish uninstalling (\((registered + stayed).joined(separator: ", "))): it stays installed; try again.\n".utf8))
+        exit(1)
+    }
+    if !services.moveAppToTrash() {
+        FileHandle.standardError.write(Data(("Uninstalling is not finished: move \(Bundle.main.bundlePath) to the Trash yourself."
+            + (stayed.isEmpty ? "" : " These could not be removed either: \(stayed.joined(separator: ", "))") + "\n").utf8))
+        exit(1)
+    }
     guard stayed.isEmpty else {
         // Said, not claimed gone.
         FileHandle.standardError.write(Data("MugVPN is uninstalled, but these could not be removed: \(stayed.joined(separator: ", "))\n".utf8))

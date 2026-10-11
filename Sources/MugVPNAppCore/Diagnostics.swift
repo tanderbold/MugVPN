@@ -33,7 +33,12 @@ public enum Diagnostics {
 
     /// The profile as MugVPN reads it, comments left out and every argument not known to be safe
     /// removed; one MugVPN cannot read is left out (it could hide anything).
+    /// What stands for a profile that was not read (too large, not a file).
+    public static let leftOut = "[a profile larger than 1 MB, or not a file: left out]"
+
     public static func sanitize(config: String) -> String {
+        // The app's own note in its place, exactly: as it is (any other text is a profile, sanitized).
+        if config == leftOut { return config }
         guard let ds = try? ConfigParser.parse(config) else { return "[a profile MugVPN cannot read: left out]" }
         return render(ds)
     }

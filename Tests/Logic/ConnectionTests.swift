@@ -67,8 +67,16 @@ final class FakeSecrets: SecretStore {
         items["\(profile)|\(key.rawValue)"] = value
         return true
     }
-    func remove(_ profile: String, _ key: SecretKey) { items["\(profile)|\(key.rawValue)"] = nil }
-    func removeAll(_ profile: String) { items = items.filter { !$0.key.hasPrefix(profile + "|") } }
+    func remove(_ profile: String, _ key: SecretKey) -> Bool {
+        if refuses { return false }
+        items["\(profile)|\(key.rawValue)"] = nil
+        return true
+    }
+    func removeAll(_ profile: String) -> Bool {
+        if refuses { return false }
+        items = items.filter { !$0.key.hasPrefix(profile + "|") }
+        return true
+    }
 }
 
 final class Harness {
@@ -188,6 +196,16 @@ func registerConnectionTests() {
         expectEqual(h.ui.dismissed, 0)
         h.line(">STATE:1700000000,EXITING,SIGTERM,,,,,")
         expectEqual(h.ui.dismissed, 1)
+    }
+    test("CON-39", "a saved password that failed, or the server says to forget: kept by the keychain, said") {
+        let h = Harness()
+        h.secrets.items["\(h.c.profile)|\(SecretKey.keyPassword.rawValue)"] = "bad"
+        h.secrets.refuses = true
+        h.line(">PASSWORD:Verification Failed: 'Private Key'")
+        expect(h.ui.notes.contains { $0.1 == ConnectionController.keychainRemoveFailed }, "\(h.ui.notes)")
+        h.line(">ECHO:1700000000,forget-passwords")
+        h.line(">ECHO:1700000001,forget-passwords")
+        expectEqual(h.ui.notes.filter { $0.1 == ConnectionController.keychainRemoveFailed }.count, 1, "said once, not every time")
     }
     test("CON-06", "private key password") {
         let h = Harness()

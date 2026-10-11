@@ -867,7 +867,10 @@ final class AppController: NSObject, NSMenuDelegate {
                              helperID: manager.active[p.id]?.helperID,
                              uid: getuid(), runDir: runDir, logsDir: logsDir,
                              exists: { FileManager.default.isReadableFile(atPath: $0) }).map { (p.displayName, $0) }
-        }
+        } + (!parts.contains(.logs) ? [] : ((try? FileManager.default.contentsOfDirectory(atPath: logsDir)) ?? [])
+            // Logs of tunnels that died with the helper, whose profile was not known (an older version's).
+            .filter { $0.hasPrefix("recovered-") && FileManager.default.isReadableFile(atPath: logsDir + "/" + $0) }
+            .sorted().map { (($0 as NSString).deletingPathExtension, logsDir + "/" + $0) })
         let appVersion = Self.appVersion
         let os = ProcessInfo.processInfo.operatingSystemVersionString
         let connected = manager.active.values.map { "\($0.profile.displayName): \($0.controller.status)" }.sorted()
@@ -882,22 +885,47 @@ final class AppController: NSObject, NSMenuDelegate {
                     p.standardOutput = out
                     p.standardError = out
                     guard (try? p.run()) != nil else { return "(\(tool) did not run)" }
-                    let killer = DispatchWorkItem { if p.isRunning { p.terminate() } }
+                    let killer = DispatchWorkItem {
+                        guard p.isRunning else { return }
+                        p.terminate()
+                        let pid = p.processIdentifier
+                        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { if p.isRunning { kill(pid, SIGKILL) } }
+                    }
                     DispatchQueue.global().asyncAfter(deadline: .now() + 10, execute: killer)
                     let d = out.fileHandleForReading.readDataToEndOfFile()
                     p.waitUntilExit()
                     killer.cancel()
                     return String(decoding: d, as: UTF8.self)
                 }
-                func tail(_ path: String, _ bytes: UInt64) -> String? {
-                    guard let h = FileHandle(forReadingAtPath: path) else { return nil }
-                    defer { try? h.close() }
-                    let end = (try? h.seekToEnd()) ?? 0
-                    try? h.seek(toOffset: end > bytes ? end - bytes : 0)
-                    return (try? h.readToEnd()).map { String(decoding: $0, as: UTF8.self) }
+                /// One open, then checked on that descriptor (not the path: it could be swapped between): a regular
+                /// file only (never follows a link, never waits on a FIFO or device), at most `limit` bytes — its last
+                /// ones (`tail`), or none when it is larger (nil).
+                func read(_ path: String, limit: Int, tail: Bool) -> String? {
+                    let fd = open(path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
+                    guard fd >= 0 else { return nil }
+                    defer { close(fd) }
+                    var st = stat()
+                    guard fstat(fd, &st) == 0, (st.st_mode & S_IFMT) == S_IFREG else { return nil }
+                    let size = Int(st.st_size)
+                    if size > limit {
+                        guard tail else { return nil }
+                        lseek(fd, off_t(size - limit), SEEK_SET)
+                    }
+                    var data = Data()
+                    var buf = [UInt8](repeating: 0, count: 65536)
+                    while data.count < limit {
+                        let n = Darwin.read(fd, &buf, min(buf.count, limit - data.count))
+                        guard n > 0 else { break }
+                        data.append(contentsOf: buf[0..<n])
+                    }
+                    return String(decoding: data, as: UTF8.self)
                 }
-                let profiles = profileFiles.map { ($0.0, tail($0.1, 1 << 20) ?? "") }
-                let logs = logFiles.compactMap { f in tail(f.1, 1 << 20).map { (f.0, $0) } }
+                // A profile whole (sanitized as a whole: a piece of one could start inside a secret), or left out.
+                func whole(_ path: String) -> String {
+                    read(path, limit: 1 << 20, tail: false) ?? Diagnostics.leftOut
+                }
+                let profiles = profileFiles.map { ($0.0, whole($0.1)) }
+                let logs = logFiles.compactMap { f in read(f.1, limit: 1 << 20, tail: true).map { (f.0, $0) } }
                 let openvpn = run(MugVPNIDs.libexecDir + "/openvpn", ["--version"]).components(separatedBy: "\n").first ?? ""
                 let files = Diagnostics.files(
                     summary: ["MugVPN": appVersion, "helper": helperVersion ?? "not answering", "openvpn": openvpn, "macOS": os,
@@ -933,8 +961,17 @@ final class AppController: NSObject, NSMenuDelegate {
                 var zipped = "ditto did not run"
                 var ok = false
                 if (try? ditto.run()) != nil {
+                    // Not forever: stopped after a minute (then the archive counts as not made).
+                    let stop = DispatchWorkItem {
+                        guard ditto.isRunning else { return }
+                        ditto.terminate()
+                        let pid = ditto.processIdentifier
+                        DispatchQueue.global().asyncAfter(deadline: .now() + 2) { if ditto.isRunning { kill(pid, SIGKILL) } }
+                    }
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 60, execute: stop)
                     zipped = String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
                     ditto.waitUntilExit()
+                    stop.cancel()
                     ok = ditto.terminationStatus == 0 && FileManager.default.fileExists(atPath: made)
                 }
                 if ok {
@@ -982,9 +1019,10 @@ final class AppController: NSObject, NSMenuDelegate {
 
     @objc func clearPasswords(_ sender: NSMenuItem) {
         guard let p = sender.representedObject as? Profile else { return }
-        secrets.removeAll(p.secretsKey)
-        // Still there (the keychain refused): said, not claimed cleared.
-        if secrets.hasSaved(p.secretsKey) { showError(L("The keychain did not remove the saved passwords of %@.", p.displayName)) }
+        // The keychain refused (or may still have them): said, not claimed cleared.
+        if !secrets.removeAll(p.secretsKey) || secrets.hasSaved(p.secretsKey) {
+            showError(L("The keychain did not remove the saved passwords of %@.", p.displayName))
+        }
         rebuildMenu()
     }
 
@@ -1221,7 +1259,6 @@ final class AppController: NSObject, NSMenuDelegate {
                 } catch {
                     return showError(L("Cannot uninstall: %@", "\(error)"))
                 }
-                self.services.helperSetup.unregister()
                 self.removeUserPart(keepProfiles: keepProfiles)
             }
             return true
@@ -1234,7 +1271,6 @@ final class AppController: NSObject, NSMenuDelegate {
         manager.helperClient.uninstall(keepProfiles: keepProfiles) { [weak self] err in
             guard let self else { return }
             if let err { return done(err) }
-            self.services.helperSetup.unregister()
             self.removeUserPart(keepProfiles: keepProfiles, then: { done(nil) })
         }
     }
@@ -1242,17 +1278,32 @@ final class AppController: NSObject, NSMenuDelegate {
     /// The user's part, then the app; what stays is said before MugVPN quits (not claimed gone).
     private func removeUserPart(keepProfiles: Bool, then: (() -> Void)? = nil) {
         var stayed = services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
-        if !services.moveAppToTrash() { stayed.append(Bundle.main.bundlePath) }
+        // Both registrations go before the app does (a registration left with no app could not be undone here).
+        var registered: [String] = []
+        if !services.helperSetup.unregister() { registered.append(L("the helper's entry in Login Items")) }
+        if services.launchAtLogin, (try? services.setLaunchAtLogin(false)) == nil || services.launchAtLogin {
+            registered.append(L("MugVPN in Login Items"))
+        }
+        guard registered.isEmpty else {
+            // The app stays (and keeps running) so it can be tried again.
+            return showError(L("MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.",
+                               (registered + stayed).joined(separator: ", ")))
+        }
+        let appStays = !services.moveAppToTrash()
         let finish: () -> Void = { [weak self] in
             if let then { then() } else { self?.onQuit() }
         }
-        guard !stayed.isEmpty else {
+        guard !stayed.isEmpty || appStays else {
             finish()
             return
         }
+        // The app still there: not finished, and what to do by hand is said.
+        let text = appStays
+            ? L("Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.", Bundle.main.bundlePath)
+                + (stayed.isEmpty ? "" : "\n" + L("These could not be removed either: %@", stayed.joined(separator: ", ")))
+            : L("MugVPN is uninstalled, but these could not be removed: %@", stayed.joined(separator: ", "))
         showForm(kind: "message", profile: "", title: L("Uninstall MugVPN"),
-                 views: [Form.label(L("MugVPN is uninstalled, but these could not be removed: %@", stayed.joined(separator: ", ")),
-                                    id: "text")],
+                 views: [Form.label(text, id: "text")],
                  cancelTitle: nil, ok: { _ in DispatchQueue.main.async(execute: finish); return true })
     }
 

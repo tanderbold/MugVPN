@@ -1647,6 +1647,113 @@ func registerPrivsepHelperTests() {
         sys.launched[0].process.onExit(.exited(0))
         expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "why it dropped")
     }
+    test("PS-101", "DNS a dead tunnel left on a utun a live one has again: not taken off under it (the live one's own end does)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        sys.launched[0].process.onExit(.exited(1))          // a's DNS left on record
+        sys.failRestoreFor = []
+        _ = a
+        let b = try dnsUp(sys, h, "utun5", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])   // utun5 again, its DNS
+        let before = sys.dnsRestored.count
+        sys.fireTimers()
+        expectEqual(sys.dnsRestored.count, before, "the live one's DNS not taken off")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all")
+    }
+    test("PS-102", "ROUTEDEL of a default route: one half gone, the other stays, the first not back: undone and stopped") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "0.0.0.0 0.0.0.0 10.8.0.1")
+        // The second half does not go; the first cannot be put back.
+        sys.failRouteDeleteFor = ["128.0.0.0"]
+        sys.failRouteAdds = true
+        expectThrows("ROUTEDEL") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTEDEL", message: "0.0.0.0 0.0.0.0 10.8.0.1") }
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "not left with a record of a route that is not there")
+    }
+    test("PS-103", "a log neither moved nor copied into place: its run folder stays, the log saved later (not lost)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("why it dropped".utf8), mode: 0o600)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        sys.failMoves = [kept]
+        sys.failWrites = [kept]
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        expect(sys.files["/L/run/\(id)/openvpn.log"] != nil, "still in its run folder")
+        sys.failMoves = []
+        sys.failWrites = []
+        sys.fireTimers()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "why it dropped")
+        expect(sys.files["/L/run/\(id)/openvpn.log"] == nil)
+    }
+    test("PS-104", "a connection undone at once (fail closed) takes its own DNS off (its utun is not someone else's)") {
+        let (sys, h, b) = try standardSplit()
+        sys.failNthWrite = 1           // its rollback cannot be recorded: undone and stopped
+        sys.failWrites = ["/L/run/\(b)/state.json"]
+        _ = try? h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "10.98.0.0 255.255.0.0 10.9.0.1")
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "undone and stopped")
+        expectEqual(sys.splitResolvers["utun6"], nil, "its DNS taken off")
+    }
+    test("PS-105", "the helper starts again after a crash: the dead tunnel's log is kept (it says why it dropped)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("the last words".utf8), mode: 0o600)
+        sys.dirs["/Logs"] = nil          // a fresh install: no logs folder yet
+        sys.failWritesWithoutDir = true
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.list("/L/run").isEmpty, "its folder gone at once (not left for a retry)")
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: nil, uid: 501) + ".log"
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "the last words")
+    }
+    test("PS-106", "the log of a tunnel that died with the helper: kept as its profile's log, its user's to read") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("the last words".utf8), mode: 0o600)
+        try makeHelper(sys).prepareRunDirectory()
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "the last words", "View Log finds it")
+        expectEqual(sys.owners[kept]?.uid, 501, "its user's")
+    }
+    test("PS-107", "a dead run's log that cannot be kept at helper start: tried again while the helper runs") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("words".utf8), mode: 0o600)
+        let h2 = makeHelper(sys)
+        sys.failMoves = Set(["/Logs/recovered-\(id).log", "/Logs/" + ProfileKey.logName(profile: "office", id: nil, uid: 501) + ".log"])
+        sys.failWrites = sys.failMoves
+        try h2.prepareRunDirectory()
+        expect(sys.files["/L/run/\(id)/openvpn.log"] != nil, "kept")
+        sys.failMoves = []
+        sys.failWrites = []
+        sys.fireTimers()
+        expect(sys.files["/L/run/\(id)/openvpn.log"] == nil, "kept on a later try")
+    }
+    test("PS-108", "a dead run 0.2.4 recorded (no profile, no user): its log kept for administrators to read") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/run", mode: 0o711)
+        try sys.makeDirectory("/L/run/OLD", mode: 0o711)
+        // What 0.2.4 wrote: the tunnel only.
+        try sys.writeFile("/L/run/OLD/state.json", Data(#"{"device":"utun5","routes":[],"dnsVars":{},"dnsApplied":false,"opened":["utun5"]}"#.utf8), mode: 0o600)
+        try sys.writeFile("/L/run/OLD/openvpn.log", Data("words".utf8), mode: 0o600)
+        try makeHelper(sys).prepareRunDirectory()
+        expectEqual(String(decoding: sys.files["/Logs/recovered-OLD.log"]?.data ?? Data(), as: UTF8.self), "words")
+        expectEqual(sys.owners["/Logs/recovered-OLD.log"]?.gid, 80, "administrators may read it")
+        expect(sys.list("/L/run").isEmpty)
+    }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

@@ -84,7 +84,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN nemohl dokončit odinstalaci (%@). Zůstane nainstalován: zkuste to znovu za minutu.",
   "saved passwords": "uložená hesla",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN je odinstalován, ale tyto položky nešlo odstranit: %@",
-  "The keychain did not remove the saved passwords of %@.": "Klíčenka neodstranila uložená hesla pro %@."
+  "The keychain did not remove the saved passwords of %@.": "Klíčenka neodstranila uložená hesla pro %@.",
+  "the helper's entry in Login Items": "položka pomocné služby v Položkách při přihlášení",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Odinstalace není dokončena: MugVPN se nemohl přesunout do koše. Přesuňte %@ do koše sami.",
+  "These could not be removed either: %@": "Tyto položky také nešlo odstranit: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Dotazy na jména přes systémový resolver dál odcházejí, aby VPN znovu našla svůj server.",
+  "MugVPN in Login Items": "MugVPN v Položkách při přihlášení",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Klíčenka ponechala uložené heslo, které měl MugVPN zapomenout: odstraňte ho v aplikaci Klíčenka."
  },
  "de": {
   "OK": "OK",
@@ -171,7 +177,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN konnte die Deinstallation nicht abschließen (%@). Es bleibt installiert: Versuchen Sie es in einer Minute erneut.",
   "saved passwords": "gesicherte Passwörter",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN ist deinstalliert, aber Folgendes konnte nicht entfernt werden: %@",
-  "The keychain did not remove the saved passwords of %@.": "Der Schlüsselbund hat die gesicherten Passwörter von %@ nicht entfernt."
+  "The keychain did not remove the saved passwords of %@.": "Der Schlüsselbund hat die gesicherten Passwörter von %@ nicht entfernt.",
+  "the helper's entry in Login Items": "der Eintrag des Helfers in den Anmeldeobjekten",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Die Deinstallation ist nicht abgeschlossen: MugVPN konnte sich nicht in den Papierkorb legen. Legen Sie %@ selbst in den Papierkorb.",
+  "These could not be removed either: %@": "Auch dies konnte nicht entfernt werden: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namensabfragen über den Resolver des Mac gehen weiter hinaus, damit das VPN seinen Server wiederfindet.",
+  "MugVPN in Login Items": "MugVPN in den Anmeldeobjekten",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Der Schlüsselbund hat ein gesichertes Passwort behalten, das MugVPN vergessen sollte: Entfernen Sie es in der Schlüsselbundverwaltung."
  },
  "da": {
   "OK": "OK",
@@ -258,7 +270,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN kunne ikke afslutte afinstallationen (%@). Det forbliver installeret: prøv igen om et minut.",
   "saved passwords": "gemte adgangskoder",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN er afinstalleret, men disse kunne ikke fjernes: %@",
-  "The keychain did not remove the saved passwords of %@.": "Nøgleringen fjernede ikke de gemte adgangskoder for %@."
+  "The keychain did not remove the saved passwords of %@.": "Nøgleringen fjernede ikke de gemte adgangskoder for %@.",
+  "the helper's entry in Login Items": "hjælperens punkt i Login-emner",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Afinstallationen er ikke færdig: MugVPN kunne ikke flytte sig selv til papirkurven. Flyt %@ til papirkurven selv.",
+  "These could not be removed either: %@": "Disse kunne heller ikke fjernes: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneopslag via Mac’ens resolver går stadig ud, så VPN’en kan finde sin server igen.",
+  "MugVPN in Login Items": "MugVPN i Login-emner",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøgleringen beholdt en gemt adgangskode, som MugVPN skulle glemme: fjern den i Nøgleringsadgang."
  },
  "el": {
   "OK": "OK",
@@ -345,7 +363,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "Το MugVPN δεν μπόρεσε να ολοκληρώσει την απεγκατάσταση (%@). Παραμένει εγκατεστημένο: δοκιμάστε ξανά σε ένα λεπτό.",
   "saved passwords": "αποθηκευμένοι κωδικοί",
   "MugVPN is uninstalled, but these could not be removed: %@": "Το MugVPN απεγκαταστάθηκε, αλλά αυτά δεν αφαιρέθηκαν: %@",
-  "The keychain did not remove the saved passwords of %@.": "Η κλειδοθήκη δεν αφαίρεσε τους αποθηκευμένους κωδικούς του %@."
+  "The keychain did not remove the saved passwords of %@.": "Η κλειδοθήκη δεν αφαίρεσε τους αποθηκευμένους κωδικούς του %@.",
+  "the helper's entry in Login Items": "η καταχώριση της βοηθητικής υπηρεσίας στα Στοιχεία σύνδεσης",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Η απεγκατάσταση δεν ολοκληρώθηκε: το MugVPN δεν μπόρεσε να μετακινηθεί στον Κάδο. Μετακινήστε το %@ στον Κάδο μόνοι σας.",
+  "These could not be removed either: %@": "Ούτε αυτά δεν αφαιρέθηκαν: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Οι αναζητήσεις ονομάτων μέσω του επιλυτή του Mac συνεχίζουν να βγαίνουν, ώστε το VPN να ξαναβρεί τον διακομιστή του.",
+  "MugVPN in Login Items": "Το MugVPN στα Στοιχεία σύνδεσης",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Η κλειδοθήκη κράτησε έναν αποθηκευμένο κωδικό που το MugVPN έπρεπε να ξεχάσει: αφαιρέστε τον στην Πρόσβαση στην κλειδοθήκη."
  },
  "es": {
   "OK": "Aceptar",
@@ -432,7 +456,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN no pudo terminar la desinstalación (%@). Sigue instalado: inténtelo de nuevo en un minuto.",
   "saved passwords": "contraseñas guardadas",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN está desinstalado, pero no se pudo quitar esto: %@",
-  "The keychain did not remove the saved passwords of %@.": "El llavero no quitó las contraseñas guardadas de %@."
+  "The keychain did not remove the saved passwords of %@.": "El llavero no quitó las contraseñas guardadas de %@.",
+  "the helper's entry in Login Items": "la entrada del asistente en Ítems de inicio",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "La desinstalación no ha terminado: MugVPN no pudo moverse a la Papelera. Mueva %@ a la Papelera usted mismo.",
+  "These could not be removed either: %@": "Tampoco se pudo quitar esto: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Las consultas de nombres a través del resolvedor del Mac siguen saliendo, para que la VPN vuelva a encontrar su servidor.",
+  "MugVPN in Login Items": "MugVPN en Ítems de inicio",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "El llavero conservó una contraseña guardada que MugVPN debía olvidar: elimínela en Acceso a Llaveros."
  },
  "fa": {
   "OK": "تأیید",
@@ -519,7 +549,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN نتوانست حذف را کامل کند (%@). نصب می‌ماند: یک دقیقه دیگر دوباره امتحان کنید.",
   "saved passwords": "گذرواژه‌های ذخیره‌شده",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN حذف شد، اما این‌ها حذف نشدند: %@",
-  "The keychain did not remove the saved passwords of %@.": "زنجیرهٔ کلید گذرواژه‌های ذخیره‌شدهٔ %@ را حذف نکرد."
+  "The keychain did not remove the saved passwords of %@.": "زنجیرهٔ کلید گذرواژه‌های ذخیره‌شدهٔ %@ را حذف نکرد.",
+  "the helper's entry in Login Items": "مورد سرویس کمکی در موارد ورود",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "حذف تمام نشد: MugVPN نتوانست خودش را به سطل زباله ببرد. %@ را خودتان به سطل زباله ببرید.",
+  "These could not be removed either: %@": "این‌ها هم حذف نشدند: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "پرس‌وجوی نام از طریق حل‌کنندهٔ Mac همچنان بیرون می‌رود تا VPN دوباره سرورش را پیدا کند.",
+  "MugVPN in Login Items": "MugVPN در موارد ورود",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "زنجیرهٔ کلید گذرواژه‌ای را که MugVPN باید فراموش می‌کرد نگه داشت: آن را در Keychain Access حذف کنید."
  },
  "fi": {
   "OK": "OK",
@@ -606,7 +642,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN ei voinut viedä poistoa loppuun (%@). Se pysyy asennettuna: yritä uudelleen minuutin kuluttua.",
   "saved passwords": "tallennetut salasanat",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN on poistettu, mutta näitä ei voitu poistaa: %@",
-  "The keychain did not remove the saved passwords of %@.": "Avainnippu ei poistanut kohteen %@ tallennettuja salasanoja."
+  "The keychain did not remove the saved passwords of %@.": "Avainnippu ei poistanut kohteen %@ tallennettuja salasanoja.",
+  "the helper's entry in Login Items": "apupalvelun kohde kirjautumiskohteissa",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Poisto ei ole valmis: MugVPN ei voinut siirtää itseään roskakoriin. Siirrä %@ roskakoriin itse.",
+  "These could not be removed either: %@": "Myöskään näitä ei voitu poistaa: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Nimihaut Macin selvittimen kautta lähtevät yhä, jotta VPN löytää palvelimensa uudelleen.",
+  "MugVPN in Login Items": "MugVPN kirjautumiskohteissa",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Avainnippu säilytti tallennetun salasanan, joka MugVPN:n piti unohtaa: poista se Avainnippujen hallinnassa."
  },
  "fr": {
   "OK": "OK",
@@ -693,7 +735,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN n’a pas pu terminer la désinstallation (%@). Il reste installé : réessayez dans une minute.",
   "saved passwords": "mots de passe enregistrés",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN est désinstallé, mais ces éléments n’ont pas pu être supprimés : %@",
-  "The keychain did not remove the saved passwords of %@.": "Le trousseau n’a pas supprimé les mots de passe enregistrés de %@."
+  "The keychain did not remove the saved passwords of %@.": "Le trousseau n’a pas supprimé les mots de passe enregistrés de %@.",
+  "the helper's entry in Login Items": "l’entrée de l’assistant dans les éléments de connexion",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "La désinstallation n’est pas terminée : MugVPN n’a pas pu se placer dans la Corbeille. Placez %@ dans la Corbeille vous-même.",
+  "These could not be removed either: %@": "Ces éléments n’ont pas pu être supprimés non plus : %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Les résolutions de noms via le résolveur du Mac sortent toujours, pour que le VPN retrouve son serveur.",
+  "MugVPN in Login Items": "MugVPN dans les éléments de connexion",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Le trousseau a gardé un mot de passe que MugVPN devait oublier : supprimez-le dans Trousseaux d’accès."
  },
  "it": {
   "OK": "OK",
@@ -780,7 +828,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN non ha potuto completare la disinstallazione (%@). Resta installato: riprova tra un minuto.",
   "saved passwords": "password salvate",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN è disinstallato, ma questi elementi non sono stati rimossi: %@",
-  "The keychain did not remove the saved passwords of %@.": "Il portachiavi non ha rimosso le password salvate di %@."
+  "The keychain did not remove the saved passwords of %@.": "Il portachiavi non ha rimosso le password salvate di %@.",
+  "the helper's entry in Login Items": "la voce dell’helper negli elementi di login",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "La disinstallazione non è finita: MugVPN non è riuscito a spostarsi nel Cestino. Sposta %@ nel Cestino tu stesso.",
+  "These could not be removed either: %@": "Neanche questi sono stati rimossi: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Le risoluzioni dei nomi tramite il resolver del Mac continuano a uscire, così la VPN ritrova il suo server.",
+  "MugVPN in Login Items": "MugVPN negli elementi di login",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Il portachiavi ha conservato una password salvata che MugVPN doveva dimenticare: rimuovila in Accesso Portachiavi."
  },
  "ja": {
   "OK": "OK",
@@ -867,7 +921,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN はアンインストールを完了できませんでした（%@）。インストールされたままです。1 分後にもう一度お試しください。",
   "saved passwords": "保存したパスワード",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN はアンインストールされましたが、次のものを削除できませんでした: %@",
-  "The keychain did not remove the saved passwords of %@.": "キーチェーンは %@ の保存したパスワードを削除しませんでした。"
+  "The keychain did not remove the saved passwords of %@.": "キーチェーンは %@ の保存したパスワードを削除しませんでした。",
+  "the helper's entry in Login Items": "ログイン項目のヘルパーの項目",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "アンインストールは完了していません: MugVPN は自身をゴミ箱に入れられませんでした。%@ をご自分でゴミ箱に入れてください。",
+  "These could not be removed either: %@": "次のものも削除できませんでした: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN がサーバを再び見つけられるよう、Mac のリゾルバ経由の名前解決は引き続き外部へ送られます。",
+  "MugVPN in Login Items": "ログイン項目の MugVPN",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN が忘れるべき保存したパスワードをキーチェーンが保持しています。キーチェーンアクセスで削除してください。"
  },
  "ko": {
   "OK": "확인",
@@ -954,7 +1014,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN이 제거를 마치지 못했습니다(%@). 설치된 상태로 남습니다. 1분 후에 다시 시도하세요.",
   "saved passwords": "저장된 암호",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN이 제거되었지만 다음 항목은 삭제하지 못했습니다: %@",
-  "The keychain did not remove the saved passwords of %@.": "키체인이 %@의 저장된 암호를 삭제하지 않았습니다."
+  "The keychain did not remove the saved passwords of %@.": "키체인이 %@의 저장된 암호를 삭제하지 않았습니다.",
+  "the helper's entry in Login Items": "로그인 항목의 도우미 항목",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "제거가 끝나지 않았습니다. MugVPN이 자신을 휴지통으로 옮기지 못했습니다. %@을(를) 직접 휴지통으로 옮기세요.",
+  "These could not be removed either: %@": "다음 항목도 삭제하지 못했습니다: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN이 서버를 다시 찾을 수 있도록 Mac 리졸버를 통한 이름 조회는 계속 나갑니다.",
+  "MugVPN in Login Items": "로그인 항목의 MugVPN",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN이 잊어야 할 저장된 암호를 키체인이 보관했습니다. 키체인 접근에서 삭제하세요."
  },
  "nl": {
   "OK": "OK",
@@ -1041,7 +1107,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN kon het verwijderen niet voltooien (%@). Het blijft geïnstalleerd: probeer het over een minuut opnieuw.",
   "saved passwords": "bewaarde wachtwoorden",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN is verwijderd, maar dit kon niet worden verwijderd: %@",
-  "The keychain did not remove the saved passwords of %@.": "De sleutelhanger heeft de bewaarde wachtwoorden van %@ niet verwijderd."
+  "The keychain did not remove the saved passwords of %@.": "De sleutelhanger heeft de bewaarde wachtwoorden van %@ niet verwijderd.",
+  "the helper's entry in Login Items": "het onderdeel van de helper in Inlogonderdelen",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Het verwijderen is niet voltooid: MugVPN kon zichzelf niet naar de prullenmand verplaatsen. Verplaats %@ zelf naar de prullenmand.",
+  "These could not be removed either: %@": "Ook dit kon niet worden verwijderd: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Naamopzoekingen via de resolver van de Mac gaan nog steeds naar buiten, zodat het VPN zijn server terugvindt.",
+  "MugVPN in Login Items": "MugVPN in Inlogonderdelen",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "De sleutelhanger heeft een bewaard wachtwoord gehouden dat MugVPN moest vergeten: verwijder het in Sleutelhangertoegang."
  },
  "nb": {
   "OK": "OK",
@@ -1128,7 +1200,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN kunne ikke fullføre avinstalleringen (%@). Det forblir installert: prøv igjen om et minutt.",
   "saved passwords": "lagrede passord",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN er avinstallert, men disse kunne ikke fjernes: %@",
-  "The keychain did not remove the saved passwords of %@.": "Nøkkelringen fjernet ikke de lagrede passordene for %@."
+  "The keychain did not remove the saved passwords of %@.": "Nøkkelringen fjernet ikke de lagrede passordene for %@.",
+  "the helper's entry in Login Items": "hjelperens oppføring i påloggingsobjekter",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Avinstalleringen er ikke fullført: MugVPN kunne ikke flytte seg selv til papirkurven. Flytt %@ til papirkurven selv.",
+  "These could not be removed either: %@": "Disse kunne heller ikke fjernes: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneoppslag via Macens resolver går fortsatt ut, så VPN-et kan finne serveren sin igjen.",
+  "MugVPN in Login Items": "MugVPN i påloggingsobjekter",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøkkelringen beholdt et lagret passord MugVPN skulle glemme: fjern det i Nøkkelringtilgang."
  },
  "pl": {
   "OK": "OK",
@@ -1215,7 +1293,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN nie mógł dokończyć dezinstalacji (%@). Pozostaje zainstalowany: spróbuj ponownie za minutę.",
   "saved passwords": "zapisane hasła",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN został odinstalowany, ale tego nie udało się usunąć: %@",
-  "The keychain did not remove the saved passwords of %@.": "Pęk kluczy nie usunął zapisanych haseł %@."
+  "The keychain did not remove the saved passwords of %@.": "Pęk kluczy nie usunął zapisanych haseł %@.",
+  "the helper's entry in Login Items": "wpis usługi pomocniczej w Rzeczach otwieranych podczas logowania",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Dezinstalacja nie została zakończona: MugVPN nie mógł przenieść się do Kosza. Przenieś %@ do Kosza samodzielnie.",
+  "These could not be removed either: %@": "Tego również nie udało się usunąć: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Zapytania o nazwy przez resolver Maca nadal wychodzą, aby VPN mógł znów znaleźć swój serwer.",
+  "MugVPN in Login Items": "MugVPN w Rzeczach otwieranych podczas logowania",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Pęk kluczy zachował zapisane hasło, które MugVPN miał zapomnieć: usuń je w Pęku kluczy."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1302,7 +1386,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "O MugVPN não conseguiu concluir a desinstalação (%@). Ele continua instalado: tente de novo em um minuto.",
   "saved passwords": "senhas salvas",
   "MugVPN is uninstalled, but these could not be removed: %@": "O MugVPN foi desinstalado, mas não foi possível remover: %@",
-  "The keychain did not remove the saved passwords of %@.": "As Chaves não removeram as senhas salvas de %@."
+  "The keychain did not remove the saved passwords of %@.": "As Chaves não removeram as senhas salvas de %@.",
+  "the helper's entry in Login Items": "o item do auxiliar nos Itens de Início",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "A desinstalação não terminou: o MugVPN não conseguiu se mover para o Lixo. Mova %@ para o Lixo você mesmo.",
+  "These could not be removed either: %@": "Também não foi possível remover: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "As consultas de nomes pelo resolvedor do Mac continuam saindo, para a VPN encontrar seu servidor de novo.",
+  "MugVPN in Login Items": "MugVPN nos Itens de Início",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "As Chaves mantiveram uma senha salva que o MugVPN deveria esquecer: remova-a no Acesso às Chaves."
  },
  "ru": {
   "OK": "ОК",
@@ -1389,7 +1479,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN не смог завершить удаление (%@). Он остаётся установленным: повторите через минуту.",
   "saved passwords": "сохранённые пароли",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN удалён, но это удалить не удалось: %@",
-  "The keychain did not remove the saved passwords of %@.": "Связка ключей не удалила сохранённые пароли %@."
+  "The keychain did not remove the saved passwords of %@.": "Связка ключей не удалила сохранённые пароли %@.",
+  "the helper's entry in Login Items": "запись помощника в объектах входа",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Удаление не завершено: MugVPN не смог переместить себя в Корзину. Переместите %@ в Корзину вручную.",
+  "These could not be removed either: %@": "Это тоже удалить не удалось: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запросы имён через системный резолвер по-прежнему уходят наружу, чтобы VPN снова нашёл свой сервер.",
+  "MugVPN in Login Items": "MugVPN в объектах входа",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Связка ключей сохранила пароль, который MugVPN должен был забыть: удалите его в «Связке ключей»."
  },
  "sv": {
   "OK": "OK",
@@ -1476,7 +1572,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN kunde inte slutföra avinstallationen (%@). Det förblir installerat: försök igen om en minut.",
   "saved passwords": "sparade lösenord",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN är avinstallerat, men detta kunde inte tas bort: %@",
-  "The keychain did not remove the saved passwords of %@.": "Nyckelringen tog inte bort de sparade lösenorden för %@."
+  "The keychain did not remove the saved passwords of %@.": "Nyckelringen tog inte bort de sparade lösenorden för %@.",
+  "the helper's entry in Login Items": "hjälparens objekt i Inloggningsobjekt",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Avinstallationen är inte klar: MugVPN kunde inte flytta sig själv till papperskorgen. Flytta %@ till papperskorgen själv.",
+  "These could not be removed either: %@": "Detta kunde inte heller tas bort: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namnuppslag via Macens resolver går fortfarande ut, så att VPN:et kan hitta sin server igen.",
+  "MugVPN in Login Items": "MugVPN i Inloggningsobjekt",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nyckelringen behöll ett sparat lösenord som MugVPN skulle glömma: ta bort det i Nyckelhanterare."
  },
  "tr": {
   "OK": "Tamam",
@@ -1563,7 +1665,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN kaldırmayı tamamlayamadı (%@). Yüklü kalıyor: bir dakika sonra yeniden deneyin.",
   "saved passwords": "kaydedilmiş parolalar",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN kaldırıldı ancak şunlar silinemedi: %@",
-  "The keychain did not remove the saved passwords of %@.": "Anahtar Zinciri %@ için kaydedilmiş parolaları silmedi."
+  "The keychain did not remove the saved passwords of %@.": "Anahtar Zinciri %@ için kaydedilmiş parolaları silmedi.",
+  "the helper's entry in Login Items": "yardımcının Giriş Öğeleri’ndeki kaydı",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Kaldırma tamamlanmadı: MugVPN kendini Çöp Sepeti’ne taşıyamadı. %@ uygulamasını Çöp Sepeti’ne kendiniz taşıyın.",
+  "These could not be removed either: %@": "Bunlar da silinemedi: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN’in sunucusunu yeniden bulabilmesi için Mac’in çözümleyicisi üzerinden ad sorguları dışarı çıkmaya devam eder.",
+  "MugVPN in Login Items": "Giriş Öğeleri’ndeki MugVPN",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Anahtar Zinciri, MugVPN’in unutması gereken kayıtlı bir parolayı tuttu: Anahtar Zinciri Erişimi’nde silin."
  },
  "uk": {
   "OK": "OK",
@@ -1650,7 +1758,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN не зміг завершити видалення (%@). Він залишається встановленим: повторіть за хвилину.",
   "saved passwords": "збережені паролі",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN видалено, але це видалити не вдалося: %@",
-  "The keychain did not remove the saved passwords of %@.": "Зв’язка ключів не видалила збережені паролі %@."
+  "The keychain did not remove the saved passwords of %@.": "Зв’язка ключів не видалила збережені паролі %@.",
+  "the helper's entry in Login Items": "запис помічника в об’єктах входу",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "Видалення не завершено: MugVPN не зміг перемістити себе в Кошик. Перемістіть %@ у Кошик вручну.",
+  "These could not be removed either: %@": "Це теж видалити не вдалося: %@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запити імен через системний резолвер і далі йдуть назовні, щоб VPN знову знайшов свій сервер.",
+  "MugVPN in Login Items": "MugVPN в об’єктах входу",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Зв’язка ключів зберегла пароль, який MugVPN мав забути: видаліть його в «Доступі до зв’язки ключів»."
  },
  "zh-Hans": {
   "OK": "好",
@@ -1737,7 +1851,13 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN 无法完成卸载（%@）。它会保持安装：请一分钟后再试。",
   "saved passwords": "存储的密码",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN 已卸载，但以下内容无法移除：%@",
-  "The keychain did not remove the saved passwords of %@.": "钥匙串未移除 %@ 的存储密码。"
+  "The keychain did not remove the saved passwords of %@.": "钥匙串未移除 %@ 的存储密码。",
+  "the helper's entry in Login Items": "登录项中的辅助程序项目",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "卸载未完成：MugVPN 无法将自己移到废纸篓。请手动将 %@ 移到废纸篓。",
+  "These could not be removed either: %@": "以下内容也无法移除：%@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "通过 Mac 解析器的名称查询仍会发出，以便 VPN 能再次找到其服务器。",
+  "MugVPN in Login Items": "登录项中的 MugVPN",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "钥匙串保留了 MugVPN 应忘记的存储密码：请在“钥匙串访问”中移除它。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1824,6 +1944,12 @@
   "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.": "MugVPN 無法完成解除安裝（%@）。它會保持安裝：請一分鐘後再試。",
   "saved passwords": "儲存的密碼",
   "MugVPN is uninstalled, but these could not be removed: %@": "MugVPN 已解除安裝，但以下項目無法移除：%@",
-  "The keychain did not remove the saved passwords of %@.": "鑰匙圈未移除 %@ 的儲存密碼。"
+  "The keychain did not remove the saved passwords of %@.": "鑰匙圈未移除 %@ 的儲存密碼。",
+  "the helper's entry in Login Items": "登入項目中的輔助程式項目",
+  "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself.": "解除安裝未完成：MugVPN 無法將自己移到垃圾桶。請手動將 %@ 移到垃圾桶。",
+  "These could not be removed either: %@": "以下項目也無法移除：%@",
+  "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "透過 Mac 解析器的名稱查詢仍會送出，讓 VPN 能再次找到其伺服器。",
+  "MugVPN in Login Items": "登入項目中的 MugVPN",
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "鑰匙圈保留了 MugVPN 應忘記的儲存密碼：請在「鑰匙圈存取」中移除它。"
  }
 }

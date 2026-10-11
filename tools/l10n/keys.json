@@ -387,6 +387,9 @@
   "key": "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute."
  },
  {
+  "key": "MugVPN in Login Items"
+ },
+ {
   "key": "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute."
  },
  {
@@ -418,6 +421,9 @@
  },
  {
   "key": "Mute repeated messages (h):"
+ },
+ {
+  "key": "Name lookups through the Mac's resolver still go out, so the VPN can find its server again."
  },
  {
   "key": "Name:"
@@ -642,6 +648,9 @@
   "key": "The keychain did not save it: it is used for this connection only."
  },
  {
+  "key": "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access."
+ },
+ {
   "key": "The network state (routes, DNS, network interfaces)"
  },
  {
@@ -655,6 +664,9 @@
  },
  {
   "key": "These DNS servers"
+ },
+ {
+  "key": "These could not be removed either: %@"
  },
  {
   "key": "Third-Party Notices"
@@ -688,6 +700,9 @@
  },
  {
   "key": "Uninstall MugVPN…"
+ },
+ {
+  "key": "Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself."
  },
  {
   "key": "Update"
@@ -757,6 +772,9 @@
  },
  {
   "key": "the connection ended unexpectedly"
+ },
+ {
+  "key": "the helper's entry in Login Items"
  },
  {
   "key": "the persistent connection is not running"

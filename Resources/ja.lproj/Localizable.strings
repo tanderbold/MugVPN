@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN はアンインストールを完了できませんでした（%@）。インストールされたままです。1 分後にもう一度お試しください。";
+"MugVPN in Login Items" = "ログイン項目の MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN は VPN が設定した DNS や経路をまだ取り除いています。それが終わるまでインストールされたままです。1 分後にもう一度お試しください。";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN はアンインストールされましたが、次のものを削除できませんでした: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN、ヘルパー、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "繰り返しメッセージを非表示 (時間):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "VPN がサーバを再び見つけられるよう、Mac のリゾルバ経由の名前解決は引き続き外部へ送られます。";
 "Name:" = "名前:";
 "Never" = "非表示";
 "New Connection" = "新規接続";
@@ -213,11 +215,13 @@
 "The first time" = "初回のみ";
 "The keychain did not remove the saved passwords of %@." = "キーチェーンは %@ の保存したパスワードを削除しませんでした。";
 "The keychain did not save it: it is used for this connection only." = "キーチェーンに保存できませんでした。この接続にのみ使われます。";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "MugVPN が忘れるべき保存したパスワードをキーチェーンが保持しています。キーチェーンアクセスで削除してください。";
 "The network state (routes, DNS, network interfaces)" = "ネットワークの状態（経路、DNS、ネットワークインターフェイス）";
 "The private key needs its client certificate." = "秘密鍵にはクライアント証明書が必要です。";
 "The proxy for %@ needs a username and password." = "%@ のプロキシにはユーザー名とパスワードが必要です。";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？";
 "These DNS servers" = "次のDNSサーバ";
+"These could not be removed either: %@" = "次のものも削除できませんでした: %@";
 "Third-Party Notices" = "サードパーティに関する通知";
 "This network asks you to sign in first." = "このネットワークでは最初にサインインが必要です。";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "このプロファイルは別の方法（PKCS#12 または証明書のフィンガープリント）でもサインインします。「詳細」を参照してください。";
@@ -229,6 +233,7 @@
 "Uninstall" = "アンインストール";
 "Uninstall MugVPN" = "MugVPN をアンインストール";
 "Uninstall MugVPN…" = "MugVPN をアンインストール…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "アンインストールは完了していません: MugVPN は自身をゴミ箱に入れられませんでした。%@ をご自分でゴミ箱に入れてください。";
 "Update" = "アップデート";
 "Update MugVPN's Helper" = "MugVPN のヘルパーをアップデート";
 "Update MugVPN's Helper…" = "MugVPN のヘルパーをアップデート…";
@@ -252,6 +257,7 @@
 "passwords" = "パスワード";
 "saved passwords" = "保存したパスワード";
 "the connection ended unexpectedly" = "接続が予期せず終了しました";
+"the helper's entry in Login Items" = "ログイン項目のヘルパーの項目";
 "the persistent connection is not running" = "永続的な接続が実行されていません";
 "the port must be 1–65535" = "ポートは 1–65535 の範囲で指定してください";
 "the pre-connect script failed" = "接続前スクリプトが失敗しました";

@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Configurações do MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "O MugVPN não conseguiu concluir a desinstalação (%@). Ele continua instalado: tente de novo em um minuto.";
+"MugVPN in Login Items" = "MugVPN nos Itens de Início";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "O MugVPN ainda está removendo o DNS ou as rotas definidas por uma VPN e continuará instalado até lá. Tente de novo em um minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "O MugVPN foi desinstalado, mas não foi possível remover: %@";
 "MugVPN needs its helper to start tunnels." = "O MugVPN precisa do seu auxiliar para iniciar túneis.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "O MugVPN, seu auxiliar, registros, ajustes e senhas salvas serão removidos. Os túneis serão desconectados.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenciar mensagens repetidas (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "As consultas de nomes pelo resolvedor do Mac continuam saindo, para a VPN encontrar seu servidor de novo.";
 "Name:" = "Nome:";
 "Never" = "Nunca";
 "New Connection" = "Nova conexão";
@@ -213,11 +215,13 @@
 "The first time" = "Na primeira vez";
 "The keychain did not remove the saved passwords of %@." = "As Chaves não removeram as senhas salvas de %@.";
 "The keychain did not save it: it is used for this connection only." = "As Chaves não salvaram: será usado só nesta conexão.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "As Chaves mantiveram uma senha salva que o MugVPN deveria esquecer: remova-a no Acesso às Chaves.";
 "The network state (routes, DNS, network interfaces)" = "O estado da rede (rotas, DNS, interfaces de rede)";
 "The private key needs its client certificate." = "A chave privada requer seu certificado de cliente.";
 "The proxy for %@ needs a username and password." = "O proxy de %@ requer usuário e senha.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "O auxiliar em execução é uma versão anterior que não consegue se atualizar. Instalar o novo encerra todas as conexões do MugVPN neste Mac, de todos os usuários. Continuar?";
 "These DNS servers" = "Estes servidores DNS";
+"These could not be removed either: %@" = "Também não foi possível remover: %@";
 "Third-Party Notices" = "Avisos de terceiros";
 "This network asks you to sign in first." = "Esta rede pede que você entre primeiro.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Este perfil também se autentica de outra forma (PKCS#12 ou impressão digital do certificado): veja Avançado.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Desinstalar";
 "Uninstall MugVPN" = "Desinstalar o MugVPN";
 "Uninstall MugVPN…" = "Desinstalar o MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "A desinstalação não terminou: o MugVPN não conseguiu se mover para o Lixo. Mova %@ para o Lixo você mesmo.";
 "Update" = "Atualizar";
 "Update MugVPN's Helper" = "Atualizar o auxiliar do MugVPN";
 "Update MugVPN's Helper…" = "Atualizar o auxiliar do MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "senhas";
 "saved passwords" = "senhas salvas";
 "the connection ended unexpectedly" = "a conexão terminou inesperadamente";
+"the helper's entry in Login Items" = "o item do auxiliar nos Itens de Início";
 "the persistent connection is not running" = "a conexão persistente não está em execução";
 "the port must be 1–65535" = "a porta deve ser 1–65535";
 "the pre-connect script failed" = "o script de pré-conexão falhou";

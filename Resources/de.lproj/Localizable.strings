@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-Einstellungen";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN konnte die Deinstallation nicht abschließen (%@). Es bleibt installiert: Versuchen Sie es in einer Minute erneut.";
+"MugVPN in Login Items" = "MugVPN in den Anmeldeobjekten";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN entfernt noch DNS oder Routen, die ein VPN gesetzt hat, und bleibt bis dahin installiert. Versuchen Sie es in einer Minute erneut.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN ist deinstalliert, aber Folgendes konnte nicht entfernt werden: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN benötigt seinen Helfer, um Tunnel zu starten.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, sein Hilfsprogramm, Protokolle, Einstellungen und gespeicherte Passwörter werden entfernt. Tunnel werden getrennt.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Wiederholte Meldungen stummschalten (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Namensabfragen über den Resolver des Mac gehen weiter hinaus, damit das VPN seinen Server wiederfindet.";
 "Name:" = "Name:";
 "Never" = "Nie";
 "New Connection" = "Neue Verbindung";
@@ -213,11 +215,13 @@
 "The first time" = "Beim ersten Mal";
 "The keychain did not remove the saved passwords of %@." = "Der Schlüsselbund hat die gesicherten Passwörter von %@ nicht entfernt.";
 "The keychain did not save it: it is used for this connection only." = "Der Schlüsselbund hat es nicht gesichert: Es wird nur für diese Verbindung verwendet.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Der Schlüsselbund hat ein gesichertes Passwort behalten, das MugVPN vergessen sollte: Entfernen Sie es in der Schlüsselbundverwaltung.";
 "The network state (routes, DNS, network interfaces)" = "Netzwerkstatus (Routen, DNS, Netzwerkschnittstellen)";
 "The private key needs its client certificate." = "Der private Schlüssel benötigt sein Client-Zertifikat.";
 "The proxy for %@ needs a username and password." = "Der Proxy für %@ benötigt Benutzername und Passwort.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Der laufende Helfer ist älter und kann sich nicht selbst aktualisieren. Den neuen einzusetzen beendet alle MugVPN-Verbindungen auf diesem Mac, aller Benutzer. Fortfahren?";
 "These DNS servers" = "Diese DNS-Server";
+"These could not be removed either: %@" = "Auch dies konnte nicht entfernt werden: %@";
 "Third-Party Notices" = "Hinweise zu Drittanbietern";
 "This network asks you to sign in first." = "Dieses Netzwerk verlangt zuerst eine Anmeldung.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Dieses Profil meldet sich auch anders an (PKCS#12 oder Zertifikat-Fingerabdruck): siehe Erweitert.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Deinstallieren";
 "Uninstall MugVPN" = "MugVPN deinstallieren";
 "Uninstall MugVPN…" = "MugVPN deinstallieren…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Die Deinstallation ist nicht abgeschlossen: MugVPN konnte sich nicht in den Papierkorb legen. Legen Sie %@ selbst in den Papierkorb.";
 "Update" = "Aktualisieren";
 "Update MugVPN's Helper" = "Helfer von MugVPN aktualisieren";
 "Update MugVPN's Helper…" = "Helfer von MugVPN aktualisieren …";
@@ -252,6 +257,7 @@
 "passwords" = "Passwörter";
 "saved passwords" = "gesicherte Passwörter";
 "the connection ended unexpectedly" = "die Verbindung wurde unerwartet beendet";
+"the helper's entry in Login Items" = "der Eintrag des Helfers in den Anmeldeobjekten";
 "the persistent connection is not running" = "die dauerhafte Verbindung läuft nicht";
 "the port must be 1–65535" = "der Port muss im Bereich 1–65535 liegen";
 "the pre-connect script failed" = "das Preconnect-Skript ist fehlgeschlagen";

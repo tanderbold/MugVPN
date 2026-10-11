@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "Το MugVPN δεν μπόρεσε να ολοκληρώσει την απεγκατάσταση (%@). Παραμένει εγκατεστημένο: δοκιμάστε ξανά σε ένα λεπτό.";
+"MugVPN in Login Items" = "Το MugVPN στα Στοιχεία σύνδεσης";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "Το MugVPN αφαιρεί ακόμη το DNS ή τις διαδρομές που όρισε ένα VPN και θα παραμείνει εγκατεστημένο μέχρι τότε. Δοκιμάστε ξανά σε ένα λεπτό.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "Το MugVPN απεγκαταστάθηκε, αλλά αυτά δεν αφαιρέθηκαν: %@";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Το MugVPN, το βοηθητικό του πρόγραμμα, τα αρχεία καταγραφής, οι ρυθμίσεις και τα αποθηκευμένα συνθήματα θα αφαιρεθούν. Οι σήραγγες θα αποσυνδεθούν.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Σίγαση επαναλαμβανόμενων μηνυμάτων (ώρες):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Οι αναζητήσεις ονομάτων μέσω του επιλυτή του Mac συνεχίζουν να βγαίνουν, ώστε το VPN να ξαναβρεί τον διακομιστή του.";
 "Name:" = "Όνομα:";
 "Never" = "Ποτέ";
 "New Connection" = "Νέα σύνδεση";
@@ -213,11 +215,13 @@
 "The first time" = "Την πρώτη φορά";
 "The keychain did not remove the saved passwords of %@." = "Η κλειδοθήκη δεν αφαίρεσε τους αποθηκευμένους κωδικούς του %@.";
 "The keychain did not save it: it is used for this connection only." = "Η κλειδοθήκη δεν το αποθήκευσε: χρησιμοποιείται μόνο για αυτή τη σύνδεση.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Η κλειδοθήκη κράτησε έναν αποθηκευμένο κωδικό που το MugVPN έπρεπε να ξεχάσει: αφαιρέστε τον στην Πρόσβαση στην κλειδοθήκη.";
 "The network state (routes, DNS, network interfaces)" = "Κατάσταση δικτύου (διαδρομές, DNS, διεπαφές δικτύου)";
 "The private key needs its client certificate." = "Το ιδιωτικό κλειδί χρειάζεται το πιστοποιητικό πελάτη του.";
 "The proxy for %@ needs a username and password." = "Το proxy για το %@ απαιτεί όνομα χρήστη και σύνθημα.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;";
 "These DNS servers" = "Αυτοί οι διακομιστές DNS";
+"These could not be removed either: %@" = "Ούτε αυτά δεν αφαιρέθηκαν: %@";
 "Third-Party Notices" = "Σημειώσεις τρίτων";
 "This network asks you to sign in first." = "Αυτό το δίκτυο ζητά πρώτα σύνδεση.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Αυτό το προφίλ συνδέεται και με άλλο τρόπο (PKCS#12 ή αποτύπωμα πιστοποιητικού): δείτε Για προχωρημένους.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Απεγκατάσταση";
 "Uninstall MugVPN" = "Απεγκατάσταση του MugVPN";
 "Uninstall MugVPN…" = "Απεγκατάσταση του MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Η απεγκατάσταση δεν ολοκληρώθηκε: το MugVPN δεν μπόρεσε να μετακινηθεί στον Κάδο. Μετακινήστε το %@ στον Κάδο μόνοι σας.";
 "Update" = "Ενημέρωση";
 "Update MugVPN's Helper" = "Ενημέρωση του βοηθού του MugVPN";
 "Update MugVPN's Helper…" = "Ενημέρωση του βοηθού του MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "συνθήματα";
 "saved passwords" = "αποθηκευμένοι κωδικοί";
 "the connection ended unexpectedly" = "η σύνδεση τερματίστηκε απροσδόκητα";
+"the helper's entry in Login Items" = "η καταχώριση της βοηθητικής υπηρεσίας στα Στοιχεία σύνδεσης";
 "the persistent connection is not running" = "η μόνιμη σύνδεση δεν εκτελείται";
 "the port must be 1–65535" = "η θύρα πρέπει να είναι 1–65535";
 "the pre-connect script failed" = "το σενάριο πριν τη σύνδεση απέτυχε";

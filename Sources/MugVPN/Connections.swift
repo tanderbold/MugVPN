@@ -199,6 +199,8 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         }
         dnsServers.delegate = self
         dnsDomains.delegate = self
+        // What it does not block, said where it is switched on.
+        killSwitch.toolTip = L("Name lookups through the Mac's resolver still go out, so the VPN can find its server again.")
         for p in [silent, sleep, proxy, dnsMode] {
             p.target = self
             p.action = #selector(changed)
@@ -747,8 +749,9 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         case "remove": removeSelected()
         case "clear_passwords":
             if let p = selected?.profile {
-                app.secrets.removeAll(p.secretsKey)
-                if app.secrets.hasSaved(p.secretsKey) { showError(L("The keychain did not remove the saved passwords of %@.", p.displayName)) }
+                if !app.secrets.removeAll(p.secretsKey) || app.secrets.hasSaved(p.secretsKey) {
+                    showError(L("The keychain did not remove the saved passwords of %@.", p.displayName))
+                }
             }
             refresh()
         case "reveal":
@@ -885,6 +888,10 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
                         throw error
                     }
                     app.options.set(p.id, opts)
+                    // All of it saved: the keychain's old copies (kept under the old name, no one's now) said.
+                    if p != old, app.secrets.hasSaved(old.secretsKey) {
+                        app.services.notify(title: p.displayName, text: L("The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access."))
+                    }
                 } else {
                     app.options.set(p.id, opts)
                 }

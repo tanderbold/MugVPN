@@ -110,6 +110,8 @@ final class FakeSystem: HelperSystem {
     var failRouteAdds = false
     /// `route delete` refused (the route stays).
     var failRouteDeletes = false
+    /// `route delete` refused for these destinations.
+    var failRouteDeleteFor: Set<String> = []
     /// `route add` refused for these destinations.
     var failRouteAddFor: Set<String> = []
     func runNetwork(_ command: [String]) -> Bool {
@@ -119,7 +121,7 @@ final class FakeSystem: HelperSystem {
         if command.count > 3, command[0] == "route" {
             var key = command
             if key[2] == "delete" {
-                if failRouteDeletes { return false }
+                if failRouteDeletes || (key.count > 4 && failRouteDeleteFor.contains(key[4])) { return false }
                 key[2] = "add"
                 let had = routeTable.remove(key) != nil
                 var cloning = key
@@ -203,7 +205,13 @@ final class FakeSystem: HelperSystem {
         guard dirs[path] == nil else { throw CocoaError(.fileWriteFileExists) }
         dirs[path] = mode
     }
+    /// Writes (and moves) into a folder that does not exist fail, as on disk.
+    var failWritesWithoutDir = false
+    private func folderMissing(_ path: String) -> Bool {
+        failWritesWithoutDir && dirs[(path as NSString).deletingLastPathComponent] == nil
+    }
     func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
+        if folderMissing(path) { throw CocoaError(.fileNoSuchFile) }
         if failWrites.contains(where: { path.hasSuffix($0) }) { throw CocoaError(.fileWriteOutOfSpace) }
         if let n = failNthWrite {
             failNthWrite = n > 1 ? n - 1 : nil
@@ -250,7 +258,7 @@ final class FakeSystem: HelperSystem {
         if let f = files.removeValue(forKey: from) { files[to] = f; mtimes[to] = mtimes.removeValue(forKey: from) }
     }
     func replace(_ from: String, _ to: String) throws {
-        if failMoves.contains(to) { throw CocoaError(.fileWriteNoPermission) }
+        if failMoves.contains(to) || folderMissing(to) { throw CocoaError(.fileWriteNoPermission) }
         move(from, to)
     }
     /// Modes set with setOwner (directories included).
@@ -462,6 +470,20 @@ func registerCleanupTests() {
         expect(ExitKind.exited(1).needsCleanup)
         expect(ExitKind.signaled(9).needsCleanup)
         expect(ExitKind.signaled(15).needsCleanup)
+    }
+    test("CLN-07", "routes compared exactly, in every form openvpn writes and the helper uses (a live one is not taken for a dead one's)") {
+        let k = HelperCore.routeKey
+        expectEqual(k(["-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]),
+                    k(Array(TunnelRoute(kind: .host, net: "203.0.113.7", mask: "255.255.255.255", via: "192.168.64.1").add.dropFirst(3))))
+        expect(k(["-net", "203.0.113.7", "192.168.64.1", "255.255.255.255"]) != k(["-net", "203.0.113.7", "192.168.64.9", "255.255.255.255"]),
+               "another gateway: another route")
+        expectEqual(k(["-cloning", "-net", "203.0.113.7", "-netmask", "255.255.255.255", "-interface", "en0"]),
+                    k(Array(TunnelRoute(kind: .onLink, net: "203.0.113.7", mask: "255.255.255.255", via: "en0").add.dropFirst(3))))
+        expect(k(["-cloning", "-net", "203.0.113.7", "-netmask", "255.255.255.255", "-interface", "en0"])
+               != k(["-cloning", "-net", "203.0.113.7", "-netmask", "255.255.255.255", "-interface", "en1"]), "another interface")
+        expectEqual(k(["-inet6", "fd00:1::", "-prefixlen", "48", "-iface", "utun5"])?.via, "utun5")
+        expectEqual(k(["-inet6", "2001:db8::", "-prefixlen", "32", "fe80::1"])?.via, "fe80::1")
+        expect(k(["-net", "10.0.0.0", "255.0.0.0"]) == nil, "not a form it knows: not matched")
     }
     test("CLN-05", "no device, no DNS step") {
         expectEqual(CleanupPlan.make(OpenVPNLogFacts(), others: []).dnsDevice, nil)

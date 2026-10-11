@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "تنظیمات MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN نتوانست حذف را کامل کند (%@). نصب می‌ماند: یک دقیقه دیگر دوباره امتحان کنید.";
+"MugVPN in Login Items" = "MugVPN در موارد ورود";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN هنوز در حال برداشتن DNS یا مسیرهایی است که یک VPN تنظیم کرده و تا آن زمان نصب می‌ماند. یک دقیقه دیگر دوباره امتحان کنید.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN حذف شد، اما این‌ها حذف نشدند: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN برای راه‌اندازی تونل‌ها به سرویس کمکی خود نیاز دارد.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN، برنامهٔ کمکی آن، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "بی‌صدا کردن پیام‌های تکراری (ساعت):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "پرس‌وجوی نام از طریق حل‌کنندهٔ Mac همچنان بیرون می‌رود تا VPN دوباره سرورش را پیدا کند.";
 "Name:" = "نام:";
 "Never" = "هرگز";
 "New Connection" = "اتصال جدید";
@@ -213,11 +215,13 @@
 "The first time" = "اولین بار";
 "The keychain did not remove the saved passwords of %@." = "زنجیرهٔ کلید گذرواژه‌های ذخیره‌شدهٔ %@ را حذف نکرد.";
 "The keychain did not save it: it is used for this connection only." = "زنجیرهٔ کلید آن را ذخیره نکرد: فقط برای همین اتصال استفاده می‌شود.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "زنجیرهٔ کلید گذرواژه‌ای را که MugVPN باید فراموش می‌کرد نگه داشت: آن را در Keychain Access حذف کنید.";
 "The network state (routes, DNS, network interfaces)" = "وضعیت شبکه (مسیرها، DNS، رابط‌های شبکه)";
 "The private key needs its client certificate." = "کلید خصوصی به گواهی کلاینت خود نیاز دارد.";
 "The proxy for %@ needs a username and password." = "پروکسی %@ به نام کاربری و رمز عبور نیاز دارد.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟";
 "These DNS servers" = "این سرورهای DNS";
+"These could not be removed either: %@" = "این‌ها هم حذف نشدند: %@";
 "Third-Party Notices" = "اطلاعیه‌های اشخاص ثالث";
 "This network asks you to sign in first." = "این شبکه ابتدا از شما می‌خواهد وارد شوید.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "این نمایه به روش دیگری هم وارد می‌شود (PKCS#12 یا اثر انگشت گواهی): بخش پیشرفته را ببینید.";
@@ -229,6 +233,7 @@
 "Uninstall" = "حذف نصب";
 "Uninstall MugVPN" = "حذف نصب MugVPN";
 "Uninstall MugVPN…" = "حذف نصب MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "حذف تمام نشد: MugVPN نتوانست خودش را به سطل زباله ببرد. %@ را خودتان به سطل زباله ببرید.";
 "Update" = "به‌روزرسانی";
 "Update MugVPN's Helper" = "به‌روزرسانی دستیار MugVPN";
 "Update MugVPN's Helper…" = "به‌روزرسانی دستیار MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "رمزهای عبور";
 "saved passwords" = "گذرواژه‌های ذخیره‌شده";
 "the connection ended unexpectedly" = "اتصال به‌طور غیرمنتظره پایان یافت";
+"the helper's entry in Login Items" = "مورد سرویس کمکی در موارد ورود";
 "the persistent connection is not running" = "اتصال دائمی در حال اجرا نیست";
 "the port must be 1–65535" = "درگاه باید بین 1–65535 باشد";
 "the pre-connect script failed" = "اسکریپت پیش از اتصال ناموفق بود";

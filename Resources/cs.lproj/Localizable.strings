@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Nastavení MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN nemohl dokončit odinstalaci (%@). Zůstane nainstalován: zkuste to znovu za minutu.";
+"MugVPN in Login Items" = "MugVPN v Položkách při přihlášení";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ještě odstraňuje DNS nebo trasy, které nastavila VPN, a do té doby zůstane nainstalován. Zkuste to znovu za minutu.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN je odinstalován, ale tyto položky nešlo odstranit: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, jeho pomocná služba, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Potlačit opakované zprávy (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Dotazy na jména přes systémový resolver dál odcházejí, aby VPN znovu našla svůj server.";
 "Name:" = "Název:";
 "Never" = "Nikdy";
 "New Connection" = "Nové připojení";
@@ -213,11 +215,13 @@
 "The first time" = "Poprvé";
 "The keychain did not remove the saved passwords of %@." = "Klíčenka neodstranila uložená hesla pro %@.";
 "The keychain did not save it: it is used for this connection only." = "Klíčenka to neuložila: použije se jen pro toto připojení.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Klíčenka ponechala uložené heslo, které měl MugVPN zapomenout: odstraňte ho v aplikaci Klíčenka.";
 "The network state (routes, DNS, network interfaces)" = "Stav sítě (trasy, DNS, síťová rozhraní)";
 "The private key needs its client certificate." = "Soukromý klíč potřebuje svůj klientský certifikát.";
 "The proxy for %@ needs a username and password." = "Proxy pro %@ vyžaduje uživatelské jméno a heslo.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?";
 "These DNS servers" = "Tyto DNS servery";
+"These could not be removed either: %@" = "Tyto položky také nešlo odstranit: %@";
 "Third-Party Notices" = "Oznámení třetích stran";
 "This network asks you to sign in first." = "Tato síť nejprve vyžaduje přihlášení.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Tento profil se přihlašuje i jinak (PKCS#12 nebo otisk certifikátu): viz Pokročilé.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Odinstalovat";
 "Uninstall MugVPN" = "Odinstalovat MugVPN";
 "Uninstall MugVPN…" = "Odinstalovat MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Odinstalace není dokončena: MugVPN se nemohl přesunout do koše. Přesuňte %@ do koše sami.";
 "Update" = "Aktualizovat";
 "Update MugVPN's Helper" = "Aktualizovat pomocníka MugVPN";
 "Update MugVPN's Helper…" = "Aktualizovat pomocníka MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "hesla";
 "saved passwords" = "uložená hesla";
 "the connection ended unexpectedly" = "spojení neočekávaně skončilo";
+"the helper's entry in Login Items" = "položka pomocné služby v Položkách při přihlášení";
 "the persistent connection is not running" = "trvalé spojení neběží";
 "the port must be 1–65535" = "port musí být 1–65535";
 "the pre-connect script failed" = "skript před připojením selhal";

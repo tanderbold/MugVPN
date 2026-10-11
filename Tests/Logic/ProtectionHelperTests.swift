@@ -177,6 +177,20 @@ func registerProtectionHelperTests() {
         try bringUp(sys, h, b, uid: 501, device: "utun6")
         expectEqual(h.locks(uid: 501), [], "lifted once it takes all traffic again")
     }
+    test("PROT-21", "a block an older version left (keyed by name alone): lifted by its profile coming back with all traffic") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/locks.json", Data(#"[{"name":"office","owner":501,"allowLAN":false,"armed":false,"everyone":false}]"#.utf8), mode: 0o600)
+        let h = makeHelper(sys)
+        try h.prepareRunDirectory()
+        expectEqual(h.locks(uid: 501), ["office"])
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.protection = ProtectionOptions(killSwitch: true)
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5")
+        expectEqual(h.locks(uid: 501), [], "lifted")
+    }
     test("PROT-12", "a same-named tunnel that drops does not take the arming of the one still up (ext. audit 6: P2)") {
         let sys = FakeSystem()
         let h = makeHelper(sys)

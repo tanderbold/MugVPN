@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-instellingen";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kon het verwijderen niet voltooien (%@). Het blijft geïnstalleerd: probeer het over een minuut opnieuw.";
+"MugVPN in Login Items" = "MugVPN in Inlogonderdelen";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN verwijdert de DNS of routes die een VPN instelde nog en blijft tot dan geïnstalleerd. Probeer het over een minuut opnieuw.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN is verwijderd, maar dit kon niet worden verwijderd: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN heeft zijn hulpcomponent nodig om tunnels te starten.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, de helper, logbestanden, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Herhaalde berichten dempen (u):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Naamopzoekingen via de resolver van de Mac gaan nog steeds naar buiten, zodat het VPN zijn server terugvindt.";
 "Name:" = "Naam:";
 "Never" = "Nooit";
 "New Connection" = "Nieuwe verbinding";
@@ -213,11 +215,13 @@
 "The first time" = "De eerste keer";
 "The keychain did not remove the saved passwords of %@." = "De sleutelhanger heeft de bewaarde wachtwoorden van %@ niet verwijderd.";
 "The keychain did not save it: it is used for this connection only." = "De sleutelhanger heeft het niet bewaard: het wordt alleen voor deze verbinding gebruikt.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "De sleutelhanger heeft een bewaard wachtwoord gehouden dat MugVPN moest vergeten: verwijder het in Sleutelhangertoegang.";
 "The network state (routes, DNS, network interfaces)" = "De netwerkstatus (routes, DNS, netwerkinterfaces)";
 "The private key needs its client certificate." = "De privésleutel heeft het bijbehorende clientcertificaat nodig.";
 "The proxy for %@ needs a username and password." = "De proxy voor %@ vereist een gebruikersnaam en wachtwoord.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?";
 "These DNS servers" = "Deze DNS-servers";
+"These could not be removed either: %@" = "Ook dit kon niet worden verwijderd: %@";
 "Third-Party Notices" = "Kennisgevingen van derden";
 "This network asks you to sign in first." = "Dit netwerk vraagt eerst om in te loggen.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Dit profiel meldt zich ook op een andere manier aan (PKCS#12 of een certificaatvingerafdruk): zie Geavanceerd.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Verwijder";
 "Uninstall MugVPN" = "Verwijder MugVPN";
 "Uninstall MugVPN…" = "Verwijder MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Het verwijderen is niet voltooid: MugVPN kon zichzelf niet naar de prullenmand verplaatsen. Verplaats %@ zelf naar de prullenmand.";
 "Update" = "Bijwerken";
 "Update MugVPN's Helper" = "Helper van MugVPN bijwerken";
 "Update MugVPN's Helper…" = "Helper van MugVPN bijwerken…";
@@ -252,6 +257,7 @@
 "passwords" = "wachtwoorden";
 "saved passwords" = "bewaarde wachtwoorden";
 "the connection ended unexpectedly" = "de verbinding is onverwacht beëindigd";
+"the helper's entry in Login Items" = "het onderdeel van de helper in Inlogonderdelen";
 "the persistent connection is not running" = "de permanente verbinding is niet actief";
 "the port must be 1–65535" = "de poort moet binnen 1–65535 liggen";
 "the pre-connect script failed" = "het script vóór verbinden is mislukt";

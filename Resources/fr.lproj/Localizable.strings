@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Réglages de MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN n’a pas pu terminer la désinstallation (%@). Il reste installé : réessayez dans une minute.";
+"MugVPN in Login Items" = "MugVPN dans les éléments de connexion";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN retire encore le DNS ou les routes définis par un VPN et reste installé jusque-là. Réessayez dans une minute.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN est désinstallé, mais ces éléments n’ont pas pu être supprimés : %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN a besoin de son outil d'assistance pour démarrer les tunnels.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, son assistant, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels seront déconnectés.";
 "MugVPN: %@" = "MugVPN : %@";
 "Mute repeated messages (h):" = "Masquer les messages répétés (h) :";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Les résolutions de noms via le résolveur du Mac sortent toujours, pour que le VPN retrouve son serveur.";
 "Name:" = "Nom :";
 "Never" = "Jamais";
 "New Connection" = "Nouvelle connexion";
@@ -213,11 +215,13 @@
 "The first time" = "La première fois";
 "The keychain did not remove the saved passwords of %@." = "Le trousseau n’a pas supprimé les mots de passe enregistrés de %@.";
 "The keychain did not save it: it is used for this connection only." = "Le trousseau ne l’a pas enregistré : il n’est utilisé que pour cette connexion.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Le trousseau a gardé un mot de passe que MugVPN devait oublier : supprimez-le dans Trousseaux d’accès.";
 "The network state (routes, DNS, network interfaces)" = "L’état du réseau (routes, DNS, interfaces réseau)";
 "The private key needs its client certificate." = "La clé privée nécessite son certificat client.";
 "The proxy for %@ needs a username and password." = "Le proxy de %@ nécessite un nom d'utilisateur et un mot de passe.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "L'assistant en cours est une ancienne version qui ne peut pas se mettre à jour seule. Installer le nouveau arrête toutes les connexions MugVPN de ce Mac, de tous les utilisateurs. Continuer ?";
 "These DNS servers" = "Ces serveurs DNS";
+"These could not be removed either: %@" = "Ces éléments n’ont pas pu être supprimés non plus : %@";
 "Third-Party Notices" = "Mentions de tiers";
 "This network asks you to sign in first." = "Ce réseau demande d'abord de vous connecter.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Ce profil s'authentifie aussi autrement (PKCS#12 ou empreinte de certificat) : voir Avancé.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Désinstaller";
 "Uninstall MugVPN" = "Désinstaller MugVPN";
 "Uninstall MugVPN…" = "Désinstaller MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "La désinstallation n’est pas terminée : MugVPN n’a pas pu se placer dans la Corbeille. Placez %@ dans la Corbeille vous-même.";
 "Update" = "Mettre à jour";
 "Update MugVPN's Helper" = "Mettre à jour l'assistant de MugVPN";
 "Update MugVPN's Helper…" = "Mettre à jour l'assistant de MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "mots de passe";
 "saved passwords" = "mots de passe enregistrés";
 "the connection ended unexpectedly" = "la connexion s'est terminée de façon inattendue";
+"the helper's entry in Login Items" = "l’entrée de l’assistant dans les éléments de connexion";
 "the persistent connection is not running" = "la connexion persistante n'est pas active";
 "the port must be 1–65535" = "le port doit être compris dans la plage 1–65535";
 "the pre-connect script failed" = "le script de préconnexion a échoué";

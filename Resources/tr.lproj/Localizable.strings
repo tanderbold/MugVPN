@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN Ayarları";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kaldırmayı tamamlayamadı (%@). Yüklü kalıyor: bir dakika sonra yeniden deneyin.";
+"MugVPN in Login Items" = "Giriş Öğeleri’ndeki MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN bir VPN’in ayarladığı DNS’i veya yönlendirmeleri hâlâ kaldırıyor ve o zamana kadar yüklü kalacak. Bir dakika sonra yeniden deneyin.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN kaldırıldı ancak şunlar silinemedi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, yardımcı programı, günlükler, ayarlar ve kayıtlı parolalar silinecek. Tüneller kesilecek.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Tekrarlanan mesajları sessize al (sa):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "VPN’in sunucusunu yeniden bulabilmesi için Mac’in çözümleyicisi üzerinden ad sorguları dışarı çıkmaya devam eder.";
 "Name:" = "Ad:";
 "Never" = "Asla";
 "New Connection" = "Yeni bağlantı";
@@ -213,11 +215,13 @@
 "The first time" = "İlk seferde";
 "The keychain did not remove the saved passwords of %@." = "Anahtar Zinciri %@ için kaydedilmiş parolaları silmedi.";
 "The keychain did not save it: it is used for this connection only." = "Anahtar Zinciri bunu kaydetmedi: yalnızca bu bağlantı için kullanılacak.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Anahtar Zinciri, MugVPN’in unutması gereken kayıtlı bir parolayı tuttu: Anahtar Zinciri Erişimi’nde silin.";
 "The network state (routes, DNS, network interfaces)" = "Ağ durumu (yönlendirmeler, DNS, ağ arabirimleri)";
 "The private key needs its client certificate." = "Özel anahtar için istemci sertifikası gerekir.";
 "The proxy for %@ needs a username and password." = "%@ için proxy, kullanıcı adı ve şifre gerektiriyor.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?";
 "These DNS servers" = "Bu DNS sunucuları";
+"These could not be removed either: %@" = "Bunlar da silinemedi: %@";
 "Third-Party Notices" = "Üçüncü taraf bildirimleri";
 "This network asks you to sign in first." = "Bu ağ önce oturum açmanızı istiyor.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Bu profil başka bir yolla da oturum açar (PKCS#12 veya sertifika parmak izi): Gelişmiş'e bakın.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Kaldır";
 "Uninstall MugVPN" = "MugVPN’i Kaldır";
 "Uninstall MugVPN…" = "MugVPN’i Kaldır…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Kaldırma tamamlanmadı: MugVPN kendini Çöp Sepeti’ne taşıyamadı. %@ uygulamasını Çöp Sepeti’ne kendiniz taşıyın.";
 "Update" = "Güncelle";
 "Update MugVPN's Helper" = "MugVPN yardımcısını güncelle";
 "Update MugVPN's Helper…" = "MugVPN yardımcısını güncelle…";
@@ -252,6 +257,7 @@
 "passwords" = "şifreler";
 "saved passwords" = "kaydedilmiş parolalar";
 "the connection ended unexpectedly" = "bağlantı beklenmedik şekilde sona erdi";
+"the helper's entry in Login Items" = "yardımcının Giriş Öğeleri’ndeki kaydı";
 "the persistent connection is not running" = "kalıcı bağlantı çalışmıyor";
 "the port must be 1–65535" = "port 1–65535 olmalıdır";
 "the pre-connect script failed" = "bağlantı öncesi betik başarısız oldu";

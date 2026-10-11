@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Opciones de MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN no pudo terminar la desinstalación (%@). Sigue instalado: inténtelo de nuevo en un minuto.";
+"MugVPN in Login Items" = "MugVPN en Ítems de inicio";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN todavía está quitando el DNS o las rutas que estableció una VPN y seguirá instalado hasta entonces. Inténtelo de nuevo en un minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN está desinstalado, pero no se pudo quitar esto: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necesita su asistente para iniciar túneles.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Se eliminarán MugVPN, su asistente, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectarán.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Silenciar mensajes repetidos (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Las consultas de nombres a través del resolvedor del Mac siguen saliendo, para que la VPN vuelva a encontrar su servidor.";
 "Name:" = "Nombre:";
 "Never" = "Nunca";
 "New Connection" = "Nueva conexión";
@@ -213,11 +215,13 @@
 "The first time" = "La primera vez";
 "The keychain did not remove the saved passwords of %@." = "El llavero no quitó las contraseñas guardadas de %@.";
 "The keychain did not save it: it is used for this connection only." = "El llavero no lo guardó: se usa solo para esta conexión.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "El llavero conservó una contraseña guardada que MugVPN debía olvidar: elimínela en Acceso a Llaveros.";
 "The network state (routes, DNS, network interfaces)" = "El estado de la red (rutas, DNS, interfaces de red)";
 "The private key needs its client certificate." = "La clave privada necesita su certificado de cliente.";
 "The proxy for %@ needs a username and password." = "El proxy de %@ requiere usuario y clave.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "El asistente en ejecución es uno anterior que no puede actualizarse solo. Poner el nuevo detiene todas las conexiones de MugVPN de este Mac, de todos los usuarios. ¿Continuar?";
 "These DNS servers" = "Estos servidores DNS";
+"These could not be removed either: %@" = "Tampoco se pudo quitar esto: %@";
 "Third-Party Notices" = "Avisos de terceros";
 "This network asks you to sign in first." = "Esta red pide que inicie sesión primero.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Este perfil también inicia sesión de otra forma (PKCS#12 o huella del certificado): consulte Avanzado.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Desinstalar";
 "Uninstall MugVPN" = "Desinstalar MugVPN";
 "Uninstall MugVPN…" = "Desinstalar MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "La desinstalación no ha terminado: MugVPN no pudo moverse a la Papelera. Mueva %@ a la Papelera usted mismo.";
 "Update" = "Actualizar";
 "Update MugVPN's Helper" = "Actualizar el asistente de MugVPN";
 "Update MugVPN's Helper…" = "Actualizar el asistente de MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "claves";
 "saved passwords" = "contraseñas guardadas";
 "the connection ended unexpectedly" = "la conexión terminó inesperadamente";
+"the helper's entry in Login Items" = "la entrada del asistente en Ítems de inicio";
 "the persistent connection is not running" = "la conexión persistente no se está ejecutando";
 "the port must be 1–65535" = "el puerto debe estar en el rango 1–65535";
 "the pre-connect script failed" = "el script previo a la conexión falló";

@@ -487,8 +487,14 @@ final class RealSystem: HelperSystem {
         let pfctl = "/sbin/pfctl"
         if anchor.isEmpty {
             let r = run(pfctl, ["-a", PFRules.anchorName, "-F", "all"], input: nil)
-            if let token = currentToken() { run(pfctl, ["-X", token]) }
+            // PF given back with its token (this boot's); refused, the token stays to try again. A token PF no longer
+            // knows (given back before, its file not removed then, maybe by a helper since gone) counts as given back.
+            if let token = currentToken() {
+                let x = run(pfctl, ["-X", token], input: nil)
+                guard x.status == 0 || x.output.contains("Invalid argument") || x.output.contains("No such") else { return false }
+            }
             try? fm.removeItem(atPath: tokenFile)
+            guard !fm.fileExists(atPath: tokenFile) else { return false }
             return r.status == 0
         }
         let r = run(pfctl, ["-a", PFRules.anchorName, "-f", "-"], input: Data(anchor.utf8))

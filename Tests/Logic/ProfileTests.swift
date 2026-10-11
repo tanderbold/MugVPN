@@ -57,7 +57,9 @@ final class MemFS: ProfileFileSystem {
             dirs.insert(to + d.dropFirst(from.count))
         }
     }
+    var failRemoves = false
     func remove(_ path: String) throws {
+        if failRemoves { throw CocoaError(.fileWriteNoPermission) }
         files = files.filter { !($0.key == path || $0.key.hasPrefix(path + "/")) }
         dirs = dirs.filter { !($0 == path || $0.hasPrefix(path + "/")) }
     }
@@ -326,6 +328,51 @@ func registerProfileTests() {
         let r = try store(fs).rename(p, to: "berlin", active: [], secrets: secrets)
         expectEqual(secrets.items["\(r.secretsKey)|password"], "p")
         expect(secrets.items["\(p.secretsKey)|password"] == nil)
+    }
+    test("PRF-33", "a rename does not take on the saved passwords of a removed profile that had the new name") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        let secrets = FakeSecrets()
+        secrets.items["user:berlin/berlin|password"] = "old berlin's"
+        let r = try store(fs).rename(p, to: "berlin", active: [], secrets: secrets)
+        expect(secrets.items["\(r.secretsKey)|password"] == nil, "nothing inherited: \(secrets.items)")
+    }
+    test("PRF-34", "a new profile never gets another's saved passwords: the keychain must clear them first, or nothing is made") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let secrets = FakeSecrets()
+        secrets.items["user:office/office|password"] = "a removed profile's"
+        secrets.refuses = true
+        expectThrows("import", matching: "keychain") { _ = try store(fs).importProfile(at: "/D/office.ovpn", secrets: secrets) }
+        expect(store(fs).scan().isEmpty, "not imported")
+        expectThrows("create", matching: "keychain") {
+            _ = try store(fs).create(name: "office", config: "client\ndev tun\nremote o 1194\n", secrets: secrets)
+        }
+        expect(store(fs).scan().isEmpty, "not created")
+        secrets.refuses = false
+        _ = try store(fs).importProfile(at: "/D/office.ovpn", secrets: secrets)
+        expect(secrets.items["user:office/office|password"] == nil, "cleared before it is there")
+    }
+    test("PRF-35", "deleting a profile whose saved passwords the keychain keeps: not deleted, said why") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        let secrets = FakeSecrets()
+        secrets.items["\(p.secretsKey)|password"] = "p"
+        secrets.refuses = true
+        expectThrows("delete", matching: "keychain") { try store(fs).delete(p, active: [], secrets: secrets) }
+        expectEqual(store(fs).scan().map(\.path), [p.path])
+    }
+    test("PRF-36", "deleting a profile whose files will not go: said, and back in sight (not hidden away)") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        fs.failRemoves = true
+        expectThrows("delete", matching: "could not be removed") { try store(fs).delete(p, active: []) }
+        fs.failRemoves = false
+        expectEqual(store(fs).scan().map(\.path), [p.path], "back where it was")
+        expect(!fs.contents(of: userDir).contains { $0.name.hasPrefix(".deleting") }, "nothing hidden left")
     }
     test("PRF-24", "files dropped on MugVPN: profiles (.ovpn, .conf) and Tunnelblick configurations (.tblk) only") {
         expectEqual(ProfileStore.importable(["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk", "/a/notes.txt", "/a/key.pem", "/a/ovpn"]),

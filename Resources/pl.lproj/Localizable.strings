@@ -128,6 +128,7 @@
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ustawienia MugVPN";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN nie mógł dokończyć dezinstalacji (%@). Pozostaje zainstalowany: spróbuj ponownie za minutę.";
+"MugVPN in Login Items" = "MugVPN w Rzeczach otwieranych podczas logowania";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN wciąż usuwa DNS lub trasy ustawione przez VPN i do tego czasu pozostanie zainstalowany. Spróbuj ponownie za minutę.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN został odinstalowany, ale tego nie udało się usunąć: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potrzebuje programu pomocniczego, aby uruchamiać tunele.";
@@ -139,6 +140,7 @@
 "MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN, jego program pomocniczy, logi, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone.";
 "MugVPN: %@" = "MugVPN: %@";
 "Mute repeated messages (h):" = "Wycisz powtarzane komunikaty (h):";
+"Name lookups through the Mac's resolver still go out, so the VPN can find its server again." = "Zapytania o nazwy przez resolver Maca nadal wychodzą, aby VPN mógł znów znaleźć swój serwer.";
 "Name:" = "Nazwa:";
 "Never" = "Nigdy";
 "New Connection" = "Nowe połączenie";
@@ -213,11 +215,13 @@
 "The first time" = "Za pierwszym razem";
 "The keychain did not remove the saved passwords of %@." = "Pęk kluczy nie usunął zapisanych haseł %@.";
 "The keychain did not save it: it is used for this connection only." = "Pęk kluczy tego nie zapisał: zostanie użyte tylko dla tego połączenia.";
+"The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access." = "Pęk kluczy zachował zapisane hasło, które MugVPN miał zapomnieć: usuń je w Pęku kluczy.";
 "The network state (routes, DNS, network interfaces)" = "Stan sieci (trasy, DNS, interfejsy sieciowe)";
 "The private key needs its client certificate." = "Klucz prywatny wymaga certyfikatu klienta.";
 "The proxy for %@ needs a username and password." = "Proxy dla %@ wymaga nazwy użytkownika i hasła.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Działający pomocnik to starsza wersja, która nie potrafi się sama zaktualizować. Wstawienie nowego zatrzyma wszystkie połączenia MugVPN na tym Macu, wszystkich użytkowników. Kontynuować?";
 "These DNS servers" = "Te serwery DNS";
+"These could not be removed either: %@" = "Tego również nie udało się usunąć: %@";
 "Third-Party Notices" = "Informacje o oprogramowaniu innych firm";
 "This network asks you to sign in first." = "Ta sieć najpierw wymaga zalogowania.";
 "This profile also signs in another way (PKCS#12 or a certificate fingerprint): see Advanced." = "Ten profil loguje się też w inny sposób (PKCS#12 lub odcisk certyfikatu): zobacz Zaawansowane.";
@@ -229,6 +233,7 @@
 "Uninstall" = "Odinstaluj";
 "Uninstall MugVPN" = "Odinstaluj MugVPN";
 "Uninstall MugVPN…" = "Odinstaluj MugVPN…";
+"Uninstalling is not finished: MugVPN could not move itself to the Trash. Move %@ to the Trash yourself." = "Dezinstalacja nie została zakończona: MugVPN nie mógł przenieść się do Kosza. Przenieś %@ do Kosza samodzielnie.";
 "Update" = "Aktualizuj";
 "Update MugVPN's Helper" = "Zaktualizuj pomocnika MugVPN";
 "Update MugVPN's Helper…" = "Zaktualizuj pomocnika MugVPN…";
@@ -252,6 +257,7 @@
 "passwords" = "hasła";
 "saved passwords" = "zapisane hasła";
 "the connection ended unexpectedly" = "połączenie zostało nieoczekiwanie zakończone";
+"the helper's entry in Login Items" = "wpis usługi pomocniczej w Rzeczach otwieranych podczas logowania";
 "the persistent connection is not running" = "stałe połączenie nie jest uruchomione";
 "the port must be 1–65535" = "port musi mieścić się w zakresie 1–65535";
 "the pre-connect script failed" = "skrypt przed połączeniem nie powiódł się";

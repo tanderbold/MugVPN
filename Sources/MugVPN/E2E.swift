@@ -97,7 +97,7 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
         reply(uninstallRefusal)
     }
     var setupCalls: [String] = []
-    func unregister() { setupCalls.append("unregister") }
+    func unregister() -> Bool { setupCalls.append("unregister"); return true }
     var reregisterRefusal: String?
     func reregister(completion: @escaping (Error?) -> Void) {
         if let r = reregisterRefusal { return completion(ProfileError(r)) }
