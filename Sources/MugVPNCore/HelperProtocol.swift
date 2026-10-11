@@ -5,6 +5,8 @@ import Foundation
 public enum MugVPNIDs {
     public static let appBundleID = "com.mugvpn.app"
     public static let helperLabel = "com.mugvpn.helper"
+    /// The boot cleanup kept while the app is in the Trash.
+    public static let cleanupLabel = "com.mugvpn.cleanup"
     public static let helperPlist = "com.mugvpn.helper.plist"
     /// Root-owned state: run directories, the DNS script, logs.
     public static let supportDir = "/Library/Application Support/MugVPN"

@@ -434,8 +434,10 @@ public final class ProfileStore {
         do {
             try fs.remove(aside)
         } catch {
-            // Its files still on disk: back in sight (its passwords are gone), said.
-            try? fs.move(aside, target)
+            // Its files still on disk: back in sight (its passwords are gone), said; if not even that, where they are.
+            guard (try? fs.move(aside, target)) != nil else {
+                throw ProfileError("its files could not be removed, nor put back: they are at \(aside)")
+            }
             throw ProfileError("its files could not be removed: \(error)")
         }
         options?.remove(p.id)

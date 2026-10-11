@@ -9,7 +9,7 @@ public enum UninstallPlan {
         // What a tunnel left that only a helper can undo (its run records, DNS on record): nothing is removed while
         // there is any (exit 2, MugVPN stays installed; started again, its helper undoes it). The run folder goes
         // only when empty.
-        var paths = [support + "/uninstall-pending.json", support + "/libexec", support + "/locks.json",
+        var paths = [support + "/uninstall-pending.json", support + "/libexec", support + "/locks.json", support + "/app-location",
                      "/Library/Logs/MugVPN", "/Library/LaunchDaemons/com.mugvpn.helper.plist"]
         if !keepProfiles { paths += [support + "/config", support + "/config-auto", support + "/policy.json"] }
         // (Nothing for a shell to expand: the command is also printed for pasting into sudo sh -c "...".)
@@ -17,19 +17,28 @@ public enum UninstallPlan {
         // helper gone from launchd, its openvpn stopped, MugVPN's PF rules out (its token given back).
         let gone = "launchctl bootout system/com.mugvpn.helper 2>/dev/null; launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1; "
         let openvpn = "pkill -9 -f '\(support)/libexec/openvpn' 2>/dev/null; "
-        // PF's token: this boot's must be taken back (or nothing is removed); an earlier boot's means nothing now and
-        // goes. (The boot time compared through a pattern file: nothing for a shell to expand.)
-        let token = "'\(support)/pf.token'", boot = "'/private/var/tmp/mugvpn-uninstall-boot'"
+        // PF's token taken back. Refused: only an earlier boot's token may go without (it means nothing now); this
+        // boot's, or one whose boot cannot be told, stops it all. No file of its own anywhere (a world-writable
+        // folder could hold a link): the boot time goes to grep as patterns on its standard input.
+        let token = "'\(support)/pf.token'", answer = "'\(support)/pf.release'"
         let pf = "pfctl -a 'com.apple/mugvpn' -F all || exit 1; "
-            + "sysctl -n kern.boottime | sed -e 's/^{ sec = \\([0-9]*\\),.*/^\\1 /' > \(boot); "
-            + "if [ -f \(token) ] && grep -q -f \(boot) \(token); then cut -d' ' -f2 \(token) | xargs -n1 pfctl -X "
-            + "|| { echo 'PF did not take back MugVPN s token: try again.' >&2; rm -f \(boot); exit 1; }; fi; "
-            + "rm -f \(token) \(boot); "
+            // (A token PF no longer knows was given back before, the run stopped before its file went: counts as given.)
+            // (Asked once; its answer kept in MugVPN's own folder, which only root can write to.)
+            + "if [ -f \(token) ]; then cut -d' ' -f2 \(token) | xargs -n1 pfctl -X > \(answer) 2>&1 || "
+            + "grep -q -e 'Invalid argument' -e 'No such' \(answer) || { "
+            + "sysctl -n kern.boottime | grep -q 'sec = ' || exit 1; "
+            + "sysctl -n kern.boottime | sed -e 's/^{ sec = \\([0-9]*\\),.*/^\\1 /' | grep -q -f /dev/stdin \(token) "
+            + "&& { echo 'PF did not take back MugVPN s token: try again.' >&2; exit 1; }; }; fi; "
+            + "rm -f \(token) \(answer) || exit 1; "
         let stop = "{ echo 'A tunnel left DNS or routes that the helper must undo first: open MugVPN again, then uninstall.' >&2; exit 2; }"
         let pending = "ls -A '\(support)/run' 2>/dev/null | grep -q . && \(stop); [ -e '\(support)/dns-left.json' ] && \(stop); "
         var script = gone + openvpn + pending + pf + "rm -rf " + paths.map { "'\($0)'" }.joined(separator: " ") + " || exit 1"
-            + "; rmdir '\(support)/run' 2>/dev/null"
-        if !keepProfiles { script += "; rmdir '\(support)' 2>/dev/null" }
+            // (Empty by now: checked above.) Either folder that would not go is not success.
+            + "; [ ! -e '\(support)/run' ] || rmdir '\(support)/run' || exit 1"
+        if !keepProfiles {
+            script += "; [ ! -e '\(support)' ] || rmdir '\(support)' || { echo 'Something MugVPN did not expect is still in "
+                + "\(support): remove it, then uninstall again.' >&2; exit 1; }"
+        }
         return script + "; exit 0"
     }
 

@@ -444,7 +444,7 @@ func registerUninstallAppTests() {
         expect(keep.hasPrefix("launchctl bootout system/com.mugvpn.helper"), keep)
         for p in ["'/Library/Application Support/MugVPN/libexec'", "'/Library/Application Support/MugVPN/run'",
                   "'/Library/Logs/MugVPN'", "'/Library/LaunchDaemons/com.mugvpn.helper.plist'",
-                  "'/Library/Application Support/MugVPN/uninstall-pending.json'"] {
+                  "'/Library/Application Support/MugVPN/uninstall-pending.json'", "'/Library/Application Support/MugVPN/app-location'"] {
             expect(keep.contains(p), "\(p) in \(keep)")
         }
         expect(!keep.contains("'/Library/Application Support/MugVPN' "), "profiles kept: not the whole folder")
@@ -458,13 +458,22 @@ func registerUninstallAppTests() {
                    && !rm.hasSuffix("'/Library/Application Support/MugVPN'"),
                    "what a reinstall's helper undoes (run records, DNS on record) is not removed: \(rm)")
             expect(k.contains("rmdir '/Library/Application Support/MugVPN/run'"), "the run folder only when empty")
+            expect(k.contains("[ ! -e '/Library/Application Support/MugVPN/run' ] || rmdir '/Library/Application Support/MugVPN/run' || exit 1"),
+                   "a run folder that would not go is not success: \(k)")
+            expect(!k.contains("rmdir") || !k.contains("2>/dev/null; exit 0") && !k.contains("2>/dev/null; rmdir"),
+                   "no rmdir's failure hidden: \(k)")
             expect(k.contains("pkill -9 -f '/Library/Application Support/MugVPN/libexec/openvpn'"), "its openvpn stopped")
             expect(k.contains("ls -A '/Library/Application Support/MugVPN/run' 2>/dev/null | grep -q . && {"), "a run left: nothing removed")
             expect(k.contains("[ -e '/Library/Application Support/MugVPN/dns-left.json' ] && {"), "DNS on record: nothing removed")
             expect(k.range(of: "exit 2")!.lowerBound < k.range(of: "rm -rf")!.lowerBound, "checked before anything goes")
             expect(!k.hasSuffix("; true"), "a failure is not hidden")
-            expect(k.contains("grep -q -f '/private/var/tmp/mugvpn-uninstall-boot'"), "this boot's token told apart")
-            expect(k.contains("xargs -n1 pfctl -X || {"), "this boot's token must be taken back")
+            expect(!k.contains("/tmp") && !k.contains("/var/tmp"), "no file in a world-writable folder (a link there would redirect root)")
+            expect(k.contains("grep -q -f /dev/stdin '/Library/Application Support/MugVPN/pf.token'"), "this boot's token told apart")
+            expect(k.contains("sysctl -n kern.boottime | grep -q 'sec = ' || exit 1"), "a boot time it cannot read stops it")
+            expect(k.components(separatedBy: "pfctl -X").count - 1 == 1, "PF's token asked back once (its answer kept, not asked again)")
+            expect(k.contains("pfctl -X > '/Library/Application Support/MugVPN/pf.release' 2>&1 ||"), "the answer kept in MugVPN's own folder")
+            expect(k.contains("grep -q -e 'Invalid argument' -e 'No such' '/Library/Application Support/MugVPN/pf.release' || {"),
+                   "a token given back before (run again) counts as given")
             let sh = Process()
             sh.executableURL = URL(fileURLWithPath: "/bin/sh")
             sh.arguments = ["-n", "-c", k]
@@ -474,6 +483,9 @@ func registerUninstallAppTests() {
         }
         let all = UninstallPlan.systemRemovalScript(keepProfiles: false)
         expect(all.contains("'/Library/Application Support/MugVPN'"), all)
+        expect(all.contains("[ ! -e '/Library/Application Support/MugVPN' ] || rmdir '/Library/Application Support/MugVPN' || {"),
+               "the support folder that would not go (something left in it) is not success: \(all)")
+        expect(!keep.contains("rmdir '/Library/Application Support/MugVPN' "), "profiles kept: the folder stays")
         expect(!all.contains("\"") && !all.contains("$"), "nothing for a shell to expand")
     }
     test("UNI-08", "a helper that answers and refuses (DNS, routes, PF, its record) is not removed around: only one that does not answer") {

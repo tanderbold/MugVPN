@@ -110,6 +110,8 @@ final class FakeSystem: HelperSystem {
     var failRouteAdds = false
     /// `route delete` refused (the route stays).
     var failRouteDeletes = false
+    /// The helper runs from the app in the Trash (false: a reinstalled one).
+    var runningFromTrash = true
     /// `route delete` refused for these destinations.
     var failRouteDeleteFor: Set<String> = []
     /// `route add` refused for these destinations.
@@ -197,7 +199,35 @@ final class FakeSystem: HelperSystem {
     /// Legacy clean-up's route commands refused.
     var failLegacyRoutes = false
     func addRoute(_ args: [String]) -> Bool { routesAdded.append(args); return !failLegacyRoutes }
-    func grantRead(_ path: String, uid: UInt32) { readGrants[path] = uid }
+    /// Read grants (ACLs) refused.
+    var failGrants = false
+    func grantRead(_ path: String, uid: UInt32) -> Bool {
+        guard !failGrants else { return false }
+        readGrants[path] = uid
+        return true
+    }
+    /// Users' home folders.
+    var userHomes: [String] = []
+    /// removeInHome calls, as "home|folders|name".
+    var homeRemovals: [String] = []
+    func removeInHome(_ home: String, through folders: [String], _ name: String) -> HomeRemoval {
+        homeRemovals.append("\(home)|\(folders.joined(separator: "/"))|\(name)")
+        var path = home
+        for step in [""] + folders {
+            if !step.isEmpty { path += "/" + step }
+            if links.contains(path) || mounts.contains(path) { return .skipped }
+            guard fileInfo(path)?.kind == .directory else { return .gone }
+        }
+        path += "/" + name
+        guard !failRemoves.contains(path) else { return .failed }
+        if mounts.contains(where: { $0.hasPrefix(path + "/") }) { return .skipped }
+        files = files.filter { $0.key != path && !$0.key.hasPrefix(path + "/") }
+        dirs = dirs.filter { $0.key != path && !$0.key.hasPrefix(path + "/") }
+        links.remove(path)
+        return .gone
+    }
+    /// Folders another volume is mounted on.
+    var mounts: Set<String> = []
     var launchFails = false
     var nextPID: Int32 = 1000
 
@@ -263,10 +293,14 @@ final class FakeSystem: HelperSystem {
     }
     /// Modes set with setOwner (directories included).
     var modes: [String: UInt16] = [:]
-    func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) {
+    /// Owners that cannot be set on these paths.
+    var failOwners: Set<String> = []
+    func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) -> Bool {
+        guard !failOwners.contains(path) else { return false }
         owners[path] = (uid, gid)
         modes[path] = mode
         if let f = files[path] { files[path] = (f.data, mode) }
+        return true
     }
     func exists(_ path: String) -> Bool {
         files[path] != nil || dirs[path] != nil || files.keys.contains { $0.hasPrefix(path + "/") }
@@ -308,7 +342,12 @@ final class FakeSystem: HelperSystem {
         backupsLeft.remove(device)
         return true
     }
-    func deleteRoute(_ args: [String]) -> Bool { routesDeleted.append(args); return !failLegacyRoutes }
+    /// Legacy clean-up's deletes refused for these destinations.
+    var failLegacyRouteFor: Set<String> = []
+    func deleteRoute(_ args: [String]) -> Bool {
+        routesDeleted.append(args)
+        return !failLegacyRoutes && !(args.count > 1 && failLegacyRouteFor.contains(args[1]))
+    }
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void) { timers.append((seconds, f)) }
     func userName(uid: UInt32) -> String? { users[uid] }
     func isAdmin(uid: UInt32) -> Bool { admins.contains(uid) }
@@ -333,6 +372,13 @@ let testPaths = HelperPaths(openvpn: "/L/libexec/openvpn", runDir: "/L/run", log
 
 /// A certificate as the policy expects one (POL-36).
 let testCA = "-----BEGIN CERTIFICATE-----\nQ0E=\n-----END CERTIFICATE-----\n"
+
+/// A user's home with its Library's Logs and Preferences folders.
+func makeHome(_ sys: FakeSystem, _ home: String) throws {
+    for d in [home, home + "/Library", home + "/Library/Logs", home + "/Library/Preferences"] where sys.fileInfo(d) == nil {
+        try sys.makeDirectory(d, mode: 0o755)
+    }
+}
 
 func makeHelper(_ sys: FakeSystem) -> HelperCore {
     var n = 0, k = 0
@@ -520,6 +566,14 @@ func registerHelperTests() {
         expect(!w.look(bundleInPlace: false, runningFrom: trash, now: 50))
         expect(!w.look(bundleInPlace: false, runningFrom: trash, now: 100))
         expect(w.look(bundleInPlace: false, runningFrom: trash, now: 111), "a minute in the Trash")
+        expect(w.counting)
+        var v = TrashWatch()
+        let external = "/Volumes/Ext/.Trashes/501/MugVPN.app/Contents/MacOS/MugVPNHelper"
+        expect(!v.look(bundleInPlace: false, runningFrom: external, now: 0) && v.counting, "another volume's Trash too")
+        expect(v.look(bundleInPlace: false, runningFrom: external, now: 61))
+        expect(HelperPaths.isInTrash("/Users/u/.Trash/MugVPN.app"))
+        expect(!HelperPaths.isInTrash("/Volumes/Ext/.Trashes/MugVPN.app"), "only a user's folder in .Trashes")
+        expect(!HelperPaths.isInTrash("/Applications/Trash.app"))
         var m = TrashWatch()
         expect(!m.look(bundleInPlace: false, runningFrom: "/Users/u/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper", now: 0))
         expect(!m.look(bundleInPlace: false, runningFrom: "/Users/u/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper", now: 500),
@@ -532,13 +586,16 @@ func registerHelperTests() {
                   "/Users/b/Library/Logs/MugVPN"] {
             try sys.makeDirectory(d, mode: 0o755)
         }
+        try makeHome(sys, "/Users/a")
+        try makeHome(sys, "/Users/b")
         try sys.writeFile("/L/policy.json", Data("{}".utf8), mode: 0o644)
         try sys.writeFile("/Users/a/Library/Preferences/com.mugvpn.app.plist", Data(), mode: 0o600)
         let h = makeHelper(sys)
         var gone = false
         h.onUninstalled = { gone = true }
         _ = try h.start(bundle: bundle(), uid: 501)
-        h.uninstallMovedToTrash(homes: ["/Users/a", "/Users/b"])
+        sys.userHomes = ["/Users/a", "/Users/b"]
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.exited(0))
         expect(gone, "the service leaves launchd")
         for p in ["/L/run", "/L/libexec", "/Logs", "/Users/a/Library/Logs/MugVPN", "/Users/b/Library/Logs/MugVPN",

@@ -1,11 +1,15 @@
 #include "MugVPNSys.h"
 
+#include <dirent.h>
 #include <errno.h>
 #include <fcntl.h>
 #include <grp.h>
+#include <limits.h>
 #include <signal.h>
+#include <stdio.h>
 #include <string.h>
 #include <sys/resource.h>
+#include <sys/stat.h>
 #include <sys/wait.h>
 #include <sys/ioctl.h>
 #include <sys/kern_control.h>
@@ -104,4 +108,92 @@ int mugvpn_kill_uid(uid_t uid) {
     kill(pid, SIGKILL);
     while (waitpid(pid, &status, 0) < 0 && errno == EINTR) {}
     return -1;
+}
+
+/// `name` in the folder `dfd`, all in it first; never through a link (a link is removed itself), never into another
+/// volume (one mounted there is left as it is: 1). 0: gone; -1: stayed.
+static int remove_at(int dfd, const char *name, int depth, dev_t dev) {
+    if (depth > 64) return -1;
+    struct stat st;
+    if (fstatat(dfd, name, &st, AT_SYMLINK_NOFOLLOW) != 0) return errno == ENOENT ? 0 : -1;
+    if (st.st_dev != dev) return 1;
+    if (!S_ISDIR(st.st_mode)) return unlinkat(dfd, name, 0) == 0 || errno == ENOENT ? 0 : -1;
+    int fd = openat(dfd, name, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+    if (fd < 0) {
+        if (errno == ENOENT) return 0;
+        // Swapped for a link or a file meanwhile: that itself goes (unlinkat follows nothing).
+        if (errno == ELOOP || errno == ENOTDIR) return unlinkat(dfd, name, 0) == 0 || errno == ENOENT ? 0 : -1;
+        return -1;
+    }
+    // A volume mounted there (or swapped in meanwhile): not entered.
+    struct stat opened;
+    if (fstat(fd, &opened) != 0 || opened.st_dev != dev) { close(fd); return 1; }
+    DIR *d = fdopendir(fd);
+    if (!d) { close(fd); return -1; }
+    int rc = 0;
+    struct dirent *e;
+    while ((e = readdir(d)) != NULL) {
+        if (strcmp(e->d_name, ".") == 0 || strcmp(e->d_name, "..") == 0) continue;
+        int r = remove_at(dirfd(d), e->d_name, depth + 1, dev);
+        if (r < 0) rc = -1; else if (r > 0 && rc == 0) rc = 1;
+    }
+    closedir(d);
+    // (Something left in it on purpose: the folder stays too.)
+    if (rc != 0) return rc;
+    if (unlinkat(dfd, name, AT_REMOVEDIR) != 0 && errno != ENOENT) return -1;
+    return 0;
+}
+
+/// The folder at `path`, opened from / one name at a time, never through a link: the system's own links in / (/var,
+/// /tmp, /etc to /private) are replaced beforehand by what they always point to, and any link met after that is
+/// refused, whoever owns it (owner and mode can be a user's to choose: ACLs, a mounted volume). "." and ".." are
+/// refused. -1 with errno ENOENT/ELOOP/ENOTDIR when the way is not one root may follow.
+static int open_walked(const char *path) {
+    if (path[0] != '/') { errno = ENOENT; return -1; }
+    char rest[4096];
+    const char *system_links[] = { "/var", "/tmp", "/etc" };
+    const char *prefix = "";
+    for (int i = 0; i < 3; i++) {
+        size_t n = strlen(system_links[i]);
+        if (strncmp(path, system_links[i], n) == 0 && (path[n] == 0 || path[n] == '/')) prefix = "/private";
+    }
+    if ((size_t)snprintf(rest, sizeof rest, "%s%s", prefix, path) >= sizeof rest) { errno = ENAMETOOLONG; return -1; }
+    int fd = open("/", O_RDONLY | O_DIRECTORY | O_CLOEXEC);
+    char *p = rest;
+    while (fd >= 0) {
+        while (*p == '/') p++;
+        if (*p == 0) return fd;
+        char *end = strchr(p, '/');
+        size_t len = end ? (size_t)(end - p) : strlen(p);
+        char name[NAME_MAX + 1];
+        if (len > NAME_MAX) { close(fd); errno = ENAMETOOLONG; return -1; }
+        memcpy(name, p, len);
+        name[len] = 0;
+        p += len;
+        if (strcmp(name, ".") == 0 || strcmp(name, "..") == 0) { close(fd); errno = ELOOP; return -1; }
+        // (A link gives ENOTDIR with O_DIRECTORY, ELOOP without: either ends it.)
+        int next = openat(fd, name, O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+        close(fd);
+        fd = next;
+    }
+    return -1;
+}
+
+int mugvpn_remove_beneath(const char *home, const char *const dirs[], int ndirs, const char *name) {
+    int fd = open_walked(home);
+    if (fd < 0) return errno == ENOENT ? 0 : errno == ELOOP || errno == ENOTDIR ? 1 : -1;
+    // From the home on, all on its volume: another mounted on the way is not entered.
+    struct stat st;
+    if (fstat(fd, &st) != 0) { close(fd); return -1; }
+    dev_t dev = st.st_dev;
+    for (int i = 0; i < ndirs; i++) {
+        int next = openat(fd, dirs[i], O_RDONLY | O_DIRECTORY | O_NOFOLLOW | O_CLOEXEC);
+        close(fd);
+        if (next < 0) return errno == ENOENT ? 0 : errno == ELOOP || errno == ENOTDIR ? 1 : -1;
+        if (fstat(next, &st) != 0 || st.st_dev != dev) { close(next); return 1; }
+        fd = next;
+    }
+    int rc = remove_at(fd, name, 0, dev);
+    close(fd);
+    return rc;
 }

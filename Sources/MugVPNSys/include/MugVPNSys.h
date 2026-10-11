@@ -17,4 +17,10 @@ int mugvpn_open_utun(char *name, unsigned name_len);
 /// a child becomes `uid` and signals all of them until none is left. 0 when done.
 int mugvpn_kill_uid(uid_t uid);
 
+/// Remove `name` (a file, a link, or a folder with all in it) in the folder reached from `home` through `dirs`,
+/// each step opened from the one before without following a link (none resolved again by path, so none swapped in
+/// meanwhile is followed), never into another volume than the home's. 0: gone or never there; 1: left, the way (or
+/// something in it) not one root may take: a link, a mounted volume; -1: stayed.
+int mugvpn_remove_beneath(const char *home, const char *const dirs[], int ndirs, const char *name);
+
 #endif

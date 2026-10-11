@@ -19,7 +19,7 @@ let package = Package(
         .executableTarget(name: "MugVPNHelper", dependencies: ["MugVPNCore", "MugVPNHelperCore", "MugVPNSys"]),
         // Logic tests (layer L of the test plan). A plain executable: the Command
         // Line Tools ship without XCTest.
-        .executableTarget(name: "MugVPNTests", dependencies: ["MugVPNCore", "MugVPNHelperCore", "MugVPNAppCore"],
+        .executableTarget(name: "MugVPNTests", dependencies: ["MugVPNCore", "MugVPNHelperCore", "MugVPNAppCore", "MugVPNSys"],
                           path: "Tests/Logic"),
     ]
 )

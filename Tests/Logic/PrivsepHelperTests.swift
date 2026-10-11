@@ -1277,7 +1277,7 @@ func registerPrivsepHelperTests() {
         h.onUninstalled = { gone = true }
         _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
         sys.failRestoreFor = ["utun5"]
-        h.uninstallMovedToTrash(homes: [])
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.signaled(15))
         expect(!gone, "held back")
         sys.failRestoreFor = []
@@ -1312,7 +1312,7 @@ func registerPrivsepHelperTests() {
         let h = makeHelper(sys)
         _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
         sys.failRestoreFor = ["utun5"]
-        h.uninstallMovedToTrash(homes: [])
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.signaled(15))
         expect(sys.files["/L/uninstall-pending.json"] != nil, "the wish outlives the helper")
         sys.failRestoreFor = []
@@ -1350,7 +1350,7 @@ func registerPrivsepHelperTests() {
         _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
         sys.failRestoreFor = ["utun5"]
         sys.failWrites = ["/L/uninstall-pending.json"]
-        h.uninstallMovedToTrash(homes: [])
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.signaled(15))
         expect(sys.files["/L/uninstall-pending.json"] == nil)
         sys.failWrites = []
@@ -1382,7 +1382,7 @@ func registerPrivsepHelperTests() {
         try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
         _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
         sys.failRestoreFor = ["utun5"]
-        h.uninstallMovedToTrash(homes: [])
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.signaled(15))
         var answer: String?? = .none
         try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
@@ -1399,7 +1399,7 @@ func registerPrivsepHelperTests() {
         try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
         _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
         sys.failRestoreFor = ["utun5"]
-        h.uninstallMovedToTrash(homes: [])
+        h.uninstallMovedToTrash()
         sys.launched[0].process.onExit(.signaled(15))
         let marker = sys.files["/L/uninstall-pending.json"]?.data
         expectThrows(matching: "administrator") { try h.uninstall(uid: 502, keepProfiles: false) }
@@ -1408,32 +1408,47 @@ func registerPrivsepHelperTests() {
         sys.fireTimers()
         expect(sys.files["/L/config/office.ovpn"] != nil, "profiles kept, as the Trash uninstall asked")
     }
-    test("PS-87", "uninstalling: the wish on disk goes first (checked), the launch daemon last; a wish that cannot go stops it there") {
+    test("PS-87", "uninstalling after the Trash: the wish on disk until all else is gone and checked, then it goes before success is said") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
         var gone = false
-        h.onUninstalled = { gone = true }
-        h.uninstallMovedToTrash(homes: [])
-        expect(gone)
+        h.onUninstalled = { gone = sys.files["/L/uninstall-pending.json"] == nil }
+        h.uninstallMovedToTrash()
+        expect(gone, "the wish gone before launchd is asked to let go (a helper started again from the Trash finds that on its own)")
         let order = sys.removedPaths
-        let marker = order.firstIndex(of: "/L/uninstall-pending.json") ?? -1
-        expect(marker >= 0 && order.prefix(marker).allSatisfy { $0.hasPrefix("/Users") || $0 == "/L/locks.json" },
-               "the wish first (after the blocks): \(order)")
-        expectEqual(order.last, "/LD/com.mugvpn.helper.plist", "the launch daemon last")
-        // The wish cannot be removed: nothing else goes (a reinstall would find it and remove itself).
-        let s2 = FakeSystem()
-        let h2 = makeHelper(s2)
-        try s2.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
-        var gone2 = false
-        h2.onUninstalled = { gone2 = true }
-        s2.failRemoves = ["/L/uninstall-pending.json"]
-        h2.uninstallMovedToTrash(homes: [])
-        expect(!gone2, "not uninstalled")
-        expect(s2.files["/LD/com.mugvpn.helper.plist"] != nil, "the helper stays to try again")
-        s2.failRemoves = []
-        s2.fireTimers()
-        expect(gone2, "tried again")
+        expectEqual(order.last, "/L/uninstall-pending.json", "the wish last: \(order)")
+        expect(order.firstIndex(of: "/LD/com.mugvpn.helper.plist")! < order.firstIndex(of: "/L/uninstall-pending.json")!)
+    }
+    test("PS-109", "a wish to uninstall found by a helper that runs from a reinstalled app (not the Trash): dropped, nothing removed") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/uninstall-pending.json", Data(#"{"keepProfiles":true}"#.utf8), mode: 0o600)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        sys.runningFromTrash = false
+        let h = makeHelper(sys)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        try h.prepareRunDirectory()
+        expect(!gone, "not uninstalled")
+        expect(sys.files["/L/uninstall-pending.json"] == nil, "the stale wish dropped")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil)
+    }
+    test("PS-110", "an uninstall after the Trash stopped halfway (a file would not go): its wish stays, a helper starting again finishes") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        try? sys.makeDirectory("/L/libexec", mode: 0o755)
+        sys.failRemoves = ["/L/libexec"]
+        h.uninstallMovedToTrash()
+        expect(sys.files["/L/uninstall-pending.json"] != nil, "the wish still on disk")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil)
+        sys.failRemoves = []
+        let h2 = makeHelper(sys)          // the helper (or the Mac) started again
+        var gone = false
+        h2.onUninstalled = { gone = true }
+        try h2.prepareRunDirectory()
+        expect(gone, "finished")
     }
     test("PS-88", "same-named profiles stay apart in the helper: their ids listed, their blocks and kept logs their own") {
         let sys = FakeSystem()
@@ -1634,7 +1649,7 @@ func registerPrivsepHelperTests() {
         sys.fireTimers()
         expect(sys.files["/L/run/OLD1/openvpn.log"] == nil, "cleaned up and gone")
     }
-    test("PS-100", "a log that cannot be moved into place is copied there (not lost with its run folder)") {
+    test("PS-100", "a log whose rename into place is refused: its run folder stays and it is put in place on a later try") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
@@ -1645,6 +1660,9 @@ func registerPrivsepHelperTests() {
         sys.failMoves = [kept]
         _ = h.stop(id: id, uid: 501)
         sys.launched[0].process.onExit(.exited(0))
+        expect(sys.files[kept] == nil && sys.dirs["/L/run/\(id)"] != nil, "not written in place by halves; the run kept")
+        sys.failMoves = []
+        sys.fireTimers()
         expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "why it dropped")
     }
     test("PS-101", "DNS a dead tunnel left on a utun a live one has again: not taken off under it (the live one's own end does)") {
@@ -1685,7 +1703,7 @@ func registerPrivsepHelperTests() {
         sys.failWrites = [kept]
         _ = h.stop(id: id, uid: 501)
         sys.launched[0].process.onExit(.exited(0))
-        expect(sys.files["/L/run/\(id)/openvpn.log"] != nil, "still in its run folder")
+        expect(sys.files["/L/run/\(id)/openvpn.log.kept"] != nil, "still in its run folder (marked moved)")
         sys.failMoves = []
         sys.failWrites = []
         sys.fireTimers()
@@ -1736,11 +1754,11 @@ func registerPrivsepHelperTests() {
         sys.failMoves = Set(["/Logs/recovered-\(id).log", "/Logs/" + ProfileKey.logName(profile: "office", id: nil, uid: 501) + ".log"])
         sys.failWrites = sys.failMoves
         try h2.prepareRunDirectory()
-        expect(sys.files["/L/run/\(id)/openvpn.log"] != nil, "kept")
+        expect(sys.files["/L/run/\(id)/openvpn.log"] != nil || sys.files["/L/run/\(id)/openvpn.log.kept"] != nil, "its run's copy kept")
         sys.failMoves = []
         sys.failWrites = []
         sys.fireTimers()
-        expect(sys.files["/L/run/\(id)/openvpn.log"] == nil, "kept on a later try")
+        expect(sys.files["/L/run/\(id)/openvpn.log"] == nil && sys.files["/L/run/\(id)/openvpn.log.kept"] == nil, "kept on a later try")
     }
     test("PS-108", "a dead run 0.2.4 recorded (no profile, no user): its log kept for administrators to read") {
         let sys = FakeSystem()
@@ -1753,6 +1771,410 @@ func registerPrivsepHelperTests() {
         expectEqual(String(decoding: sys.files["/Logs/recovered-OLD.log"]?.data ?? Data(), as: UTF8.self), "words")
         expectEqual(sys.owners["/Logs/recovered-OLD.log"]?.gid, 80, "administrators may read it")
         expect(sys.list("/L/run").isEmpty)
+    }
+    test("PS-111", "a route deletion half done that cannot be put back: its DNS taken off (never put back), the connection undone") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "ROUTE", message: "0.0.0.0 0.0.0.0 10.8.0.1")
+        sys.failRouteDeleteFor = ["128.0.0.0"]
+        sys.failRouteAdds = true
+        let setBefore = sys.dnsSet.count
+        expectThrows("ROUTEDEL") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "ROUTEDEL", message: "0.0.0.0 0.0.0.0 10.8.0.1") }
+        expectEqual(sys.dnsSet.count, setBefore, "its DNS not set again")
+        expectEqual(sys.allNames["utun5"], nil, "taken off")
+        expectEqual(sys.launched[0].process.signals, [SIGKILL])
+    }
+    test("PS-112", "an older version's run with more routes than one pass takes: all deleted over passes, its folder kept till then") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/run", mode: 0o711)
+        try sys.makeDirectory("/L/run/OLD1", mode: 0o711)
+        let n = HelperCore.maxCleanupRoutes + 40
+        let routes = (0..<n).map { "2026-10-06 05:46:44 /sbin/route add -net 10.\(1 + $0 / 250).\($0 % 250).0 192.168.64.1 255.255.255.0" }
+        try sys.writeFile("/L/run/OLD1/openvpn.log", Data((["2026-10-06 05:46:44 Opened utun device utun3"] + routes).joined(separator: "\n").utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        try h.prepareRunDirectory()
+        sys.fireTimers()
+        expectEqual(Set(sys.routesDeleted.map { $0.joined(separator: " ") }).count, n, "every one of them deleted (a batch a pass)")
+        expect(sys.dirs["/L/run/OLD1"] == nil, "then gone")
+    }
+    test("PS-113", "a dead run's log written but not given to its user: its own copy stays, given on a later try") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("words".utf8), mode: 0o600)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        sys.failOwners = [kept]
+        let h2 = makeHelper(sys)
+        try h2.prepareRunDirectory()
+        expect(sys.files["/L/run/\(id)/openvpn.log.kept"] != nil, "its run folder and its copy (marked moved) stay")
+        sys.failOwners = []
+        sys.fireTimers()
+        expectEqual(sys.owners[kept]?.uid, 501)
+        expect(sys.files["/L/run/\(id)/openvpn.log"] == nil)
+    }
+    test("PS-114", "an older run's route that would not go in an early batch: tried again, the folder kept until it goes") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/run", mode: 0o711)
+        try sys.makeDirectory("/L/run/OLD1", mode: 0o711)
+        let n = HelperCore.maxCleanupRoutes + 40
+        let routes = (0..<n).map { "2026-10-06 05:46:44 /sbin/route add -net 10.\(1 + $0 / 250).\($0 % 250).0 192.168.64.1 255.255.255.0" }
+        try sys.writeFile("/L/run/OLD1/openvpn.log", Data((["2026-10-06 05:46:44 Opened utun device utun3"] + routes).joined(separator: "\n").utf8), mode: 0o644)
+        sys.failLegacyRouteFor = ["10.1.5.0"]      // one in the first batch
+        let h = makeHelper(sys)
+        try h.prepareRunDirectory()
+        sys.fireTimers()
+        expect(sys.dirs["/L/run/OLD1"] != nil, "kept while that one stays")
+        sys.failLegacyRouteFor = []
+        sys.routesDeleted = []
+        sys.fireTimers()
+        expect(sys.routesDeleted.contains { $0.contains("10.1.5.0") }, "tried again")
+        expect(sys.dirs["/L/run/OLD1"] == nil, "then gone")
+    }
+    test("PS-115", "fail-closed after a half route deletion: a DNS backup left and not recordable stays on the record") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "ROUTE", message: "0.0.0.0 0.0.0.0 10.8.0.1")
+        sys.failRouteDeleteFor = ["128.0.0.0"]
+        sys.failRouteAdds = true
+        sys.failBackupRemovalFor = ["utun5"]
+        sys.failWrites = ["/L/dns-left.json"]
+        _ = try? h.tunnelRequest(id: a, uid: 501, kind: "ROUTEDEL", message: "0.0.0.0 0.0.0.0 10.8.0.1")
+        let saved = String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("dnsBackupLeft"), "the backup left is on its record: \(saved)")
+    }
+    test("PS-116", "a dead run's log appended, not yet given to its user: a later try does not append it twice") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile(kept, Data("old\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("new\n".utf8), mode: 0o600)
+        sys.failOwners = [kept]
+        let h2 = makeHelper(sys)
+        try h2.prepareRunDirectory()
+        sys.failOwners = []
+        sys.fireTimers()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "old\nnew\n", "once")
+    }
+    test("PS-117", "a dead run's log appended, stopped before its copy was marked moved: a later try does not append it twice") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile(kept, Data("old\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("new\n".utf8), mode: 0o600)
+        sys.failMoves = ["/L/run/\(id)/openvpn.log.kept"]      // marking it moved fails
+        let h2 = makeHelper(sys)
+        try h2.prepareRunDirectory()
+        sys.failMoves = []
+        sys.fireTimers()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "old\nnew\n", "once")
+    }
+    test("PS-118", "uninstalling with profiles not kept (not after the Trash): the support folder itself goes too") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
+        var answer: String?? = .none
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        expectEqual(answer, .some(nil))
+        expect(sys.dirs["/L"] == nil && !sys.files.keys.contains { $0.hasPrefix("/L/") }, "nothing of it left")
+    }
+    test("PS-119", "a tunnel that ends, its log appended but not yet its user's: a later try does not append it twice") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile(kept, Data("old\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("new\n".utf8), mode: 0o600)
+        sys.failOwners = [kept]
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        sys.failOwners = []
+        sys.fireTimers()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "old\nnew\n", "once")
+    }
+    test("PS-120", "a run's log staged in its own folder (two dead runs of one profile never share it)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("words".utf8), mode: 0o600)
+        sys.failMoves = [kept]
+        sys.failWrites = [kept]
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        expect(sys.files["/L/run/\(id)/openvpn.log.new"] != nil, "staged in its run's folder")
+        expect(!sys.files.keys.contains { $0.hasPrefix("/Logs/") && $0.hasSuffix(".new") }, "nothing staged in the shared logs folder")
+    }
+    test("PS-121", "a run's files whose owner or mode cannot be set: openvpn not started, the run folder gone") {
+        for path in ["/L/run/ID1/config.ovpn", "/L/run/ID1/sock"] {
+            let sys = FakeSystem()
+            let h = makeHelper(sys)
+            sys.failOwners = [path]
+            expectThrows(path, matching: "could not set") { _ = try h.start(bundle: psBundle(), uid: 501) }
+            expect(sys.launched.isEmpty, "\(path): not started")
+            expect(sys.dirs["/L/run/ID1"] == nil, "\(path): nothing left")
+        }
+    }
+    test("PS-122", "a run folder whose removal is refused: kept on the list, tried again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        sys.failRemoves = ["/L/run/\(id)"]
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        expect(sys.dirs["/L/run/\(id)"] != nil)
+        sys.failRemoves = []
+        sys.fireTimers()
+        expect(sys.dirs["/L/run/\(id)"] == nil, "gone on a later try")
+    }
+    test("PS-123", "two dead runs of one profile, both appending, the first stopped before its log was in place: both logs kept") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (a, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        // a staged old+A and marked its copy moved, but stopped before putting it in place; another run (B) of the
+        // profile has appended its log since.
+        try sys.writeFile("/L/run/\(a)/openvpn.log.new", Data("old\nA\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(a)/openvpn.log.kept", Data("A\n".utf8), mode: 0o600)
+        try sys.writeFile(kept, Data("old\nB\n".utf8), mode: 0o600)
+        try makeHelper(sys).prepareRunDirectory()
+        let text = String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self)
+        expect(text.contains("A\n") && text.contains("B\n") && text.hasPrefix("old\n"), "both kept: \(text)")
+        expectEqual(text.components(separatedBy: "A\n").count - 1, 1, "each once")
+    }
+    test("PS-124", "a log in place, its owner not set, another run appended since: the retry does not append it again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (a, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        // A was put in place (its copy alone marked moved), then B appended.
+        try sys.writeFile("/L/run/\(a)/openvpn.log.kept", Data("A\n".utf8), mode: 0o600)
+        try sys.writeFile(kept, Data("old\nA\nB\n".utf8), mode: 0o600)
+        try makeHelper(sys).prepareRunDirectory()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "old\nA\nB\n", "A once")
+        expectEqual(sys.owners[kept]?.uid, 501)
+    }
+    test("PS-125", "a run whose log is the same as the last one kept: appended all the same (content does not decide)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        b.appendLog = true
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile(kept, Data("same\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("same\n".utf8), mode: 0o600)
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "same\nsame\n")
+    }
+    test("PS-126", "not appending, the old kept log ending as the new one: replaced by the new one alone") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try sys.writeFile(kept, Data("old\nnew\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log.new", Data("new\n".utf8), mode: 0o600)
+        try sys.writeFile("/L/run/\(id)/openvpn.log.kept", Data("new\n".utf8), mode: 0o600)
+        try makeHelper(sys).prepareRunDirectory()
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "new\n")
+    }
+    test("PS-127", "after the Trash, a user's log or settings that would not go: not finished, the wish kept, a helper starting again removes them") {
+        let sys = FakeSystem()
+        sys.userHomes = ["/Users/a", "/var/home/b", "/Users/c"]
+        for home in sys.userHomes { try makeHome(sys, home) }
+        // c's Library a link (to wherever c likes): nothing removed through it.
+        sys.dirs["/Users/c/Library"] = nil
+        sys.links.insert("/Users/c/Library")
+        try sys.makeDirectory("/Users/c/Library/Logs/MugVPN", mode: 0o755)
+        for d in ["/Users/a/Library/Logs/MugVPN", "/var/home/b/Library/Logs/MugVPN"] { try sys.makeDirectory(d, mode: 0o755) }
+        try sys.writeFile("/var/home/b/Library/Preferences/com.mugvpn.app.plist", Data(), mode: 0o600)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        sys.failRemoves = ["/Users/a/Library/Logs/MugVPN"]
+        let h = makeHelper(sys)
+        var gone = false
+        var notes: [String] = []
+        h.onNote = { notes.append($0) }
+        h.onUninstalled = { gone = true }
+        h.uninstallMovedToTrash()
+        expect(notes.contains { $0.contains("/Users/c/Library/Logs/MugVPN") && $0.contains("not safe") },
+               "one behind a link: left and said, not taken for removed \(notes)")
+        expect(!gone, "not finished while a user's log stays")
+        expect(sys.files["/L/uninstall-pending.json"] != nil, "the wish still on disk")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil, "the helper stays registered to try again")
+        expect(sys.fileInfo("/var/home/b/Library/Preferences/com.mugvpn.app.plist") == nil, "a home outside /Users too")
+        sys.failRemoves = []
+        let h2 = makeHelper(sys)
+        h2.onUninstalled = { gone = true }
+        try h2.prepareRunDirectory()
+        expect(gone, "finished by the next helper")
+        expect(sys.fileInfo("/Users/a/Library/Logs/MugVPN") == nil)
+        expect(sys.fileInfo("/Users/c/Library/Logs/MugVPN") != nil, "not through a link")
+    }
+    test("PS-128", "a full uninstall joining one after the Trash: the support folder goes too, checked before success is said") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        _ = try h.start(bundle: bundle(), uid: 501)
+        h.uninstallMovedToTrash()
+        var answer: String?? = .none
+        try h.uninstall(uid: 0, keepProfiles: false) { answer = .some($0) }
+        sys.launched[0].process.onExit(.exited(0))
+        expect(gone)
+        expectEqual(answer ?? "no answer", nil)
+        expect(sys.files["/L/uninstall-pending.json"] == nil, "the wish gone")
+        expect(sys.fileInfo("/L") == nil, "and the support folder (profiles were not kept)")
+    }
+    test("PS-129", "after the Trash keeping profiles: the wish goes, profiles stay; a wish or folder that would not go: not finished, tried again") {
+        let sys = FakeSystem()
+        try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
+        let h = makeHelper(sys)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        sys.failRemoves = ["/L/uninstall-pending.json"]
+        h.uninstallMovedToTrash()
+        expect(!gone, "the wish would not go: not finished")
+        expect(sys.fileInfo("/L/uninstall-pending.json") != nil)
+        sys.failRemoves = []
+        sys.fireTimers()
+        expect(gone, "tried again")
+        expect(sys.fileInfo("/L/uninstall-pending.json") == nil)
+        expect(sys.fileInfo("/L/config/office.ovpn") != nil, "profiles stay")
+        let sys2 = FakeSystem()
+        try sys2.makeDirectory("/L", mode: 0o755)
+        let h2 = makeHelper(sys2)
+        var answer: String?? = .none
+        sys2.failRemoves = ["/L"]
+        try h2.uninstall(uid: 0, keepProfiles: false) { answer = .some($0) }
+        expect((answer ?? nil)?.hasPrefix(HelperRefusal.filesPending) == true, "the support folder would not go: said \(String(describing: answer))")
+    }
+    test("PS-132", "where the app is installed: kept while the helper runs from it, read back when it runs from the Trash (after a restart)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        expectEqual(h.appLocation(running: "/Applications/MugVPN.app/Contents"), "/Applications/MugVPN.app/Contents")
+        expectEqual(sys.files["/L/app-location"].map { String(decoding: $0.data, as: UTF8.self) }, "/Applications/MugVPN.app/Contents")
+        expectEqual(sys.files["/L/app-location"]?.mode, 0o600)
+        let again = makeHelper(sys)       // started again, from the Trash
+        expectEqual(again.appLocation(running: "/Users/u/.Trash/MugVPN.app/Contents"), "/Applications/MugVPN.app/Contents",
+                    "where it was installed (a replacement there keeps it)")
+        expectEqual(sys.files["/L/app-location"].map { String(decoding: $0.data, as: UTF8.self) }, "/Applications/MugVPN.app/Contents",
+                    "the Trash never recorded")
+        let none = FakeSystem()
+        expectEqual(makeHelper(none).appLocation(running: "/Users/u/.Trash/MugVPN.app/Contents"), nil, "not known: not in place")
+        try none.writeFile("/L/app-location", Data("/Users/u/.Trash/X.app/Contents".utf8), mode: 0o600)
+        expectEqual(makeHelper(none).appLocation(running: "/Users/u/.Trash/MugVPN.app/Contents"), nil, "a Trash location never counts")
+        // In place, it goes with uninstalling.
+        h.uninstallMovedToTrash()
+        expect(sys.fileInfo("/L/app-location") == nil, "removed with the rest")
+    }
+    test("PS-130", "the live log its owner could not be let read: the connection not started, said, nothing of it left") {
+        let sys = FakeSystem()
+        sys.failGrants = true
+        let h = makeHelper(sys)
+        expectThrows(matching: "read this connection's log") { _ = try h.start(bundle: bundle(), uid: 501) }
+        expect(h.list(uid: 0).isEmpty)
+        expect(sys.list("/L/run").isEmpty, "its run folder gone")
+    }
+    test("PS-131", "users' logs and settings removed only step by step from their home (never by a path root resolves again)") {
+        let sys = FakeSystem()
+        sys.userHomes = ["/Users/a"]
+        try makeHome(sys, "/Users/a")
+        try sys.makeDirectory("/Users/a/Library/Logs/MugVPN", mode: 0o755)
+        let h = makeHelper(sys)
+        h.uninstallMovedToTrash()
+        expect(!sys.removedPaths.contains { $0.hasPrefix("/Users/") }, "no plain remove in a home: \(sys.removedPaths)")
+        expect(sys.homeRemovals.contains("/Users/a|Library/Logs|MugVPN"), "\(sys.homeRemovals)")
+        expect(sys.homeRemovals.contains("/Users/a|Library/Preferences|com.mugvpn.app.plist"))
+        expect(sys.fileInfo("/Users/a/Library/Logs/MugVPN") == nil)
+    }
+    test("PS-133", "a volume mounted in a user's MugVPN logs: not entered, left and said; the uninstall finishes") {
+        let sys = FakeSystem()
+        sys.userHomes = ["/Users/a"]
+        try makeHome(sys, "/Users/a")
+        try sys.makeDirectory("/Users/a/Library/Logs/MugVPN", mode: 0o755)
+        try sys.makeDirectory("/Users/a/Library/Logs/MugVPN/vol", mode: 0o755)
+        try sys.writeFile("/Users/a/Library/Logs/MugVPN/vol/data", Data("x".utf8), mode: 0o644)
+        sys.mounts = ["/Users/a/Library/Logs/MugVPN/vol"]
+        let h = makeHelper(sys)
+        var notes: [String] = [], gone = false
+        h.onNote = { notes.append($0) }
+        h.onUninstalled = { gone = true }
+        h.uninstallMovedToTrash()
+        expect(sys.files["/Users/a/Library/Logs/MugVPN/vol/data"] != nil, "the volume's files stay")
+        expect(notes.contains { $0.contains("/Users/a/Library/Logs/MugVPN") }, "\(notes)")
+        expect(gone, "nothing more root could do: finished, said")
+    }
+    test("PS-134", "the app in the Trash: a boot cleanup of the system's shell kept for the next boot; out of the Trash, removed") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let helper = "/Users/u/.Trash/MugVPN.app/Contents/MacOS/MugVPNHelper"
+        h.bootCleanup(armed: true, helper: helper, app: "/Applications/MugVPN.app/Contents")
+        let plist = "/LD/com.mugvpn.cleanup.plist"
+        expectEqual(sys.files[plist]?.mode, 0o644)
+        let p = try PropertyListSerialization.propertyList(from: sys.files[plist]?.data ?? Data(), format: nil) as? [String: Any]
+        expectEqual(p?["Label"] as? String, "com.mugvpn.cleanup")
+        expectEqual(p?["RunAtLoad"] as? Bool, true)
+        let args = p?["ProgramArguments"] as? [String] ?? []
+        expectEqual(Array(args.prefix(2)), ["/bin/sh", "-c"], "nothing of MugVPN's runs it (gone by then)")
+        let script = args.last ?? ""
+        expect(script.hasPrefix("[ -e '\(helper)' ] && exit 0; [ -e '/Applications/MugVPN.app/Contents/Info.plist' ] && exit 0; "),
+               "left be while the helper (or a replacement) is there: \(script)")
+        for gone in ["/L/run", "/L/libexec", "/Logs", "/L/uninstall-pending.json", "/L/dns-left.json", "/LD/com.mugvpn.helper.plist", plist] {
+            expect(script.contains("'\(gone)'"), "\(gone) in \(script)")
+        }
+        expect(!script.contains("/L/config") && !script.contains("/L/auto") && !script.contains("policy"), "profiles stay")
+        let sh = Process()
+        sh.executableURL = URL(fileURLWithPath: "/bin/sh")
+        sh.arguments = ["-n", "-c", script]
+        try sh.run()
+        sh.waitUntilExit()
+        expectEqual(sh.terminationStatus, 0, "valid sh")
+        let odd = HelperCore.bootCleanupScript(helper: "/Users/o'k/.Trash/M.app/Contents/MacOS/MugVPNHelper", app: nil, paths: h.paths)
+        expect(odd.hasPrefix("[ -e '/Users/o'\\''k/.Trash/"), "a quote in a path stays quoted: \(odd)")
+        h.bootCleanup(armed: false, helper: helper, app: nil)
+        expect(sys.files[plist] == nil, "out of the Trash: removed")
+        h.bootCleanup(armed: true, helper: helper, app: nil)
+        h.uninstallMovedToTrash()
+        expect(sys.files[plist] == nil, "the helper finished: removed with the rest")
+        try sys.writeFile(plist, Data(), mode: 0o644)
+        sys.runningFromTrash = false
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.files[plist] == nil, "a helper from a reinstalled app: removed")
+        try sys.writeFile(plist, Data(), mode: 0o644)
+        sys.runningFromTrash = true
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.files[plist] != nil, "one from the Trash keeps it")
     }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()

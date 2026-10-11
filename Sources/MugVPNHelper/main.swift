@@ -1,4 +1,5 @@
 import Foundation
+import ServiceManagement
 import MugVPNCore
 import MugVPNHelperCore
 import Security
@@ -23,16 +24,42 @@ if let info = system.fileInfo(pretend), info.rootOnly, let d = system.readFile(p
     core.runningVersion = String(decoding: d, as: UTF8.self).trimmingCharacters(in: .whitespacesAndNewlines)
 }
 #endif
-// Once uninstalled (every request answered): leave launchd's list too (a
-// development install has no SMAppService to do it) and exit.
-core.onUninstalled = {
-    queue.asyncAfter(deadline: .now() + 0.5) {
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: "/bin/launchctl")
-        p.arguments = ["bootout", "system/" + MugVPNIDs.helperLabel]
-        try? p.run()
-        exit(0)
+// Once uninstalled (every request answered, everything removed and checked): launchd lets go of the helper. Its
+// registration through SMAppService (the app's) goes, so that launchd does not start it again at boot (the app may be
+// in the Trash, unable to do it), then launchd's list (a development install has no registration). Off the helper's
+// queue (launchd's SIGTERM, which may come meanwhile, waits on that queue). Not done, or not known to be done: the
+// helper stays and tries again a minute later (started again before that from the Trash, it finds the app gone).
+let helperService = SMAppService.daemon(plistName: MugVPNIDs.helperPlist)
+enum LaunchdJob { case absent, present, unknown }
+func launchdJob() -> LaunchdJob {
+    let r = system.run("/bin/launchctl", ["print", "system/" + MugVPNIDs.helperLabel], input: nil, timeout: 10)
+    if r.status == 0 { return .present }
+    // 113: no such service (said so); anything else (not run, timed out, another error) tells nothing.
+    if r.status == 113 || r.output.contains("Could not find service") { return .absent }
+    return .unknown
+}
+func leaveLaunchd() {
+    func again(_ why: String) {
+        log("\(why), trying again in a minute")
+        DispatchQueue.global().asyncAfter(deadline: .now() + 60, execute: leaveLaunchd)
     }
+    if helperService.status == .enabled || helperService.status == .requiresApproval {
+        do { try helperService.unregister() } catch { return again("could not unregister: \(error)") }
+    }
+    if launchdJob() != .absent {
+        // (Gone from the list, launchd ends this process with SIGTERM before this returns.)
+        _ = system.run("/bin/launchctl", ["bootout", "system/" + MugVPNIDs.helperLabel], input: nil, timeout: 30)
+        switch launchdJob() {
+        case .absent: break
+        case .present: return again("launchd still lists the helper")
+        case .unknown: return again("could not ask launchd whether it still lists the helper")
+        }
+    }
+    exit(0)
+}
+core.onNote = { log($0) }
+core.onUninstalled = {
+    DispatchQueue.global().asyncAfter(deadline: .now() + 0.5, execute: leaveLaunchd)
 }
 
 /// The helper's own bundle: <app>/Contents/MacOS/MugVPNHelper -> <app>/Contents, from the process's real
@@ -171,9 +198,24 @@ final class ListenerDelegate: NSObject, NSXPCListenerDelegate {
     }
 }
 
+// launchd stops the helper with SIGTERM: stop every tunnel first. Armed before anything is prepared (a tunnel
+// started there, or an uninstall finished, must not meet the default action).
+signal(SIGTERM, SIG_IGN)
+let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global())
+termSource.setEventHandler {
+    queue.sync { core.stopAll() }
+    let deadline = Date().addingTimeInterval(HelperCore.stopGrace + 2)
+    while Date() < deadline, queue.sync(execute: { !core.isEmpty }) { usleep(100_000) }
+    log("shut down")
+    exit(0)
+}
+termSource.resume()
+/// Where the app is installed: recorded while the helper runs from it, read back when it runs from the Trash.
+var appContents: String?
 do {
     try queue.sync {
         try core.prepareDirectories()
+        appContents = core.appLocation(running: contentsDir.path)
         try HelperCore.installPinned(from: contentsDir.appendingPathComponent("Helpers/openvpn").path,
                                      to: HelperPaths.standard.openvpn, system: system,
                                      check: checkSignature(BuildPins.openvpnRequirement))
@@ -189,17 +231,6 @@ do {
     exit(0)
 }
 
-// launchd stops the helper with SIGTERM: stop every tunnel first.
-signal(SIGTERM, SIG_IGN)
-let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global())
-termSource.setEventHandler {
-    queue.sync { core.stopAll() }
-    let deadline = Date().addingTimeInterval(HelperCore.stopGrace + 2)
-    while Date() < deadline, queue.sync(execute: { !core.isEmpty }) { usleep(100_000) }
-    log("shut down")
-    exit(0)
-}
-termSource.resume()
 
 let delegate = ListenerDelegate()
 let listener = NSXPCListener(machServiceName: MugVPNIDs.helperLabel)
@@ -213,14 +244,16 @@ var trashWatch = TrashWatch()
 let trashTimer = DispatchSource.makeTimerSource(queue: queue)
 trashTimer.schedule(deadline: .now() + 15, repeating: 15)
 trashTimer.setEventHandler {
-    let inPlace = FileManager.default.fileExists(atPath: contentsDir.appendingPathComponent("Info.plist").path)
-    guard trashWatch.look(bundleInPlace: inPlace, runningFrom: HelperPaths.executablePath() ?? "",
-                          now: ProcessInfo.processInfo.systemUptime) else { return }
+    // (Started again from the Trash: where it was installed, a replacement there keeps it.)
+    let inPlace = appContents.map { FileManager.default.fileExists(atPath: $0 + "/Info.plist") } ?? false
+    let running = HelperPaths.executablePath() ?? ""
+    let due = trashWatch.look(bundleInPlace: inPlace, runningFrom: running, now: ProcessInfo.processInfo.systemUptime)
+    // From its first look in the Trash: kept for the next boot (an emptied Trash takes the helper with it).
+    core.bootCleanup(armed: trashWatch.counting, helper: running, app: appContents)
+    guard due else { return }
     trashTimer.cancel()
     log("the app is in the Trash: removing MugVPN's system part (profiles stay)")
-    let homes = ((try? FileManager.default.contentsOfDirectory(atPath: "/Users")) ?? [])
-        .filter { !$0.hasPrefix(".") && $0 != "Shared" }.map { "/Users/" + $0 }
-    core.uninstallMovedToTrash(homes: homes)
+    core.uninstallMovedToTrash()
 }
 trashTimer.resume()
 log("listening as \(MugVPNIDs.helperLabel), version \(MugVPNIDs.helperVersion)")

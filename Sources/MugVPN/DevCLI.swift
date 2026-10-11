@@ -60,7 +60,10 @@ func loadBundle(_ path: String) -> ProfileBundle {
         guard let data = try? Data(contentsOf: f) else { fail("cannot read \(f.path), named in the profile") }
         files[name] = data
     }
-    return ProfileBundle(name: url.deletingPathExtension().lastPathComponent, config: text, files: files)
+    var bundle = ProfileBundle(name: url.deletingPathExtension().lastPathComponent, config: text, files: files)
+    // Its id as the app gives it (the profile's file).
+    bundle.profileID = url.path
+    return bundle
 }
 
 /// Drive one connection over management until it is up (or fails).

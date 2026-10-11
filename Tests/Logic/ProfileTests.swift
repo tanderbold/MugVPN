@@ -374,6 +374,14 @@ func registerProfileTests() {
         expectEqual(store(fs).scan().map(\.path), [p.path], "back where it was")
         expect(!fs.contents(of: userDir).contains { $0.name.hasPrefix(".deleting") }, "nothing hidden left")
     }
+    test("PRF-37", "deleting a profile whose files will neither go nor come back: where they are is said") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        fs.failRemoves = true
+        fs.failMovesTo = ["\(userDir)/office"]
+        expectThrows("delete", matching: ".deleting-") { try store(fs).delete(p, active: []) }
+    }
     test("PRF-24", "files dropped on MugVPN: profiles (.ovpn, .conf) and Tunnelblick configurations (.tblk) only") {
         expectEqual(ProfileStore.importable(["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk", "/a/notes.txt", "/a/key.pem", "/a/ovpn"]),
                     ["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk"])

@@ -16,7 +16,8 @@ public protocol HelperSystem: AnyObject {
     func move(_ from: String, _ to: String)
     /// Put `from` in place of `to`; an error if that fails.
     func replace(_ from: String, _ to: String) throws
-    func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16)
+    /// - Returns: false when owner or mode could not be set.
+    @discardableResult func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) -> Bool
     /// Replace MugVPN's PF anchor with these rules ("" clears it and releases PF); false if pfctl refused.
     func applyPF(_ anchor: String) -> Bool
     /// PF is on and MugVPN's anchor holds these rules (someone may have run pfctl -d or flushed it).
@@ -26,8 +27,8 @@ public protocol HelperSystem: AnyObject {
     @discardableResult func addRoute(_ args: [String]) -> Bool
     /// A file from `offset` on (at most `maxBytes`), without following a link.
     func readFrom(_ path: String, offset: UInt64, maxBytes: Int) -> Data?
-    /// Let `uid` read `path` (an ACL entry) without owning it.
-    func grantRead(_ path: String, uid: UInt32)
+    /// Let `uid` read `path` (an ACL entry) without owning it. False: not granted.
+    @discardableResult func grantRead(_ path: String, uid: UInt32) -> Bool
     func list(_ dir: String) -> [String]
     /// Start a process with stdout and stderr appended to `logPath`.
     /// `onExit` must be delivered on the caller's serial queue.
@@ -73,6 +74,13 @@ public protocol HelperSystem: AnyObject {
     @discardableResult func restoreDNS(device: String) -> DNSRestore
     /// Only the backup a restore left behind.
     func removeDNSBackup(device: String) -> Bool
+    /// The helper runs from an app in the Trash (an uninstall to finish), not from an installed one.
+    var runningFromTrash: Bool { get }
+    /// Every user's home folder (wherever it is).
+    var userHomes: [String] { get }
+    /// Remove `name` (with all in it) in `home`/`folders`, each step opened from the last, never through a link nor
+    /// into another volume.
+    func removeInHome(_ home: String, through folders: [String], _ name: String) -> HomeRemoval
     /// - Returns: false when it is still there (refused); a route already gone counts as deleted.
     @discardableResult func deleteRoute(_ args: [String]) -> Bool
     /// Run `f` after `seconds` on the caller's serial queue.
@@ -139,6 +147,10 @@ public enum ExitKind: Equatable, Sendable {
 
 /// The app was dragged to the Trash: noticed by the helper (macOS tells nobody). Only once it has
 /// been there a minute: an update replaces the app by moving the old one away and the new one in.
+/// What removing in a user's home came to: gone (or never there); left, the way (or something in it) not one root
+/// may take (a link, a mounted volume); or not removed.
+public enum HomeRemoval: Sendable { case gone, skipped, failed }
+
 public struct TrashWatch: Sendable {
     public static let grace: TimeInterval = 60
     private var since: TimeInterval?
@@ -147,11 +159,13 @@ public struct TrashWatch: Sendable {
     /// - bundleInPlace: the app is where the helper started from. - runningFrom: the helper's path now.
     /// - Returns: true when it is time to take MugVPN's system part away.
     public mutating func look(bundleInPlace: Bool, runningFrom: String, now: TimeInterval) -> Bool {
-        guard !bundleInPlace, runningFrom.contains("/.Trash/") else { since = nil; return false }
+        guard !bundleInPlace, HelperPaths.isInTrash(runningFrom) else { since = nil; return false }
         let start = since ?? now
         since = start
         return now - start >= TrashWatch.grace
     }
+    /// In the Trash, its minute running.
+    public var counting: Bool { since != nil }
 }
 
 /// A device's DNS taken off: all of it; all but the backup of the primary's DNS (its DNS is off, the
@@ -201,6 +215,21 @@ public struct HelperPaths: Sendable {
         self.libexecDir = libexecDir
         self.systemConfigDir = systemConfigDir
         self.devDaemonPlist = devDaemonPlist
+    }
+
+    /// In a Trash: the home's (~/.Trash) or another volume's (/Volumes/<name>/.Trashes/<uid>).
+    public static func isInTrash(_ path: String) -> Bool {
+        let parts = path.split(separator: "/").map(String.init)
+        for (i, p) in parts.enumerated() {
+            if p == ".Trash" { return true }
+            if p == ".Trashes", i + 1 < parts.count, !parts[i + 1].isEmpty, parts[i + 1].allSatisfy(\.isNumber) { return true }
+        }
+        return false
+    }
+
+    /// Run once at the next boot while the app is in the Trash (for its helper gone with an emptied Trash by then).
+    public var cleanupDaemonPlist: String {
+        (devDaemonPlist as NSString).deletingLastPathComponent + "/" + MugVPNIDs.cleanupLabel + ".plist"
     }
 
     public static let standard = HelperPaths(openvpn: MugVPNIDs.libexecDir + "/openvpn",
@@ -327,7 +356,7 @@ public final class HelperCore {
     private var refreshPending = false
 
     private let system: HelperSystem
-    private let paths: HelperPaths
+    public let paths: HelperPaths
     private let newID: () -> String
     private let newSecret: () -> String
     /// Management passwords of persistent connections, by connection id.
@@ -347,6 +376,8 @@ public final class HelperCore {
 
     /// Called once uninstalling has removed everything: the helper exits.
     public var onUninstalled: () -> Void = {}
+    /// Something worth the helper's log.
+    public var onNote: (String) -> Void = { _ in }
     private var uninstalling: (keepProfiles: Bool, fromTrash: Bool)?
     /// An uninstall held back by DNS left (the app in the Trash): done once that is off (keeping profiles?).
     private var uninstallWhenDNSOff: Bool?
@@ -398,12 +429,65 @@ public final class HelperCore {
 
     /// The app went to the Trash: what MugVPN put on the Mac goes, with every user's logs and settings;
     /// profiles stay (administrators' and users' own, and policy.json), for a reinstall to find.
-    public func uninstallMovedToTrash(homes: [String]) {
-        for home in homes {
-            system.remove(home + "/Library/Logs/MugVPN")
-            system.remove(home + "/Library/Preferences/com.mugvpn.app.plist")
-        }
+    /// (Those go with the rest of its files, checked, and tried again with the wish on disk.)
+    public func uninstallMovedToTrash() {
         try? uninstall(uid: 0, keepProfiles: true, fromTrash: true) { _ in }
+    }
+
+    private var appLocationPath: String { paths.supportDir + "/app-location" }
+
+    /// Where the app is installed (its Contents), for telling whether it is still there: recorded while the helper
+    /// runs from it, read back when it runs from the Trash (started again after the app went there). Nil: not known
+    /// (taken as not there). A Trash location is never recorded nor believed.
+    public func appLocation(running contents: String) -> String? {
+        func inTrash(_ p: String) -> Bool { HelperPaths.isInTrash(p) }
+        if !inTrash(contents) {
+            if system.readFile(appLocationPath).map({ String(decoding: $0, as: UTF8.self) }) != contents {
+                try? system.writeFile(appLocationPath, Data(contents.utf8), mode: 0o600)
+            }
+            return contents
+        }
+        guard let info = system.fileInfo(appLocationPath), info.kind == .regular, info.rootOnly,
+              let d = system.readFile(appLocationPath) else { return nil }
+        let recorded = String(decoding: d, as: UTF8.self)
+        return recorded.hasPrefix("/") && !inTrash(recorded) ? recorded : nil
+    }
+
+    /// While the app is in the Trash (its minute running), a launch daemon of the system's own shell is kept for the
+    /// next boot: should the Trash be emptied and the Mac restarted before the helper finishes, it takes MugVPN's
+    /// system part away (left be when the helper or the app is still there: that finishes or keeps it). Out of the
+    /// Trash: removed. Said when it could not be written (tried again on the next look).
+    public func bootCleanup(armed: Bool, helper: String, app: String?) {
+        let plist = paths.cleanupDaemonPlist
+        guard armed else {
+            if system.fileInfo(plist) != nil { system.remove(plist) }
+            return
+        }
+        let d = HelperCore.bootCleanupPlist(helper: helper, app: app, paths: paths)
+        guard system.readFile(plist) != d else { return }
+        if (try? system.writeFile(plist, d, mode: 0o644)) == nil { onNote("could not write \(plist)") }
+    }
+
+    /// The boot cleanup's launch daemon: the system's shell, nothing of MugVPN's (which may be gone by then).
+    public static func bootCleanupPlist(helper: String, app: String?, paths: HelperPaths) -> Data {
+        let p: [String: Any] = ["Label": MugVPNIDs.cleanupLabel, "RunAtLoad": true,
+                                "ProgramArguments": ["/bin/sh", "-c", bootCleanupScript(helper: helper, app: app, paths: paths)]]
+        return (try? PropertyListSerialization.data(fromPropertyList: p, format: .xml, options: 0)) ?? Data()
+    }
+
+    /// After a boot nothing of a tunnel holds (routes, DNS, PF are the running system's): only files stay. Profiles too.
+    public static func bootCleanupScript(helper: String, app: String?, paths: HelperPaths) -> String {
+        func q(_ s: String) -> String { "'" + s.replacingOccurrences(of: "'", with: "'\\''") + "'" }
+        let s = paths.supportDir
+        var script = "[ -e \(q(helper)) ] && exit 0; "
+        if let app { script += "[ -e \(q(app + "/Info.plist")) ] && exit 0; " }
+        script += "launchctl bootout system/\(MugVPNIDs.helperLabel) 2>/dev/null; "
+            + "pkill -9 -f \(q(paths.openvpn)) 2>/dev/null; "
+            + "rm -rf " + [paths.runDir, paths.libexecDir, paths.logsDir, s + "/locks.json", s + "/app-location",
+                           s + "/uninstall-pending.json", s + "/dns-left.json", s + "/pf.token", s + "/pf.release",
+                           paths.devDaemonPlist, paths.cleanupDaemonPlist].map(q).joined(separator: " ") + "; "
+            + "launchctl bootout system/\(MugVPNIDs.cleanupLabel) 2>/dev/null; exit 0"
+        return script
     }
 
     private func finishUninstall() {
@@ -437,61 +521,76 @@ public final class HelperCore {
             return
         }
         appliedPF = ""
-        // The wish to uninstall goes next, and must be gone: one left behind (a crash halfway, a failed
-        // unlink) would have a reinstall remove itself. If it stays, nothing else goes; tried again.
-        system.remove(uninstallPendingPath)
-        guard system.fileInfo(uninstallPendingPath) == nil else {
-            uninstalling = nil
+        // After the Trash the wish to uninstall is on disk before anything goes, and stays until the very end: a
+        // helper (or Mac) that stops halfway starts again and finishes. Not on disk: not started (tried again).
+        if u.fromTrash, uninstallPendingUnsaved || system.fileInfo(uninstallPendingPath) == nil {
+            uninstallWhenDNSOff = u.keepProfiles
+            saveUninstallPending()
+            guard !uninstallPendingUnsaved else {
+                uninstalling = nil
+                closing = false
+                let replies = uninstallReplies
+                uninstallReplies = []
+                replies.forEach { $0(HelperRefusal.recordPending) }
+                uninstallRetryNeeded = true
+                retryDNSLeftLater()
+                return
+            }
+        }
+        uninstalling = nil
+        // Its files, all but that wish (the support folder's other entries when profiles go too).
+        var gone = [paths.runDir, paths.libexecDir, paths.logsDir, appLocationPath, paths.cleanupDaemonPlist]
+        if !u.keepProfiles {
+            gone += [paths.systemConfigDir, paths.autoDir]
+            gone += system.list(paths.supportDir).map { paths.supportDir + "/" + $0 }
+                .filter { $0 != uninstallPendingPath && !gone.contains($0) }
+        }
+        gone.forEach(system.remove)
+        // After the Trash, every user's logs and settings (no app left to remove them): step by step from the home,
+        // never by a path (a link the user swaps in on the way would point root anywhere).
+        var userStayed: [String] = [], userSkipped: [String] = []
+        if u.fromTrash {
+            for home in system.userHomes {
+                for (folders, name) in [(["Library", "Logs"], "MugVPN"), (["Library", "Preferences"], "com.mugvpn.app.plist")] {
+                    let path = ([home] + folders + [name]).joined(separator: "/")
+                    switch system.removeInHome(home, through: folders, name) {
+                    case .gone: break
+                    case .skipped: userSkipped.append(path)
+                    case .failed: userStayed.append(path)
+                    }
+                }
+            }
+        }
+        // Not one root may reach safely (a link, a mounted volume on the way): left, and said (its user's to remove;
+        // tried again it would only be left again).
+        if !userSkipped.isEmpty { onNote("left in place, not safe for root to remove: " + userSkipped.joined(separator: ", ")) }
+        /// Not finished: said, the helper stays to try again (after the Trash on its own, the wish still on disk).
+        func notFinished(_ answer: String) {
             closing = false
             let replies = uninstallReplies
             uninstallReplies = []
-            replies.forEach { $0(HelperRefusal.recordPending) }
-            uninstallRetryNeeded = uninstallWhenDNSOff != nil
-            retryDNSLeftLater()
-            return
+            replies.forEach { $0(answer) }
+            if u.fromTrash {
+                uninstallWhenDNSOff = u.keepProfiles
+                uninstallRetryNeeded = true
+                retryDNSLeftLater()
+            }
         }
+        // Gone, or said. (Kept profiles: no record of DNS left may stay either, a reinstall would act on it.)
+        let stayed = (gone + [dnsLeftPath]).filter { system.fileInfo($0) != nil } + userStayed
+        guard stayed.isEmpty else { return notFinished(HelperRefusal.filesPending + stayed.joined(separator: ", ")) }
+        // The launch daemon next: one that stays is said.
+        system.remove(paths.devDaemonPlist)
+        guard system.fileInfo(paths.devDaemonPlist) == nil else { return notFinished(HelperRefusal.filesPending + paths.devDaemonPlist) }
+        // Last, checked: profiles not kept, the support folder itself (the wish in it); kept, the wish alone. Until
+        // then a helper started again finishes the uninstall; after, one started again from the Trash finds the app
+        // gone on its own (and one from a reinstalled app is not to uninstall). Not gone: not finished, tried again.
+        let last = u.keepProfiles ? uninstallPendingPath : paths.supportDir
+        system.remove(last)
+        guard system.fileInfo(last) == nil else { return notFinished(HelperRefusal.filesPending + last) }
         uninstallWhenDNSOff = nil
         uninstallPendingUnsaved = false
         uninstallRetryNeeded = false
-        uninstalling = nil
-        var gone = [paths.runDir, paths.libexecDir, paths.logsDir]
-        if !u.keepProfiles { gone += [paths.systemConfigDir, paths.autoDir, paths.supportDir] }
-        gone.forEach(system.remove)
-        // Gone, or said: the helper stays (its launch daemon too) to try again. (Kept profiles: no record of
-        // DNS left may stay either, a reinstall would act on it.)
-        let stayed = (gone + [dnsLeftPath]).filter { system.fileInfo($0) != nil }
-        guard stayed.isEmpty else {
-            uninstalling = nil
-            closing = false
-            let replies = uninstallReplies
-            uninstallReplies = []
-            replies.forEach { $0(HelperRefusal.filesPending + stayed.joined(separator: ", ")) }
-            if u.fromTrash {
-                uninstallWhenDNSOff = u.keepProfiles
-                saveUninstallPending()
-                uninstallRetryNeeded = true
-                retryDNSLeftLater()
-            }
-            return
-        }
-        // The launch daemon last: stopped halfway, the helper starts again and finishes. One that stays is said.
-        system.remove(paths.devDaemonPlist)
-        if system.fileInfo(paths.devDaemonPlist) != nil {
-            closing = false
-            let replies = uninstallReplies
-            uninstallReplies = []
-            replies.forEach { $0(HelperRefusal.filesPending + paths.devDaemonPlist) }
-            // After the Trash no one asks again: tried again by the helper itself, the wish on disk again (its
-            // folder may be gone by now) so a helper that starts again finishes it.
-            if u.fromTrash {
-                uninstallWhenDNSOff = u.keepProfiles
-                try? system.makeDirectory(paths.supportDir, mode: 0o755)
-                saveUninstallPending()
-                uninstallRetryNeeded = true
-                retryDNSLeftLater()
-            }
-            return
-        }
         let replies = uninstallReplies
         uninstallReplies = []
         replies.forEach { $0(nil) }
@@ -525,8 +624,11 @@ public final class HelperCore {
         loadDNSLeft()
         if let info = system.fileInfo(uninstallPendingPath), info.kind == .regular, info.rootOnly,
            let d = system.readFile(uninstallPendingPath), let p = try? JSONDecoder().decode([String: Bool].self, from: d) {
-            uninstallWhenDNSOff = p["keepProfiles"] ?? true
+            // Only while this helper runs from the app in the Trash: started from a reinstalled app, it is not to go.
+            if system.runningFromTrash { uninstallWhenDNSOff = p["keepProfiles"] ?? true } else { system.remove(uninstallPendingPath) }
         }
+        // Started from a reinstalled app (not the Trash): no boot cleanup is to take it away.
+        if !system.runningFromTrash, system.fileInfo(paths.cleanupDaemonPlist) != nil { system.remove(paths.cleanupDaemonPlist) }
         // Whatever ran as a connection's id outlived its helper.
         system.killProcesses(uids: HelperCore.serviceIDBase...(HelperCore.serviceIDBase + HelperCore.serviceIDCount - 1))
         if !leftovers.isEmpty {
@@ -544,7 +646,7 @@ public final class HelperCore {
                 }
                 // openvpn without root wrote that log: never a reason to change anything.
                 if system.fileInfo(paths.runDir + "/" + d + "/sock") != nil { continue }
-                if !cleanUp(after: facts(in: paths.runDir + "/" + d), others: []) {
+                if !cleanUp(after: facts(in: paths.runDir + "/" + d), others: [], dir: paths.runDir + "/" + d) {
                     kept.insert(d)
                     keptRuns.insert(paths.runDir + "/" + d)   // tried again while the helper runs
                 }
@@ -793,29 +895,34 @@ public final class HelperCore {
         let socket = user == nil ? dir + "/m.sock" : dir + "/sock/m.sock"
         try system.makeDirectory(dir, mode: 0o711)
         do {
-            /// Readable by openvpn's account (its group), by nobody else.
-            func forOpenVPN(_ path: String) {
-                if let user { system.setOwner(path, uid: 0, gid: user.gid, mode: 0o640) }
+            /// Readable by openvpn's account (its group), by nobody else; not set: not started.
+            func forOpenVPN(_ path: String) throws {
+                if let user, !system.setOwner(path, uid: 0, gid: user.gid, mode: 0o640) {
+                    throw HelperCoreError.message("the helper could not set who may read \((path as NSString).lastPathComponent)")
+                }
             }
             for (i, key) in checked.files.enumerated() {
                 let f = dir + "/" + ProfilePolicy.runName(forIndex: i)
                 try system.writeFile(f, bundle.files[key] ?? Data(), mode: 0o600)
-                forOpenVPN(f)
+                try forOpenVPN(f)
             }
             try system.writeFile(config, Data(ConfigParser.serializeForOpenVPN(checked.directives).utf8), mode: 0o600)
-            forOpenVPN(config)
+            try forOpenVPN(config)
             if let user {
                 // openvpn creates its management socket here: the one place it may write.
                 try system.makeDirectory(dir + "/sock", mode: 0o711)
                 // A persistent tunnel's socket: its administrators' (the app attaches), nobody else's.
-                system.setOwner(dir + "/sock", uid: user.uid, gid: persistent ? adminGID : user.gid,
-                                mode: persistent ? 0o750 : 0o711)
+                // Not set as asked (a persistent socket's folder open to others): not started.
+                guard system.setOwner(dir + "/sock", uid: user.uid, gid: persistent ? adminGID : user.gid,
+                                      mode: persistent ? 0o750 : 0o711) else {
+                    throw HelperCoreError.message("the helper could not set who may reach the management socket")
+                }
             }
             var password: String?
             if persistent {
                 password = newSecret()
                 try system.writeFile(dir + "/m.pw", Data((password! + "\n").utf8), mode: 0o600)
-                forOpenVPN(dir + "/m.pw")
+                try forOpenVPN(dir + "/m.pw")
             }
             if bundle.splitDNS {
                 // MugVPN's DNS script runs in this directory and looks for it.
@@ -857,7 +964,10 @@ public final class HelperCore {
             // the log (an unprivileged openvpn writes that).
             try saveTunnel(c)
             passwords[id] = password
-            giveLog(dir + "/openvpn.log", to: info)
+            // Its owner could not read it (View Log would fail for no reason given): not started, said.
+            guard giveLog(dir + "/openvpn.log", to: info) else {
+                throw HelperCoreError.message("the helper could not let you read this connection's log")
+            }
             // A persistent tunnel has nobody to answer its requests at boot: the helper does,
             // once openvpn listens (the app of an administrator can take over).
             if persistent { scheduleManagement(id, after: 0.5) }
@@ -971,36 +1081,18 @@ public final class HelperCore {
         }
         saveLocks()
         let kept = paths.logsDir + "/" + ProfileKey.logName(profile: c.info.name, id: c.info.profileID, uid: c.info.ownerUID) + ".log"
-        let live = c.dir + "/openvpn.log"
-        var appended = false
-        if c.appendLog, let before = system.readTail(kept, maxBytes: HelperCore.maxKeptLogBytes),
-           let now = system.readTail(live, maxBytes: HelperCore.maxKeptLogBytes) {
-            // This run after the earlier ones, the newest kept when it grows too long. Only once written does the
-            // run's own go.
-            appended = (try? system.writeFile(kept, Data((before + now).suffix(HelperCore.maxKeptLogBytes)), mode: 0o600)) != nil
-            if appended { system.remove(live) }
-        }
-        if !appended, system.fileInfo(live) != nil {
-            // In one step (rename): the kept one replaced only by the new one.
-            do {
-                try system.replace(live, kept)
-            } catch {
-                // Not moved: copied, so it does not go with the run folder; not even that: the run folder stays.
-                let copied = system.readTail(live, maxBytes: HelperCore.maxKeptLogBytes).map {
-                    (try? system.writeFile(kept, $0, mode: 0o600)) != nil } ?? false
-                if !copied { c.keepRecord = true }
-            }
-        }
-        giveLog(kept, to: c.info, live: false)
+        // (Not all done: its run folder stays, tried again.)
+        let info = c.info
+        if !keepLog(of: c.dir, at: kept, append: c.appendLog, own: { giveLog(kept, to: info, live: false) }) { c.keepRecord = true }
         // Bounded per user: names are the user's to choose.
         // The oldest go (by when they were written).
         let mine = system.list(paths.logsDir).filter { $0.hasSuffix(".\(c.info.ownerUID).log") && paths.logsDir + "/" + $0 != kept }
             .sorted { (system.fileInfo(paths.logsDir + "/" + $0)?.modified ?? 0) < (system.fileInfo(paths.logsDir + "/" + $1)?.modified ?? 0) }
         for old in mine.dropLast(max(0, HelperCore.keptLogsPerUser - 1)) { system.remove(paths.logsDir + "/" + old) }
         // DNS left behind and not on record elsewhere: its own record stays for the next helper.
-        if recorded, !c.keepRecord {
-            system.remove(c.dir)
-        } else {
+        if recorded, !c.keepRecord { system.remove(c.dir) }
+        // Still there (kept on purpose, or its removal refused): tried again.
+        if system.fileInfo(c.dir) != nil {
             // Something of it still to undo (a route still there, DNS on record nowhere else): tried again.
             keptRuns.insert(c.dir)
             retryDNSLeftLater()
@@ -1087,7 +1179,17 @@ public final class HelperCore {
         } catch {
             // Nothing done: the record (written ahead) says so again; if it cannot, the
             // connection is undone and stopped rather than left with a record of the future.
-            putDNSBack(on: before)
+            // A route it took away that would not come back: its DNS is not put back (its server may now be reached
+            // around the tunnel), it is taken off; the connection is undone below.
+            if c.mustFailClosed {
+                replaceDNS(c, with: nil)
+                before.dnsBackupLeft = c.tunnel.dnsBackupLeft ?? before.dnsBackupLeft
+                before.dnsApplied = c.appliedDNS != nil
+                before.dnsServers = c.appliedDNS?.servers ?? []
+                before.dnsDomains = c.appliedDNS?.matchDomains ?? []
+            } else {
+                putDNSBack(on: before)
+            }
             c.tunnel = before
             // Routes it added that would not go back (or took away that would not come back): on record, and the
             // connection undone with them.
@@ -1095,6 +1197,8 @@ public final class HelperCore {
                 c.mustFailClosed = false
                 c.tunnel.keep(c.stuckRoutes)
                 c.stuckRoutes = []
+                // On disk as it now is (what stays to undo), before it is undone.
+                try? saveTunnel(c)
                 failClosed(c)
                 throw error
             }
@@ -1639,6 +1743,8 @@ public final class HelperCore {
     private var dnsLeft: [String: DNSLeft] = [:]
     private var dnsLeftPath: String { paths.supportDir + "/dns-left.json" }
     private var dnsLeftRetryPending = false
+    /// An older version's run whose routes are not all gone yet (more than one pass takes, or refused): those left.
+    private var legacyRemaining: [String: Set<[String]>] = [:]
     /// dns-left.json not as it should be (an emptied one not removed): written again with the retries.
     private var dnsLeftUnsaved = false
     /// Run directories of gone tunnels kept because something of theirs is not undone yet (their record says what).
@@ -1677,10 +1783,9 @@ public final class HelperCore {
 
     /// A log still in a run folder about to go (it could not be kept when its tunnel ended): kept as
     /// recovered-<run>.log. - Returns: false when it is still there only.
+    /// A dead run's log (its tunnel died with a helper, or its log could not be kept when it ended), kept as its
+    /// profile's (its user's; View Log finds it) or, whose not known, recovered-<run>.log for administrators.
     private func salvageLog(_ dir: String) -> Bool {
-        let log = dir + "/openvpn.log"
-        guard system.fileInfo(log) != nil else { return true }
-        // Its profile's kept log, its user's (View Log finds it); without a record of whose: recovered-<run>.log.
         let t = savedTunnel(in: dir)
         let to: String
         if let name = t?.profileName, let owner = t?.ownerUID {
@@ -1688,24 +1793,46 @@ public final class HelperCore {
         } else {
             to = paths.logsDir + "/recovered-" + (dir as NSString).lastPathComponent + ".log"
         }
-        var kept = false
-        // Appended to its kept log when the profile asks for that (bounded, the newest kept).
-        if t?.appendLog == true, let before = system.readTail(to, maxBytes: HelperCore.maxKeptLogBytes),
-           let now = system.readTail(log, maxBytes: HelperCore.maxKeptLogBytes) {
-            kept = (try? system.writeFile(to, Data((before + now).suffix(HelperCore.maxKeptLogBytes)), mode: 0o600)) != nil
-            if kept { system.remove(log) }
+        return keepLog(of: dir, at: to, append: t?.appendLog == true) {
+            t?.ownerUID.map { self.system.setOwner(to, uid: $0, gid: staffGID, mode: 0o600) }
+                ?? self.system.setOwner(to, uid: 0, gid: adminGID, mode: 0o640)
         }
-        if !kept { kept = (try? system.replace(log, to)) != nil }
-        if !kept, let d = system.readTail(log, maxBytes: HelperCore.maxKeptLogBytes) {
-            kept = (try? system.writeFile(to, d, mode: 0o600)) != nil
-            if kept { system.remove(log) }
+    }
+
+    /// A run's log into its kept place, the one way for a tunnel that ended and for one found dead: in steps a stop
+    /// between cannot repeat. The whole new log staged in the run's own folder (openvpn.log.new: no other run's),
+    /// the run's copy marked moved (openvpn.log.kept), the staged one put in place in one rename, the owner set (`own`).
+    /// A later try finishes from the step it finds: never appended twice, never another run's.
+    /// - Returns: false when it is not (all) done (the run folder stays, tried again).
+    private func keepLog(of dir: String, at to: String, append: Bool, own: () -> Bool) -> Bool {
+        let log = dir + "/openvpn.log", moved = dir + "/openvpn.log.kept", staged = dir + "/openvpn.log.new"
+        // The phase is what files there are, never what a log says: the copy marked moved with a staged log beside
+        // it, not yet in place (built again from what is in place now: another run may have written there since);
+        // the copy alone, in place already (only its owner left). The one step that puts it in place is a rename,
+        // which removes the staged log at once; a refused rename leaves things as they were, tried again.
+        func stageAndPlace(_ raw: Data) -> Bool {
+            var text = raw
+            if append, system.fileInfo(to) != nil {
+                guard let there = system.readTail(to, maxBytes: HelperCore.maxKeptLogBytes) else { return false }
+                text = Data((there + raw).suffix(HelperCore.maxKeptLogBytes))
+            }
+            guard (try? system.writeFile(staged, text, mode: 0o600)) != nil else { return false }
+            if system.fileInfo(moved) == nil {
+                guard (try? system.replace(log, moved)) != nil else { return false }   // (its place untouched so far)
+            }
+            return (try? system.replace(staged, to)) != nil
         }
-        // Its user's; whose is not known (an older version's run): administrators may read it.
-        if kept {
-            if let owner = t?.ownerUID { system.setOwner(to, uid: owner, gid: staffGID, mode: 0o600) }
-            else { system.setOwner(to, uid: 0, gid: adminGID, mode: 0o640) }
+        if system.fileInfo(moved) != nil {
+            if system.fileInfo(staged) != nil {
+                guard let raw = system.readTail(moved, maxBytes: HelperCore.maxKeptLogBytes), stageAndPlace(raw) else { return false }
+            }
+        } else {
+            guard system.fileInfo(log) != nil else { return true }
+            guard let now = system.readTail(log, maxBytes: HelperCore.maxKeptLogBytes), stageAndPlace(now) else { return false }
         }
-        return kept
+        guard own() else { return false }
+        system.remove(moved)
+        return true
     }
 
     private func retryDNSLeftLater() {
@@ -1724,12 +1851,13 @@ public final class HelperCore {
         for dir in keptRuns.sorted() {
             if let t = savedTunnel(in: dir) {
                 if !undo(t, others: live) { continue }
-            } else if system.fileInfo(dir + "/sock") == nil, !cleanUp(after: facts(in: dir), others: [], live: live) {
+            } else if system.fileInfo(dir + "/sock") == nil, !cleanUp(after: facts(in: dir), others: [], live: live, dir: dir) {
                 continue   // an older version's run, by its log
             }
             guard salvageLog(dir) else { continue }
             system.remove(dir)
-            keptRuns.remove(dir)
+            // Off the list only once it is really gone.
+            if system.fileInfo(dir) == nil { keptRuns.remove(dir) }
         }
         for c in connections.values {
             // Never under all names set on that device (the backup is theirs then).
@@ -2127,7 +2255,7 @@ public final class HelperCore {
 
     /// - Returns: false when DNS it left is on record nowhere (its directory is then kept).
     /// - live: tunnels up now (a utun of theirs, a route they hold too, is theirs: left alone).
-    private func cleanUp(after facts: OpenVPNLogFacts, others: [OpenVPNLogFacts], live: [TunnelState] = []) -> Bool {
+    private func cleanUp(after facts: OpenVPNLogFacts, others: [OpenVPNLogFacts], live: [TunnelState] = [], dir: String? = nil) -> Bool {
         var plan = CleanupPlan.make(facts, others: others)
         let liveDevices = Set(live.compactMap(\.device))
         // The same route exactly (destination, mask or prefix, and the way out), in any of openvpn's forms.
@@ -2146,10 +2274,16 @@ public final class HelperCore {
             case .failed: recorded = leaveDNS(dev, .all)
             }
         }
-        // Routes through the dead utun are already gone (counted as deleted); one that stays keeps the folder.
-        for r in plan.routes.prefix(HelperCore.maxCleanupRoutes).map(OpenVPNLogFacts.deleteArguments) where !system.deleteRoute(r) {
-            recorded = false
-        }
+        // Routes through the dead utun are already gone (counted as deleted); one that stays keeps the folder. Many:
+        // a batch each pass (the folder kept until the last).
+        // What is still to delete, by the routes themselves (not a position: the ones a live tunnel holds now are
+        // left out each pass); one that would not go stays in it for the next pass.
+        var remaining = dir.flatMap { legacyRemaining[$0] }.map { left in plan.routes.filter { left.contains($0) } } ?? plan.routes
+        let batch = Array(remaining.prefix(HelperCore.maxCleanupRoutes))
+        let done = batch.filter { system.deleteRoute(OpenVPNLogFacts.deleteArguments($0)) }
+        remaining.removeAll { done.contains($0) }
+        if !remaining.isEmpty { recorded = false }
+        if let dir { legacyRemaining[dir] = remaining.isEmpty ? nil : Set(remaining) }
         // A default route openvpn took away (redirect-gateway without def1) goes back.
         for r in facts.deletedDefaults.prefix(2) where !system.addRoute(r) { recorded = false }
         return recorded
@@ -2157,14 +2291,14 @@ public final class HelperCore {
 
     /// The live log stays root's (cleanup reads it) and its owner may read it;
     /// a kept log is the user's alone. Persistent ones are root's, readable by administrators.
-    private func giveLog(_ path: String, to info: ConnectionInfo, live: Bool = true) {
+    /// - Returns: false when its owner or mode could not be set.
+    @discardableResult private func giveLog(_ path: String, to info: ConnectionInfo, live: Bool = true) -> Bool {
         if info.persistent {
-            system.setOwner(path, uid: 0, gid: adminGID, mode: 0o640)
+            return system.setOwner(path, uid: 0, gid: adminGID, mode: 0o640)
         } else if live {
-            system.setOwner(path, uid: 0, gid: staffGID, mode: 0o600)
-            system.grantRead(path, uid: info.ownerUID)
+            return system.setOwner(path, uid: 0, gid: staffGID, mode: 0o600) && system.grantRead(path, uid: info.ownerUID)
         } else {
-            system.setOwner(path, uid: info.ownerUID, gid: staffGID, mode: 0o600)
+            return system.setOwner(path, uid: info.ownerUID, gid: staffGID, mode: 0o600)
         }
     }
 

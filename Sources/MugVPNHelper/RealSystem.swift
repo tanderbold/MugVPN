@@ -58,9 +58,9 @@ final class RealSystem: HelperSystem {
         return try? h.readToEnd() ?? Data()
     }
 
-    func grantRead(_ path: String, uid: UInt32) {
-        guard let name = userName(uid: uid) else { return }
-        _ = run("/bin/chmod", ["-h", "+a", "user:\(name) allow read", path])
+    func grantRead(_ path: String, uid: UInt32) -> Bool {
+        guard let name = userName(uid: uid) else { return false }
+        return run("/bin/chmod", ["-h", "+a", "user:\(name) allow read", path]) == 0
     }
 
     /// Copy the bytes of a regular file. The source is opened without
@@ -119,10 +119,10 @@ final class RealSystem: HelperSystem {
         }
     }
 
-    func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) {
+    @discardableResult func setOwner(_ path: String, uid: UInt32, gid: UInt32, mode: UInt16) -> Bool {
         // lchown/lchmod: never follow a link someone put in the logs directory.
-        lchown(path, uid, gid)
-        lchmod(path, mode_t(mode))
+        let owned = lchown(path, uid, gid) == 0
+        return lchmod(path, mode_t(mode)) == 0 && owned
     }
 
     func list(_ dir: String) -> [String] { (try? fm.contentsOfDirectory(atPath: dir)) ?? [] }
@@ -167,13 +167,24 @@ final class RealSystem: HelperSystem {
         let pid = mugvpn_spawn_as("/usr/bin/sandbox-exec", cArgs, cEnv, cwd, log.fileDescriptor, user.uid, user.gid)
         try? log.close()
         guard pid > 0 else { throw CocoaError(.executableNotLoadable) }
+        let queue = self.queue
         let source = DispatchSource.makeProcessSource(identifier: pid, eventMask: .exit, queue: queue)
-        source.setEventHandler {
+        // NOTE_EXIT may come a moment before the process can be reaped, and it comes once: reaped
+        // as soon as it can be (else a zombie, and its connection never finished).
+        func reap() {
             var status: Int32 = 0
-            guard waitpid(pid, &status, WNOHANG) == pid else { return }
-            source.cancel()
+            let r = waitpid(pid, &status, WNOHANG)
+            if r == 0 || (r < 0 && errno == EINTR) {
+                queue.asyncAfter(deadline: .now() + 0.02, execute: reap)
+                return
+            }
+            guard r == pid else { return }
             let signaled = status & 0x7f != 0
             onExit(signaled ? .signaled(status & 0x7f) : .exited((status >> 8) & 0xff))
+        }
+        source.setEventHandler {
+            source.cancel()
+            reap()
         }
         source.activate()
         // An exit before the source was armed.
@@ -369,6 +380,34 @@ final class RealSystem: HelperSystem {
         run("/usr/bin/killall", ["-HUP", "mDNSResponder"])
     }
 
+    /// Users' homes from the user database (not only under /Users), and whatever /Users holds.
+    var userHomes: [String] {
+        var homes = Set<String>()
+        setpwent()
+        while let pw = getpwent() {
+            guard pw.pointee.pw_uid >= 500, pw.pointee.pw_uid != UInt32.max - 1, let dir = pw.pointee.pw_dir else { continue }
+            let home = String(cString: dir)
+            if home.hasPrefix("/"), home != "/", home != "/var/empty", home != "/dev/null" { homes.insert(home) }
+        }
+        endpwent()
+        for name in (try? fm.contentsOfDirectory(atPath: "/Users")) ?? [] where !name.hasPrefix(".") && name != "Shared" {
+            homes.insert("/Users/" + name)
+        }
+        return homes.sorted()
+    }
+
+    func removeInHome(_ home: String, through folders: [String], _ name: String) -> HomeRemoval {
+        var c: [UnsafePointer<CChar>?] = folders.map { UnsafePointer(strdup($0)) }
+        defer { c.forEach { free(UnsafeMutablePointer(mutating: $0)) } }
+        switch mugvpn_remove_beneath(home, &c, Int32(c.count), name) {
+        case 0: return .gone
+        case 1: return .skipped
+        default: return .failed
+        }
+    }
+
+    var runningFromTrash: Bool { HelperPaths.executablePath().map(HelperPaths.isInTrash) ?? false }
+
     @discardableResult func deleteRoute(_ args: [String]) -> Bool {
         let r = run("/sbin/route", ["-n", "delete"] + args, input: nil)
         return r.status == 0 || r.output.contains("not in table")
@@ -423,7 +462,7 @@ final class RealSystem: HelperSystem {
     }
 
     /// With `input` on stdin; returns stdout and stderr together.
-    private func run(_ path: String, _ args: [String], input: Data?, timeout: TimeInterval = 10) -> (status: Int32, output: String) {
+    func run(_ path: String, _ args: [String], input: Data?, timeout: TimeInterval = 10) -> (status: Int32, output: String) {
         let p = Process()
         p.executableURL = URL(fileURLWithPath: path)
         p.arguments = args
