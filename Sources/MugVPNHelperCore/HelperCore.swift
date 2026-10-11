@@ -81,6 +81,8 @@ public protocol HelperSystem: AnyObject {
     /// Remove `name` (with all in it) in `home`/`folders`, each step opened from the last, never through a link nor
     /// into another volume.
     func removeInHome(_ home: String, through folders: [String], _ name: String) -> HomeRemoval
+    /// A launchd job unloaded: true once launchd is known to have no such job.
+    func unloadJob(_ label: String) -> Bool
     /// - Returns: false when it is still there (refused); a route already gone counts as deleted.
     @discardableResult func deleteRoute(_ args: [String]) -> Bool
     /// Run `f` after `seconds` on the caller's serial queue.
@@ -453,14 +455,14 @@ public final class HelperCore {
         return recorded.hasPrefix("/") && !inTrash(recorded) ? recorded : nil
     }
 
-    /// While the app is in the Trash (its minute running), a launch daemon of the system's own shell is kept for the
-    /// next boot: should the Trash be emptied and the Mac restarted before the helper finishes, it takes MugVPN's
-    /// system part away (left be when the helper or the app is still there: that finishes or keeps it). Out of the
-    /// Trash: removed. Said when it could not be written (tried again on the next look).
+    /// While the app is in the Trash (from the helper's first sight of it there), a launch daemon of the system's own
+    /// shell is kept for the next boot: should the Trash be emptied and the Mac restarted before the helper finishes,
+    /// it takes MugVPN's system part away (left be while the helper or the app is still there: that finishes or keeps
+    /// it). Out of the Trash: unloaded and removed. Said when not done (tried again on the next look).
     public func bootCleanup(armed: Bool, helper: String, app: String?) {
         let plist = paths.cleanupDaemonPlist
         guard armed else {
-            if system.fileInfo(plist) != nil { system.remove(plist) }
+            if system.fileInfo(plist) != nil, !removeBootCleanup() { onNote("could not remove \(plist)") }
             return
         }
         let d = HelperCore.bootCleanupPlist(helper: helper, app: app, paths: paths)
@@ -468,25 +470,42 @@ public final class HelperCore {
         if (try? system.writeFile(plist, d, mode: 0o644)) == nil { onNote("could not write \(plist)") }
     }
 
+    /// The boot cleanup unloaded (launchd may have it from this boot), known gone from launchd, then its file.
+    private func removeBootCleanup() -> Bool {
+        guard system.unloadJob(MugVPNIDs.cleanupLabel) else { return false }
+        system.remove(paths.cleanupDaemonPlist)
+        return system.fileInfo(paths.cleanupDaemonPlist) == nil
+    }
+
     /// The boot cleanup's launch daemon: the system's shell, nothing of MugVPN's (which may be gone by then).
     public static func bootCleanupPlist(helper: String, app: String?, paths: HelperPaths) -> Data {
         let p: [String: Any] = ["Label": MugVPNIDs.cleanupLabel, "RunAtLoad": true,
+                                "EnvironmentVariables": ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin"],
                                 "ProgramArguments": ["/bin/sh", "-c", bootCleanupScript(helper: helper, app: app, paths: paths)]]
         return (try? PropertyListSerialization.data(fromPropertyList: p, format: .xml, options: 0)) ?? Data()
     }
 
-    /// After a boot nothing of a tunnel holds (routes, DNS, PF are the running system's): only files stay. Profiles too.
+    /// After a boot nothing of a tunnel holds (routes, DNS, PF are the running system's): only files stay. Nothing is
+    /// removed unless launchd is known to have no helper and none runs (113: launchctl's "no such service"); a removal
+    /// that fails leaves it for the next boot. What it did, and what it leaves (it reaches no user's home: profiles,
+    /// users' logs and settings, the Login Items entry only the app could take away), goes to the system log.
     public static func bootCleanupScript(helper: String, app: String?, paths: HelperPaths) -> String {
         func q(_ s: String) -> String { "'" + s.replacingOccurrences(of: "'", with: "'\\''") + "'" }
-        let s = paths.supportDir
+        let s = paths.supportDir, h = "system/" + MugVPNIDs.helperLabel
         var script = "[ -e \(q(helper)) ] && exit 0; "
         if let app { script += "[ -e \(q(app + "/Info.plist")) ] && exit 0; " }
-        script += "launchctl bootout system/\(MugVPNIDs.helperLabel) 2>/dev/null; "
-            + "pkill -9 -f \(q(paths.openvpn)) 2>/dev/null; "
+        script += "say() { logger -t MugVPN \"MugVPN boot cleanup: $1\"; }; "
+            + "pgrep -f /Contents/MacOS/MugVPNHelper >/dev/null && { say 'its helper runs: left to it'; exit 0; }; "
+            + "launchctl bootout \(h) >/dev/null 2>&1; "
+            + "launchctl print \(h) >/dev/null 2>&1; [ $? -eq 113 ] || { say 'launchd still has its helper (or could not tell): nothing removed, tried again at the next start'; exit 1; }; "
+            + "pgrep -f /Contents/MacOS/MugVPNHelper >/dev/null && { say 'its helper runs: left to it'; exit 0; }; "
+            + "pkill -9 -f \(q(paths.openvpn)) >/dev/null 2>&1; "
             + "rm -rf " + [paths.runDir, paths.libexecDir, paths.logsDir, s + "/locks.json", s + "/app-location",
                            s + "/uninstall-pending.json", s + "/dns-left.json", s + "/pf.token", s + "/pf.release",
-                           paths.devDaemonPlist, paths.cleanupDaemonPlist].map(q).joined(separator: " ") + "; "
-            + "launchctl bootout system/\(MugVPNIDs.cleanupLabel) 2>/dev/null; exit 0"
+                           paths.devDaemonPlist].map(q).joined(separator: " ")
+            + " || { say 'not all removed: tried again at the next start'; exit 1; }; "
+            + "say 'the system part is removed (the app left with the Trash emptied). Left: profiles, the MugVPN logs and settings in each home (Library/Logs/MugVPN, Library/Preferences/com.mugvpn.app.plist), and the entry in System Settings, General, Login Items'; "
+            + "rm -f \(q(paths.cleanupDaemonPlist)); launchctl bootout system/\(MugVPNIDs.cleanupLabel) >/dev/null 2>&1; exit 0"
         return script
     }
 
@@ -539,7 +558,7 @@ public final class HelperCore {
         }
         uninstalling = nil
         // Its files, all but that wish (the support folder's other entries when profiles go too).
-        var gone = [paths.runDir, paths.libexecDir, paths.logsDir, appLocationPath, paths.cleanupDaemonPlist]
+        var gone = [paths.runDir, paths.libexecDir, paths.logsDir, appLocationPath]
         if !u.keepProfiles {
             gone += [paths.systemConfigDir, paths.autoDir]
             gone += system.list(paths.supportDir).map { paths.supportDir + "/" + $0 }
@@ -579,6 +598,8 @@ public final class HelperCore {
         // Gone, or said. (Kept profiles: no record of DNS left may stay either, a reinstall would act on it.)
         let stayed = (gone + [dnsLeftPath]).filter { system.fileInfo($0) != nil } + userStayed
         guard stayed.isEmpty else { return notFinished(HelperRefusal.filesPending + stayed.joined(separator: ", ")) }
+        // The boot cleanup (kept while the app was in the Trash): out of launchd, then its file.
+        guard removeBootCleanup() else { return notFinished(HelperRefusal.filesPending + paths.cleanupDaemonPlist) }
         // The launch daemon next: one that stays is said.
         system.remove(paths.devDaemonPlist)
         guard system.fileInfo(paths.devDaemonPlist) == nil else { return notFinished(HelperRefusal.filesPending + paths.devDaemonPlist) }
@@ -628,7 +649,7 @@ public final class HelperCore {
             if system.runningFromTrash { uninstallWhenDNSOff = p["keepProfiles"] ?? true } else { system.remove(uninstallPendingPath) }
         }
         // Started from a reinstalled app (not the Trash): no boot cleanup is to take it away.
-        if !system.runningFromTrash, system.fileInfo(paths.cleanupDaemonPlist) != nil { system.remove(paths.cleanupDaemonPlist) }
+        if !system.runningFromTrash, !removeBootCleanup() { onNote("could not remove \(paths.cleanupDaemonPlist)") }
         // Whatever ran as a connection's id outlived its helper.
         system.killProcesses(uids: HelperCore.serviceIDBase...(HelperCore.serviceIDBase + HelperCore.serviceIDCount - 1))
         if !leftovers.isEmpty {

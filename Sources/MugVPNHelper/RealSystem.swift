@@ -406,6 +406,17 @@ final class RealSystem: HelperSystem {
         }
     }
 
+    func unloadJob(_ label: String) -> Bool {
+        func absent() -> Bool? {
+            let r = run("/bin/launchctl", ["print", "system/" + label], input: nil, timeout: 10)
+            // 113: no such service; anything else but 0 (not run, timed out) tells nothing.
+            return r.status == 0 ? false : r.status == 113 || r.output.contains("Could not find service") ? true : nil
+        }
+        if absent() == true { return true }
+        _ = run("/bin/launchctl", ["bootout", "system/" + label], input: nil, timeout: 30)
+        return absent() == true
+    }
+
     var runningFromTrash: Bool { HelperPaths.executablePath().map(HelperPaths.isInTrash) ?? false }
 
     @discardableResult func deleteRoute(_ args: [String]) -> Bool {

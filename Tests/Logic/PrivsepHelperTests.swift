@@ -2135,7 +2135,7 @@ func registerPrivsepHelperTests() {
         expect(notes.contains { $0.contains("/Users/a/Library/Logs/MugVPN") }, "\(notes)")
         expect(gone, "nothing more root could do: finished, said")
     }
-    test("PS-134", "the app in the Trash: a boot cleanup of the system's shell kept for the next boot; out of the Trash, removed") {
+    test("PS-134", "the app in the Trash: a boot cleanup of the system's shell kept for the next boot; out of the Trash, unloaded and removed") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         let helper = "/Users/u/.Trash/MugVPN.app/Contents/MacOS/MugVPNHelper"
@@ -2145,14 +2145,14 @@ func registerPrivsepHelperTests() {
         let p = try PropertyListSerialization.propertyList(from: sys.files[plist]?.data ?? Data(), format: nil) as? [String: Any]
         expectEqual(p?["Label"] as? String, "com.mugvpn.cleanup")
         expectEqual(p?["RunAtLoad"] as? Bool, true)
+        expectEqual((p?["EnvironmentVariables"] as? [String: String])?["PATH"], "/usr/bin:/bin:/usr/sbin:/sbin")
         let args = p?["ProgramArguments"] as? [String] ?? []
         expectEqual(Array(args.prefix(2)), ["/bin/sh", "-c"], "nothing of MugVPN's runs it (gone by then)")
         let script = args.last ?? ""
         expect(script.hasPrefix("[ -e '\(helper)' ] && exit 0; [ -e '/Applications/MugVPN.app/Contents/Info.plist' ] && exit 0; "),
                "left be while the helper (or a replacement) is there: \(script)")
-        for gone in ["/L/run", "/L/libexec", "/Logs", "/L/uninstall-pending.json", "/L/dns-left.json", "/LD/com.mugvpn.helper.plist", plist] {
-            expect(script.contains("'\(gone)'"), "\(gone) in \(script)")
-        }
+        expect(script.contains("[ $? -eq 113 ] || {"), "nothing removed unless launchd is known to have no helper")
+        expect(script.contains("|| { say 'not all removed"), "a removal that fails is not success")
         expect(!script.contains("/L/config") && !script.contains("/L/auto") && !script.contains("policy"), "profiles stay")
         let sh = Process()
         sh.executableURL = URL(fileURLWithPath: "/bin/sh")
@@ -2162,20 +2162,98 @@ func registerPrivsepHelperTests() {
         expectEqual(sh.terminationStatus, 0, "valid sh")
         let odd = HelperCore.bootCleanupScript(helper: "/Users/o'k/.Trash/M.app/Contents/MacOS/MugVPNHelper", app: nil, paths: h.paths)
         expect(odd.hasPrefix("[ -e '/Users/o'\\''k/.Trash/"), "a quote in a path stays quoted: \(odd)")
+        sys.loadedJobs = ["com.mugvpn.cleanup"]
+        sys.failUnload = ["com.mugvpn.cleanup"]
         h.bootCleanup(armed: false, helper: helper, app: nil)
-        expect(sys.files[plist] == nil, "out of the Trash: removed")
-        h.bootCleanup(armed: true, helper: helper, app: nil)
-        h.uninstallMovedToTrash()
-        expect(sys.files[plist] == nil, "the helper finished: removed with the rest")
+        expect(sys.files[plist] != nil, "launchd would not let go of it: its file stays (tried again)")
+        sys.failUnload = []
+        h.bootCleanup(armed: false, helper: helper, app: nil)
+        expect(sys.files[plist] == nil && sys.loadedJobs.isEmpty, "out of the Trash: unloaded, then removed")
+    }
+    test("PS-135", "the boot cleanup leaves launchd wherever it goes: the helper's uninstall, a helper from a reinstalled app") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let plist = "/LD/com.mugvpn.cleanup.plist"
+        h.bootCleanup(armed: true, helper: "/Users/u/.Trash/MugVPN.app/Contents/MacOS/MugVPNHelper", app: nil)
+        sys.loadedJobs = ["com.mugvpn.cleanup"]
+        sys.failUnload = ["com.mugvpn.cleanup"]
+        var gone = false, answer: String?? = .none
+        h.onUninstalled = { gone = true }
+        try h.uninstall(uid: 0, keepProfiles: true) { answer = .some($0) }
+        expect(!gone, "launchd still has it: not finished")
+        expect((answer ?? nil)?.contains(plist) == true, "said: \(String(describing: answer))")
+        sys.failUnload = []
+        try h.uninstall(uid: 0, keepProfiles: true)
+        expect(gone && sys.loadedJobs.isEmpty && sys.files[plist] == nil)
         try sys.writeFile(plist, Data(), mode: 0o644)
+        sys.loadedJobs = ["com.mugvpn.cleanup"]
         sys.runningFromTrash = false
         try makeHelper(sys).prepareRunDirectory()
-        expect(sys.files[plist] == nil, "a helper from a reinstalled app: removed")
+        expect(sys.files[plist] == nil && sys.loadedJobs.isEmpty, "a helper from a reinstalled app: unloaded and removed")
         try sys.writeFile(plist, Data(), mode: 0o644)
         sys.runningFromTrash = true
         try makeHelper(sys).prepareRunDirectory()
         expect(sys.files[plist] != nil, "one from the Trash keeps it")
     }
+    test("PS-136", "the boot cleanup run (temporary paths, stand-in system tools): nothing removed unless launchd has no helper") {
+        let fm = FileManager.default
+        let root = NSTemporaryDirectory() + "mugvpn-boot-\(UUID().uuidString)"
+        defer { try? fm.removeItem(atPath: root) }
+        let bin = root + "/bin"
+        try fm.createDirectory(atPath: bin, withIntermediateDirectories: true)
+        // Only these on PATH: the real launchctl (or anything else of the Mac's) cannot be reached.
+        func tool(_ name: String, _ body: String) {
+            fm.createFile(atPath: bin + "/" + name, contents: Data("#!/bin/sh\n\(body)\n".utf8), attributes: [.posixPermissions: 0o755])
+        }
+        tool("launchctl", "echo \"$*\" >> \(root)/calls; [ \"$1\" = print ] && exit $(/bin/cat \(root)/print-status); exit 0")
+        tool("pgrep", "exit $(/bin/cat \(root)/pgrep-status)")
+        tool("pkill", "exit 0")
+        tool("logger", "echo \"$*\" >> \(root)/said")
+        tool("rm", "exec /bin/rm \"$@\"")
+        let paths = HelperPaths(openvpn: root + "/L/libexec/openvpn", runDir: root + "/L/run", logsDir: root + "/Logs",
+                                autoDir: root + "/L/auto", libexecDir: root + "/L/libexec", systemConfigDir: root + "/L/config",
+                                devDaemonPlist: root + "/LD/com.mugvpn.helper.plist", supportDir: root + "/L")
+        func setUp() throws {
+            for d in ["/L/run/x", "/L/libexec", "/Logs", "/L/config", "/LD"] { try fm.createDirectory(atPath: root + d, withIntermediateDirectories: true) }
+            for f in ["/L/locks.json", "/L/config/office.ovpn", "/LD/com.mugvpn.helper.plist", "/LD/com.mugvpn.cleanup.plist"] {
+                fm.createFile(atPath: root + f, contents: Data())
+            }
+            try? fm.removeItem(atPath: root + "/calls")
+        }
+        func run(print: Int, pgrep: Int = 1, helper: String = "/nonexistent/MugVPNHelper") throws -> Int32 {
+            try setUp()
+            try "\(print)".write(toFile: root + "/print-status", atomically: true, encoding: .utf8)
+            try "\(pgrep)".write(toFile: root + "/pgrep-status", atomically: true, encoding: .utf8)
+            let sh = Process()
+            sh.executableURL = URL(fileURLWithPath: "/bin/sh")
+            sh.arguments = ["-c", HelperCore.bootCleanupScript(helper: helper, app: nil, paths: paths)]
+            sh.environment = ["PATH": bin]
+            try sh.run()
+            sh.waitUntilExit()
+            return sh.terminationStatus
+        }
+        func exists(_ p: String) -> Bool { fm.fileExists(atPath: root + p) }
+        expectEqual(try run(print: 0), 1, "launchd still has the helper: stopped")
+        expect(exists("/L/run/x") && exists("/L/locks.json") && exists("/L/libexec"), "nothing removed")
+        expectEqual(try run(print: 5), 1, "launchd could not tell: stopped")
+        expect(exists("/L/run/x"))
+        expectEqual(try run(print: 113, pgrep: 0), 0, "a helper runs (from anywhere): left to it")
+        expect(exists("/L/run/x"))
+        fm.createFile(atPath: root + "/helper", contents: Data())
+        expectEqual(try run(print: 113, helper: root + "/helper"), 0)
+        expect(exists("/L/run/x"), "the helper still there: left to it")
+        expect(!((try? String(contentsOfFile: root + "/calls", encoding: .utf8)) ?? "").contains("bootout"), "not even asked to stop")
+        expectEqual(try run(print: 113), 0, "launchd has no helper: done")
+        for p in ["/L/run", "/L/libexec", "/Logs", "/L/locks.json", "/LD/com.mugvpn.helper.plist", "/LD/com.mugvpn.cleanup.plist"] {
+            expect(!exists(p), "\(p) gone")
+        }
+        expect(exists("/L/config/office.ovpn"), "profiles stay")
+        let said = (try? String(contentsOfFile: root + "/said", encoding: .utf8)) ?? ""
+        expect(said.contains("Login Items") && said.contains("Library/Logs/MugVPN"), "what it leaves is said in the system log: \(said)")
+        let calls = (try? String(contentsOfFile: root + "/calls", encoding: .utf8)) ?? ""
+        expect(calls.contains("bootout system/com.mugvpn.cleanup"), "and it leaves launchd: \(calls)")
+    }
+
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

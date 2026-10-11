@@ -226,6 +226,16 @@ final class FakeSystem: HelperSystem {
         links.remove(path)
         return .gone
     }
+    /// launchd jobs loaded (by label), and those that will not unload.
+    var loadedJobs: Set<String> = []
+    var failUnload: Set<String> = []
+    var unloads: [String] = []
+    func unloadJob(_ label: String) -> Bool {
+        unloads.append(label)
+        if failUnload.contains(label) { return false }
+        loadedJobs.remove(label)
+        return true
+    }
     /// Folders another volume is mounted on.
     var mounts: Set<String> = []
     var launchFails = false

@@ -1,4 +1,5 @@
 import Foundation
+import OSLog
 import ServiceManagement
 import MugVPNCore
 import MugVPNHelperCore
@@ -57,7 +58,12 @@ func leaveLaunchd() {
     }
     exit(0)
 }
-core.onNote = { log($0) }
+// Also to the system log, which keeps it (the helper's own log may be gone with an uninstall).
+let systemLog = Logger(subsystem: MugVPNIDs.helperLabel, category: "helper")
+core.onNote = { note in
+    log(note)
+    systemLog.notice("\(note, privacy: .public)")
+}
 core.onUninstalled = {
     DispatchQueue.global().asyncAfter(deadline: .now() + 0.5, execute: leaveLaunchd)
 }
@@ -198,11 +204,22 @@ final class ListenerDelegate: NSObject, NSXPCListenerDelegate {
     }
 }
 
+/// Where the app is installed: recorded while the helper runs from it, read back when it runs from the Trash.
+var appContents: String?
+/// Where the helper runs now, and whether the app is (still, or again) where it was installed (started again from
+/// the Trash: where it was installed, a replacement there keeps it).
+func whereabouts() -> (running: String, inPlace: Bool) {
+    (HelperPaths.executablePath() ?? "", appContents.map { FileManager.default.fileExists(atPath: $0 + "/Info.plist") } ?? false)
+}
+
 // launchd stops the helper with SIGTERM: stop every tunnel first. Armed before anything is prepared (a tunnel
 // started there, or an uninstall finished, must not meet the default action).
 signal(SIGTERM, SIG_IGN)
 let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global())
 termSource.setEventHandler {
+    // Stopped (a restart, a shutdown) with the app in the Trash: the boot cleanup is kept before anything else.
+    let w = whereabouts()
+    if HelperPaths.isInTrash(w.running), !w.inPlace { queue.sync { core.bootCleanup(armed: true, helper: w.running, app: appContents) } }
     queue.sync { core.stopAll() }
     let deadline = Date().addingTimeInterval(HelperCore.stopGrace + 2)
     while Date() < deadline, queue.sync(execute: { !core.isEmpty }) { usleep(100_000) }
@@ -210,8 +227,6 @@ termSource.setEventHandler {
     exit(0)
 }
 termSource.resume()
-/// Where the app is installed: recorded while the helper runs from it, read back when it runs from the Trash.
-var appContents: String?
 do {
     try queue.sync {
         try core.prepareDirectories()
@@ -239,22 +254,35 @@ listener.setConnectionCodeSigningRequirement(BuildPins.clientRequirement)
 listener.delegate = delegate
 listener.resume()
 
-// Dragged to the Trash: the system part goes with it (macOS runs no uninstaller). Looked at every 15 s.
+// Dragged to the Trash: the system part goes with it (macOS runs no uninstaller). Looked at when the bundle is
+// moved or deleted, at start, and every 15 s.
+var bundleWatchKept: DispatchSourceFileSystemObject?
 var trashWatch = TrashWatch()
 let trashTimer = DispatchSource.makeTimerSource(queue: queue)
-trashTimer.schedule(deadline: .now() + 15, repeating: 15)
-trashTimer.setEventHandler {
-    // (Started again from the Trash: where it was installed, a replacement there keeps it.)
-    let inPlace = appContents.map { FileManager.default.fileExists(atPath: $0 + "/Info.plist") } ?? false
-    let running = HelperPaths.executablePath() ?? ""
-    let due = trashWatch.look(bundleInPlace: inPlace, runningFrom: running, now: ProcessInfo.processInfo.systemUptime)
-    // From its first look in the Trash: kept for the next boot (an emptied Trash takes the helper with it).
-    core.bootCleanup(armed: trashWatch.counting, helper: running, app: appContents)
+var trashDone = false
+func lookAtTrash() {
+    guard !trashDone else { return }
+    let w = whereabouts()
+    let due = trashWatch.look(bundleInPlace: w.inPlace, runningFrom: w.running, now: ProcessInfo.processInfo.systemUptime)
+    // From its first sight in the Trash: kept for the next boot (an emptied Trash takes the helper with it).
+    core.bootCleanup(armed: trashWatch.counting, helper: w.running, app: appContents)
     guard due else { return }
+    trashDone = true
     trashTimer.cancel()
     log("the app is in the Trash: removing MugVPN's system part (profiles stay)")
     core.uninstallMovedToTrash()
 }
+trashTimer.schedule(deadline: .now() + 15, repeating: 15)
+trashTimer.setEventHandler(handler: lookAtTrash)
 trashTimer.resume()
+queue.async(execute: lookAtTrash)
+// The bundle's own folder: a move (to the Trash) or deletion is seen at once.
+let bundleFD = open(contentsDir.deletingLastPathComponent().path, O_EVTONLY)
+if bundleFD >= 0 {
+    let bundleWatch = DispatchSource.makeFileSystemObjectSource(fileDescriptor: bundleFD, eventMask: [.rename, .delete], queue: queue)
+    bundleWatch.setEventHandler(handler: lookAtTrash)
+    bundleWatch.resume()
+    bundleWatchKept = bundleWatch
+}
 log("listening as \(MugVPNIDs.helperLabel), version \(MugVPNIDs.helperVersion)")
 dispatchMain()

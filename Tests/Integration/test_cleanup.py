@@ -181,14 +181,15 @@ def test_int47c_trash_emptied_and_rebooted(vpn, mac):
     mac.run(f"sudo mkdir -p {support}/config && sudo touch {support}/config/int47c.ovpn", check=True)
     try:
         mac.run(f"rm -rf {trashed} {aside} && mv {APP} {trashed}", check=True)
-        wait_for(armed, 40, "the boot cleanup kept")
+        wait_for(armed, 5, "the boot cleanup kept at once (not at the next 15 s look)")
         mac.run(f"mv {trashed} {APP}", check=True)
         wait_for(lambda: not armed(), 40, "put back: the boot cleanup gone")
-        mac.run(f"mv {APP} {trashed}", check=True)
-        wait_for(armed, 40, "kept again")
+        assert mac.run("sudo launchctl print system/com.mugvpn.cleanup").returncode != 0, "not in launchd either"
+        # Moved and the Mac shut down at once: kept before the helper is gone.
+        mac.run(f"mv {APP} {trashed} && sudo launchctl bootout system/com.mugvpn.helper; true")
+        assert armed(), "kept by the time the helper stopped"
         # The Trash emptied (the bundle gone: kept aside here) and the Mac restarted: the helper cannot start.
-        mac.run(f"sudo launchctl bootout system/com.mugvpn.helper; sudo pkill -9 -f Contents/MacOS/MugVPNHelper;"
-                f" mv {trashed} {aside}; true")
+        mac.run(f"sudo pkill -9 -f Contents/MacOS/MugVPNHelper; mv {trashed} {aside}; true")
         mac.run(f"sudo launchctl bootstrap system {cleanup}", check=True)
         wait_for(lambda: mac.run(f"sudo test -e {support}/libexec").returncode != 0, 30, "the system part gone")
         wait_for(lambda: not armed(), 30, "the boot cleanup gone with it")
@@ -196,6 +197,8 @@ def test_int47c_trash_emptied_and_rebooted(vpn, mac):
         assert mac.run("sudo test -e /Library/Logs/MugVPN").returncode != 0
         assert mac.run(f"sudo test -f {support}/config/int47c.ovpn").returncode == 0, "profiles stay"
         assert mac.run("sudo launchctl print system/com.mugvpn.cleanup").returncode != 0, "it ran once and left"
+        said = mac.out("sudo /usr/bin/log show --last 5m --predicate 'process == \"logger\" AND eventMessage CONTAINS \"MugVPN boot cleanup\"'")
+        assert "Login Items" in said, f"what it leaves is said in the system log: {said}"
     finally:
         mac.run(f"sudo launchctl bootout system/com.mugvpn.cleanup 2>/dev/null; sudo rm -f {cleanup} {support}/config/int47c.ovpn;"
                 f" test -e {APP} || mv {aside} {APP} 2>/dev/null || mv {trashed} {APP}; bash /tmp/install-helper.sh")

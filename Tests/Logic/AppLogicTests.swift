@@ -452,6 +452,9 @@ func registerUninstallAppTests() {
         expect(keep.contains("pfctl -X"), "and PF is given back with its token")
         expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all || exit 1"), "PF must let go, or nothing is removed: \(keep)")
         expect(keep.contains("launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1"), "the helper must be gone first")
+        expect(keep.contains("launchctl bootout system/com.mugvpn.cleanup 2>/dev/null; launchctl print system/com.mugvpn.cleanup >/dev/null 2>&1 && exit 1"),
+               "the boot cleanup out of launchd too: \(keep)")
+        expect(keep.contains("'/Library/LaunchDaemons/com.mugvpn.cleanup.plist'"), "and its file")
         for k in [keep, UninstallPlan.systemRemovalScript(keepProfiles: false)] {
             let rm = k.components(separatedBy: "rm -rf ").last?.components(separatedBy: ";").first ?? ""
             expect(!rm.contains("/run'") && !rm.contains("dns-left") && !rm.contains("'/Library/Application Support/MugVPN' ")

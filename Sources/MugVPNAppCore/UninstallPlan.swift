@@ -10,12 +10,15 @@ public enum UninstallPlan {
         // there is any (exit 2, MugVPN stays installed; started again, its helper undoes it). The run folder goes
         // only when empty.
         var paths = [support + "/uninstall-pending.json", support + "/libexec", support + "/locks.json", support + "/app-location",
-                     "/Library/Logs/MugVPN", "/Library/LaunchDaemons/com.mugvpn.helper.plist"]
+                     "/Library/Logs/MugVPN", "/Library/LaunchDaemons/com.mugvpn.helper.plist",
+                     "/Library/LaunchDaemons/com.mugvpn.cleanup.plist"]
         if !keepProfiles { paths += [support + "/config", support + "/config-auto", support + "/policy.json"] }
         // (Nothing for a shell to expand: the command is also printed for pasting into sudo sh -c "...".)
         // Each step must hold, or nothing is removed (the helper's files are what could put things back): the
         // helper gone from launchd, its openvpn stopped, MugVPN's PF rules out (its token given back).
+        // (And the boot cleanup kept while the app was in the Trash.)
         let gone = "launchctl bootout system/com.mugvpn.helper 2>/dev/null; launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1; "
+            + "launchctl bootout system/com.mugvpn.cleanup 2>/dev/null; launchctl print system/com.mugvpn.cleanup >/dev/null 2>&1 && exit 1; "
         let openvpn = "pkill -9 -f '\(support)/libexec/openvpn' 2>/dev/null; "
         // PF's token taken back. Refused: only an earlier boot's token may go without (it means nothing now); this
         // boot's, or one whose boot cannot be told, stops it all. No file of its own anywhere (a world-writable
