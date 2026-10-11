@@ -44,6 +44,14 @@ public struct DNSPlan: Equatable, Sendable {
     public var matchDomains: [String]
     public var searchDomains: [String]
     public var split: Bool
+
+    public init(device: String, servers: [String], matchDomains: [String], searchDomains: [String], split: Bool) {
+        self.device = device
+        self.servers = servers
+        self.matchDomains = matchDomains
+        self.searchDomains = searchDomains
+        self.split = split
+    }
 }
 
 /// A route the helper added for a connection.
@@ -120,13 +128,16 @@ public struct TunnelState: Equatable, Sendable, Codable {
     public var gateways: [UInt32] = []
     /// Servers its DNS asks while applied.
     public var dnsServers: [String] = []
+    /// The device whose backup of the primary's DNS its DNS left behind (its DNS is off; the backup holds
+    /// all names back), when that could not be recorded elsewhere: removed with it.
+    public var dnsBackupLeft: String?
 
     /// A connection with more routes than this is not a VPN profile but an attack on the helper.
     public static let maxRoutes = 512
 
     public init() {}
 
-    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways, dnsServers }
+    private enum CodingKeys: String, CodingKey { case device, subnet, peer, routes, dnsVars, dnsApplied, opened, subnetRoute, net6, local, dnsDomains, gateways, dnsServers, dnsBackupLeft }
 
     /// A record of an older helper lacks newer fields: it still counts.
     public init(from decoder: Decoder) throws {
@@ -144,6 +155,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
         dnsDomains = (try? c.decodeIfPresent([String].self, forKey: .dnsDomains)) ?? []
         gateways = (try? c.decodeIfPresent([UInt32].self, forKey: .gateways)) ?? []
         dnsServers = (try? c.decodeIfPresent([String].self, forKey: .dnsServers)) ?? []
+        dnsBackupLeft = (try? c.decodeIfPresent(String.self, forKey: .dnsBackupLeft)).flatMap { $0 }
     }
 
     /// Routes of the current device that cover everything (def1's halves, or a default).
@@ -347,6 +359,11 @@ public struct TunnelState: Equatable, Sendable, Codable {
         guard !ours.isEmpty else { throw TunnelRequestError("this connection did not add \(msg)") }
         forget(ours)
         return ours
+    }
+
+    /// Routes still on the Mac although a change took them away (deleting failed): back on record.
+    public mutating func keep(_ rs: [TunnelRoute]) {
+        routes += rs.filter { !routes.contains($0) }
     }
 
     /// Routes that were not (or no longer) added after all.

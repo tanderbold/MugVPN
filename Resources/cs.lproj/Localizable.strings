@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ není textový soubor (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ odkazuje na soubory mimo svou složku. Zkopírovat je do profilu? VPN server může získat jejich obsah.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ byl od otevření zde změněn mimo MugVPN.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ byl od otevření zde odstraněn mimo MugVPN.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS jen pro vlastní domény, všechna jména převzalo jiné připojení";
 "%@: DNS not set, another connection takes all names" = "%@: DNS nenastaven, všechna jména převzalo jiné připojení";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Klient pro profily OpenVPN, který udrží několik připojení najednou. Licence MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Program požádal MugVPN o import %@. Importovat?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Souhrn (verze, která připojení běží) je vždy uvnitř. Dále:";
 "About MugVPN" = "O aplikaci MugVPN";
 "Add a connection" = "Přidat připojení";
 "Add at least one server." = "Přidejte alespoň jeden server.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Připojování (%@)";
 "Connecting to %@." = "Připojování k %@.";
 "Connection Settings…" = "Nastavení připojení…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Protokoly připojení (každý do 1 MB: adresy, servery, chyby)";
 "Connection settings" = "Nastavení připojení";
 "Connections" = "Připojení";
 "Connections…" = "Připojení…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Zadejte nejvýše 8 DNS serverů.";
 "Enter the proxy's address and a port from 1 to 65535." = "Zadejte adresu proxy a port od 1 do 65535.";
 "Every time" = "Pokaždé";
+"Export Diagnostics" = "Exportovat diagnostiku";
 "Export Diagnostics…" = "Exportovat diagnostiku…";
+"Export…" = "Exportovat…";
 "Flat" = "Ploché";
 "From the VPN server" = "Od VPN serveru";
 "General" = "Obecné";
 "Hide" = "Skrýt";
 "IPv6 traffic goes around the VPN (through %@)" = "Provoz IPv6 obchází VPN (přes %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Při nečekaném výpadku blokovat internet, dokud se znovu nepřipojím";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Při nečekaném výpadku blokovat můj provoz TCP a UDP, dokud se znovu nepřipojím";
 "Ignore messages from servers" = "Ignorovat zprávy ze serverů";
 "Import" = "Importovat";
 "Import File…" = "Importovat soubor…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Přesuňte MugVPN do složky Aplikace, otevřete ho odtamtud a připojte se znovu.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Nastavení MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN nemohl dokončit odinstalaci (%@). Zůstane nainstalován: zkuste to znovu za minutu.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ještě odstraňuje DNS nebo trasy, které nastavila VPN, a do té doby zůstane nainstalován. Zkuste to znovu za minutu.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN je odinstalován, ale tyto položky nešlo odstranit: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Pomocník MugVPN neodpověděl (%@). Odstranit systémovou část MugVPN pomocí hesla správce?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Pomocník MugVPN má verzi %@, novější než tato aplikace (%@): aktualizujte MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Žádný";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Ne všechen provoz jde přes VPN: tunel nedrží výchozí trasu";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Neimportováno (MugVPN nespouští skripty profilů jako root): %@";
+"Not in the archive (could not be written): %@" = "Není v archivu (nešlo zapsat): %@";
 "Notify when connected:" = "Upozornit při připojení:";
 "OK" = "OK";
 "Off" = "Vypnuto";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Otevřít v textovém editoru";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN je registrovaná ochranná známka společnosti OpenVPN Inc.";
 "Options" = "Volby";
+"Overwrite" = "Přepsat";
 "Password:" = "Heslo:";
 "Paste" = "Vložit";
 "Persistent connections:" = "Trvalá spojení:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Skript před připojením (s):";
 "Private key:" = "Soukromý klíč:";
 "Profile menu:" = "Nabídka profilů:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Profily bez hesel a klíčů (servery, certifikáty, volby)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Ukončit MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Znovu připojit";
 "Reconnecting" = "Opětovné připojování";
 "Redo" = "Znovu";
+"Reload" = "Načíst znovu";
 "Remove" = "Odstranit";
 "Response" = "Odpověď";
 "Revert" = "Vrátit";
@@ -184,6 +197,7 @@
 "Settings…" = "Nastavení…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Více připojení může obsluhovat každé své vlastní domény; všechna jména může převzít jen jedno najednou.";
 "Show Status" = "Zobrazit stav";
+"Show Windows" = "Zobrazit okna";
 "Show in Finder" = "Zobrazit ve Finderu";
 "Show the status window" = "Zobrazit okno stavu";
 "Sign in to This Network…" = "Přihlásit se k této síti…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Klientský certifikát potřebuje svůj soukromý klíč.";
 "The configuration cannot be read: %@" = "Konfiguraci nelze přečíst: %@";
 "The first time" = "Poprvé";
+"The keychain did not remove the saved passwords of %@." = "Klíčenka neodstranila uložená hesla pro %@.";
+"The keychain did not save it: it is used for this connection only." = "Klíčenka to neuložila: použije se jen pro toto připojení.";
+"The network state (routes, DNS, network interfaces)" = "Stav sítě (trasy, DNS, síťová rozhraní)";
 "The private key needs its client certificate." = "Soukromý klíč potřebuje svůj klientský certifikát.";
 "The proxy for %@ needs a username and password." = "Proxy pro %@ vyžaduje uživatelské jméno a heslo.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Spuštěný pomocník je starší a neumí se sám aktualizovat. Nasazení nového zastaví všechna připojení MugVPN na tomto Macu, všech uživatelů. Pokračovat?";
@@ -233,6 +250,7 @@
 "not connected" = "nepřipojeno";
 "nothing" = "nic";
 "passwords" = "hesla";
+"saved passwords" = "uložená hesla";
 "the connection ended unexpectedly" = "spojení neočekávaně skončilo";
 "the persistent connection is not running" = "trvalé spojení neběží";
 "the port must be 1–65535" = "port musí být 1–65535";

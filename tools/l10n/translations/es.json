@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "El tráfico hacia %@ evita la VPN (a través de %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "El servidor DNS %@ se alcanza fuera de la VPN (a través de %@)",
  "Block IPv6 outside the VPN": "Bloquear IPv6 fuera de la VPN",
- "If it drops unexpectedly, block the Internet until I reconnect": "Si se corta inesperadamente, bloquear Internet hasta que vuelva a conectar",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "Internet bloqueado: %@ se cortó. Vuelve a conectar o desbloquea.",
  "Send DNS only through the VPN": "Enviar el DNS solo a través de la VPN",
  "Unblock Internet": "Desbloquear Internet",

@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "%@ への通信がVPNを迂回しています（%@ 経由）",
  "DNS server %@ is reached outside the VPN (through %@)": "DNSサーバ %@ にVPN外から到達しています（%@ 経由）",
  "Block IPv6 outside the VPN": "VPN外のIPv6をブロック",
- "If it drops unexpectedly, block the Internet until I reconnect": "予期せず切断されたら、再接続するまでインターネットをブロック",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "インターネットをブロック中: %@ が切断されました。再接続するかブロックを解除してください。",
  "Send DNS only through the VPN": "DNSはVPN経由でのみ送信",
  "Unblock Internet": "インターネットのブロックを解除",

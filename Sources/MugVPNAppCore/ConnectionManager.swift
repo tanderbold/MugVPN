@@ -44,8 +44,9 @@ public protocol HelperClient: AnyObject {
 
 public protocol ManagementLink: AnyObject {
     func write(_ data: Data)
-    /// With a descriptor for openvpn (SCM_RIGHTS); false if it was not sent.
-    func write(_ data: Data, passing fd: Int32) -> Bool
+    /// With a descriptor for openvpn (SCM_RIGHTS); `done(false)` if it was not sent. Off the caller's thread:
+    /// `done` comes on the main queue (the descriptor must stay open until then).
+    func write(_ data: Data, passing fd: Int32, done: @escaping (Bool) -> Void)
     func close()
 }
 
@@ -110,6 +111,8 @@ public final class ConnectionManager {
     public var splitDNS: (Profile) -> Bool = { _ in false }
     /// The domains a profile's options list for the server's DNS.
     public var dnsDomains: (Profile) -> [String] = { _ in [] }
+    /// Settings > Append to the log.
+    public var appendLog: () -> Bool = { false }
     /// The protection a connection asks the helper for.
     public var protection: (Profile) -> ProtectionOptions = { _ in ProtectionOptions() }
     public private(set) var active: [String: ActiveConnection] = [:] {
@@ -303,10 +306,14 @@ public final class ConnectionManager {
         guard pending.begin(profile.id) else { return }
         onChange()
         preflight(profile) { [weak self] in
-            guard let self else { return }
-            if self.pending.finish(profile.id) == true { self.startConnection(profile) }
-            self.pendingThens.removeValue(forKey: profile.id)?.forEach { $0() }
-            self.onChange()
+            self?.helperTakes(profile) { [weak self] refusal in
+                guard let self else { return }
+                if self.pending.finish(profile.id) == true {
+                    if let refusal { self.fail(profile.id, refusal) } else { self.startConnection(profile) }
+                }
+                self.pendingThens.removeValue(forKey: profile.id)?.forEach { $0() }
+                self.onChange()
+            }
         }
     }
 
@@ -321,32 +328,31 @@ public final class ConnectionManager {
         !(helperVersionMismatch.map { ConnectionManager.isOlder($0, than: ConnectionManager.dnsDomainsHelper) } ?? false)
     }
 
+    /// Domains for the server's DNS go only to a helper that knows them (an older one would set DNS for all
+    /// names, or none, without a word): its version asked now (the one seen at launch may be old news),
+    /// while the start is still pending. - done: why not (nil: go ahead).
+    private func helperTakes(_ profile: Profile, done: @escaping (String?) -> Void) {
+        guard !dnsDomains(profile).isEmpty else { return done(nil) }
+        helper.version { [weak self] v in
+            guard let self else { return }
+            if let v { self.versionKnown(v) }
+            done(ConnectionManager.isOlder(v ?? "unknown", than: ConnectionManager.dnsDomainsHelper)
+                 ? ConnectionManager.helperTooOldForDNSDomains : nil)
+        }
+    }
+
     private func startConnection(_ profile: Profile) {
         guard active[profile.id] == nil else { return }
         lastError[profile.id] = nil
         if profile.source == .persistent { return connectPersistent(profile) }
-        // Domains for the server's DNS: only to a helper that knows them (an older one would set DNS
-        // for all names, or none, without a word). Asked now: the version seen at launch may be old news.
-        guard dnsDomains(profile).isEmpty else {
-            return helper.version { [weak self] v in
-                guard let self, self.active[profile.id] == nil else { return }
-                if ConnectionManager.isOlder(v ?? "unknown", than: ConnectionManager.dnsDomainsHelper) {
-                    if let v { self.versionKnown(v) }
-                    return self.fail(profile.id, ConnectionManager.helperTooOldForDNSDomains)
-                }
-                self.startChecked(profile)
-            }
-        }
-        startChecked(profile)
-    }
-
-    private func startChecked(_ profile: Profile) {
         var bundle: ProfileBundle
         do { bundle = try reader.bundle(for: profile) } catch {
             return fail(profile.id, "\(error)")
         }
         bundle.splitDNS = splitDNS(profile)
         bundle.dnsDomains = dnsDomains(profile)
+        bundle.profileID = profile.id
+        bundle.appendLog = appendLog()
         bundle.protection = protection(profile)
         let c = makeConnection(profile)
         c.config = bundle.config
@@ -519,8 +525,13 @@ public final class ConnectionManager {
                     self.attachPersistent(c, socket: info.managementSocket)
                     continue
                 }
-                guard let p = self.profiles.first(where: { $0.source != .persistent && $0.name == info.name }),
-                      self.active[p.id] == nil else {
+                // By the profile's id; a tunnel without one (an older helper's) by name only if one profile has
+                // it: never another profile's (it would get that one's passwords).
+                let mine = self.profiles.filter { $0.source != .persistent }
+                // (Names as the disk compares them: Office and office are one.)
+                let named = mine.filter { $0.name.caseInsensitiveCompare(info.name) == .orderedSame }
+                let match = info.profileID.map { id in mine.first { $0.id == id } } ?? (named.count == 1 ? named.first : nil)
+                guard let p = match, self.active[p.id] == nil else {
                     self.helper.stop(info.id) { _ in }
                     continue
                 }
@@ -584,9 +595,10 @@ public final class ConnectionManager {
             guard let c else { return }
             c.link?.write(c.proto.command(cmd))
         }
-        controller.sendWithFD = { [weak c] cmd, fd in
-            guard let c, let link = c.link else { return false }
-            return link.write(c.proto.command(cmd), passing: fd.fileDescriptor)
+        controller.sendWithFD = { [weak c] cmd, fd, done in
+            guard let c, let link = c.link else { return done(false) }
+            // The handle kept until it is sent.
+            link.write(c.proto.command(cmd), passing: fd.fileDescriptor) { ok in withExtendedLifetime(fd) { done(ok) } }
         }
         controller.tunnelRequest = { [weak self, weak c] kind, message, reply in
             guard let self, let id = c?.helperID else { return reply(.failure(ProfileError("not connected"))) }

@@ -443,13 +443,25 @@ func registerUninstallAppTests() {
         let keep = UninstallPlan.systemRemovalScript(keepProfiles: true)
         expect(keep.hasPrefix("launchctl bootout system/com.mugvpn.helper"), keep)
         for p in ["'/Library/Application Support/MugVPN/libexec'", "'/Library/Application Support/MugVPN/run'",
-                  "'/Library/Logs/MugVPN'", "'/Library/LaunchDaemons/com.mugvpn.helper.plist'"] {
+                  "'/Library/Logs/MugVPN'", "'/Library/LaunchDaemons/com.mugvpn.helper.plist'",
+                  "'/Library/Application Support/MugVPN/uninstall-pending.json'"] {
             expect(keep.contains(p), "\(p) in \(keep)")
         }
         expect(!keep.contains("'/Library/Application Support/MugVPN' "), "profiles kept: not the whole folder")
+        expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all"), "MugVPN's PF rules go: \(keep)")
+        expect(keep.contains("pfctl -X"), "and PF is given back with its token")
+        expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all || exit 1"), "PF must let go, or nothing is removed: \(keep)")
+        expect(keep.contains("launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1"), "the helper must be gone first")
         let all = UninstallPlan.systemRemovalScript(keepProfiles: false)
         expect(all.contains("'/Library/Application Support/MugVPN'"), all)
         expect(!all.contains("\"") && !all.contains("$"), "nothing for a shell to expand")
+    }
+    test("UNI-08", "a helper that answers and refuses (DNS, routes, PF, its record) is not removed around: only one that does not answer") {
+        for r in [HelperRefusal.dnsCleanupPending, HelperRefusal.pfPending, HelperRefusal.recordPending, HelperRefusal.filesPending + "/L/run"] {
+            expect(HelperRefusal.isHelpersOwn(r), r)
+        }
+        expect(!HelperRefusal.isHelpersOwn("the helper did not answer"))
+        expect(!HelperRefusal.isHelpersOwn("Couldn’t communicate with a helper application."))
     }
     test("UNI-04", "what the app removes for the user") {
         let all = UninstallPlan.userPaths(home: "/Users/u", keepProfiles: false)
@@ -474,5 +486,15 @@ func registerLogViewTests() {
         expectEqual(path(nil), "/logs/a.501.log", "disconnected: the kept log")
         expectEqual(path("H1", ["/logs/a.501.log"]), "/logs/a.501.log", "no live log yet: the last one")
         expectEqual(path(nil, []), nil, "nothing to show")
+    }
+    test("LOGV-02", "a kept log is its profile's own (by its id): a same-named profile's is not shown") {
+        let mine = "/logs/" + ProfileKey.logName(profile: "a", id: "/cfg/a.ovpn", uid: 501) + ".log"
+        func path(_ files: Set<String>, unique: Bool) -> String? {
+            LogLocation.path(profile: "a", id: "/cfg/a.ovpn", nameIsUnique: unique, helperID: nil, uid: 501, runDir: "/run",
+                             logsDir: "/logs", exists: { files.contains($0) })
+        }
+        expectEqual(path([mine, "/logs/a.501.log"], unique: false), mine)
+        expectEqual(path(["/logs/a.501.log"], unique: false), nil, "an older log by name alone: maybe another's")
+        expectEqual(path(["/logs/a.501.log"], unique: true), "/logs/a.501.log", "the only profile of that name: its older log")
     }
 }

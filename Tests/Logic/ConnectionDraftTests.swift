@@ -174,7 +174,7 @@ func registerConnectionDraftTests() {
     test("EDIT-11", "save a profile") {
         let fs = MemFS()
         fs.add("\(userDir)/work/work.ovpn", "client\nremote w 1194\nca ca.crt\n")
-        fs.add("\(userDir)/work/ca.crt", "CA")
+        fs.add("\(userDir)/work/ca.crt", testPEMCert)
         fs.add("\(systemDir)/corp.ovpn", "client\nremote c 1194\n")
         let store = ProfileStore(fs: fs, userDir: userDir, systemDir: systemDir)
         func p(_ name: String) -> Profile { store.scan().first { $0.name == name }! }

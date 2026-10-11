@@ -37,6 +37,8 @@ public protocol ConnectionUI: AnyObject {
     func openURL(_ url: String)
     func showMessage(title: String, text: String)
     func notify(title: String, text: String)
+    /// The connection ended: its questions still open are closed (they would answer nothing).
+    func dismissPrompts()
 }
 
 public enum SecretKey: String, Sendable {
@@ -46,7 +48,8 @@ public enum SecretKey: String, Sendable {
 /// Saved secrets per profile (Keychain in the app).
 public protocol SecretStore: AnyObject {
     func get(_ profile: String, _ key: SecretKey) -> String?
-    func set(_ profile: String, _ key: SecretKey, _ value: String)
+    /// - Returns: false when it could not be saved (what was saved before stays).
+    @discardableResult func set(_ profile: String, _ key: SecretKey, _ value: String) -> Bool
     func remove(_ profile: String, _ key: SecretKey)
     func removeAll(_ profile: String)
 }
@@ -94,6 +97,8 @@ public enum ConnectionStatus: Equatable, Sendable {
 /// send and what to ask; the caller owns the socket and the helper.
 public final class ConnectionController {
     public let profile: String
+    /// Said when the keychain does not take a password (it is used for this connection all the same).
+    public static let keychainSaveFailed = "The keychain did not save it: it is used for this connection only."
     /// How messages are titled (the profile's name).
     public var displayName: String
     /// Writes one management command. A command with a line break or NUL in it
@@ -115,8 +120,8 @@ public final class ConnectionController {
     /// openvpn without root asks for its tunnel (OPENTUN, routes, DNS): the helper
     /// checks and does it. nil: no helper takes them (a root openvpn), refused.
     public var tunnelRequest: ((_ kind: String, _ message: String, _ reply: @escaping (Result<FileHandle?, Error>) -> Void) -> Void)?
-    /// Writes a command together with a descriptor (the utun for OPENTUN); false if it was not sent.
-    public var sendWithFD: (String, FileHandle) -> Bool = { _, _ in false }
+    /// Writes a command together with a descriptor (the utun for OPENTUN); `done(false)` if it was not sent.
+    public var sendWithFD: (String, FileHandle, @escaping (Bool) -> Void) -> Void = { _, _, done in done(false) }
     /// openvpn's requests that only the helper answers.
     public static let tunnelRequestNames: Set<String> = ["OPENTUN", "IFCONFIG", "IFCONFIG6", "ROUTE", "ROUTE6", "ROUTEDEL",
                                                          "ROUTE6DEL", "DNSVAR", "DNSUP", "DNSDOWN"]
@@ -200,7 +205,8 @@ public final class ConnectionController {
             switch result {
             case .success(let fd?) where name == "OPENTUN":
                 // openvpn waits for an answer: without the descriptor, a refusal.
-                if !self.sendWithFD("needok '\(name)' ok", fd) {
+                self.sendWithFD("needok '\(name)' ok", fd) { [weak self] sent in
+                    guard !sent, let self else { return }
                     self.addLog("MugVPN: could not hand the tunnel to openvpn")
                     self.send("needok '\(name)' cancel")
                 }
@@ -267,6 +273,7 @@ public final class ConnectionController {
         case .disconnected:
             let wasStopping = status == .disconnecting
             finished = true
+            ui.dismissPrompts()
             status = .disconnected
             if !wasStopping { onLost() }
         case .passwordPrompt, .other: break
@@ -285,6 +292,7 @@ public final class ConnectionController {
             if status != .disconnecting { status = .reconnecting }
         case "EXITING":
             finished = true
+            ui.dismissPrompts()
             status = .disconnected
         default:
             if status != .disconnecting { status = .connecting(s.name) }
@@ -338,8 +346,9 @@ public final class ConnectionController {
         ui.askCredentials(type: type, username: savedUser, challenge: sc, error: error) { [weak self] a in
             guard let self else { return }
             guard let a else { return self.disconnect() }
-            self.secrets.set(self.profile, k.user, a.username)
-            if a.save && self.settings.savePasswordsAllowed { self.secrets.set(self.profile, k.pass, a.password) }
+            var saved = self.secrets.set(self.profile, k.user, a.username)
+            if a.save && self.settings.savePasswordsAllowed { saved = self.secrets.set(self.profile, k.pass, a.password) && saved }
+            if !saved { self.ui.notify(title: self.displayName, text: ConnectionController.keychainSaveFailed) }
             var password = a.password
             if let sc {
                 let r = a.response ?? ""
@@ -364,7 +373,9 @@ public final class ConnectionController {
         ui.askSecret(type: type, error: error) { [weak self] a in
             guard let self else { return }
             guard let a else { return self.disconnect() }
-            if a.save && self.settings.savePasswordsAllowed { self.secrets.set(self.profile, .keyPassword, a.secret) }
+            if a.save && self.settings.savePasswordsAllowed, !self.secrets.set(self.profile, .keyPassword, a.secret) {
+                self.ui.notify(title: self.displayName, text: ConnectionController.keychainSaveFailed)
+            }
             if type == "Private Key" { self.onKeyPassword(a.secret) }
             self.send("password \(managementQuote(type)) \(managementQuote(a.secret))")
         }

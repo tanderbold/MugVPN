@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "Trafikk til %@ går forbi VPN (via %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS-serveren %@ nås utenfor VPN (via %@)",
  "Block IPv6 outside the VPN": "Blokker IPv6 utenfor VPN",
- "If it drops unexpectedly, block the Internet until I reconnect": "Hvis den brytes uventet, blokker internett til jeg kobler til igjen",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "Internett blokkert: %@ ble brutt. Koble til igjen eller opphev blokkeringen.",
  "Send DNS only through the VPN": "Send DNS bare gjennom VPN",
  "Unblock Internet": "Opphev blokkering av internett",

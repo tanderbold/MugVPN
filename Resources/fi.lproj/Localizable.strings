@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ ei ole tekstitiedosto (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ viittaa kansionsa ulkopuolisiin tiedostoihin. Kopioidaanko ne profiiliin? VPN-palvelin voi saada niiden sisällön.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ on muuttunut MugVPN:n ulkopuolella sen jälkeen, kun se avattiin täällä.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ on poistettu MugVPN:n ulkopuolella sen jälkeen, kun se avattiin täällä.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS vain omille verkkotunnuksille, toinen yhteys ottaa kaikki nimet";
 "%@: DNS not set, another connection takes all names" = "%@: DNS:ää ei asetettu, toinen yhteys ottaa kaikki nimet";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "OpenVPN-profiilien asiakasohjelma, joka pitää useita yhteyksiä yllä yhtä aikaa. MIT-lisenssi.";
 "A program asked MugVPN to import %@. Import it?" = "Ohjelma pyysi MugVPN:ää tuomaan kohteen %@. Tuodaanko?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Yhteenveto (versiot, mitkä yhteydet ovat päällä) on aina mukana. Lisäksi:";
 "About MugVPN" = "Tietoja MugVPN:stä";
 "Add a connection" = "Lisää yhteys";
 "Add at least one server." = "Lisää vähintään yksi palvelin.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Yhdistetään (%@)";
 "Connecting to %@." = "Yhdistetään kohteeseen %@.";
 "Connection Settings…" = "Yhteyden asetukset…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Yhteyslokit (enintään 1 Mt kukin: osoitteet, palvelimet, virheet)";
 "Connection settings" = "Yhteyden asetukset";
 "Connections" = "Yhteydet";
 "Connections…" = "Yhteydet…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Anna enintään 8 DNS-palvelinta.";
 "Enter the proxy's address and a port from 1 to 65535." = "Anna välipalvelimen osoite ja portti väliltä 1–65535.";
 "Every time" = "Joka kerta";
+"Export Diagnostics" = "Vie diagnostiikka";
 "Export Diagnostics…" = "Vie vianmääritystiedot…";
+"Export…" = "Vie…";
 "Flat" = "Tasainen";
 "From the VPN server" = "VPN-palvelimelta";
 "General" = "Yleiset";
 "Hide" = "Piilota";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6-liikenne kiertää VPN:n (kautta %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Jos yhteys katkeaa odottamatta, estä internet, kunnes yhdistän uudelleen";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Jos yhteys katkeaa odottamatta, estä TCP- ja UDP-liikenteeni, kunnes yhdistän uudelleen";
 "Ignore messages from servers" = "Ohita palvelimien viestit";
 "Import" = "Tuo";
 "Import File…" = "Tuo tiedosto…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Siirrä MugVPN Ohjelmat-kansioon, avaa se sieltä ja yhdistä uudelleen.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-asetukset";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN ei voinut viedä poistoa loppuun (%@). Se pysyy asennettuna: yritä uudelleen minuutin kuluttua.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN poistaa vielä VPN:n asettamaa DNS:ää tai reittejä ja pysyy asennettuna siihen asti. Yritä uudelleen minuutin kuluttua.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN on poistettu, mutta näitä ei voitu poistaa: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Ei mitään";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Kaikki liikenne ei kulje VPN:n kautta: tunneli ei pidä oletusreittiä";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Ei tuotu (MugVPN ei suorita profiilien komentosarjoja root-oikeuksin): %@";
+"Not in the archive (could not be written): %@" = "Ei arkistossa (ei voitu kirjoittaa): %@";
 "Notify when connected:" = "Ilmoita yhdistettäessä:";
 "OK" = "OK";
 "Off" = "Pois";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Avaa tekstieditorissa";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN on OpenVPN Inc.:n rekisteröity tavaramerkki.";
 "Options" = "Valinnat";
+"Overwrite" = "Korvaa";
 "Password:" = "Salasana:";
 "Paste" = "Sijoita";
 "Persistent connections:" = "Pysyvät yhteydet:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Yhdistämistä edeltävä komentosarja (s):";
 "Private key:" = "Yksityinen avain:";
 "Profile menu:" = "Profiilivalikko:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Profiilit ilman salasanoja tai avaimia (palvelimet, varmenteet, asetukset)";
 "Proxy" = "Välipalvelin";
 "Proxy:" = "Välipalvelin:";
 "Quit MugVPN" = "Lopeta MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Yhdistä uudelleen";
 "Reconnecting" = "Yhdistetään uudelleen";
 "Redo" = "Tee uudelleen";
+"Reload" = "Lataa uudelleen";
 "Remove" = "Poista";
 "Response" = "Vastaus";
 "Revert" = "Palauta";
@@ -184,6 +197,7 @@
 "Settings…" = "Asetukset…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Useat yhteydet voivat kukin palvella omia verkkotunnuksiaan; kaikki nimet voi ottaa vain yksi kerrallaan.";
 "Show Status" = "Näytä tila";
+"Show Windows" = "Näytä ikkunat";
 "Show in Finder" = "Näytä Finderissa";
 "Show the status window" = "Näytä tilaikkuna";
 "Sign in to This Network…" = "Kirjaudu tähän verkkoon…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Asiakasvarmenne tarvitsee yksityisen avaimensa.";
 "The configuration cannot be read: %@" = "Määrityksiä ei voi lukea: %@";
 "The first time" = "Ensimmäisellä kerralla";
+"The keychain did not remove the saved passwords of %@." = "Avainnippu ei poistanut kohteen %@ tallennettuja salasanoja.";
+"The keychain did not save it: it is used for this connection only." = "Avainnippu ei tallentanut sitä: sitä käytetään vain tähän yhteyteen.";
+"The network state (routes, DNS, network interfaces)" = "Verkon tila (reitit, DNS, verkkoliitännät)";
 "The private key needs its client certificate." = "Yksityinen avain tarvitsee asiakasvarmenteensa.";
 "The proxy for %@ needs a username and password." = "Profiilin %@ välipalvelin vaatii käyttäjänimen ja salasanan.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Käynnissä oleva apuohjelma on vanhempi eikä osaa päivittää itseään. Uuden asentaminen pysäyttää kaikki tämän Macin MugVPN-yhteydet kaikilta käyttäjiltä. Jatketaanko?";
@@ -233,6 +250,7 @@
 "not connected" = "ei yhdistetty";
 "nothing" = "ei mitään";
 "passwords" = "salasanat";
+"saved passwords" = "tallennetut salasanat";
 "the connection ended unexpectedly" = "yhteys katkesi odottamatta";
 "the persistent connection is not running" = "pysyvä yhteys ei ole käynnissä";
 "the port must be 1–65535" = "portin on oltava 1–65535";

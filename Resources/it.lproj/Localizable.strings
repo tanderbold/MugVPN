@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ non è un file di testo (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ fa riferimento a file fuori dalla sua cartella. Copiarli nel profilo? Il server VPN potrebbe riceverne il contenuto.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ prende %@ reti dalle rotte di %@ (vince la rotta più specifica)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ è stato modificato fuori da MugVPN da quando è stato aperto qui.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ è stato rimosso fuori da MugVPN da quando è stato aperto qui.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS solo per i suoi domini, un'altra connessione prende tutti i nomi";
 "%@: DNS not set, another connection takes all names" = "%@: DNS non impostato, un'altra connessione prende tutti i nomi";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Un client per profili OpenVPN che mantiene più connessioni attive insieme. Licenza MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Un programma ha chiesto a MugVPN di importare %@. Importarlo?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Un riepilogo (versioni, quali connessioni sono attive) è sempre incluso. Inoltre:";
 "About MugVPN" = "Informazioni su MugVPN";
 "Add a connection" = "Aggiungi una connessione";
 "Add at least one server." = "Aggiungi almeno un server.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Connessione in corso (%@)";
 "Connecting to %@." = "Connessione a %@.";
 "Connection Settings…" = "Impostazioni connessione…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Log delle connessioni (fino a 1 MB ciascuno: indirizzi, server, errori)";
 "Connection settings" = "Impostazioni connessione";
 "Connections" = "Connessioni";
 "Connections…" = "Connessioni…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Inserisci al massimo 8 server DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Inserisci l'indirizzo del proxy e una porta da 1 a 65535.";
 "Every time" = "Ogni volta";
+"Export Diagnostics" = "Esporta diagnostica";
 "Export Diagnostics…" = "Esporta diagnostica…";
+"Export…" = "Esporta…";
 "Flat" = "Piatto";
 "From the VPN server" = "Dal server VPN";
 "General" = "Generali";
 "Hide" = "Nascondi";
 "IPv6 traffic goes around the VPN (through %@)" = "Il traffico IPv6 aggira la VPN (tramite %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Se cade inaspettatamente, blocca Internet finché non mi ricollego";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Se cade inaspettatamente, blocca il mio traffico TCP e UDP finché non mi riconnetto";
 "Ignore messages from servers" = "Ignora i messaggi dei server";
 "Import" = "Importa";
 "Import File…" = "Importa file…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Sposta MugVPN nella cartella Applicazioni, aprilo da lì e connettiti di nuovo.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Impostazioni di MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN non ha potuto completare la disinstallazione (%@). Resta installato: riprova tra un minuto.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN sta ancora rimuovendo il DNS o gli instradamenti impostati da una VPN e resterà installato fino ad allora. Riprova tra un minuto.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN è disinstallato, ma questi elementi non sono stati rimossi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necessita del suo componente di supporto per avviare i tunnel.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "L'helper di MugVPN non ha risposto (%@). Rimuovere la parte di sistema di MugVPN con una password di amministratore?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "L'helper di MugVPN è alla versione %@, più recente di questa app (%@): aggiorna MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Nessuno";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Non tutto il traffico passa dalla VPN: il tunnel non detiene la route predefinita";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Non importati (MugVPN non esegue gli script dei profili come root): %@";
+"Not in the archive (could not be written): %@" = "Non nell’archivio (impossibile scrivere): %@";
 "Notify when connected:" = "Notifica alla connessione:";
 "OK" = "OK";
 "Off" = "Disattivato";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Apri nell'editor di testo";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN è un marchio registrato di OpenVPN Inc.";
 "Options" = "Opzioni";
+"Overwrite" = "Sovrascrivi";
 "Password:" = "Password:";
 "Paste" = "Incolla";
 "Persistent connections:" = "Connessioni persistenti:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Script di preconnessione (s):";
 "Private key:" = "Chiave privata:";
 "Profile menu:" = "Menu profili:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Profili senza password né chiavi (server, certificati, opzioni)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Esci da MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Riconnetti";
 "Reconnecting" = "Riconnessione in corso";
 "Redo" = "Ripristina";
+"Reload" = "Ricarica";
 "Remove" = "Rimuovi";
 "Response" = "Risposta";
 "Revert" = "Ripristina";
@@ -184,6 +197,7 @@
 "Settings…" = "Impostazioni…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Più connessioni possono servire ciascuna i propri domini; solo una alla volta può prendere tutti i nomi.";
 "Show Status" = "Mostra stato";
+"Show Windows" = "Mostra finestre";
 "Show in Finder" = "Mostra nel Finder";
 "Show the status window" = "Mostra la finestra di stato";
 "Sign in to This Network…" = "Accedi a questa rete…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Il certificato client richiede la relativa chiave privata.";
 "The configuration cannot be read: %@" = "Impossibile leggere la configurazione: %@";
 "The first time" = "La prima volta";
+"The keychain did not remove the saved passwords of %@." = "Il portachiavi non ha rimosso le password salvate di %@.";
+"The keychain did not save it: it is used for this connection only." = "Il portachiavi non l’ha salvato: viene usato solo per questa connessione.";
+"The network state (routes, DNS, network interfaces)" = "Lo stato della rete (instradamenti, DNS, interfacce di rete)";
 "The private key needs its client certificate." = "La chiave privata richiede il relativo certificato client.";
 "The proxy for %@ needs a username and password." = "Il proxy di %@ richiede nome utente e password.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "L'helper in esecuzione è una versione precedente che non può aggiornarsi da sola. Installare quello nuovo interrompe tutte le connessioni MugVPN su questo Mac, di tutti gli utenti. Continuare?";
@@ -233,6 +250,7 @@
 "not connected" = "non connesso";
 "nothing" = "niente";
 "passwords" = "password";
+"saved passwords" = "password salvate";
 "the connection ended unexpectedly" = "la connessione è terminata inaspettatamente";
 "the persistent connection is not running" = "la connessione persistente non è attiva";
 "the port must be 1–65535" = "la porta deve essere compresa nell'intervallo 1–65535";

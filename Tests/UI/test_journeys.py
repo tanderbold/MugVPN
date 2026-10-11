@@ -106,7 +106,7 @@ def test_uj03_view_log_live_and_kept(real):
     real.click("stand-a", "Disconnect")
     wait_for(lambda: "stand-a" not in tunnels(), 30, "a down")
     real.click("stand-a", "View Log")
-    kept = wait_for(lambda: next((u for u in real.call("opened_urls")["urls"] if re.search(r"stand-a\.\d+\.log$", u)), None),
+    kept = wait_for(lambda: next((u for u in real.call("opened_urls")["urls"] if re.search(r"stand-a~[0-9a-f]{12}\.\d+\.log$", u)), None),
                     5, "the kept log")
     assert "SIGTERM" in open(kept.replace("file://", "")).read()
 

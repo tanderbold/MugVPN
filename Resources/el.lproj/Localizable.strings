@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "Το %@ δεν είναι αρχείο κειμένου (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "Το %@ αναφέρεται σε αρχεία εκτός του φακέλου του. Αντιγραφή τους στο προφίλ; Ο διακομιστής VPN μπορεί να λάβει το περιεχόμενό τους.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)";
+"%@ was changed outside MugVPN since it was opened here." = "Το %@ άλλαξε εκτός MugVPN από τότε που ανοίχτηκε εδώ.";
+"%@ was removed outside MugVPN since it was opened here." = "Το %@ αφαιρέθηκε εκτός MugVPN από τότε που ανοίχτηκε εδώ.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS μόνο για τους δικούς του τομείς, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "%@: DNS not set, another connection takes all names" = "%@: Το DNS δεν ορίστηκε, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Πρόγραμμα για προφίλ OpenVPN που διατηρεί πολλές συνδέσεις ταυτόχρονα. Άδεια MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Ένα πρόγραμμα ζήτησε από το MugVPN να εισαγάγει το %@. Εισαγωγή;";
+"A summary (versions, which connections are up) always goes in. Also:" = "Μια σύνοψη (εκδόσεις, ποιες συνδέσεις είναι ενεργές) περιλαμβάνεται πάντα. Επίσης:";
 "About MugVPN" = "Σχετικά με το MugVPN";
 "Add a connection" = "Προσθήκη σύνδεσης";
 "Add at least one server." = "Προσθέστε τουλάχιστον έναν διακομιστή.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Σύνδεση σε εξέλιξη (%@)";
 "Connecting to %@." = "Σύνδεση στο %@.";
 "Connection Settings…" = "Ρυθμίσεις σύνδεσης…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Αρχεία καταγραφής συνδέσεων (έως 1 MB το καθένα: διευθύνσεις, διακομιστές, σφάλματα)";
 "Connection settings" = "Ρυθμίσεις σύνδεσης";
 "Connections" = "Συνδέσεις";
 "Connections…" = "Συνδέσεις…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Εισαγάγετε έως 8 διακομιστές DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Εισαγάγετε τη διεύθυνση του proxy και μια θύρα από 1 έως 65535.";
 "Every time" = "Κάθε φορά";
+"Export Diagnostics" = "Εξαγωγή διαγνωστικών";
 "Export Diagnostics…" = "Εξαγωγή διαγνωστικών…";
+"Export…" = "Εξαγωγή…";
 "Flat" = "Επίπεδο";
 "From the VPN server" = "Από τον διακομιστή VPN";
 "General" = "Γενικά";
 "Hide" = "Απόκρυψη";
 "IPv6 traffic goes around the VPN (through %@)" = "Η κίνηση IPv6 παρακάμπτει το VPN (μέσω %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Αν διακοπεί απροσδόκητα, αποκλεισμός του Διαδικτύου μέχρι να συνδεθώ ξανά";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Αν διακοπεί απροσδόκητα, αποκλεισμός της κίνησής μου TCP και UDP μέχρι να συνδεθώ ξανά";
 "Ignore messages from servers" = "Αγνόηση μηνυμάτων από διακομιστές";
 "Import" = "Εισαγωγή";
 "Import File…" = "Εισαγωγή αρχείου…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Μετακινήστε το MugVPN στον φάκελο Εφαρμογές, ανοίξτε το από εκεί και συνδεθείτε ξανά.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "Το MugVPN δεν μπόρεσε να ολοκληρώσει την απεγκατάσταση (%@). Παραμένει εγκατεστημένο: δοκιμάστε ξανά σε ένα λεπτό.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "Το MugVPN αφαιρεί ακόμη το DNS ή τις διαδρομές που όρισε ένα VPN και θα παραμείνει εγκατεστημένο μέχρι τότε. Δοκιμάστε ξανά σε ένα λεπτό.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "Το MugVPN απεγκαταστάθηκε, αλλά αυτά δεν αφαιρέθηκαν: %@";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Κανένα";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Δεν περνά όλη η κίνηση από το VPN: η σήραγγα δεν κρατά την προεπιλεγμένη διαδρομή";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Δεν εισήχθησαν (το MugVPN δεν εκτελεί σενάρια προφίλ ως root): %@";
+"Not in the archive (could not be written): %@" = "Δεν περιλαμβάνονται στο αρχείο (δεν ήταν δυνατή η εγγραφή): %@";
 "Notify when connected:" = "Ειδοποίηση κατά τη σύνδεση:";
 "OK" = "OK";
 "Off" = "Ανενεργό";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Άνοιγμα σε επεξεργαστή κειμένου";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "Το OpenVPN είναι σήμα κατατεθέν της OpenVPN Inc.";
 "Options" = "Επιλογές";
+"Overwrite" = "Αντικατάσταση";
 "Password:" = "Σύνθημα:";
 "Paste" = "Επικόλληση";
 "Persistent connections:" = "Μόνιμες συνδέσεις:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Σενάριο πριν τη σύνδεση (s):";
 "Private key:" = "Ιδιωτικό κλειδί:";
 "Profile menu:" = "Μενού προφίλ:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Προφίλ χωρίς κωδικούς ή κλειδιά (διακομιστές, πιστοποιητικά, επιλογές)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Έξοδος από το MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Επανασύνδεση";
 "Reconnecting" = "Επανασύνδεση σε εξέλιξη";
 "Redo" = "Επανάληψη";
+"Reload" = "Επαναφόρτωση";
 "Remove" = "Αφαίρεση";
 "Response" = "Απάντηση";
 "Revert" = "Επαναφορά";
@@ -184,6 +197,7 @@
 "Settings…" = "Ρυθμίσεις…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Πολλές συνδέσεις μπορούν η καθεμία να εξυπηρετεί τους δικούς της τομείς· όλα τα ονόματα μπορεί να τα αναλάβει μόνο μία τη φορά.";
 "Show Status" = "Εμφάνιση κατάστασης";
+"Show Windows" = "Εμφάνιση παραθύρων";
 "Show in Finder" = "Εμφάνιση στο Finder";
 "Show the status window" = "Εμφάνιση του παραθύρου κατάστασης";
 "Sign in to This Network…" = "Σύνδεση σε αυτό το δίκτυο…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Το πιστοποιητικό πελάτη χρειάζεται το ιδιωτικό κλειδί του.";
 "The configuration cannot be read: %@" = "Δεν είναι δυνατή η ανάγνωση της διαμόρφωσης: %@";
 "The first time" = "Την πρώτη φορά";
+"The keychain did not remove the saved passwords of %@." = "Η κλειδοθήκη δεν αφαίρεσε τους αποθηκευμένους κωδικούς του %@.";
+"The keychain did not save it: it is used for this connection only." = "Η κλειδοθήκη δεν το αποθήκευσε: χρησιμοποιείται μόνο για αυτή τη σύνδεση.";
+"The network state (routes, DNS, network interfaces)" = "Κατάσταση δικτύου (διαδρομές, DNS, διεπαφές δικτύου)";
 "The private key needs its client certificate." = "Το ιδιωτικό κλειδί χρειάζεται το πιστοποιητικό πελάτη του.";
 "The proxy for %@ needs a username and password." = "Το proxy για το %@ απαιτεί όνομα χρήστη και σύνθημα.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Ο βοηθός που τρέχει είναι παλαιότερος και δεν μπορεί να ενημερωθεί μόνος του. Η τοποθέτηση του νέου σταματά κάθε σύνδεση MugVPN σε αυτό το Mac, για κάθε χρήστη. Συνέχεια;";
@@ -233,6 +250,7 @@
 "not connected" = "μη συνδεδεμένο";
 "nothing" = "τίποτα";
 "passwords" = "συνθήματα";
+"saved passwords" = "αποθηκευμένοι κωδικοί";
 "the connection ended unexpectedly" = "η σύνδεση τερματίστηκε απροσδόκητα";
 "the persistent connection is not running" = "η μόνιμη σύνδεση δεν εκτελείται";
 "the port must be 1–65535" = "η θύρα πρέπει να είναι 1–65535";

@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "%@ hedefine giden trafik VPN’i atlıyor (%@ üzerinden)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS sunucusu %@ VPN dışından erişiliyor (%@ üzerinden)",
  "Block IPv6 outside the VPN": "VPN dışında IPv6’yı engelle",
- "If it drops unexpectedly, block the Internet until I reconnect": "Beklenmedik şekilde koparsa, yeniden bağlanana kadar interneti engelle",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "İnternet engellendi: %@ koptu. Yeniden bağlanın veya engeli kaldırın.",
  "Send DNS only through the VPN": "DNS’i yalnızca VPN üzerinden gönder",
  "Unblock Internet": "İnternet engelini kaldır",

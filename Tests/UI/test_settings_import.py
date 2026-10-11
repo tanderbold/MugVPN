@@ -52,7 +52,7 @@ def test_ui13c_cancel_keeps_the_old_values(app):
 def test_ui14_import_file(app, tmp_path):
     src = tmp_path / "work.ovpn"
     src.write_text("client\ndev tun\nremote w 1194\nca ca.crt\n")
-    (tmp_path / "ca.crt").write_text("CA")
+    (tmp_path / "ca.crt").write_text("-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n")
     app.call("answer_open_panel", path=str(src))
     app.click("Import", "Import File…")
     wait_for(lambda: any(i["title"] == "work" for i in app.menu()), 5, "the new profile in the menu")
@@ -242,6 +242,7 @@ def test_ui54_export_diagnostics(app, tmp_path):
     out = tmp_path / "diag.zip"
     app.call("answer_save_panel", path=str(out))
     app.click("Export Diagnostics…")
+    app.press(app.window("diagnostics"), "ok")    # what goes in is said first; all of it
     wait_for(lambda: out.exists() and zipfile.is_zipfile(out), 30, "the archive")
     z = zipfile.ZipFile(out)
     names = [n.split("/", 1)[1] for n in z.namelist() if "/" in n]
@@ -287,3 +288,61 @@ def test_ui68_uninstall_when_the_helper_does_not_answer(home):
     log = json.load(open(os.path.join(home, "uninstall.json")))
     assert any("launchctl bootout system/com.mugvpn.helper" in s for s in log["admin"]), log
     assert log["trashed"].endswith("MugVPN.app")
+
+
+def test_ui85_uninstall_refused_while_dns_is_restored_offers_no_way_around(home):
+    """The helper refuses to go while DNS a tunnel set is still being taken off: said, try again later; no
+    administrator's removal around it (that would leave the VPN's DNS on the Mac)."""
+    with launched(home) as a:
+        a.call("fake_uninstall_fails", message=DNS_PENDING)
+        a.click("About MugVPN")
+        a.press(a.window("about"), "uninstall")
+        a.press(a.window("uninstall"), "ok")
+        e = a.window("error")
+        assert "routes" in str(e["controls"]) and "minute" in str(e["controls"]), e
+        a.no_window("confirm")
+        assert a.proc.poll() is None, "MugVPN stays"
+
+
+DNS_PENDING = "the DNS or routes a tunnel set could not be taken off yet: MugVPN stays installed to try again; uninstall again in a minute"
+
+
+def test_ui87_diagnostics_without_logs_or_the_network(app, tmp_path):
+    """Export Diagnostics says what goes in; logs and the network state can be left out."""
+    import zipfile
+    out = tmp_path / "diag.zip"
+    app.call("answer_save_panel", path=str(out))
+    app.click("Export Diagnostics…")
+    w = app.window("diagnostics")
+    app.set(w, "include_logs", False)
+    app.set(w, "include_network", False)
+    app.press(app.window("diagnostics"), "ok")
+    wait_for(lambda: out.exists() and zipfile.is_zipfile(out), 30, "the archive")
+    names = [n.split("/", 1)[1] for n in zipfile.ZipFile(out).namelist() if "/" in n]
+    assert "summary.txt" in names and "profiles/stand-a.ovpn" in names, names
+    assert not any(n.startswith("logs/") or n in ("routes.txt", "dns.txt", "interfaces.txt") for n in names), names
+
+
+def test_ui88_import_says_a_file_that_is_not_what_it_is_named_as(app, tmp_path):
+    """A profile whose CA file holds no certificate: said at import, not first at Connect."""
+    src = tmp_path / "bad.ovpn"
+    src.write_text("client\ndev tun\nremote w 1194\nca ca.crt\n")
+    (tmp_path / "ca.crt").write_text("CA")
+    app.call("answer_open_panel", path=str(src))
+    app.click("Import", "Import File…")
+    e = app.window("error")
+    assert "ca.crt" in str(e["controls"]), e
+    assert not any(i["title"] == "bad" for i in app.menu())
+
+
+def test_ui89_uninstall_says_what_stayed(home):
+    """The user's part not all gone (the keychain refused): said before MugVPN quits, not claimed gone."""
+    with launched(home) as a:
+        a.call("fake_user_data_stays", items=["saved passwords"])
+        a.click("About MugVPN")
+        a.press(a.window("about"), "uninstall")
+        a.press(a.window("uninstall"), "ok")
+        m = a.window("message")
+        assert "could not be removed" in str(m["controls"]) and "saved passwords" in str(m["controls"]), m
+        a.press(m, "ok")
+        a.proc.wait(timeout=10)

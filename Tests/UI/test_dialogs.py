@@ -1,8 +1,15 @@
 """UI-06..10: what openvpn asks, as the user sees it."""
 import base64
+import subprocess
 import time
 
 from conftest import wait_for
+
+
+def finder_window():
+    """Another app's window on screen (the stand VM's Finder may have none)."""
+    subprocess.run(["open", "/Applications"], check=True)
+    time.sleep(1.5)
 
 
 def b64(s):
@@ -145,11 +152,18 @@ def test_ui70_menu_bar_icon_brings_windows_forward(app):
     app.click("stand-a", "Connect")
     app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
     app.window("credentials")
+    finder_window()
     app.call("send_windows_back")
     wait_for(lambda: not app.call("status")["active"], 5, "another app in use")
+    time.sleep(1)   # the other app done bringing its windows forward
     app.call("menu_will_open")
     w = app.window("credentials")
     assert w["front_index"] == 0, w["front_index"]
+
+    def above():
+        mine, other = app.window("credentials")["screen_order"]
+        return 0 <= mine < other
+    wait_for(above, 3, f"above the other app's window: {app.window('credentials')['screen_order']}")
     time.sleep(0.5)
     assert not app.call("status")["active"], "only shown: the keyboard stays with the app in use"
 
@@ -189,3 +203,22 @@ def test_ui82_a_window_shown_again_stays_where_it_was_put(app):
     before = app.window("connections")["origin"]
     app.click("Connections…")
     assert app.window("connections")["origin"] == before
+
+
+def test_ui84_menu_bar_icon_leaves_ordinary_windows_where_they_are(app):
+    """Opening the menu does not pull Connections over the app in use; Show Windows does, asked for."""
+    app.click("Connections…")
+    app.window("connections")
+    finder_window()
+    app.call("send_windows_back")
+    wait_for(lambda: not app.call("status")["active"], 5, "another app in use")
+    app.call("menu_will_open")
+    mine, other = app.window("connections")["screen_order"]
+    assert other >= 0 and mine > other, f"still behind the other app's window: {[mine, other]}"
+    app.click("Show Windows")
+    wait_for(lambda: app.call("status")["active"], 5, "MugVPN in use")
+
+    def in_front():
+        mine, other = app.window("connections")["screen_order"]
+        return 0 <= mine < other
+    wait_for(in_front, 5, f"Connections in front: {app.window('connections')['screen_order']}")

@@ -56,8 +56,11 @@ def test_int15_connection_log_is_kept(vpn, mac):
     vpn.connected("stand-a")
     vpn.disconnect_all()
     uid = mac.out("id -u").strip()
-    log = mac.out(f"sudo cat {LOGS_DIR}/stand-a.{uid}.log")
-    owner = mac.out(f"stat -f '%Su %Lp' {LOGS_DIR}/stand-a.{uid}.log").strip()
+    # Its own: named by the profile and its id (same-named profiles keep theirs).
+    name = mac.out(f"ls {LOGS_DIR} | grep -E '^stand-a~[0-9a-f]{{12}}\\.{uid}\\.log$'").strip()
+    assert name, mac.out(f"ls {LOGS_DIR}")
+    log = mac.out(f"sudo cat {LOGS_DIR}/{name}")
+    owner = mac.out(f"stat -f '%Su %Lp' {LOGS_DIR}/{name}").strip()
     assert owner == "tester 600", f"the log is the user's alone: {owner}"
     assert "Initialization Sequence Completed" in log
     assert "SIGTERM" in log

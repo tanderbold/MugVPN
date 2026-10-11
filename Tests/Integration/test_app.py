@@ -161,3 +161,23 @@ def test_int27g_connect_option_while_running(vpn, mac, gui_app):
     assert len(mac.out("pgrep -x MugVPN").split()) == 1, "one MugVPN"
     mac.run(f"{CLI} --command disconnect_all; true")
     wait_for(lambda: not vpn.list(), 30, "it to stop")
+
+
+def test_int28b_a_script_past_its_timeout_goes_with_its_children(vpn, mac):
+    """A pre-connect script past its timeout is stopped with everything it started (its process group)."""
+    mac.run(f"mkdir -p '{CONFIG}' && cp /Users/tester/stand/stand-b.ovpn '{CONFIG}/'", check=True)
+    mac.run("pkill -x MugVPN; defaults write com.mugvpn.app preconnectscript_timeout -int 2; rm -f /tmp/mugvpn-child.pid; true")
+    mac.run(f"printf '#!/bin/sh\\n(sleep 300) &\\necho $! > /tmp/mugvpn-child.pid\\nsleep 60\\n' > '{CONFIG}/stand-b_pre.sh'"
+            f" && chmod +x '{CONFIG}/stand-b_pre.sh'", check=True)
+    mac.run(f"open {APP}", check=True)
+    try:
+        wait_for(lambda: mac.run("pgrep -x MugVPN").returncode == 0, 15, "the app to start")
+        mac.run(f"{CLI} --command connect stand-b; true")
+        wait_for(lambda: mac.run("test -s /tmp/mugvpn-child.pid").returncode == 0, 20, "the script's child")
+        child = mac.out("cat /tmp/mugvpn-child.pid").strip()
+        wait_for(lambda: mac.run(f"kill -0 {child}").returncode != 0, 15, "the child stopped with the script")
+        assert "stand-b" not in vpn.list().values(), "timed out: not connected"
+    finally:
+        mac.run(f"{CLI} --command exit; true")
+        wait_for(lambda: mac.run("pgrep -x MugVPN").returncode != 0, 30, "the app to quit")
+        mac.run(f"rm -rf '{CONFIG}'; defaults delete com.mugvpn.app preconnectscript_timeout; true")

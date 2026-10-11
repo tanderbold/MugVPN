@@ -65,6 +65,15 @@ func registerDiagnosticsTests() {
             expect(s.contains(kept), "\(kept) missing from \(s)")
         }
     }
+    test("DIAG-04", "what goes in is the user's choice: logs, the network state, the profiles; the summary always") {
+        let all = MugVPNAppCore.Diagnostics.files(summary: ["MugVPN": "1"], commands: ["routes.txt": "r"],
+                                                  profiles: [("office", "client\n")], logs: [("office", "line")],
+                                                  include: [])
+        expectEqual(all.map(\.name), ["summary.txt"])
+        let logsOnly = MugVPNAppCore.Diagnostics.files(summary: [:], commands: ["routes.txt": "r"], profiles: [("o", "client\n")],
+                                                       logs: [("o", "l")], include: [.logs])
+        expectEqual(logsOnly.map(\.name), ["summary.txt", "logs/o.log"])
+    }
     test("DIAG-02", "the archive's files: a summary, the system's state, each profile and log") {
         let files = MugVPNAppCore.Diagnostics.files(
             summary: ["MugVPN": "1.2", "helper": "1.2", "openvpn": "2.7.8", "macOS": "15.1"],

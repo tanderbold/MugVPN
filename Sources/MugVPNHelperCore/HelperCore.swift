@@ -22,7 +22,8 @@ public protocol HelperSystem: AnyObject {
     /// PF is on and MugVPN's anchor holds these rules (someone may have run pfctl -d or flushed it).
     func pfIntact(_ anchor: String) -> Bool
     /// `route add` with these arguments (putting back a default route openvpn deleted).
-    func addRoute(_ args: [String])
+    /// - Returns: false when it is not there afterwards (refused).
+    @discardableResult func addRoute(_ args: [String]) -> Bool
     /// A file from `offset` on (at most `maxBytes`), without following a link.
     func readFrom(_ path: String, offset: UInt64, maxBytes: Int) -> Data?
     /// Let `uid` read `path` (an ACL entry) without owning it.
@@ -64,12 +65,16 @@ public protocol HelperSystem: AnyObject {
     /// The Mac's default route before any tunnel (its gateway and interface).
     func defaultGateway() -> DefaultGateway?
     /// Set a tunnel's DNS (split: its own resolver for some domains; else all names).
-    func setDNS(_ plan: DNSPlan) -> Bool
+    func setDNS(_ plan: DNSPlan) -> DNSSet
     /// SIGKILL every process running the executable at `path`.
     func killStrayOpenVPN(path: String)
-    /// False when what it set could not all be taken off.
-    @discardableResult func restoreDNS(device: String) -> Bool
-    func deleteRoute(_ args: [String])
+    /// Its DNS taken off: all of it, all but the backup of the primary's DNS (its DNS is off; the backup
+    /// still holds all names back), or not (some may still be in effect).
+    @discardableResult func restoreDNS(device: String) -> DNSRestore
+    /// Only the backup a restore left behind.
+    func removeDNSBackup(device: String) -> Bool
+    /// - Returns: false when it is still there (refused); a route already gone counts as deleted.
+    @discardableResult func deleteRoute(_ args: [String]) -> Bool
     /// Run `f` after `seconds` on the caller's serial queue.
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void)
     func userName(uid: UInt32) -> String?
@@ -103,10 +108,13 @@ public struct FileInfo: Equatable, Sendable {
     public var owner: UInt32
     public var mode: UInt16
     public var kind: Kind
-    public init(owner: UInt32, mode: UInt16, kind: Kind) {
+    /// Last written (seconds since 1970).
+    public var modified: TimeInterval
+    public init(owner: UInt32, mode: UInt16, kind: Kind, modified: TimeInterval = 0) {
         self.owner = owner
         self.mode = mode
         self.kind = kind
+        self.modified = modified
     }
     /// Only root can change it: owned by root, no write for group or others.
     public var rootOnly: Bool { owner == 0 && mode & 0o022 == 0 }
@@ -145,6 +153,12 @@ public struct TrashWatch: Sendable {
         return now - start >= TrashWatch.grace
     }
 }
+
+/// A device's DNS taken off: all of it; all but the backup of the primary's DNS (its DNS is off, the
+/// backup still holds all names back); or not (some may still be in effect).
+public enum DNSRestore: Sendable { case done, backupLeft, failed }
+/// DNS set, refused, or refused with the backup made for it left behind (it holds all names back).
+public enum DNSSet: Sendable { case set, failed, failedBackupLeft }
 
 public struct HelperPaths: Sendable {
     /// `<bundle>/Contents` for an executable at `<bundle>/Contents/MacOS/<name>`; nil for a relative
@@ -219,6 +233,8 @@ public final class HelperCore {
     public static let maxBundleBytes = 4 << 20
     /// How long openvpn gets to tear down after SIGTERM before SIGKILL.
     public static let stopGrace: TimeInterval = 15
+    /// A kept log appended to is cut to its newest this much.
+    public static let maxKeptLogBytes = 4 << 20
 
     final class Connection {
         let info: ConnectionInfo
@@ -236,6 +252,14 @@ public final class HelperCore {
         var dnsWantsAll: DNSPlan?
         /// When it asked (in order: who has waited longest goes first).
         var dnsAskOrder = 0
+        /// Routes a failed request added and could not take back (kept on record, the connection undone).
+        var stuckRoutes: [TunnelRoute] = []
+        /// Its log is added to the kept one (not replacing it).
+        var appendLog = false
+        /// Started while the block of a dropped tunnel of its name was in force: lifts it once it takes all traffic.
+        var liftsBlock = false
+        /// DNS it left could not be put on record elsewhere: its own record (run directory) stays.
+        var keepRecord = false
         /// Its DNS on the Mac now, whole (search domains too); nil: none of its own. Its record says the same.
         var appliedDNS: DNSPlan?
         /// When it was started (a persistent tunnel up a long time starts again soon).
@@ -321,23 +345,49 @@ public final class HelperCore {
 
     /// Called once uninstalling has removed everything: the helper exits.
     public var onUninstalled: () -> Void = {}
-    private var uninstalling: (keepProfiles: Bool, Void)?
-    private var uninstallReplies: [() -> Void] = []
+    private var uninstalling: (keepProfiles: Bool, fromTrash: Bool)?
+    /// An uninstall held back by DNS left (the app in the Trash): done once that is off (keeping profiles?).
+    private var uninstallWhenDNSOff: Bool?
+    private var uninstallPendingPath: String { paths.supportDir + "/uninstall-pending.json" }
+    /// That wish not on disk yet (written again with the DNS retries).
+    private var uninstallPendingUnsaved = false
+    /// An uninstall stopped because that wish could not be removed: tried again.
+    private var uninstallRetryNeeded = false
+
+    private func saveUninstallPending() {
+        guard let keep = uninstallWhenDNSOff else { return }
+        let d = (try? JSONEncoder().encode(["keepProfiles": keep])) ?? Data()
+        uninstallPendingUnsaved = (try? system.writeFile(uninstallPendingPath, d, mode: 0o600)) == nil
+        if uninstallPendingUnsaved { retryDNSLeftLater() }
+    }
+    private var uninstallReplies: [(String?) -> Void] = []
     /// Uninstalling or shutting down: no new tunnels.
     private var closing = false
 
     /// Remove MugVPN's system part: stop every tunnel, then delete what the
     /// helper installed or wrote. Administrators only. `done` is called once
-    /// it is removed (each accepted request gets its own call).
-    public func uninstall(uid: UInt32, keepProfiles: Bool, done: @escaping () -> Void = {}) throws {
+    /// it is removed (each accepted request gets its own call), or with why not.
+    public func uninstall(uid: UInt32, keepProfiles: Bool, done: @escaping (String?) -> Void = { _ in }) throws {
+        try uninstall(uid: uid, keepProfiles: keepProfiles, fromTrash: false, done: done)
+    }
+
+    private func uninstall(uid: UInt32, keepProfiles: Bool, fromTrash: Bool, done: @escaping (String?) -> Void) throws {
+        // Before anything changes: a refused caller leaves every wish (and file) as it was.
         guard uid == 0 || system.isAdmin(uid: uid) else {
             throw HelperCoreError.message("only an administrator can uninstall MugVPN")
         }
+        // The app went to the Trash: no one asks again, so the wish is on disk before anything is stopped
+        // (a helper that starts again finishes it), and stays until it is done.
+        // A request while one waits for DNS: one wish, keeping profiles only if every request asked to.
+        if fromTrash || uninstallWhenDNSOff != nil {
+            uninstallWhenDNSOff = (uninstallWhenDNSOff ?? true) && keepProfiles
+            saveUninstallPending()
+        }
         if let u = uninstalling {
             // Keeping profiles only if every request asked to.
-            uninstalling = (u.keepProfiles && keepProfiles, ())
+            uninstalling = (u.keepProfiles && keepProfiles, u.fromTrash || fromTrash)
         } else {
-            uninstalling = (keepProfiles, ())
+            uninstalling = (keepProfiles, fromTrash)
         }
         uninstallReplies.append(done)
         stopAll()
@@ -351,23 +401,81 @@ public final class HelperCore {
             system.remove(home + "/Library/Logs/MugVPN")
             system.remove(home + "/Library/Preferences/com.mugvpn.app.plist")
         }
-        try? uninstall(uid: 0, keepProfiles: true)
+        try? uninstall(uid: 0, keepProfiles: true, fromTrash: true) { _ in }
     }
 
     private func finishUninstall() {
         guard let u = uninstalling else { return }
-        uninstalling = nil
-        var gone = [paths.runDir, paths.libexecDir, paths.logsDir, paths.devDaemonPlist]
-        if !u.keepProfiles { gone += [paths.systemConfigDir, paths.autoDir, paths.supportDir] }
-        // Protection first: nothing of it may outlive the files (or come back with a reinstall).
+        // DNS a tunnel left that could not be taken off: the helper stays to take it off (its record and
+        // retries would go with it). Said; asked again later.
+        if !dnsLeft.isEmpty || !keptRuns.isEmpty { retryDNSLeftNow() }
+        guard dnsLeft.isEmpty, keptRuns.isEmpty else {
+            uninstalling = nil
+            closing = false
+            let replies = uninstallReplies
+            uninstallReplies = []
+            replies.forEach { $0(HelperRefusal.dnsCleanupPending) }
+            // The app went to the Trash: no one asks again, so it is done once that DNS is off.
+            if u.fromTrash, uninstallWhenDNSOff == nil { uninstallWhenDNSOff = u.keepProfiles }
+            return
+        }
+        // Protection first: nothing of it may outlive the helper (or come back with a reinstall). PF that keeps
+        // MugVPN's rules: the helper stays (gone, no one could lift a block).
         locks = []
         saveLocks()
-        _ = system.applyPF("")
+        // (Blocks still on disk would come back with a reinstall: as much a refusal as PF's.)
+        guard !locksDirty, system.applyPF("") else {
+            uninstalling = nil
+            closing = false
+            let replies = uninstallReplies
+            uninstallReplies = []
+            replies.forEach { $0(HelperRefusal.pfPending) }
+            uninstallRetryNeeded = uninstallWhenDNSOff != nil
+            retryDNSLeftLater()
+            return
+        }
         appliedPF = ""
+        // The wish to uninstall goes next, and must be gone: one left behind (a crash halfway, a failed
+        // unlink) would have a reinstall remove itself. If it stays, nothing else goes; tried again.
+        system.remove(uninstallPendingPath)
+        guard system.fileInfo(uninstallPendingPath) == nil else {
+            uninstalling = nil
+            closing = false
+            let replies = uninstallReplies
+            uninstallReplies = []
+            replies.forEach { $0(HelperRefusal.recordPending) }
+            uninstallRetryNeeded = uninstallWhenDNSOff != nil
+            retryDNSLeftLater()
+            return
+        }
+        uninstallWhenDNSOff = nil
+        uninstallPendingUnsaved = false
+        uninstallRetryNeeded = false
+        uninstalling = nil
+        var gone = [paths.runDir, paths.libexecDir, paths.logsDir]
+        if !u.keepProfiles { gone += [paths.systemConfigDir, paths.autoDir, paths.supportDir] }
         gone.forEach(system.remove)
+        // Gone, or said: the helper stays (its launch daemon too) to try again.
+        let stayed = gone.filter { system.fileInfo($0) != nil }
+        guard stayed.isEmpty else {
+            uninstalling = nil
+            closing = false
+            let replies = uninstallReplies
+            uninstallReplies = []
+            replies.forEach { $0(HelperRefusal.filesPending + stayed.joined(separator: ", ")) }
+            if u.fromTrash {
+                uninstallWhenDNSOff = u.keepProfiles
+                saveUninstallPending()
+                uninstallRetryNeeded = true
+                retryDNSLeftLater()
+            }
+            return
+        }
+        // The launch daemon last: stopped halfway, the helper starts again and finishes.
+        system.remove(paths.devDaemonPlist)
         let replies = uninstallReplies
         uninstallReplies = []
-        replies.forEach { $0() }
+        replies.forEach { $0(nil) }
         onUninstalled()
     }
 
@@ -392,26 +500,50 @@ public final class HelperCore {
     /// say they set up, and start with an empty run directory.
     public func prepareRunDirectory() throws {
         let leftovers = system.list(paths.runDir)
+        var kept = Set<String>()
+        loadDNSLeft()
+        if let info = system.fileInfo(uninstallPendingPath), info.kind == .regular, info.rootOnly,
+           let d = system.readFile(uninstallPendingPath), let p = try? JSONDecoder().decode([String: Bool].self, from: d) {
+            uninstallWhenDNSOff = p["keepProfiles"] ?? true
+        }
         // Whatever ran as a connection's id outlived its helper.
         system.killProcesses(uids: HelperCore.serviceIDBase...(HelperCore.serviceIDBase + HelperCore.serviceIDCount - 1))
         if !leftovers.isEmpty {
             system.killStrayOpenVPN(path: paths.openvpn)
             system.killStrayOpenVPN(path: paths.openvpn + "-root") // an older version's
             for d in leftovers {
-                // A privilege-separated run: the helper's own record of what it did.
-                if let t = savedTunnel(in: paths.runDir + "/" + d) { undo(t, others: []); continue }
+                // A privilege-separated run: the helper's own record of what it did (kept while DNS it left
+                // is on record nowhere else).
+                if let t = savedTunnel(in: paths.runDir + "/" + d) {
+                    if !undo(t, others: []) {
+                        kept.insert(d)
+                        keptRuns.insert(paths.runDir + "/" + d)   // tried again while the helper runs
+                    }
+                    continue
+                }
                 // openvpn without root wrote that log: never a reason to change anything.
                 if system.fileInfo(paths.runDir + "/" + d + "/sock") != nil { continue }
-                cleanUp(after: facts(in: paths.runDir + "/" + d), others: [])
+                if !cleanUp(after: facts(in: paths.runDir + "/" + d), others: []) {
+                    kept.insert(d)
+                    keptRuns.insert(paths.runDir + "/" + d)   // tried again while the helper runs
+                }
             }
         }
-        system.remove(paths.runDir)
-        try system.makeDirectory(paths.runDir, mode: 0o711)
+        retryDNSLeftNow()
+        retryDNSLeftLater()
+        if kept.isEmpty {
+            system.remove(paths.runDir)
+            try system.makeDirectory(paths.runDir, mode: 0o711)
+        } else {
+            for d in leftovers where !kept.contains(d) { system.remove(paths.runDir + "/" + d) }
+        }
         try? system.makeDirectory(paths.logsDir, mode: 0o755)
         // Whatever a previous helper left in PF is replaced: its blocks, or nothing.
         loadLocks()
         appliedPF = "\u{0}"
         refreshProtection()
+        // An uninstall held back by DNS left (the app went to the Trash): done now if that is off.
+        if uninstallWhenDNSOff != nil { retryDNSLeft() }
     }
 
     public func start(bundle data: Data, uid: UInt32) throws -> (id: String, socket: String) {
@@ -425,15 +557,13 @@ public final class HelperCore {
             throw HelperCoreError.message("too many connections")
         }
         let bundle = try JSONDecoder().decode(ProfileBundle.self, from: data)
-        // Connecting the profile again lifts the block its drop left.
-        let lockName = HelperCore.lockName(bundle.name)
-        // (A block that fired only: the arming of a tunnel of that name still up stays.)
-        if locks.contains(where: { $0.name == lockName && $0.owner == uid && !$0.armed && !$0.everyone }) {
-            locks.removeAll { $0.name == lockName && $0.owner == uid && !$0.armed && !$0.everyone }
-            saveLocks()
-        }
+        // The block its drop left stays while it connects again: lifted once it takes all traffic
+        // (refreshProtection), not before (a start that fails would leave the user unprotected).
         let r = try launch(bundle, owner: uid, management: ["--management-client-user", user], persistent: false)
         connections[r.id]?.protection = bundle.protection
+        // Started to replace a tunnel whose drop fired its block: it lifts that block once up.
+        let lockName = HelperCore.lockKey(name: bundle.name, profileID: bundle.profileID)
+        connections[r.id]?.liftsBlock = locks.contains { $0.name == lockName && $0.owner == uid && !$0.armed && !$0.everyone }
         refreshProtection()
         return r
     }
@@ -597,6 +727,9 @@ public final class HelperCore {
     private func launch(_ bundle: ProfileBundle, owner uid: UInt32, management: [String],
                         persistent: Bool) throws -> (id: String, socket: String) {
         // Before anything is made or started: a refusal leaves nothing behind.
+        guard bundle.profileID.map({ $0.utf8.count <= 1024 && !$0.unicodeScalars.contains(where: CharacterSet.controlCharacters.contains) }) ?? true else {
+            throw HelperCoreError.message("profile id: not one")
+        }
         guard bundle.dnsDomains.count <= ProfileBundle.maxDNSDomains else {
             throw HelperCoreError.message("DNS domains: at most \(ProfileBundle.maxDNSDomains)")
         }
@@ -672,13 +805,15 @@ public final class HelperCore {
                                             cwd: dir, logPath: dir + "/openvpn.log", user: user) { [weak self] kind in
                 self?.finished(id: id, kind: kind)
             }
-            let info = ConnectionInfo(id: id, name: bundle.name, pid: process.pid, managementSocket: socket, ownerUID: uid,
+            var info = ConnectionInfo(id: id, name: bundle.name, pid: process.pid, managementSocket: socket, ownerUID: uid,
                                       persistent: persistent)
+            info.profileID = persistent ? nil : bundle.profileID
             let c = Connection(info: info, process: process, dir: dir)
             c.startedAt = system.now()
             c.serviceID = user?.uid
             c.splitDNS = bundle.splitDNS
             c.dnsDomains = bundle.dnsDomains
+            c.appendLog = bundle.appendLog
             c.mayRouteAll = limit.mayRouteAll
             c.mayChangeDNS = limit.mayChangeDNS
             c.allowed = limit.allowed
@@ -776,13 +911,14 @@ public final class HelperCore {
         c.exited = true
         c.channel?.close()
         c.channel = nil
-        let name = HelperCore.lockName(c.info.name)
+        let name = HelperCore.lockKey(c.info)
         syncArming()
         let tookAll = c.tunnel.takesAllTraffic
         if let id = c.serviceID { system.killProcesses(uids: id...id) }
+        var recorded = true
         do {
             let others = connections.values.filter { $0 !== c }.map(\.tunnel)
-            undo(c.tunnel, others: others)
+            recorded = undo(c.tunnel, others: others)
             release(c.tunnel, others: others)
         }
         if c.protection.killSwitch, !c.stopping, c.wasFull || tookAll {
@@ -800,13 +936,39 @@ public final class HelperCore {
             system.after(wait) { [weak self] in _ = try? self?.startPersistent(name: pname, uid: 0) }
         }
         saveLocks()
-        let kept = paths.logsDir + "/" + HelperCore.logFileName(c.info.name, uid: c.info.ownerUID) + ".log"
-        system.move(c.dir + "/openvpn.log", kept)
+        let kept = paths.logsDir + "/" + ProfileKey.logName(profile: c.info.name, id: c.info.profileID, uid: c.info.ownerUID) + ".log"
+        let live = c.dir + "/openvpn.log"
+        var appended = false
+        if c.appendLog, let before = system.readTail(kept, maxBytes: HelperCore.maxKeptLogBytes),
+           let now = system.readTail(live, maxBytes: HelperCore.maxKeptLogBytes) {
+            // This run after the earlier ones, the newest kept when it grows too long. Only once written does the
+            // run's own go.
+            appended = (try? system.writeFile(kept, Data((before + now).suffix(HelperCore.maxKeptLogBytes)), mode: 0o600)) != nil
+            if appended { system.remove(live) }
+        }
+        if !appended, system.fileInfo(live) != nil {
+            // In one step (rename): the kept one replaced only by the new one.
+            do {
+                try system.replace(live, kept)
+            } catch {
+                // Not moved: copied, so it does not go with the run folder.
+                if let d = system.readTail(live, maxBytes: HelperCore.maxKeptLogBytes) { try? system.writeFile(kept, d, mode: 0o600) }
+            }
+        }
         giveLog(kept, to: c.info, live: false)
         // Bounded per user: names are the user's to choose.
+        // The oldest go (by when they were written).
         let mine = system.list(paths.logsDir).filter { $0.hasSuffix(".\(c.info.ownerUID).log") && paths.logsDir + "/" + $0 != kept }
+            .sorted { (system.fileInfo(paths.logsDir + "/" + $0)?.modified ?? 0) < (system.fileInfo(paths.logsDir + "/" + $1)?.modified ?? 0) }
         for old in mine.dropLast(max(0, HelperCore.keptLogsPerUser - 1)) { system.remove(paths.logsDir + "/" + old) }
-        system.remove(c.dir)
+        // DNS left behind and not on record elsewhere: its own record stays for the next helper.
+        if recorded, !c.keepRecord {
+            system.remove(c.dir)
+        } else {
+            // Something of it still to undo (a route still there, DNS on record nowhere else): tried again.
+            keptRuns.insert(c.dir)
+            retryDNSLeftLater()
+        }
         refreshProtection()
         if connections.isEmpty { finishUninstall() }
     }
@@ -872,10 +1034,14 @@ public final class HelperCore {
         let queueBefore = (c.dnsWantsAll, c.dnsAskOrder)
         /// Its DNS on the Mac as before the request (the new one off, the old one back); the record
         /// says what is set whatever could not be.
-        func putDNSBack() {
+        /// - on: the tunnel as it is on the Mac after the rollback (its routes back, or not).
+        func putDNSBack(on topology: TunnelState) {
             if c.appliedDNS != dnsBefore {
-                replaceDNS(c, with: dnsBefore.flatMap { system.interfaceExists($0.device) ? $0 : nil })
+                // Not back where it would no longer pass on the tunnel as it now is.
+                let back = dnsBefore.flatMap { system.interfaceExists($0.device) && (try? checkDNS(c, $0, policy: "", on: topology)) != nil ? $0 : nil }
+                replaceDNS(c, with: back)
             }
+            before.dnsBackupLeft = c.tunnel.dnsBackupLeft ?? before.dnsBackupLeft
             before.dnsApplied = c.appliedDNS != nil
             before.dnsServers = c.appliedDNS?.servers ?? []
             before.dnsDomains = c.appliedDNS?.matchDomains ?? []
@@ -885,8 +1051,15 @@ public final class HelperCore {
         } catch {
             // Nothing done: the record (written ahead) says so again; if it cannot, the
             // connection is undone and stopped rather than left with a record of the future.
-            putDNSBack()
+            putDNSBack(on: before)
             c.tunnel = before
+            // Routes it added that would not go back: on record, and the connection undone with them.
+            if !c.stuckRoutes.isEmpty {
+                c.tunnel.keep(c.stuckRoutes)
+                c.stuckRoutes = []
+                failClosed(c)
+                throw error
+            }
             // Asked for all names while another has them: in line for them (that is the answer, not a failure).
             if !(error is DNSWaiting) { (c.dnsWantsAll, c.dnsAskOrder) = queueBefore }
             do { try saveTunnel(c) } catch { failClosed(c) }
@@ -896,14 +1069,22 @@ public final class HelperCore {
         }
         /// Take back what this request did.
         func undoRequest() {
-            for r in c.tunnel.cleanup() where !before.cleanup().contains(r) { remove(r, others: others) }
+            // Its new routes go, and those it took away (ROUTEDEL) come back, as the record says; one that cannot
+            // leaves the record wrong (DNS checks trust it), so the connection is undone and stopped instead.
+            var routesBack = true
+            var stuck: [TunnelRoute] = []
+            for r in c.tunnel.cleanup() where !before.cleanup().contains(r) && !remove(r, others: others) { stuck.append(r) }
+            if !stuck.isEmpty { routesBack = false }
+            for r in before.cleanup() where !c.tunnel.cleanup().contains(r) && !system.routeExists(r) {
+                if !system.runNetwork(r.add) { routesBack = false }
+            }
             if let dev = c.tunnel.device, dev == before.device {
                 if let a = c.tunnel.local, a != before.local { _ = system.runNetwork(["ifconfig", dev, "inet", TunnelState.text(a), "delete"]) }
                 if let n6 = c.tunnel.net6, n6 != before.net6, let a6 = n6.split(separator: "/").first {
                     _ = system.runNetwork(["ifconfig", dev, "inet6", String(a6), "delete"])
                 }
             }
-            putDNSBack()
+            putDNSBack(on: routesBack ? before : c.tunnel)
             (c.dnsWantsAll, c.dnsAskOrder) = queueBefore
             if let dev = c.tunnel.device, dev != before.device {
                 takeDown(c.tunnel)
@@ -911,8 +1092,11 @@ public final class HelperCore {
             }
             if let fd = reply.fd { system.closeDescriptor(fd) }
             c.tunnel = before
+            // Its new routes that would not go stay on record (undone with the connection).
+            c.tunnel.keep(stuck)
             // Undone but not recorded: a record of what is no longer there is not kept running.
-            do { try saveTunnel(c) } catch { failClosed(c) }
+            do { try saveTunnel(c) } catch { return failClosed(c) }
+            if !routesBack { failClosed(c) }
         }
         // On disk before it counts: a change the helper could not undo after a crash is undone now.
         do {
@@ -969,7 +1153,10 @@ public final class HelperCore {
                     // All names free while it reconnects: the next in line gets them (its own DNSUP may not come).
                     if heldAll { reassignAfterRequest = true }
                 }
-                for r in c.tunnel.dropDevice(old) { remove(r, others: others) }
+                // Into the old utun: gone with it, unless it is the same one again (then still on record if they stay).
+                let dropped = c.tunnel.dropDevice(old)
+                let stayed = dropped.filter { !remove($0, others: others) }
+                if old == name { c.tunnel.keep(stayed) }
                 if old != name {
                     takeDown(c.tunnel)
                     system.releaseDevice(old)
@@ -1001,6 +1188,8 @@ public final class HelperCore {
                     throw HelperCoreError.message("\(TunnelState.text(a)) is in another user's network")
                 }
             }
+            // Its DNS server may not be inside the new network: off before the change.
+            try dropDNSNoLongerAllowed(c)
             guard let first = cmds.first, system.runNetwork(first) else { throw HelperCoreError.message("ifconfig failed") }
             // The route to its own network: not essential (it may exist already, as a LAN of the same range).
             // Not when it lies in another user's networks (as narrow or narrower, it would take their traffic).
@@ -1078,12 +1267,16 @@ public final class HelperCore {
             if fullElsewhere, c.tunnel.outsideHosts.count > HelperCore.hostsBesideFullTunnel {
                 throw HelperCoreError.message("another user's tunnel takes all traffic: no more host routes around it")
             }
+            // A host route around the tunnel may take its DNS server with it: off before the change.
+            try dropDNSNoLongerAllowed(c)
             // On disk before the change: after a crash the helper knows what it may have done.
             try record(c)
             for (i, r) in added.enumerated() where !system.runNetwork(r.add) {
                 // Already there from another of our connections (the same server): shared.
                 if !r.intoTunnel, others.contains(where: { $0.routes.contains(r) }) { continue }
-                added.prefix(i).forEach { _ = system.runNetwork($0.delete) }
+                // Those added just now taken back; one that stays keeps its record and the connection is undone.
+                let stuck = added.prefix(i).filter { !system.runNetwork($0.delete) && system.routeExists($0) }
+                if !stuck.isEmpty { c.stuckRoutes = Array(stuck) }
                 throw HelperCoreError.message("route failed")
             }
         case "ROUTE6":
@@ -1103,8 +1296,18 @@ public final class HelperCore {
             try record(c)
             if !system.runNetwork(r.add) { throw HelperCoreError.message("route failed") }
         case "ROUTEDEL":
-            for r in try c.tunnel.deleteRoute(message, gateway: system.defaultGateway()) { remove(r, others: others) }
-        case "ROUTE6DEL": remove(try c.tunnel.deleteRoute6(message), others: others)
+            let deleted = try c.tunnel.deleteRoute(message, gateway: system.defaultGateway())
+            // (The record goes back with the request's if this fails.)
+            // Its DNS server may have been inside the tunnel only through that route: off before it goes.
+            try dropDNSNoLongerAllowed(c)
+            for (i, r) in deleted.enumerated() where !remove(r, others: others) {
+                // Still there: refused, as recorded (the ones already gone put back).
+                deleted.prefix(i).forEach { _ = system.runNetwork($0.add) }
+                throw HelperCoreError.message("route delete failed")
+            }
+        case "ROUTE6DEL":
+            // Still there: refused, as recorded.
+            guard remove(try c.tunnel.deleteRoute6(message), others: others) else { throw HelperCoreError.message("route delete failed") }
         case "DNSVAR": try c.tunnel.dnsVar(message)
         case "DNSUP":
             let t = system.now()
@@ -1169,23 +1372,62 @@ public final class HelperCore {
     /// `appliedDNS` says what is set afterwards, whatever happened.
     @discardableResult private func replaceDNS(_ c: Connection, with plan: DNSPlan?) -> Bool {
         let old = c.appliedDNS
-        if let plan, plan == old { return system.setDNS(plan) }
+        if plan == old { return true }
         if let old {
-            guard system.restoreDNS(device: old.device) else { return false }
+            switch system.restoreDNS(device: old.device) {
+            case .failed: return false
+            // Off, its backup left: on record (dns-left, or else the tunnel's own record).
+            case .backupLeft: if !leaveDNS(old.device, .backup) { c.tunnel.dnsBackupLeft = old.device }
+            case .done: break
+            }
             c.appliedDNS = nil
         }
         guard let plan else { return true }
-        guard system.setDNS(plan) else {
-            if let old, system.setDNS(old) { c.appliedDNS = old }
+        let result = system.setDNS(plan)
+        guard result == .set else {
+            // A backup made for it left behind: on record (dns-left, or else the tunnel's own record).
+            if result == .failedBackupLeft, !leaveDNS(plan.device, .backup) { c.tunnel.dnsBackupLeft = plan.device }
+            if let old, system.setDNS(old) == .set {
+                c.appliedDNS = old
+                if !old.split { adoptBackup(c, old.device) }
+            }
             return false
         }
         c.appliedDNS = plan
+        if !plan.split { adoptBackup(c, plan.device) }
         return true
+    }
+
+    /// All names set again on a device whose backup was left: that backup is this DNS's own again (what to
+    /// put back when it ends), no longer one to remove.
+    private func adoptBackup(_ c: Connection, _ dev: String) {
+        if c.tunnel.dnsBackupLeft == dev { c.tunnel.dnsBackupLeft = nil }
+        if dnsLeft[dev] == .backup {
+            dnsLeft[dev] = nil
+            saveDNSLeft()
+        }
+    }
+
+    /// Its tunnel changed (a route gone): DNS that no longer passes the checks is taken off (a standard user's
+    /// server would be reached outside the tunnel), and a request in line for all names dropped.
+    private func dropDNSNoLongerAllowed(_ c: Connection) throws {
+        if let w = c.dnsWantsAll, (try? checkDNS(c, w, policy: "")) == nil { c.dnsWantsAll = nil }
+        guard let p = c.appliedDNS, (try? checkDNS(c, p, policy: "")) == nil else { return }
+        // Off first, then recorded so (a record of DNS set that is not is undone harmlessly after a crash;
+        // one of DNS off that is not would be left).
+        guard replaceDNS(c, with: nil) else {
+            throw HelperCoreError.message("its DNS server would be outside the tunnel, and its DNS could not be taken off")
+        }
+        c.tunnel.dnsApplied = false
+        c.tunnel.dnsDomains = []
+        c.tunnel.dnsServers = []
+        if !p.split { reassignAfterRequest = true }
     }
 
     /// May `c` have `plan` set now (asked for, or its turn come): the policy, and a standard user's
     /// servers inside its own tunnel as it is now.
-    private func checkDNS(_ c: Connection, _ plan: DNSPlan, policy: String) throws {
+    private func checkDNS(_ c: Connection, _ plan: DNSPlan, policy: String, on topology: TunnelState? = nil) throws {
+        let t = topology ?? c.tunnel
         // Its own domains are its business; all names are everyone's on the Mac.
         if !c.mayChangeDNS {
             // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.
@@ -1198,7 +1440,7 @@ public final class HelperCore {
         // networks (the system resolver would send everyone's queries there, whatever the name).
         if c.restricted {
             let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
-            let mine = c.tunnel.networks
+            let mine = t.networks
             // (An administrator who lets users change the Mac's DNS lets them replace its resolvers too;
             // their own, set for all names, is then the Mac's.)
             var system = Set<UInt32>()
@@ -1211,7 +1453,8 @@ public final class HelperCore {
             }
             for srv in plan.servers {
                 guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
-                      !lan.contains(where: { $0.contains(a) }), mine.contains(where: { $0.contains(a) }) || c.tunnel.peer == a else {
+                      !lan.contains(where: { $0.contains(a) }), !t.outsideHosts.contains(a),
+                      mine.contains(where: { $0.contains(a) }) || t.peer == a else {
                     throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
                 }
             }
@@ -1222,7 +1465,8 @@ public final class HelperCore {
     /// DNS for all names free again: to the tunnel that has asked for them longest (its split DNS, if it
     /// had its own domains meanwhile, taken off first).
     private func reassignAllNames() {
-        guard !connections.values.contains(where: { !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) else { return }
+        guard !connections.values.contains(where: { !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }),
+              !dnsLeftHoldsAllNames, !connections.values.contains(where: { $0.tunnel.dnsBackupLeft != nil }) else { return }
         let next = connections.values.filter { !$0.exited && $0.dnsWantsAll != nil && $0.tunnel.device != nil }
             .sorted { $0.dnsAskOrder < $1.dnsAskOrder }
         for c in next {
@@ -1253,10 +1497,12 @@ public final class HelperCore {
 
     /// Take a route away: only while it is there as added, not while another connection shares
     /// it, and never on a device that is another connection's now.
-    private func remove(_ r: TunnelRoute, others: [TunnelState]) {
-        if !r.intoTunnel, others.contains(where: { $0.routes.contains(r) }) { return }
-        if r.intoTunnel, others.contains(where: { $0.device == r.via }) { return }
-        if system.routeExists(r) { _ = system.runNetwork(r.delete) }
+    /// - Returns: false when it is still there (its record must stay).
+    @discardableResult private func remove(_ r: TunnelRoute, others: [TunnelState]) -> Bool {
+        if !r.intoTunnel, others.contains(where: { $0.routes.contains(r) }) { return true }
+        if r.intoTunnel, others.contains(where: { $0.device == r.via }) { return true }
+        guard system.routeExists(r) else { return true }
+        return system.runNetwork(r.delete) || !system.routeExists(r)
     }
 
     /// At once, not after openvpn's grace: its routes, DNS and addresses go, then openvpn.
@@ -1264,14 +1510,18 @@ public final class HelperCore {
     private func failClosed(_ c: Connection) {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         if c.protection.killSwitch, c.wasFull || c.tunnel.takesAllTraffic {
-            addLock(Lock(name: HelperCore.lockName(c.info.name), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN,
+            addLock(Lock(name: HelperCore.lockKey(c.info), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN,
                          everyone: c.info.persistent))
             saveLocks()
         }
-        undo(c.tunnel, others: others)
+        let recorded = undo(c.tunnel, others: others)
         release(c.tunnel, others: others)
-        c.tunnel = TunnelState()
-        try? saveTunnel(c)
+        if recorded {
+            c.tunnel = TunnelState()
+            try? saveTunnel(c)
+        } else {
+            c.keepRecord = true
+        }
         c.stopping = true
         c.process.signal(SIGKILL)
     }
@@ -1316,9 +1566,113 @@ public final class HelperCore {
 
     /// Take away what the helper set up for a tunnel that is gone: only routes still there
     /// as added (those into a closed utun went with it), none another connection shares.
-    private func undo(_ t: TunnelState, others: [TunnelState]) {
-        t.cleanup().forEach { remove($0, others: others) }
-        if t.dnsApplied, let dev = t.device { system.restoreDNS(device: dev) }
+    /// DNS that could not be taken off is put on record (tried again; all names not handed on meanwhile).
+    /// - Returns: false when that record could not be written (the tunnel's own record is then kept).
+    @discardableResult private func undo(_ t: TunnelState, others: [TunnelState]) -> Bool {
+        // A route still there keeps the record (tried again).
+        var recorded = t.cleanup().map { remove($0, others: others) }.allSatisfy { $0 }
+        // Its DNS first (a backup it still uses is what that puts back), then a backup left on its own.
+        if t.dnsApplied, let dev = t.device {
+            switch system.restoreDNS(device: dev) {
+            case .done: break
+            case .backupLeft: recorded = leaveDNS(dev, .backup) && recorded
+            case .failed: recorded = leaveDNS(dev, t.dnsDomains.isEmpty ? .all : .split) && recorded
+            }
+        }
+        // Never the backup of all names set on that device: it is theirs (put back by restoring them, done
+        // or still to do), whatever the restore did.
+        let usedByItsDNS = t.dnsApplied && t.dnsDomains.isEmpty && t.device == t.dnsBackupLeft
+        if let dev = t.dnsBackupLeft, !usedByItsDNS, !system.removeDNSBackup(device: dev) { recorded = leaveDNS(dev, .backup) && recorded }
+        return recorded
+    }
+
+    /// What of a gone tunnel's DNS is left: its resolver, the primary's DNS for all names, or only the
+    /// backup of the primary's DNS (it holds all names back).
+    enum DNSLeft: String, Codable { case split, all, backup }
+    /// By device. On record, so a new helper tries too; tried again meanwhile.
+    private var dnsLeft: [String: DNSLeft] = [:]
+    private var dnsLeftPath: String { paths.supportDir + "/dns-left.json" }
+    private var dnsLeftRetryPending = false
+    /// Run directories of gone tunnels kept because something of theirs is not undone yet (their record says what).
+    private var keptRuns: Set<String> = []
+    static let dnsLeftRetry: TimeInterval = 30
+    /// All names held back while some may be left.
+    private var dnsLeftHoldsAllNames: Bool { dnsLeft.values.contains { $0 != .split } }
+
+    @discardableResult private func leaveDNS(_ dev: String, _ what: DNSLeft) -> Bool {
+        // The more there is to undo wins (all names over a backup over a resolver).
+        let rank: [DNSLeft: Int] = [.split: 0, .backup: 1, .all: 2]
+        if let had = dnsLeft[dev], rank[had]! > rank[what]! {} else { dnsLeft[dev] = what }
+        retryDNSLeftLater()
+        return saveDNSLeft()
+    }
+
+    @discardableResult private func saveDNSLeft() -> Bool {
+        if dnsLeft.isEmpty { system.remove(dnsLeftPath); return true }
+        guard let d = try? JSONEncoder().encode(dnsLeft), (try? system.writeFile(dnsLeftPath, d, mode: 0o600)) != nil else { return false }
+        return true
+    }
+
+    private func loadDNSLeft() {
+        guard let info = system.fileInfo(dnsLeftPath), info.kind == .regular, info.rootOnly, let d = system.readFile(dnsLeftPath),
+              let left = try? JSONDecoder().decode([String: DNSLeft].self, from: d) else { return }
+        // Device names only: what is read is used in store keys.
+        for (dev, what) in left.prefix(64) where dev.hasPrefix("utun") && dev.count > 4 && dev.dropFirst(4).allSatisfy(\.isNumber) {
+            dnsLeft[dev] = what
+        }
+    }
+
+    private func retryDNSLeftLater() {
+        guard !dnsLeftRetryPending, !dnsLeft.isEmpty || !keptRuns.isEmpty || uninstallPendingUnsaved || uninstallRetryNeeded else { return }
+        dnsLeftRetryPending = true
+        system.after(HelperCore.dnsLeftRetry) { [weak self] in
+            self?.dnsLeftRetryPending = false
+            self?.retryDNSLeft()
+        }
+    }
+
+    /// Once, without handing anything on or finishing an uninstall (called from there).
+    private func retryDNSLeftNow() {
+        let live = connections.values.map(\.tunnel)
+        for dir in keptRuns.sorted() {
+            if let t = savedTunnel(in: dir) {
+                if !undo(t, others: live) { continue }
+            } else if system.fileInfo(dir + "/sock") == nil, !cleanUp(after: facts(in: dir), others: []) {
+                continue   // an older version's run, by its log
+            }
+            system.remove(dir)
+            keptRuns.remove(dir)
+        }
+        for c in connections.values {
+            // Never under all names set on that device (the backup is theirs then).
+            guard let dev = c.tunnel.dnsBackupLeft, c.appliedDNS.map({ $0.split || $0.device != dev }) ?? true,
+                  system.removeDNSBackup(device: dev) else { continue }
+            c.tunnel.dnsBackupLeft = nil
+            try? saveTunnel(c)
+        }
+        for (dev, what) in dnsLeft where !connections.values.contains(where: { $0.tunnel.device == dev && $0.appliedDNS != nil }) {
+            if what == .backup {
+                if system.removeDNSBackup(device: dev) { dnsLeft[dev] = nil }
+                continue
+            }
+            switch system.restoreDNS(device: dev) {
+            case .done: dnsLeft[dev] = nil
+            case .backupLeft: dnsLeft[dev] = .backup
+            case .failed: break
+            }
+        }
+        saveDNSLeft()
+    }
+
+    private func retryDNSLeft() {
+        if uninstallPendingUnsaved { saveUninstallPending() }
+        retryDNSLeftNow()
+        retryDNSLeftLater()
+        reassignAllNames()
+        if dnsLeft.isEmpty, let keep = uninstallWhenDNSOff {
+            uninstallWhenDNSOff = nil
+            try? uninstall(uid: 0, keepProfiles: keep, fromTrash: true) { _ in }
+        }
     }
 
     private func record(_ c: Connection) throws {
@@ -1420,6 +1774,18 @@ public final class HelperCore {
         String(s.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }.map(Character.init).prefix(64))
     }
 
+    /// A block's key: its profile's name and, for the app's profiles, its id (names repeat). Shown by name.
+    static func lockKey(name: String, profileID: String?) -> String {
+        lockName(name) + (profileID.map { "~" + ProfileKey.short($0) } ?? "")
+    }
+    static func lockKey(_ info: ConnectionInfo) -> String { lockKey(name: info.name, profileID: info.profileID) }
+    /// The name a block is shown by.
+    static func lockLabel(_ key: String) -> String {
+        guard let i = key.lastIndex(of: "~"), key[key.index(after: i)...].count == 12,
+              key[key.index(after: i)...].allSatisfy(\.isHexDigit) else { return key }
+        return String(key[..<i])
+    }
+
     /// Armings follow the tunnels up: one per name and user taking all traffic with a kill switch,
     /// the LAN open only if every such tunnel allows it. - Returns: whether they changed.
     @discardableResult
@@ -1427,7 +1793,7 @@ public final class HelperCore {
         var want: [Lock] = []
         for c in connections.values.sorted(by: { $0.info.id < $1.info.id })
         where !c.exited && c.protection.killSwitch && c.wasFull {
-            let name = HelperCore.lockName(c.info.name)
+            let name = HelperCore.lockKey(c.info)
             if let i = want.firstIndex(where: { $0.name == name && $0.owner == c.info.ownerUID && $0.everyone == c.info.persistent }) {
                 want[i].allowLAN = want[i].allowLAN && c.protection.allowLAN
             } else {
@@ -1474,11 +1840,21 @@ public final class HelperCore {
                                                                   dnsServers: c.tunnel.dnsApplied ? c.tunnel.dnsServers : []))
                 }
             }
+            // Its own profile up again with all traffic: the block its drop left goes (the arming of a
+            // tunnel of that name still up stays).
+            if full, c.liftsBlock, !c.exited {
+                c.liftsBlock = false
+                let name = HelperCore.lockKey(c.info), owner = c.info.ownerUID
+                if locks.contains(where: { $0.name == name && $0.owner == owner && !$0.armed && !$0.everyone }) {
+                    locks.removeAll { $0.name == name && $0.owner == owner && !$0.armed && !$0.everyone }
+                    saveLocks()
+                }
+            }
             guard c.protection.any else { continue }
             if full, !c.wasFull { c.wasFull = true }
             // A persistent tunnel up again with all traffic: the block its drop left goes (nobody connects it by hand).
             if full, c.info.persistent, !c.exited {
-                let name = HelperCore.lockName(c.info.name)
+                let name = HelperCore.lockKey(c.info)
                 if locks.contains(where: { $0.everyone && !$0.armed && $0.name == name }) {
                     locks.removeAll { $0.everyone && !$0.armed && $0.name == name }
                     saveLocks()
@@ -1523,7 +1899,7 @@ public final class HelperCore {
     public func locks(uid: UInt32) -> [String] {
         let admin = uid == 0 || system.isAdmin(uid: uid)
         // A persistent tunnel's block is everyone's: everyone it blocks is told why (an administrator lifts it).
-        return locks.filter { !$0.armed && (admin || $0.owner == uid || $0.everyone) }.map(\.name).sorted()
+        return locks.filter { !$0.armed && (admin || $0.owner == uid || $0.everyone) }.map { HelperCore.lockLabel($0.name) }.sorted()
     }
 
     /// Nothing needs this helper to keep running: no connection of anyone's, no block (PF to watch).
@@ -1595,7 +1971,12 @@ public final class HelperCore {
     /// A kill switch armed only in memory would not survive the helper: written again until it is.
     private var locksDirty = false
     private func saveLocks() {
-        if locks.isEmpty { system.remove(locksPath); locksDirty = false; return }
+        if locks.isEmpty {
+            system.remove(locksPath)
+            // Still there: dirty (written again), never taken as gone.
+            locksDirty = system.fileInfo(locksPath) != nil
+            return
+        }
         do {
             try system.writeFile(locksPath, try JSONEncoder().encode(locks), mode: 0o600)
             locksDirty = false
@@ -1611,7 +1992,8 @@ public final class HelperCore {
               let d = system.readFile(locksPath), let l = try? JSONDecoder().decode([Lock].self, from: d) else { return }
         locks = []
         for var x in l {
-            x.name = HelperCore.lockName(x.name)
+            // A name and its profile's key (printable, bounded).
+            x.name = String(x.name.unicodeScalars.filter { !CharacterSet.controlCharacters.contains($0) }.map(Character.init).prefix(80))
             x.armed = false
             addLock(x)
         }
@@ -1631,13 +2013,24 @@ public final class HelperCore {
         return OpenVPNLogFacts.parse(String(decoding: data, as: UTF8.self))
     }
 
-    private func cleanUp(after facts: OpenVPNLogFacts, others: [OpenVPNLogFacts]) {
+    /// - Returns: false when DNS it left is on record nowhere (its directory is then kept).
+    private func cleanUp(after facts: OpenVPNLogFacts, others: [OpenVPNLogFacts]) -> Bool {
         let plan = CleanupPlan.make(facts, others: others)
-        if let dev = plan.dnsDevice { system.restoreDNS(device: dev) }
-        // Routes through the dead utun are already gone; deleting them fails harmlessly.
-        plan.routes.prefix(HelperCore.maxCleanupRoutes).map(OpenVPNLogFacts.deleteArguments).forEach(system.deleteRoute)
+        var recorded = true
+        if let dev = plan.dnsDevice {
+            switch system.restoreDNS(device: dev) {
+            case .done: break
+            case .backupLeft: recorded = leaveDNS(dev, .backup)
+            case .failed: recorded = leaveDNS(dev, .all)
+            }
+        }
+        // Routes through the dead utun are already gone (counted as deleted); one that stays keeps the folder.
+        for r in plan.routes.prefix(HelperCore.maxCleanupRoutes).map(OpenVPNLogFacts.deleteArguments) where !system.deleteRoute(r) {
+            recorded = false
+        }
         // A default route openvpn took away (redirect-gateway without def1) goes back.
-        facts.deletedDefaults.prefix(2).forEach(system.addRoute)
+        for r in facts.deletedDefaults.prefix(2) where !system.addRoute(r) { recorded = false }
+        return recorded
     }
 
     /// The live log stays root's (cleanup reads it) and its owner may read it;

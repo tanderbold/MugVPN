@@ -38,13 +38,16 @@ extension ProfilePolicy {
             let b64 = CharacterSet(charactersIn: "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789+/= \t")
             return lines.allSatisfy { $0.unicodeScalars.allSatisfy(b64.contains) } ? nil : "not base64"
         case "peer-fingerprint":
+            var found = 0
             for l in lines.map({ $0.trimmingCharacters(in: .whitespaces) }) where !l.isEmpty && !l.hasPrefix("#") {
                 let bytes = l.split(separator: ":", omittingEmptySubsequences: false)
                 guard [32, 48, 64].contains(bytes.count), bytes.allSatisfy({ $0.count == 2 && $0.allSatisfy(\.isHexDigit) }) else {
                     return "not a list of certificate fingerprints"
                 }
+                found += 1
             }
-            return nil
+            // An empty list: openvpn would check nothing, and the server check would be taken as done.
+            return found > 0 ? nil : "no certificate fingerprint in it"
         case "auth-user-pass", "http-proxy-user-pass", "http-proxy", "socks-proxy", "askpass":
             let used = lines.filter { !$0.isEmpty }
             guard used.count <= 2, used.allSatisfy({ $0.utf8.count <= 256 }) else {

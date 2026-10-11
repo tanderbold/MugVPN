@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "Provoz do %@ obchází VPN (přes %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS server %@ je dosažen mimo VPN (přes %@)",
  "Block IPv6 outside the VPN": "Blokovat IPv6 mimo VPN",
- "If it drops unexpectedly, block the Internet until I reconnect": "Při nečekaném výpadku blokovat internet, dokud se znovu nepřipojím",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "Internet zablokován: %@ vypadlo. Znovu se připojte nebo zrušte blokování.",
  "Send DNS only through the VPN": "Posílat DNS jen přes VPN",
  "Unblock Internet": "Odblokovat internet",

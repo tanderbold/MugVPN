@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ is geen tekstbestand (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ verwijst naar bestanden buiten zijn map. Naar het profiel kopiëren? De VPN-server kan de inhoud ontvangen.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ is buiten MugVPN gewijzigd sinds het hier werd geopend.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ is buiten MugVPN verwijderd sinds het hier werd geopend.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS alleen voor eigen domeinen, een andere verbinding neemt alle namen";
 "%@: DNS not set, another connection takes all names" = "%@: DNS niet ingesteld, een andere verbinding neemt alle namen";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Een client voor OpenVPN-profielen die meerdere verbindingen tegelijk openhoudt. MIT-licentie.";
 "A program asked MugVPN to import %@. Import it?" = "Een programma vraagt MugVPN %@ te importeren. Importeren?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Een overzicht (versies, welke verbindingen actief zijn) zit er altijd in. Verder:";
 "About MugVPN" = "Over MugVPN";
 "Add a connection" = "Voeg een verbinding toe";
 "Add at least one server." = "Voeg minstens één server toe.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Verbinden (%@)";
 "Connecting to %@." = "Verbinden met %@.";
 "Connection Settings…" = "Verbindingsinstellingen…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Verbindingslogs (elk tot 1 MB: adressen, servers, fouten)";
 "Connection settings" = "Verbindingsinstellingen";
 "Connections" = "Verbindingen";
 "Connections…" = "Verbindingen…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Voer maximaal 8 DNS-servers in.";
 "Enter the proxy's address and a port from 1 to 65535." = "Voer het adres van de proxy en een poort van 1 tot 65535 in.";
 "Every time" = "Elke keer";
+"Export Diagnostics" = "Diagnose exporteren";
 "Export Diagnostics…" = "Diagnose exporteren…";
+"Export…" = "Exporteren…";
 "Flat" = "Plat";
 "From the VPN server" = "Van de VPN-server";
 "General" = "Algemeen";
 "Hide" = "Verbergen";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6-verkeer gaat om de VPN heen (via %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Bij een onverwachte onderbreking internet blokkeren tot ik opnieuw verbind";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Als de verbinding onverwacht wegvalt, mijn TCP- en UDP-verkeer blokkeren tot ik opnieuw verbind";
 "Ignore messages from servers" = "Berichten van servers negeren";
 "Import" = "Importeer";
 "Import File…" = "Bestand importeren…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Verplaats MugVPN naar de map Apps, open het daarvandaan en maak opnieuw verbinding.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-instellingen";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kon het verwijderen niet voltooien (%@). Het blijft geïnstalleerd: probeer het over een minuut opnieuw.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN verwijdert de DNS of routes die een VPN instelde nog en blijft tot dan geïnstalleerd. Probeer het over een minuut opnieuw.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN is verwijderd, maar dit kon niet worden verwijderd: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN heeft zijn hulpcomponent nodig om tunnels te starten.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "De helper van MugVPN reageerde niet (%@). Het systeemdeel van MugVPN in plaats daarvan met een beheerderswachtwoord verwijderen?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "De helper van MugVPN is versie %@, nieuwer dan deze app (%@): werk MugVPN bij.";
@@ -140,6 +149,7 @@
 "None" = "Geen";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Niet al het verkeer gaat via de VPN: de tunnel heeft de standaardroute niet";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Niet geïmporteerd (MugVPN voert profielscripts niet als root uit): %@";
+"Not in the archive (could not be written): %@" = "Niet in het archief (kon niet worden geschreven): %@";
 "Notify when connected:" = "Melding bij verbinden:";
 "OK" = "OK";
 "Off" = "Uit";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Open in teksteditor";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN is een gedeponeerd handelsmerk van OpenVPN Inc.";
 "Options" = "Opties";
+"Overwrite" = "Overschrijven";
 "Password:" = "Wachtwoord:";
 "Paste" = "Plak";
 "Persistent connections:" = "Permanente verbindingen:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Script vóór verbinden (s):";
 "Private key:" = "Privésleutel:";
 "Profile menu:" = "Profielmenu:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Profielen zonder wachtwoorden of sleutels (servers, certificaten, opties)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Stop MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Opnieuw verbinden";
 "Reconnecting" = "Opnieuw verbinden";
 "Redo" = "Opnieuw";
+"Reload" = "Opnieuw laden";
 "Remove" = "Haal weg";
 "Response" = "Antwoord";
 "Revert" = "Herstel";
@@ -184,6 +197,7 @@
 "Settings…" = "Instellingen…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Meerdere verbindingen kunnen elk hun eigen domeinen bedienen; slechts één tegelijk kan alle namen overnemen.";
 "Show Status" = "Toon status";
+"Show Windows" = "Toon vensters";
 "Show in Finder" = "Toon in Finder";
 "Show the status window" = "Toon het statusvenster";
 "Sign in to This Network…" = "Inloggen op dit netwerk…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Het clientcertificaat heeft de bijbehorende privésleutel nodig.";
 "The configuration cannot be read: %@" = "De configuratie kan niet worden gelezen: %@";
 "The first time" = "De eerste keer";
+"The keychain did not remove the saved passwords of %@." = "De sleutelhanger heeft de bewaarde wachtwoorden van %@ niet verwijderd.";
+"The keychain did not save it: it is used for this connection only." = "De sleutelhanger heeft het niet bewaard: het wordt alleen voor deze verbinding gebruikt.";
+"The network state (routes, DNS, network interfaces)" = "De netwerkstatus (routes, DNS, netwerkinterfaces)";
 "The private key needs its client certificate." = "De privésleutel heeft het bijbehorende clientcertificaat nodig.";
 "The proxy for %@ needs a username and password." = "De proxy voor %@ vereist een gebruikersnaam en wachtwoord.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "De actieve helper is een oudere die zichzelf niet kan bijwerken. De nieuwe plaatsen stopt alle MugVPN-verbindingen op deze Mac, van alle gebruikers. Doorgaan?";
@@ -233,6 +250,7 @@
 "not connected" = "niet verbonden";
 "nothing" = "niets";
 "passwords" = "wachtwoorden";
+"saved passwords" = "bewaarde wachtwoorden";
 "the connection ended unexpectedly" = "de verbinding is onverwacht beëindigd";
 "the persistent connection is not running" = "de permanente verbinding is niet actief";
 "the port must be 1–65535" = "de poort moet binnen 1–65535 liggen";

@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ 不是文本文件（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 引用了其文件夹以外的文件。要将它们复制到配置文件中吗？VPN 服务器可能会收到其内容。\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）";
+"%@ was changed outside MugVPN since it was opened here." = "%@ 在此处打开后已在 MugVPN 之外被修改。";
+"%@ was removed outside MugVPN since it was opened here." = "%@ 在此处打开后已在 MugVPN 之外被删除。";
 "%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 仅用于其自身域名，另一个连接已接管所有名称";
 "%@: DNS not set, another connection takes all names" = "%@：未设置 DNS，另一个连接已接管所有名称";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同时保持多个连接的 OpenVPN 配置文件客户端。MIT 许可证。";
 "A program asked MugVPN to import %@. Import it?" = "某个程序请求 MugVPN 导入 %@。要导入吗？";
+"A summary (versions, which connections are up) always goes in. Also:" = "始终包含摘要（版本、已连接的连接）。另外：";
 "About MugVPN" = "关于 MugVPN";
 "Add a connection" = "添加连接";
 "Add at least one server." = "请至少添加一个服务器。";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "连接中（%@）";
 "Connecting to %@." = "正在连接到 %@。";
 "Connection Settings…" = "连接设置…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "连接日志（每个最多 1 MB：地址、服务器、错误）";
 "Connection settings" = "连接设置";
 "Connections" = "连接";
 "Connections…" = "连接…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "最多输入 8 个 DNS 服务器。";
 "Enter the proxy's address and a port from 1 to 65535." = "请输入代理地址和 1 到 65535 之间的端口。";
 "Every time" = "每次";
+"Export Diagnostics" = "导出诊断信息";
 "Export Diagnostics…" = "导出诊断信息…";
+"Export…" = "导出…";
 "Flat" = "扁平化";
 "From the VPN server" = "来自 VPN 服务器";
 "General" = "常规";
 "Hide" = "隐藏";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6 流量绕过了 VPN（经由 %@）";
-"If it drops unexpectedly, block the Internet until I reconnect" = "意外断开时阻止互联网，直到我重新连接";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "意外断开时，阻止我的 TCP 和 UDP 流量，直到我重新连接";
 "Ignore messages from servers" = "忽略来自服务器的消息";
 "Import" = "导入";
 "Import File…" = "导入文件…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "请将 MugVPN 移到“应用程序”文件夹，从那里打开后再次连接。";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 设置";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN 无法完成卸载（%@）。它会保持安装：请一分钟后再试。";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN 仍在移除 VPN 设置的 DNS 或路由，在此之前会保持安装。请一分钟后再试。";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN 已卸载，但以下内容无法移除：%@";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其辅助程序来启动隧道。";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。";
@@ -140,6 +149,7 @@
 "None" = "无";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "并非所有流量都经过 VPN：隧道未持有默认路由";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "未导入（MugVPN 不会以 root 身份运行配置文件脚本）：%@";
+"Not in the archive (could not be written): %@" = "未包含在归档中（无法写入）：%@";
 "Notify when connected:" = "连接时通知：";
 "OK" = "好";
 "Off" = "关闭";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "在文本编辑器中打开";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN 是 OpenVPN Inc. 的注册商标。";
 "Options" = "选项";
+"Overwrite" = "覆盖";
 "Password:" = "密码：";
 "Paste" = "粘贴";
 "Persistent connections:" = "持久连接：";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "预连接脚本（秒）：";
 "Private key:" = "私钥：";
 "Profile menu:" = "配置文件菜单：";
+"Profiles without passwords or keys (servers, certificates, options)" = "不含密码或密钥的配置文件（服务器、证书、选项）";
 "Proxy" = "代理";
 "Proxy:" = "代理：";
 "Quit MugVPN" = "退出 MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "重新连接";
 "Reconnecting" = "正在重新连接";
 "Redo" = "重做";
+"Reload" = "重新载入";
 "Remove" = "移除";
 "Response" = "响应";
 "Revert" = "复原";
@@ -184,6 +197,7 @@
 "Settings…" = "设置…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "多个连接可以各自负责自己的域；同一时间只有一个连接可以接管所有名称。";
 "Show Status" = "显示状态";
+"Show Windows" = "显示窗口";
 "Show in Finder" = "在 Finder 中显示";
 "Show the status window" = "显示状态窗口";
 "Sign in to This Network…" = "登录此网络…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "客户端证书需要其私钥。";
 "The configuration cannot be read: %@" = "无法读取配置：%@";
 "The first time" = "仅第一次";
+"The keychain did not remove the saved passwords of %@." = "钥匙串未移除 %@ 的存储密码。";
+"The keychain did not save it: it is used for this connection only." = "钥匙串未能保存：仅用于此次连接。";
+"The network state (routes, DNS, network interfaces)" = "网络状态（路由、DNS、网络接口）";
 "The private key needs its client certificate." = "私钥需要其客户端证书。";
 "The proxy for %@ needs a username and password." = "%@ 的代理需要用户名和密码。";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "正在运行的助手是无法自行更新的旧版本。换上新版本会停止此 Mac 上所有用户的所有 MugVPN 连接。是否继续？";
@@ -233,6 +250,7 @@
 "not connected" = "未连接";
 "nothing" = "无";
 "passwords" = "密码";
+"saved passwords" = "存储的密码";
 "the connection ended unexpectedly" = "连接意外结束";
 "the persistent connection is not running" = "持久连接未运行";
 "the port must be 1–65535" = "端口必须为 1–65535";

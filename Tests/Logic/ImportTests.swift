@@ -117,6 +117,14 @@ func registerImportTests() {
             expect(e.description.contains("not an OpenVPN profile"), e.description)
         } else { expect(false) }
     }
+    test("ASI-09", "a server that asks challenge after challenge: given up after a few rounds") {
+        let h = FakeHTTP()
+        let crv = "<Error><Message>CRV1:R:sid:YQ==:OTP</Message></Error>"
+        h.responses = Array(repeating: .success(HTTPResponse(status: 401, body: Data(crv.utf8), contentDisposition: nil)), count: 20)
+        let r = download(h, .accessServer(host: "a.example.com", autologin: false))
+        expectEqual(h.requests.count, ProfileDownloader.maxChallengeRounds + 1)
+        if case .failure(let e)? = r { expect(e.description.contains("challenge"), e.description) } else { expect(false, "\(String(describing: r))") }
+    }
     test("ASI-07", "challenge cancelled") {
         let h = FakeHTTP()
         let crv = "<Error><Message>CRV1:R:sid:YQ==:OTP</Message></Error>"

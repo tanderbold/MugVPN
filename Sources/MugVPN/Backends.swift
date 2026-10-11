@@ -122,6 +122,11 @@ final class UnixSocketLink: ManagementLink {
     static let serviceIDs: ClosedRange<uid_t> = 470_000_000...(470_000_000 + 4095)
     private let fd: Int32
     private let source: DispatchSourceRead
+    /// Writes in order, off the main thread: an openvpn that stops reading cannot freeze the app.
+    private let writes = DispatchQueue(label: "mugvpn.management.write")
+    private var closed = false   // on `writes`; the descriptor is closed only once this is set (by the read source's end)
+    private let onClose: () -> Void
+    static let writeDeadline: TimeInterval = 5
 
     init?(path: String, onData: @escaping (Data) -> Void, onClose: @escaping () -> Void) {
         let sock = socket(AF_UNIX, SOCK_STREAM, 0)
@@ -138,39 +143,71 @@ final class UnixSocketLink: ManagementLink {
         // openvpn of MugVPN's (one of its own ids), not whatever a path was made to lead to.
         setNoSigPipe(sock)
         guard let peer = socketPeer(sock), (UnixSocketLink.serviceIDs).contains(peer.uid) else { Darwin.close(sock); return nil }
+        // Non-blocking: neither a read nor a write waits on openvpn.
+        _ = fcntl(sock, F_SETFL, fcntl(sock, F_GETFL) | O_NONBLOCK)
         fd = sock
+        self.onClose = onClose
         source = DispatchSource.makeReadSource(fileDescriptor: sock, queue: .global())
-        source.setEventHandler { [source] in
+        source.setEventHandler { [weak self] in
             var buf = [UInt8](repeating: 0, count: 16384)
             let n = read(sock, &buf, buf.count)
+            if n < 0, errno == EAGAIN || errno == EINTR { return }
             if n > 0 {
                 let d = Data(buf[0..<n])
                 DispatchQueue.main.async { onData(d) }
             } else {
-                source.cancel()
-                DispatchQueue.main.async { onClose() }
+                // Ended: closed through the write queue (no write after this reaches the descriptor).
+                self?.writes.async { self?.closeOnQueue(notify: true) }
             }
         }
+        // After the last read handler (the source's guarantee); writes stopped already (closed is set first).
         source.setCancelHandler { Darwin.close(sock) }
         source.resume()
     }
 
     func write(_ data: Data) {
-        data.withUnsafeBytes { raw in
+        writes.async { [self] in
+            guard !closed else { return }
+            let deadline = Date().addingTimeInterval(Self.writeDeadline)
             var off = 0
-            while off < raw.count {
-                let n = Darwin.write(fd, raw.baseAddress! + off, raw.count - off)
-                if n <= 0 { break }
-                off += n
+            data.withUnsafeBytes { raw in
+                while off < raw.count {
+                    let n = Darwin.write(fd, raw.baseAddress! + off, raw.count - off)
+                    if n > 0 { off += n; continue }
+                    // Full: wait for room, up to the deadline.
+                    guard n < 0, errno == EAGAIN || errno == EINTR, Date() < deadline else { break }
+                    var p = pollfd(fd: fd, events: Int16(POLLOUT), revents: 0)
+                    _ = poll(&p, 1, 100)
+                }
             }
+            // Not taken in time (or gone): the link is dropped, as when openvpn closes it.
+            if off < data.count { closeOnQueue(notify: true) }
         }
     }
 
-    func write(_ data: Data, passing passed: Int32) -> Bool {
-        sendWithDescriptor(socket: fd, data, passing: passed)
+    func write(_ data: Data, passing passed: Int32, done: @escaping (Bool) -> Void) {
+        writes.async { [self] in
+            var ok = false
+            if !closed {
+                // Room for it first (bounded: it is one short line).
+                var p = pollfd(fd: fd, events: Int16(POLLOUT), revents: 0)
+                _ = poll(&p, 1, 2000)
+                ok = sendWithDescriptor(socket: fd, data, passing: passed)
+            }
+            DispatchQueue.main.async { done(ok) }
+        }
     }
 
-    func close() { source.cancel() }
+    /// After the writes already asked for (the descriptor closes with the read source).
+    func close() { writes.async { [self] in closeOnQueue(notify: false) } }
+
+    /// On `writes` only. - notify: it ended on its own (openvpn gone, or not reading): said like openvpn's close.
+    private func closeOnQueue(notify: Bool) {
+        guard !closed else { return }
+        closed = true
+        source.cancel()
+        if notify { DispatchQueue.main.async(execute: onClose) }
+    }
 }
 
 final class UnixSocketTransport: ManagementTransport {
@@ -198,12 +235,16 @@ final class KeychainStore: SecretStore {
         return String(data: d, encoding: .utf8)
     }
 
-    func set(_ profile: String, _ key: SecretKey, _ value: String) {
-        remove(profile, key)
+    /// Updated in place (the old one is never removed first); added if there is none.
+    @discardableResult func set(_ profile: String, _ key: SecretKey, _ value: String) -> Bool {
         let q: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service,
-                                kSecAttrAccount as String: account(profile, key), kSecValueData as String: Data(value.utf8),
-                                kSecAttrLabel as String: "MugVPN: \(profile)"]
-        SecItemAdd(q as CFDictionary, nil)
+                                kSecAttrAccount as String: account(profile, key)]
+        let update = SecItemUpdate(q as CFDictionary, [kSecValueData as String: Data(value.utf8)] as CFDictionary)
+        guard update == errSecItemNotFound else { return update == errSecSuccess }
+        var add = q
+        add[kSecValueData as String] = Data(value.utf8)
+        add[kSecAttrLabel as String] = "MugVPN: \(profile)"
+        return SecItemAdd(add as CFDictionary, nil) == errSecSuccess
     }
 
     func remove(_ profile: String, _ key: SecretKey) {
@@ -216,17 +257,19 @@ final class KeychainStore: SecretStore {
         for k in [SecretKey.username, .password, .keyPassword, .proxyUsername, .proxyPassword] { remove(profile, k) }
     }
 
-    /// Every MugVPN item, for uninstalling.
-    func removeEverything() {
+    /// Every MugVPN item, for uninstalling. - Returns: false when some are still there.
+    @discardableResult func removeEverything() -> Bool {
         let q: [String: Any] = [kSecClass as String: kSecClassGenericPassword, kSecAttrService as String: service]
-        while SecItemDelete(q as CFDictionary) == errSecSuccess {}
+        var status = SecItemDelete(q as CFDictionary)
+        while status == errSecSuccess { status = SecItemDelete(q as CFDictionary) }
+        return status == errSecItemNotFound
     }
 }
 
 final class MemorySecrets: SecretStore {
     var items: [String: String] = [:]
     func get(_ p: String, _ k: SecretKey) -> String? { items["\(p)|\(k.rawValue)"] }
-    func set(_ p: String, _ k: SecretKey, _ v: String) { items["\(p)|\(k.rawValue)"] = v }
+    func set(_ p: String, _ k: SecretKey, _ v: String) -> Bool { items["\(p)|\(k.rawValue)"] = v; return true }
     func remove(_ p: String, _ k: SecretKey) { items["\(p)|\(k.rawValue)"] = nil }
     func removeAll(_ p: String) { items = items.filter { !$0.key.hasPrefix(p + "|") } }
 }
@@ -283,7 +326,13 @@ final class DiskFileSystem: ProfileFileSystem {
         if from.lowercased() == to.lowercased() {
             let tmp = to + ".mugvpn-rename"
             try fm.moveItem(atPath: from, toPath: tmp)
-            try fm.moveItem(atPath: tmp, toPath: to)
+            do {
+                try fm.moveItem(atPath: tmp, toPath: to)
+            } catch {
+                // Back under its old name: no temporary one left behind.
+                try? fm.moveItem(atPath: tmp, toPath: from)
+                throw error
+            }
         } else {
             try fm.moveItem(atPath: from, toPath: to)
         }
@@ -370,21 +419,15 @@ func systemProxy(for host: String) -> (host: String, port: Int)? {
     return nil
 }
 
-/// The user's scripts, run as the user with /bin/sh; output to the plan's log.
+/// The user's scripts, run as the user with /bin/sh; output to the plan's log. Each in a process group of
+/// its own: past its timeout the whole group goes (SIGTERM, then SIGKILL), whatever it started too.
 final class ProcessScriptExecutor: ScriptExecutor {
+    static let killGrace: TimeInterval = 2
+
     func run(_ plan: ScriptRunner.Plan, env: [String: String], completion: @escaping (ScriptRunner.Exit) -> Void) {
         let fm = FileManager.default
         try? fm.createDirectory(atPath: (plan.logPath as NSString).deletingLastPathComponent, withIntermediateDirectories: true)
         fm.createFile(atPath: plan.logPath, contents: nil)
-        let p = Process()
-        p.executableURL = URL(fileURLWithPath: "/bin/sh")
-        p.arguments = [plan.path]
-        p.currentDirectoryURL = URL(fileURLWithPath: (plan.path as NSString).deletingLastPathComponent)
-        p.environment = ScriptRunner.processEnvironment(home: NSHomeDirectory(), user: NSUserName(), extra: env)
-        let log = FileHandle(forWritingAtPath: plan.logPath)
-        p.standardOutput = log
-        p.standardError = log
-        p.standardInput = FileHandle.nullDevice
         var done = false
         let finish: (ScriptRunner.Exit) -> Void = { e in
             DispatchQueue.main.async {
@@ -393,14 +436,49 @@ final class ProcessScriptExecutor: ScriptExecutor {
                 completion(e)
             }
         }
-        p.terminationHandler = { proc in finish(.exited(proc.terminationStatus)) }
-        do { try p.run() } catch { return finish(.exited(127)) }
+        let environment = ScriptRunner.processEnvironment(home: NSHomeDirectory(), user: NSUserName(), extra: env)
+        guard let pid = Self.spawn(plan.path, log: plan.logPath, cwd: (plan.path as NSString).deletingLastPathComponent,
+                                   env: environment) else { return finish(.exited(127)) }
+        // Reaped when it ends (its status), whether it is waited for or not.
+        let exit = DispatchSource.makeProcessSource(identifier: pid, eventMask: .exit, queue: .global())
+        exit.setEventHandler {
+            var status: Int32 = 0
+            waitpid(pid, &status, 0)
+            exit.cancel()
+            let code = (status & 0x7f) == 0 ? (status >> 8) & 0xff : 128 + (status & 0x7f)
+            finish(.exited(code))
+        }
+        exit.resume()
         guard plan.waitForExit else { return finish(.exited(0)) }
         DispatchQueue.main.asyncAfter(deadline: .now() + .seconds(plan.timeout)) {
-            guard !done, p.isRunning else { return }
-            p.terminate()
+            guard !done else { return }
             finish(.timedOut)
+            kill(-pid, SIGTERM)
+            // Only a group still there (one gone could have its id again: nothing to kill then).
+            DispatchQueue.global().asyncAfter(deadline: .now() + Self.killGrace) { if kill(-pid, 0) == 0 { kill(-pid, SIGKILL) } }
         }
+    }
+
+    /// /bin/sh `path` in a new process group (its id: the pid), stdout and stderr to `log`, no stdin.
+    private static func spawn(_ path: String, log: String, cwd: String, env: [String: String]) -> pid_t? {
+        var actions: posix_spawn_file_actions_t?
+        posix_spawn_file_actions_init(&actions)
+        defer { posix_spawn_file_actions_destroy(&actions) }
+        posix_spawn_file_actions_addopen(&actions, 0, "/dev/null", O_RDONLY, 0)
+        posix_spawn_file_actions_addopen(&actions, 1, log, O_WRONLY | O_APPEND | O_CREAT, 0o644)
+        posix_spawn_file_actions_adddup2(&actions, 1, 2)
+        posix_spawn_file_actions_addchdir_np(&actions, cwd)
+        var attr: posix_spawnattr_t?
+        posix_spawnattr_init(&attr)
+        defer { posix_spawnattr_destroy(&attr) }
+        posix_spawnattr_setflags(&attr, Int16(POSIX_SPAWN_SETPGROUP | POSIX_SPAWN_CLOEXEC_DEFAULT))
+        posix_spawnattr_setpgroup(&attr, 0)
+        let argv: [UnsafeMutablePointer<CChar>?] = [strdup("/bin/sh"), strdup(path), nil]
+        let envp: [UnsafeMutablePointer<CChar>?] = env.map { strdup("\($0.key)=\($0.value)") } + [nil]
+        defer { (argv + envp).forEach { free($0) } }
+        var pid: pid_t = 0
+        guard posix_spawn(&pid, "/bin/sh", &actions, &attr, argv, envp) == 0 else { return nil }
+        return pid
     }
 }
 

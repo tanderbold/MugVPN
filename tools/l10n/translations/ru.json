@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "Трафик к %@ идёт мимо VPN (через %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS-сервер %@ доступен мимо VPN (через %@)",
  "Block IPv6 outside the VPN": "Блокировать IPv6 мимо VPN",
- "If it drops unexpectedly, block the Internet until I reconnect": "При неожиданном обрыве блокировать интернет, пока я не переподключусь",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "Интернет заблокирован: %@ оборвалось. Переподключите или снимите блокировку.",
  "Send DNS only through the VPN": "Отправлять DNS только через VPN",
  "Unblock Internet": "Разблокировать интернет",

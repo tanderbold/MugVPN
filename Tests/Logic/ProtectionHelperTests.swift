@@ -161,6 +161,22 @@ func registerProtectionHelperTests() {
         let after = String(decoding: sys.files["/L/locks.json"]?.data ?? Data(), as: UTF8.self)
         expect(after.contains("office"), "the other still takes all traffic: still armed: \(after)")
     }
+    test("PROT-20", "a fired block stays until the profile takes all traffic again: a start that fails leaves it (no gap)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try upFull(sys, h)
+        _ = a
+        sys.launched[0].process.onExit(.exited(1))                // dropped: fired
+        expect(lastAnchor(sys).contains("user 501"), "blocked")
+        sys.launchFails = true
+        _ = try? h.start(bundle: protectedBundle(), uid: 501)     // openvpn cannot start
+        sys.launchFails = false
+        expectEqual(h.locks(uid: 501), ["office"], "still blocked after a failed start")
+        let (b, _) = try h.start(bundle: protectedBundle(), uid: 501)
+        expectEqual(h.locks(uid: 501), ["office"], "still blocked while it connects")
+        try bringUp(sys, h, b, uid: 501, device: "utun6")
+        expectEqual(h.locks(uid: 501), [], "lifted once it takes all traffic again")
+    }
     test("PROT-12", "a same-named tunnel that drops does not take the arming of the one still up (ext. audit 6: P2)") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
@@ -207,12 +223,13 @@ func registerProtectionHelperTests() {
         try makeHelper(s2).prepareRunDirectory()
         expect(lastAnchor(s2).contains("to ! <mugvpn_lan> user 501"), "\(a2): \(lastAnchor(s2))")
     }
-    test("PROT-07", "connecting the same profile again lifts its block") {
+    test("PROT-07", "connecting the same profile again lifts its block (once it takes all traffic)") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         _ = try upFull(sys, h)
         sys.launched[0].process.onExit(.exited(1))
-        _ = try h.start(bundle: protectedBundle(), uid: 501)
+        let (b, _) = try h.start(bundle: protectedBundle(), uid: 501)
+        try bringUp(sys, h, b, uid: 501, device: "utun6")
         expectEqual(h.locks(uid: 501), [])
     }
     test("PROT-08", "bounded: short names, a few blocks per user") {

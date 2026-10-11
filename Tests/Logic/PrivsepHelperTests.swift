@@ -21,6 +21,28 @@ private func dnsUp(_ sys: FakeSystem, _ h: HelperCore, _ dev: String, _ net: Str
     return id
 }
 
+/// A standard user's tunnel (utun6) with split DNS for corp.lan on 10.99.0.53, inside it through the route
+/// 10.99.0.0/16 or (inSubnet) its own network; routeAll: the administrator lets users route all traffic.
+private func standardSplit(inSubnet: Bool = false, routeAll: Bool = false) throws -> (FakeSystem, HelperCore, String) {
+    let sys = FakeSystem()
+    try sys.makeDirectory("/L", mode: 0o755)
+    let policy = routeAll ? #"{"usersMayChangeDNS": true, "usersMayRouteAllTraffic": true}"# : #"{"usersMayChangeDNS": true}"#
+    try sys.writeFile("/L/policy.json", Data(policy.utf8), mode: 0o644)
+    sys.systemDNS = ["192.168.64.1"]
+    let h = makeHelper(sys)
+    let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+    sys.utunName = "utun6"
+    _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
+    _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+    let server = inSubnet ? "10.9.0.53" : "10.99.0.53"
+    if !inSubnet { _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "10.99.0.0 255.255.0.0 10.9.0.1") }
+    _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=\(server)")
+    _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.lan")
+    _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSUP", message: "utun6")
+    expectEqual(sys.splitResolvers["utun6"]?.servers, [server], "set up")
+    return (sys, h, b)
+}
+
 func registerPrivsepHelperTests() {
     test("PS-01", "openvpn runs as the unprivileged service user, not root") {
         let sys = FakeSystem()
@@ -1074,6 +1096,556 @@ func registerPrivsepHelperTests() {
         expectThrows("OPENTUN") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "OPENTUN", message: "tun") }
         expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting")
         expectEqual(sys.allNames["utun5"]?.servers, ["10.8.0.53"])
+    }
+    test("PS-67", "a tunnel's DNS that cannot be taken off when it ends: kept on record, tried again, all names not handed on till then") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        _ = a
+        sys.failRestoreFor = ["utun5"]
+        sys.launched[0].process.onExit(.exited(1))
+        expectEqual(sys.allNames["utun6"], nil, "not while a's may still be in effect")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting")
+        expect(sys.files["/L/dns-left.json"] != nil, "on record (outlives the helper)")
+        sys.failRestoreFor = []
+        sys.fireTimers()
+        expectEqual(sys.allNames["utun5"], nil)
+        expectEqual(sys.allNames["utun6"]?.servers, ["10.9.0.53"], "handed on once a's is off")
+        expect(sys.files["/L/dns-left.json"] == nil)
+    }
+    test("PS-67b", "the helper starts again: DNS a dead tunnel left (its record, or one not taken off before) taken off, or kept on record") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.files["/L/dns-left.json"] != nil, "not lost with the run directory")
+        sys.failRestoreFor = []
+        let h2 = makeHelper(sys)
+        try h2.prepareRunDirectory()
+        expectEqual(sys.allNames["utun5"], nil)
+        expect(sys.files["/L/dns-left.json"] == nil)
+    }
+    test("PS-68", "a route taken away that its DNS server needed (a standard user's): its DNS goes with it") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L", mode: 0o755)
+        try sys.writeFile("/L/policy.json", Data(#"{"usersMayChangeDNS": true}"#.utf8), mode: 0o644)
+        sys.systemDNS = ["192.168.64.1"]
+        let h = makeHelper(sys)
+        let (b, _) = try h.start(bundle: psBundle(), uid: 502)
+        sys.utunName = "utun6"
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTE", message: "10.99.0.0 255.255.0.0 10.9.0.1")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.99.0.53")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.lan")
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "DNSUP", message: "utun6")
+        expectEqual(sys.splitResolvers["utun6"]?.servers, ["10.99.0.53"])
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTEDEL", message: "10.99.0.0 255.255.0.0 10.9.0.1")
+        expectEqual(sys.splitResolvers["utun6"], nil, "its server is outside the tunnel now")
+        expectEqual(h.list(uid: 502).first { $0.id == b }?.dns, nil)
+        let saved = String(decoding: sys.files["/L/run/\(b)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(!saved.contains("10.99.0.53\"]"), "the record says no DNS: \(saved)")
+    }
+    test("PS-69", "DNS taken off because its server left the tunnel: on record as set until it is off (a crash between keeps it undone)") {
+        let (sys, h, b) = try standardSplit()
+        var onDisk = ""
+        sys.onRestore = { _ in onDisk = String(decoding: sys.files["/L/run/\(b)/state.json"]?.data ?? Data(), as: UTF8.self) }
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTEDEL", message: "10.99.0.0 255.255.0.0 10.9.0.1")
+        expect(onDisk.contains("\"dnsApplied\":true"), "the record still says set while it is taken off: \(onDisk)")
+        expectEqual(sys.splitResolvers["utun6"], nil)
+    }
+    test("PS-70", "any change of its tunnel checks its DNS again: a new address (IFCONFIG) or a host route around it (ROUTE)") {
+        let (sys, h, b) = try standardSplit(inSubnet: true)
+        _ = try h.tunnelRequest(id: b, uid: 502, kind: "IFCONFIG", message: "10.7.0.2 255.255.255.0 1500 subnet")
+        expectEqual(sys.splitResolvers["utun6"], nil, "its server is no longer in its network")
+        let (s2, h2, b2) = try standardSplit(routeAll: true)
+        _ = try h2.tunnelRequest(id: b2, uid: 502, kind: "ROUTE", message: "10.99.0.53 255.255.255.255 192.168.64.1")
+        expectEqual(s2.splitResolvers["utun6"], nil, "the more specific route takes its server around the tunnel")
+        expectEqual(h2.list(uid: 502).first { $0.id == b2 }?.dns, nil)
+    }
+    test("PS-71", "uninstalling while DNS of a tunnel could not be taken off: refused with why, the helper stays to try again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        var answer: String?? = .none
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        sys.launched[0].process.onExit(.signaled(15))
+        expect(answer != nil, "answered")
+        expectEqual(answer ?? nil, HelperRefusal.dnsCleanupPending, "said why")
+        expect(sys.files["/L/dns-left.json"] != nil, "the record to try again stays")
+        sys.failRestoreFor = []
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        expectEqual(answer, .some(nil), "taken off now: uninstalled")
+    }
+    test("PS-72", "its DNS off but its backup left (all names held back): removed later, all names handed on then") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        sys.failBackupRemovalFor = ["utun5"]
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, nil, "its DNS is off")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting", "the backup left holds all names back")
+        sys.failBackupRemovalFor = []
+        sys.fireTimers()
+        expect(sys.backupsLeft.isEmpty)
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all")
+    }
+    test("PS-73", "the record of DNS left behind cannot be written: the tunnel's own record is kept (not removed with its run directory)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        sys.failWrites = ["/L/dns-left.json"]
+        sys.launched[0].process.onExit(.exited(1))
+        expect(sys.files["/L/run/\(a)/state.json"] != nil, "kept for the next helper")
+        sys.failWrites = []
+        sys.failRestoreFor = []
+        try makeHelper(sys).prepareRunDirectory()
+        expectEqual(sys.allNames["utun5"], nil, "taken off by the next helper")
+    }
+    test("PS-74", "all names refused with the backup made for it left behind: on record, removed later") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        sys.failAllNamesDNS = true
+        sys.leaveBackupOnFailedSet = ["utun5"]
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        expect(sys.files["/L/dns-left.json"] != nil, "the backup left is on record")
+        sys.failAllNamesDNS = false
+        sys.leaveBackupOnFailedSet = []
+        sys.fireTimers()
+        expect(sys.backupsLeft.isEmpty)
+        expect(sys.files["/L/dns-left.json"] == nil)
+    }
+    test("PS-75", "its DNS off, the backup left and dns-left not writable: shown off (as it is), the backup on its own record, all names held back") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        sys.failBackupRemovalFor = ["utun5"]
+        sys.failWrites = ["/L/dns-left.json"]
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, nil, "not shown as set: it is not")
+        let saved = String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("\"dnsBackupLeft\":\"utun5\""), "the backup left is on its record: \(saved)")
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "waiting", "all names held back by it")
+        sys.failBackupRemovalFor = []
+        sys.failWrites = []
+        sys.fireTimers()
+        expect(sys.backupsLeft.isEmpty)
+        expectEqual(h.list(uid: 501).first { $0.id == b }?.dns, "all")
+        // Its record of a backup left is undone by a new helper too.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        let a2 = try dnsUp(s2, h2, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        s2.failBackupRemovalFor = ["utun5"]
+        s2.failWrites = ["/L/dns-left.json"]
+        s2.clock += 5
+        _ = try h2.tunnelRequest(id: a2, uid: 501, kind: "DNSDOWN", message: "utun5")
+        s2.failBackupRemovalFor = []
+        s2.failWrites = []
+        try makeHelper(s2).prepareRunDirectory()
+        expect(s2.backupsLeft.isEmpty, "removed by the next helper")
+    }
+    test("PS-76", "a route deleted but the change not recorded: the route put back (the record and the Mac agree)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+        sys.failNthWrite = 1
+        expectThrows("ROUTEDEL") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTEDEL", message: "10.20.0.0 255.255.0.0 10.8.0.1") }
+        expect(sys.routeTable.contains { $0.contains("10.20.0.0") }, "back as the record says")
+        // Cannot be put back: the connection is undone and stopped.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        let (id2, _) = try h2.start(bundle: psBundle(), uid: 501)
+        try bringUp(s2, h2, id2, uid: 501, device: "utun5", routes: ["10.20.0.0 255.255.0.0 10.8.0.1"])
+        s2.failNthWrite = 1
+        s2.failRouteAdds = true
+        expectThrows("ROUTEDEL") { _ = try h2.tunnelRequest(id: id2, uid: 501, kind: "ROUTEDEL", message: "10.20.0.0 255.255.0.0 10.8.0.1") }
+        expectEqual(s2.launched[0].process.signals, [SIGKILL])
+    }
+    test("PS-77", "uninstall after the app went to the Trash, held back by DNS left: done once that DNS is off") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        h.uninstallMovedToTrash(homes: [])
+        sys.launched[0].process.onExit(.signaled(15))
+        expect(!gone, "held back")
+        sys.failRestoreFor = []
+        sys.fireTimers()
+        expect(gone, "uninstalled once the DNS is off")
+    }
+    test("PS-79", "an older run's DNS (from its log) not taken off and not recordable: its directory stays for the next helper") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/run", mode: 0o711)
+        try sys.makeDirectory("/L/run/OLD1", mode: 0o711)
+        try sys.writeFile("/L/run/OLD1/openvpn.log", Data(sampleLog(device: "utun3").utf8), mode: 0o644)
+        sys.failRestoreFor = ["utun3"]
+        sys.failWrites = ["/L/dns-left.json"]
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.files["/L/run/OLD1/openvpn.log"] != nil, "kept")
+        sys.failRestoreFor = []
+        sys.failWrites = []
+        try makeHelper(sys).prepareRunDirectory()
+        expectEqual(sys.dnsRestored, ["utun3"])
+        expect(sys.list("/L/run").isEmpty)
+    }
+    test("PS-80", "a route deletion rolled back (not recorded): the route and the DNS it carried both back") {
+        let (sys, h, b) = try standardSplit()
+        sys.failNthWrite = 1
+        expectThrows("ROUTEDEL") { _ = try h.tunnelRequest(id: b, uid: 502, kind: "ROUTEDEL", message: "10.99.0.0 255.255.0.0 10.9.0.1") }
+        expect(sys.routeTable.contains { $0.contains("10.99.0.0") }, "the route back")
+        expectEqual(sys.splitResolvers["utun6"]?.servers, ["10.99.0.53"], "and its DNS")
+        expectEqual(h.list(uid: 502).first { $0.id == b }?.dns, "split")
+    }
+    test("PS-81", "uninstall after the Trash held back by DNS left: on disk, done by the next helper once the DNS is off") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        h.uninstallMovedToTrash(homes: [])
+        sys.launched[0].process.onExit(.signaled(15))
+        expect(sys.files["/L/uninstall-pending.json"] != nil, "the wish outlives the helper")
+        sys.failRestoreFor = []
+        let h2 = makeHelper(sys)
+        var gone = false
+        h2.onUninstalled = { gone = true }
+        try h2.prepareRunDirectory()
+        expect(gone, "the next helper finishes it")
+    }
+    test("PS-82", "all names off with the backup left, the new DNS refused, all names back: the backup is theirs again (never removed under them)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: "dns_server_1_resolve_domain_1=corp.lan")
+        sys.failBackupRemovalFor = ["utun5"]
+        sys.failWrites = ["/L/dns-left.json"]
+        sys.failSplitDNS = true
+        sys.clock += 5
+        expectThrows("DNSUP") { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5") }
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all", "the old DNS back")
+        let saved = String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(!saved.contains("dnsBackupLeft"), "no backup left over: it is the live one's \(saved)")
+        sys.failBackupRemovalFor = []
+        sys.failWrites = []
+        sys.failSplitDNS = false
+        sys.fireTimers()
+        expect(sys.lostBackups.isEmpty, "not removed under all names")
+        sys.launched[0].process.onExit(.exited(0))
+        expectEqual(sys.allNames["utun5"], nil, "put back at the end")
+        expect(sys.lostBackups.isEmpty)
+    }
+    test("PS-83", "the wish to uninstall after the Trash not writable at first: written later, kept until uninstalled") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        sys.failWrites = ["/L/uninstall-pending.json"]
+        h.uninstallMovedToTrash(homes: [])
+        sys.launched[0].process.onExit(.signaled(15))
+        expect(sys.files["/L/uninstall-pending.json"] == nil)
+        sys.failWrites = []
+        sys.fireTimers()
+        expect(sys.files["/L/uninstall-pending.json"] != nil, "written on a later try")
+        sys.failRestoreFor = []
+        let h2 = makeHelper(sys)
+        var gone = false
+        h2.onUninstalled = { gone = true }
+        try h2.prepareRunDirectory()
+        expect(gone)
+    }
+    test("PS-84", "a record (an earlier version's) of all names and a backup left on the same device, its DNS not taken off: the backup stays") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        let path = "/L/run/\(a)/state.json"
+        var state = try JSONSerialization.jsonObject(with: sys.files[path]!.data) as! [String: Any]
+        state["dnsBackupLeft"] = "utun5"
+        try sys.writeFile(path, try JSONSerialization.data(withJSONObject: state), mode: 0o600)
+        sys.failRestoreFor = ["utun5"]
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.lostBackups.isEmpty, "the only copy of the Mac's own DNS kept")
+        expect(sys.files["/L/dns-left.json"] != nil, "left on record to take off")
+    }
+    test("PS-85", "an uninstall waiting for DNS (after the Trash, keeping profiles), then an administrator's without: profiles go too") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        h.uninstallMovedToTrash(homes: [])
+        sys.launched[0].process.onExit(.signaled(15))
+        var answer: String?? = .none
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        expectEqual(answer ?? nil, HelperRefusal.dnsCleanupPending)
+        let marker = String(decoding: sys.files["/L/uninstall-pending.json"]?.data ?? Data(), as: UTF8.self)
+        expect(marker.contains("false"), "the wish on disk: profiles go \(marker)")
+        sys.failRestoreFor = []
+        sys.fireTimers()
+        expect(sys.files["/L/config/office.ovpn"] == nil, "removed as the last request asked")
+    }
+    test("PS-86", "a standard user's uninstall while one waits for DNS: refused before anything changes (profiles kept as asked)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/L/config/office.ovpn", Data("client".utf8), mode: 0o644)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        sys.failRestoreFor = ["utun5"]
+        h.uninstallMovedToTrash(homes: [])
+        sys.launched[0].process.onExit(.signaled(15))
+        let marker = sys.files["/L/uninstall-pending.json"]?.data
+        expectThrows(matching: "administrator") { try h.uninstall(uid: 502, keepProfiles: false) }
+        expectEqual(sys.files["/L/uninstall-pending.json"]?.data, marker, "the wish on disk unchanged")
+        sys.failRestoreFor = []
+        sys.fireTimers()
+        expect(sys.files["/L/config/office.ovpn"] != nil, "profiles kept, as the Trash uninstall asked")
+    }
+    test("PS-87", "uninstalling: the wish on disk goes first (checked), the launch daemon last; a wish that cannot go stops it there") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        var gone = false
+        h.onUninstalled = { gone = true }
+        h.uninstallMovedToTrash(homes: [])
+        expect(gone)
+        let order = sys.removedPaths
+        let marker = order.firstIndex(of: "/L/uninstall-pending.json") ?? -1
+        expect(marker >= 0 && order.prefix(marker).allSatisfy { $0.hasPrefix("/Users") || $0 == "/L/locks.json" },
+               "the wish first (after the blocks): \(order)")
+        expectEqual(order.last, "/LD/com.mugvpn.helper.plist", "the launch daemon last")
+        // The wish cannot be removed: nothing else goes (a reinstall would find it and remove itself).
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        try s2.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        var gone2 = false
+        h2.onUninstalled = { gone2 = true }
+        s2.failRemoves = ["/L/uninstall-pending.json"]
+        h2.uninstallMovedToTrash(homes: [])
+        expect(!gone2, "not uninstalled")
+        expect(s2.files["/LD/com.mugvpn.helper.plist"] != nil, "the helper stays to try again")
+        s2.failRemoves = []
+        s2.fireTimers()
+        expect(gone2, "tried again")
+    }
+    test("PS-88", "same-named profiles stay apart in the helper: their ids listed, their blocks and kept logs their own") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        func bundle(_ id: String) throws -> Data {
+            var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+            b.profileID = id
+            b.protection = ProtectionOptions(killSwitch: true)
+            return try JSONEncoder().encode(b)
+        }
+        let (a, _) = try h.start(bundle: try bundle("/cfg/office.ovpn"), uid: 501)
+        let (b, _) = try h.start(bundle: try bundle("/cfg/berlin/office.ovpn"), uid: 501)
+        expectEqual(Set(h.list(uid: 501).compactMap(\.profileID)), ["/cfg/office.ovpn", "/cfg/berlin/office.ovpn"])
+        try bringUp(sys, h, a, uid: 501, device: "utun5")
+        try bringUp(sys, h, b, uid: 501, device: "utun6", routes: ["0.0.0.0 128.0.0.0 10.8.0.1", "128.0.0.0 128.0.0.0 10.8.0.1"])
+        for id in [a, b] { try sys.writeFile("/L/run/\(id)/openvpn.log", Data("log \(id)".utf8), mode: 0o600) }
+        sys.launched[0].process.onExit(.exited(1))      // a drops: its block
+        _ = h.stop(id: b, uid: 501)
+        sys.launched[1].process.onExit(.exited(0))      // b ends as asked
+        let kept = sys.list("/Logs").filter { $0.hasPrefix("office") }
+        expectEqual(kept.count, 2, "a log each: \(kept)")
+        expectEqual(h.locks(uid: 501), ["office"], "shown by name")
+        let saved = String(decoding: sys.files["/L/locks.json"]?.data ?? Data(), as: UTF8.self)
+        expectEqual(saved.components(separatedBy: "office~").count - 1, 1, "one block, a's (keyed by id): \(saved)")
+    }
+    test("PS-89", "a route that cannot be deleted when its tunnel ends: its record kept and tried again until it goes") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["203.0.113.7 255.255.255.255 192.168.64.1"])
+        sys.failRouteDeletes = true
+        sys.launched[0].process.onExit(.exited(0))
+        expect(sys.files["/L/run/\(id)/state.json"] != nil, "its record stays")
+        sys.failRouteDeletes = false
+        sys.fireTimers()
+        expect(!sys.routeTable.contains { $0.contains("203.0.113.7") }, "deleted on a later try")
+        expect(sys.files["/L/run/\(id)/state.json"] == nil, "then its record goes")
+    }
+    test("PS-89b", "ROUTEDEL whose route cannot be deleted: refused, the record keeps it (the Mac still has it)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["203.0.113.7 255.255.255.255 192.168.64.1"])
+        sys.failRouteDeletes = true
+        expectThrows("ROUTEDEL") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTEDEL", message: "203.0.113.7 255.255.255.255 192.168.64.1") }
+        let saved = String(decoding: sys.files["/L/run/\(id)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("203.0.113.7"), "still on record: \(saved)")
+    }
+    test("PS-90", "Append to the log: the kept log grows by each run (bounded, the newest kept); otherwise replaced") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        func run(_ text: String, append: Bool) throws {
+            var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+            b.profileID = "/cfg/office.ovpn"
+            b.appendLog = append
+            let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+            try sys.writeFile("/L/run/\(id)/openvpn.log", Data(text.utf8), mode: 0o600)
+            _ = h.stop(id: id, uid: 501)
+            sys.launched.last!.process.onExit(.exited(0))
+        }
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        try run("first\n", append: true)
+        try run("second\n", append: true)
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "first\nsecond\n")
+        try run("third\n", append: false)
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "third\n")
+        try run(String(repeating: "x", count: HelperCore.maxKeptLogBytes), append: true)
+        expectEqual(sys.files[kept]?.data.count, HelperCore.maxKeptLogBytes, "bounded")
+    }
+    test("PS-91", "ROUTE6DEL whose route stays: refused, still on record") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE6", message: "fd00:1::/48 utun5")
+        sys.failRouteDeletes = true
+        expectThrows("ROUTE6DEL") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE6DEL", message: "fd00:1::/48 utun5") }
+        let saved = String(decoding: sys.files["/L/run/\(id)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("fd00:1::"), "still on record: \(saved)")
+    }
+    test("PS-92", "a default route in two halves, the second refused, the first not taken back: undone and stopped, the half on record") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        sys.failRouteAddFor = ["128.0.0.0"]
+        sys.failRouteDeletes = true
+        expectThrows("ROUTE") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "0.0.0.0 0.0.0.0 10.8.0.1") }
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "undone and stopped")
+        sys.launched[0].process.onExit(.signaled(9))
+        let saved = String(decoding: sys.files["/L/run/\(id)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("\"0.0.0.0\""), "the half still there is on record: \(saved)")
+    }
+    test("PS-93", "a new route the rollback cannot take away: kept on record, the connection undone and stopped") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: [])
+        sys.failNthWrite = 2          // the record ahead written, the final one not
+        sys.failRouteDeletes = true   // and the route it added does not go
+        expectThrows("ROUTE") { _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE", message: "203.0.113.7 255.255.255.255 192.168.64.1") }
+        expectEqual(sys.launched[0].process.signals, [SIGKILL], "undone and stopped")
+        sys.launched[0].process.onExit(.signaled(9))
+        let saved = String(decoding: sys.files["/L/run/\(id)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(saved.contains("203.0.113.7"), "the route still there is on record: \(saved)")
+        sys.failRouteDeletes = false
+        sys.fireTimers()
+        expect(!sys.routeTable.contains { $0.contains("203.0.113.7") }, "taken away on a later try")
+    }
+    test("PS-94", "a route a dead tunnel left that cannot be deleted at helper start: tried again while it runs") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try bringUp(sys, h, id, uid: 501, device: "utun5", routes: ["203.0.113.7 255.255.255.255 192.168.64.1"])
+        sys.failRouteDeletes = true
+        let h2 = makeHelper(sys)
+        try h2.prepareRunDirectory()
+        expect(sys.files["/L/run/\(id)/state.json"] != nil, "kept")
+        sys.failRouteDeletes = false
+        sys.fireTimers()
+        expect(!sys.routeTable.contains { $0.contains("203.0.113.7") })
+        expect(sys.files["/L/run/\(id)/state.json"] == nil, "then gone")
+    }
+    test("PS-95", "a route that stays and DNS put on record: the run's own record is still kept (the route needs it)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "ROUTE", message: "203.0.113.7 255.255.255.255 192.168.64.1")
+        sys.failRouteDeletes = true
+        sys.failRestoreFor = ["utun5"]
+        sys.launched[0].process.onExit(.exited(1))
+        expect(sys.files["/L/dns-left.json"] != nil, "DNS on record")
+        expect(sys.files["/L/run/\(a)/state.json"] != nil, "and the route's record kept")
+    }
+    test("PS-96", "uninstalling while PF will not let go of MugVPN's rules: refused with why, the helper stays to try again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        var answer: String?? = .none
+        sys.pfApplyFails = true
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        expect((answer ?? nil)?.contains("PF") == true, "said why: \(String(describing: answer))")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil, "the helper stays")
+        sys.pfApplyFails = false
+        try h.uninstall(uid: 501, keepProfiles: false) { answer = .some($0) }
+        expectEqual(answer, .some(nil))
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] == nil)
+    }
+    test("PS-97", "kept logs over the limit: the oldest go (by when they were written, not by name)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try? sys.makeDirectory("/Logs", mode: 0o755)
+        for i in 0..<HelperCore.keptLogsPerUser {
+            sys.clock = TimeInterval(100 + i)
+            // "z…" is the oldest, the last letter written the newest: the name order is the other way round.
+            try sys.writeFile("/Logs/\(String(UnicodeScalar(UInt8(122 - i))))old.501.log", Data("x".utf8), mode: 0o600)
+        }
+        sys.clock = 1000
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("new".utf8), mode: 0o600)
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        let left = sys.list("/Logs").filter { $0.hasSuffix(".501.log") }
+        expect(!left.contains("zold.501.log"), "the oldest went: \(left.sorted())")
+        let newest = String(UnicodeScalar(UInt8(122 - (HelperCore.keptLogsPerUser - 1)))) + "old.501.log"
+        expect(left.contains(newest), "the newest stayed")
+        expectEqual(left.count, HelperCore.keptLogsPerUser)
+    }
+    test("PS-98", "uninstalling: a file that does not go (the blocks, the helper's own) is said, the helper stays to try again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        try sys.writeFile("/LD/com.mugvpn.helper.plist", Data("<plist/>".utf8), mode: 0o644)
+        try sys.writeFile("/L/locks.json", Data("[]".utf8), mode: 0o600)
+        sys.failRemoves = ["/L/locks.json"]
+        var answer: String?? = .none
+        try h.uninstall(uid: 501, keepProfiles: true) { answer = .some($0) }
+        expect((answer ?? nil) != nil, "not claimed done")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil, "the helper stays")
+        sys.failRemoves = ["/L/libexec"]
+        try? sys.makeDirectory("/L/libexec", mode: 0o755)
+        try h.uninstall(uid: 501, keepProfiles: true) { answer = .some($0) }
+        expect((answer ?? nil)?.contains("/L/libexec") == true, "\(String(describing: answer))")
+        expect(sys.files["/LD/com.mugvpn.helper.plist"] != nil)
+        sys.failRemoves = []
+        try h.uninstall(uid: 501, keepProfiles: true) { answer = .some($0) }
+        expectEqual(answer, .some(nil))
+    }
+    test("PS-99", "an older version's run (from its log): routes that will not go keep its folder, tried again while the helper runs") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/run", mode: 0o711)
+        try sys.makeDirectory("/L/run/OLD1", mode: 0o711)
+        try sys.writeFile("/L/run/OLD1/openvpn.log", Data(sampleLog(device: "utun3").utf8), mode: 0o644)
+        sys.failLegacyRoutes = true
+        let h = makeHelper(sys)
+        try h.prepareRunDirectory()
+        expect(sys.files["/L/run/OLD1/openvpn.log"] != nil, "kept")
+        sys.failLegacyRoutes = false
+        sys.fireTimers()
+        expect(sys.files["/L/run/OLD1/openvpn.log"] == nil, "cleaned up and gone")
+    }
+    test("PS-100", "a log that cannot be moved into place is copied there (not lost with its run folder)") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var b = ProfileBundle(name: "office", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        b.profileID = "/cfg/office.ovpn"
+        let (id, _) = try h.start(bundle: try JSONEncoder().encode(b), uid: 501)
+        try sys.writeFile("/L/run/\(id)/openvpn.log", Data("why it dropped".utf8), mode: 0o600)
+        let kept = "/Logs/" + ProfileKey.logName(profile: "office", id: "/cfg/office.ovpn", uid: 501) + ".log"
+        sys.failMoves = [kept]
+        _ = h.stop(id: id, uid: 501)
+        sys.launched[0].process.onExit(.exited(0))
+        expectEqual(String(decoding: sys.files[kept]?.data ?? Data(), as: UTF8.self), "why it dropped")
     }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()

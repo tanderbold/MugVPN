@@ -65,9 +65,23 @@ public enum Diagnostics {
         return out.joined(separator: "\n")
     }
 
+    /// What may go in besides the summary (the user picks before saving).
+    public enum Part: String, CaseIterable, Sendable {
+        /// openvpn's logs, up to 1 MiB per connection.
+        case logs
+        /// Routes, DNS resolvers, network interfaces.
+        case network
+        /// The profiles without secrets (servers, certificates, options).
+        case profiles
+    }
+
     /// The archive's files. Names come from profiles: kept inside their folder.
     public static func files(summary: [String: String], commands: [String: String],
-                             profiles: [(name: String, config: String)], logs: [(name: String, text: String)]) -> [File] {
+                             profiles: [(name: String, config: String)], logs: [(name: String, text: String)],
+                             include: Set<Part> = Set(Part.allCases)) -> [File] {
+        let commands = include.contains(.network) ? commands : [:]
+        let profiles = include.contains(.profiles) ? profiles : []
+        let logs = include.contains(.logs) ? logs : []
         func safe(_ s: String) -> String { s.replacingOccurrences(of: "/", with: "_").replacingOccurrences(of: ":", with: "_") }
         var out = [File(name: "summary.txt", text: summary.sorted { $0.key < $1.key }.map { "\($0.key): \($0.value)" }.joined(separator: "\n") + "\n")]
         out += commands.sorted { $0.key < $1.key }.map { File(name: safe($0.key), text: $0.value) }

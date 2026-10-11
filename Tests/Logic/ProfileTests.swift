@@ -34,12 +34,20 @@ final class MemFS: ProfileFileSystem {
     }
     func read(_ path: String) -> Data? { files[realPath(path)] }
     func exists(_ path: String) -> Bool { files[path] != nil || dirs.contains(path) }
+    /// Writes that succeed before every next one fails (nil: none fail); moves to these paths fail.
+    var writesBeforeFailure: Int?
+    var failMovesTo: Set<String> = []
     func write(_ path: String, _ data: Data) throws {
         guard dirs.contains((path as NSString).deletingLastPathComponent) else { throw CocoaError(.fileNoSuchFile) }
+        if let n = writesBeforeFailure {
+            guard n > 0 else { throw CocoaError(.fileWriteOutOfSpace) }
+            writesBeforeFailure = n - 1
+        }
         files[path] = data
     }
     func move(_ from: String, _ to: String) throws {
         guard exists(from), !exists(to) else { throw CocoaError(.fileWriteFileExists) }
+        guard !failMovesTo.contains(to) else { throw CocoaError(.fileWriteNoPermission) }
         for (k, v) in files where k == from || k.hasPrefix(from + "/") {
             files[k] = nil
             files[to + k.dropFirst(from.count)] = v
@@ -65,6 +73,10 @@ let userDir = "/Users/u/Library/Application Support/MugVPN/config"
 let systemDir = "/Library/Application Support/MugVPN/config"
 
 let autoDir = "/Library/Application Support/MugVPN/config-auto"
+
+/// Contents that pass the checks (PEM blocks of the right type).
+let testPEMCert = "-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n"
+let testPEMKey = "-----BEGIN PRIVATE KEY-----\nMIIE\n-----END PRIVATE KEY-----\n"
 
 private func store(_ fs: MemFS, ext: String = "ovpn") -> ProfileStore {
     ProfileStore(fs: fs, userDir: userDir, systemDir: systemDir, autoDir: autoDir, ext: ext)
@@ -123,15 +135,15 @@ func registerProfileTests() {
     test("PRF-06", "import a profile with the files it names") {
         let fs = MemFS()
         fs.add("/Downloads/work.ovpn", "client\ndev tun\nremote w 1194\nca ca.crt\ncert keys/me.crt\nkey /abs/me.key\ntls-auth [inline]\n<tls-auth>\n\(testStaticKey)</tls-auth>\n")
-        fs.add("/Downloads/ca.crt", "CA")
-        fs.add("/Downloads/keys/me.crt", "CRT")
-        fs.add("/abs/me.key", "KEY")
+        fs.add("/Downloads/ca.crt", testPEMCert)
+        fs.add("/Downloads/keys/me.crt", testPEMCert)
+        fs.add("/abs/me.key", testPEMKey)
         let r = try store(fs).importProfile(at: "/Downloads/work.ovpn", allowOutside: true)
         expectEqual(r.profile.name, "work")
         expectEqual(r.profile.path, "\(userDir)/work/work.ovpn")
-        expectEqual(fs.text("\(userDir)/work/ca.crt"), "CA")
-        expectEqual(fs.text("\(userDir)/work/keys/me.crt"), "CRT")
-        expectEqual(fs.text("\(userDir)/work/me.key"), "KEY", "outside files are copied in")
+        expectEqual(fs.text("\(userDir)/work/ca.crt"), testPEMCert)
+        expectEqual(fs.text("\(userDir)/work/keys/me.crt"), testPEMCert)
+        expectEqual(fs.text("\(userDir)/work/me.key"), testPEMKey, "outside files are copied in")
         let copy = fs.text("\(userDir)/work/work.ovpn") ?? ""
         expect(copy.contains("key me.key") || copy.contains("key \"me.key\""), "the copy names the copied key: \(copy)")
         expect(copy.contains("ca ca.crt"), "relative names stay as they were")
@@ -153,7 +165,7 @@ func registerProfileTests() {
         let fs = MemFS()
         fs.add("/Users/u/Downloads/x/evil.ovpn", "client\nremote e 1194\nauth-user-pass /Users/u/.aws/credentials\nca ../../ca.crt\n")
         fs.add("/Users/u/.aws/credentials", "AKIA\nsecret\n")
-        fs.add("/Users/u/ca.crt", "CA")
+        fs.add("/Users/u/ca.crt", testPEMCert)
         do {
             _ = try store(fs).importProfile(at: "/Users/u/Downloads/x/evil.ovpn")
             expect(false, "imported without asking")
@@ -165,7 +177,7 @@ func registerProfileTests() {
         expectEqual(fs.text("\(r.profile.path.replacingOccurrences(of: "evil.ovpn", with: "credentials"))"), "AKIA\nsecret\n")
         // Inside the folder needs no consent.
         fs.add("/D/in/ok.ovpn", "client\nremote o 1194\nca keys/ca.crt\n")
-        fs.add("/D/in/keys/ca.crt", "CA")
+        fs.add("/D/in/keys/ca.crt", testPEMCert)
         _ = try store(fs).importProfile(at: "/D/in/ok.ovpn")
     }
     test("PRF-15", "a referenced file must be small") {
@@ -235,6 +247,86 @@ func registerProfileTests() {
         let r = try store(fs).importProfile(at: "/D/a.ovpn", as: "evil\u{202E}gpj\nx")
         expectEqual(r.profile.name, "evil_gpj_x")
     }
+    test("PRF-25", "the files a profile names hold what they are named as: said at import and save, not first at Connect") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\nca ca.crt\n")
+        fs.add("/D/ca.crt", "not a certificate")
+        expectThrows("import", matching: "ca.crt") { _ = try store(fs).importProfile(at: "/D/office.ovpn") }
+        expect(!fs.exists("\(userDir)/office"), "nothing copied")
+        fs.add("/D/ca.crt", "-----BEGIN CERTIFICATE-----\nMIIB\n-----END CERTIFICATE-----\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        fs.add("\(userDir)/office/me.key", "not a key")
+        expectThrows("save", matching: "me.key") { try store(fs).save(p, config: "client\ndev tun\nremote o 1194\nca ca.crt\nkey me.key\ncert ca.crt\n") }
+    }
+    test("PRF-26", "an import that fails half-way leaves nothing (no half profile, no staging folder)") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\nca ca.crt\ncert me.crt\n")
+        fs.add("/D/ca.crt", testPEMCert)
+        fs.add("/D/me.crt", testPEMCert)
+        fs.writesBeforeFailure = 1
+        expectThrows("import") { _ = try store(fs).importProfile(at: "/D/office.ovpn") }
+        fs.writesBeforeFailure = nil
+        expectEqual(fs.contents(of: userDir).map(\.name), [], "nothing left in the profiles folder")
+        expect(store(fs).scan().isEmpty)
+    }
+    test("PRF-27", "a rename that cannot finish leaves the profile as it was") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        fs.failMovesTo = ["\(userDir)/berlin/berlin.ovpn", "\(userDir)/office/berlin.ovpn"]
+        expectThrows("rename") { _ = try store(fs).rename(p, to: "berlin", active: []) }
+        expectEqual(store(fs).scan().map(\.path), [p.path], "still where it was, named as it was")
+    }
+    test("PRF-28", "a Tunnelblick configuration with several profiles: all of them or none") {
+        let fs = MemFS()
+        fs.add("/D/Office.tblk/Contents/Resources/a.ovpn", "client\ndev tun\nremote a 1194\n")
+        fs.add("/D/Office.tblk/Contents/Resources/b.ovpn", "client\ndev tun\nremote b 1194\nca missing.crt\n")
+        expectThrows("b cannot be imported") { _ = try store(fs).importTunnelblick(at: "/D/Office.tblk") }
+        expect(store(fs).scan().isEmpty, "a is not left alone")
+    }
+    test("PRF-29", "a rename the keychain does not follow: the saved passwords stay under the old name, not lost") {
+        let secrets = FakeSecrets()
+        secrets.items["old|password"] = "p"
+        secrets.refuses = true
+        expect(!ProfileSecrets.renamed(secrets, from: "old", to: "new"))
+        expectEqual(secrets.items["old|password"], "p", "kept")
+        secrets.refuses = false
+        expect(ProfileSecrets.renamed(secrets, from: "old", to: "new"))
+        expectEqual(secrets.items["new|password"], "p")
+        expect(secrets.items["old|password"] == nil)
+    }
+    test("PRF-30", "every profile shown by a name of its own, however names and folders repeat (windows go by it)") {
+        let fs = MemFS()
+        fs.add("\(systemDir)/a/office.ovpn", "client\n")
+        fs.add("\(systemDir)/b/office.ovpn", "client\n")
+        fs.add("\(userDir)/system/office.ovpn", "client\n")
+        fs.add("\(userDir)/Office.ovpn", "client\n")
+        let shown = store(fs).scan().map(\.displayName)
+        expectEqual(Set(shown.map { $0.lowercased() }).count, shown.count, "\(shown)")
+    }
+    test("PRF-31", "a new profile that cannot be written leaves no folder (its name stays free)") {
+        let fs = MemFS()
+        fs.writesBeforeFailure = 0
+        expectThrows("create") { _ = try store(fs).create(name: "office", config: "client\ndev tun\nremote o 1194\n") }
+        fs.writesBeforeFailure = nil
+        expect(!fs.exists("\(userDir)/office"))
+        expect((try? store(fs).create(name: "office", config: "client\ndev tun\nremote o 1194\n")) != nil, "the name is free")
+    }
+    test("PRF-32", "a rename the keychain does not follow is not made: files and saved passwords as they were") {
+        let fs = MemFS()
+        fs.add("/D/office.ovpn", "client\ndev tun\nremote o 1194\n")
+        let p = try store(fs).importProfile(at: "/D/office.ovpn").profile
+        let secrets = FakeSecrets()
+        secrets.items["\(p.secretsKey)|password"] = "p"
+        secrets.refuses = true
+        expectThrows("rename", matching: "keychain") { _ = try store(fs).rename(p, to: "berlin", active: [], secrets: secrets) }
+        expectEqual(store(fs).scan().map(\.path), [p.path])
+        expectEqual(secrets.items["\(p.secretsKey)|password"], "p")
+        secrets.refuses = false
+        let r = try store(fs).rename(p, to: "berlin", active: [], secrets: secrets)
+        expectEqual(secrets.items["\(r.secretsKey)|password"], "p")
+        expect(secrets.items["\(p.secretsKey)|password"] == nil)
+    }
     test("PRF-24", "files dropped on MugVPN: profiles (.ovpn, .conf) and Tunnelblick configurations (.tblk) only") {
         expectEqual(ProfileStore.importable(["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk", "/a/notes.txt", "/a/key.pem", "/a/ovpn"]),
                     ["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk"])
@@ -258,12 +350,12 @@ func registerProfileTests() {
     test("PRF-07", "import a Tunnelblick .tblk") {
         let fs = MemFS()
         fs.add("/D/Office.tblk/Contents/Resources/config.ovpn", "client\ndev tun\nremote o 1194\nca ca.crt\n")
-        fs.add("/D/Office.tblk/Contents/Resources/ca.crt", "CA")
+        fs.add("/D/Office.tblk/Contents/Resources/ca.crt", testPEMCert)
         fs.add("/D/Office.tblk/Contents/Resources/up.sh", "#!/bin/sh")
         fs.add("/D/Office.tblk/Contents/Info.plist", "<plist/>")
         let r = try store(fs).importTunnelblick(at: "/D/Office.tblk")
         expectEqual(r.map(\.profile.name), ["Office"])
-        expectEqual(fs.text("\(userDir)/Office/ca.crt"), "CA")
+        expectEqual(fs.text("\(userDir)/Office/ca.crt"), testPEMCert)
         expectEqual(r[0].skipped, ["up.sh"], "Tunnelblick scripts are not imported")
         let flat = MemFS()
         flat.add("/D/Two.tblk/a.ovpn", "client\ndev tun\nremote a 1194\n")

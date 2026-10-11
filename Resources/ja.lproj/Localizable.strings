@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ はテキストファイル（PEM）ではありません。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ はフォルダ外のファイルを参照しています。プロファイルにコピーしますか？ その内容がVPNサーバに送られる可能性があります。\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）";
+"%@ was changed outside MugVPN since it was opened here." = "%@ はここで開いた後に MugVPN の外で変更されました。";
+"%@ was removed outside MugVPN since it was opened here." = "%@ はここで開いた後に MugVPN の外で削除されました。";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS は自身のドメインのみ、別の接続がすべての名前を引き受けています";
 "%@: DNS not set, another connection takes all names" = "%@: DNS は未設定、別の接続がすべての名前を引き受けています";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "複数の接続を同時に維持できる OpenVPN プロファイル用クライアント。MIT ライセンス。";
 "A program asked MugVPN to import %@. Import it?" = "あるプログラムが MugVPN に %@ の読み込みを求めています。読み込みますか？";
+"A summary (versions, which connections are up) always goes in. Also:" = "概要（バージョン、接続中の接続）は常に含まれます。そのほか:";
 "About MugVPN" = "MugVPNについて";
 "Add a connection" = "接続を追加";
 "Add at least one server." = "サーバーを少なくとも1つ追加してください。";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "接続中 (%@)";
 "Connecting to %@." = "%@ に接続しています。";
 "Connection Settings…" = "接続設定…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "接続ログ（各最大 1 MB: アドレス、サーバ、エラー）";
 "Connection settings" = "接続設定";
 "Connections" = "接続一覧";
 "Connections…" = "接続一覧…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "DNSサーバは8つまで入力できます。";
 "Enter the proxy's address and a port from 1 to 65535." = "プロキシのアドレスと 1〜65535 のポートを入力してください。";
 "Every time" = "毎回";
+"Export Diagnostics" = "診断情報を書き出す";
 "Export Diagnostics…" = "診断情報を書き出す…";
+"Export…" = "書き出す…";
 "Flat" = "フラット";
 "From the VPN server" = "VPNサーバから";
 "General" = "一般";
 "Hide" = "隠す";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6の通信がVPNを迂回しています（%@ 経由）";
-"If it drops unexpectedly, block the Internet until I reconnect" = "予期せず切断されたら、再接続するまでインターネットをブロック";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "予期せず切断されたら、再接続するまで自分の TCP と UDP の通信をブロック";
 "Ignore messages from servers" = "サーバーからのメッセージを無視";
 "Import" = "インポート";
 "Import File…" = "ファイルのインポート…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPNを「アプリケーション」フォルダに移動し、そこから開いてもう一度接続してください。";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN はアンインストールを完了できませんでした（%@）。インストールされたままです。1 分後にもう一度お試しください。";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN は VPN が設定した DNS や経路をまだ取り除いています。それが終わるまでインストールされたままです。1 分後にもう一度お試しください。";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN はアンインストールされましたが、次のものを削除できませんでした: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN のヘルパーが応答しませんでした（%@）。代わりに管理者パスワードで MugVPN のシステム部分を削除しますか？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN のヘルパーはバージョン %@ で、このアプリ（%@）より新しいです。MugVPN をアップデートしてください。";
@@ -140,6 +149,7 @@
 "None" = "なし";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "すべての通信がVPNを通っていません: トンネルがデフォルトルートを持っていません";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "インポートされませんでした（MugVPN はプロファイルのスクリプトを root として実行しません）: %@";
+"Not in the archive (could not be written): %@" = "アーカイブに含まれていません（書き込めませんでした）: %@";
 "Notify when connected:" = "接続時に通知:";
 "OK" = "OK";
 "Off" = "オフ";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "テキストエディタで開く";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN は OpenVPN Inc. の登録商標です。";
 "Options" = "オプション";
+"Overwrite" = "上書き";
 "Password:" = "パスワード:";
 "Paste" = "ペースト";
 "Persistent connections:" = "永続的な接続:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "接続前スクリプト (秒):";
 "Private key:" = "秘密鍵:";
 "Profile menu:" = "プロファイルメニュー:";
+"Profiles without passwords or keys (servers, certificates, options)" = "パスワードや鍵を除いたプロファイル（サーバ、証明書、オプション）";
 "Proxy" = "プロキシ";
 "Proxy:" = "プロキシ:";
 "Quit MugVPN" = "MugVPN を終了";
@@ -165,6 +177,7 @@
 "Reconnect" = "再接続";
 "Reconnecting" = "再接続中";
 "Redo" = "やり直す";
+"Reload" = "再読み込み";
 "Remove" = "取り除く";
 "Response" = "応答";
 "Revert" = "元に戻す";
@@ -184,6 +197,7 @@
 "Settings…" = "設定…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "複数の接続がそれぞれ独自のドメインを担当できます。すべての名前を担当できるのは一度に1つだけです。";
 "Show Status" = "状態を表示";
+"Show Windows" = "ウインドウを表示";
 "Show in Finder" = "Finder で表示";
 "Show the status window" = "ステータスウインドウを表示";
 "Sign in to This Network…" = "このネットワークにサインイン…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "クライアント証明書には秘密鍵が必要です。";
 "The configuration cannot be read: %@" = "設定ファイルを読み込めません: %@";
 "The first time" = "初回のみ";
+"The keychain did not remove the saved passwords of %@." = "キーチェーンは %@ の保存したパスワードを削除しませんでした。";
+"The keychain did not save it: it is used for this connection only." = "キーチェーンに保存できませんでした。この接続にのみ使われます。";
+"The network state (routes, DNS, network interfaces)" = "ネットワークの状態（経路、DNS、ネットワークインターフェイス）";
 "The private key needs its client certificate." = "秘密鍵にはクライアント証明書が必要です。";
 "The proxy for %@ needs a username and password." = "%@ のプロキシにはユーザー名とパスワードが必要です。";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "実行中のヘルパーは自分でアップデートできない古いものです。新しいものに置き換えると、この Mac のすべてのユーザの MugVPN 接続が停止します。続けますか？";
@@ -233,6 +250,7 @@
 "not connected" = "未接続";
 "nothing" = "なし";
 "passwords" = "パスワード";
+"saved passwords" = "保存したパスワード";
 "the connection ended unexpectedly" = "接続が予期せず終了しました";
 "the persistent connection is not running" = "永続的な接続が実行されていません";
 "the port must be 1–65535" = "ポートは 1–65535 の範囲で指定してください";

@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ не є текстовим файлом (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ посилається на файли поза своєю папкою. Скопіювати їх у профіль? Їхній вміст може отримати VPN-сервер.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ змінено поза MugVPN відтоді, як його відкрито тут.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ видалено поза MugVPN відтоді, як його відкрито тут.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS лише для своїх доменів, усі імена в іншого підключення";
 "%@: DNS not set, another connection takes all names" = "%@: DNS не встановлено, усі імена в іншого підключення";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Клієнт для профілів OpenVPN, що тримає кілька підключень одночасно. Ліцензія MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Програма попросила MugVPN імпортувати %@. Імпортувати?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Зведення (версії, які підключення активні) входить завжди. Також:";
 "About MugVPN" = "Про MugVPN";
 "Add a connection" = "Додати підключення";
 "Add at least one server." = "Додайте хоча б один сервер.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Підключення (%@)";
 "Connecting to %@." = "Підключення до %@.";
 "Connection Settings…" = "Налаштування підключення…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Журнали підключень (до 1 МБ кожен: адреси, сервери, помилки)";
 "Connection settings" = "Налаштування підключення";
 "Connections" = "Підключення";
 "Connections…" = "Підключення…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Вкажіть не більше 8 DNS-серверів.";
 "Enter the proxy's address and a port from 1 to 65535." = "Введіть адресу проксі-сервера та порт від 1 до 65535.";
 "Every time" = "Щоразу";
+"Export Diagnostics" = "Експорт діагностики";
 "Export Diagnostics…" = "Експорт діагностики…";
+"Export…" = "Експорт…";
 "Flat" = "Плоске";
 "From the VPN server" = "Від VPN-сервера";
 "General" = "Загальні";
 "Hide" = "Сховати";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6-трафік іде повз VPN (через %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "У разі несподіваного обриву блокувати інтернет, доки я не перепідключуся";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "У разі неочікуваного розриву блокувати мій трафік TCP і UDP, доки я не перепідключуся";
 "Ignore messages from servers" = "Ігнорувати повідомлення від серверів";
 "Import" = "Імпорт";
 "Import File…" = "Імпортувати файл…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Перемістіть MugVPN у папку «Програми», відкрийте його звідти й підключіться знову.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Налаштування MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN не зміг завершити видалення (%@). Він залишається встановленим: повторіть за хвилину.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ще знімає DNS або маршрути, встановлені VPN, і доти залишається встановленим. Повторіть за хвилину.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN видалено, але це видалити не вдалося: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN потрібен допоміжний компонент для запуску тунелів.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Помічник MugVPN не відповів (%@). Видалити системну частину MugVPN з паролем адміністратора?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Помічник MugVPN версії %@ — новіший за цей застосунок (%@): оновіть MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Немає";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Не весь трафік іде через VPN: тунель не тримає маршрут за замовчуванням";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Не імпортовано (MugVPN не запускає скрипти профілів від імені root): %@";
+"Not in the archive (could not be written): %@" = "Не ввійшло до архіву (не вдалося записати): %@";
 "Notify when connected:" = "Сповіщати про підключення:";
 "OK" = "OK";
 "Off" = "Вимкнено";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Відкрити в текстовому редакторі";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN — зареєстрована торговельна марка OpenVPN Inc.";
 "Options" = "Параметри";
+"Overwrite" = "Перезаписати";
 "Password:" = "Пароль:";
 "Paste" = "Вставити";
 "Persistent connections:" = "Постійні підключення:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Скрипт перед підключенням (с):";
 "Private key:" = "Закритий ключ:";
 "Profile menu:" = "Меню профілів:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Профілі без паролів і ключів (сервери, сертифікати, параметри)";
 "Proxy" = "Проксі-сервер";
 "Proxy:" = "Проксі-сервер:";
 "Quit MugVPN" = "Вийти з MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Перепідключити";
 "Reconnecting" = "Перепідключення";
 "Redo" = "Повторити";
+"Reload" = "Завантажити знову";
 "Remove" = "Вилучити";
 "Response" = "Відповідь";
 "Revert" = "Повернути";
@@ -184,6 +197,7 @@
 "Settings…" = "Налаштування…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Кілька підключень можуть обслуговувати кожне свої домени; усі імена може забрати лише одне.";
 "Show Status" = "Показати стан";
+"Show Windows" = "Показати вікна";
 "Show in Finder" = "Показати у Finder";
 "Show the status window" = "Показувати вікно статусу";
 "Sign in to This Network…" = "Увійти в цю мережу…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Сертифікату клієнта потрібен його закритий ключ.";
 "The configuration cannot be read: %@" = "Не вдалося прочитати конфігурацію: %@";
 "The first time" = "Лише вперше";
+"The keychain did not remove the saved passwords of %@." = "Зв’язка ключів не видалила збережені паролі %@.";
+"The keychain did not save it: it is used for this connection only." = "Зв’язка ключів не зберегла його: він використовується лише для цього підключення.";
+"The network state (routes, DNS, network interfaces)" = "Стан мережі (маршрути, DNS, мережеві інтерфейси)";
 "The private key needs its client certificate." = "Закритому ключу потрібен його сертифікат клієнта.";
 "The proxy for %@ needs a username and password." = "Проксі-сервер для %@ потребує імені користувача та пароля.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Запущений помічник — старий, сам оновитися він не може. Встановлення нового зупинить усі підключення MugVPN на цьому Mac, у всіх користувачів. Продовжити?";
@@ -233,6 +250,7 @@
 "not connected" = "не підключено";
 "nothing" = "нічого";
 "passwords" = "паролі";
+"saved passwords" = "збережені паролі";
 "the connection ended unexpectedly" = "з'єднання несподівано обірвалося";
 "the persistent connection is not running" = "постійне підключення не запущено";
 "the port must be 1–65535" = "порт має бути в діапазоні 1–65535";

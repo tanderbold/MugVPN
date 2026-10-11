@@ -159,32 +159,7 @@ final class RealSystem: HelperSystem {
         // In a sandbox: it may write only its management socket's folder, and start nothing
         // (whatever ran as this id could otherwise outlive it or leave files for the next
         // connection given the id).
-        func quoted(_ s: String) -> String {
-            "\"" + s.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"") + "\""
-        }
-        // Allowed: its network, reading system files and its own run folder, the few system
-        // services name lookups need. Not: other users' files, MugVPN's other runs, writing
-        // anywhere but its socket folder, starting anything (also through launchd), IPC,
-        // hardware, preferences.
-        let profile = """
-            (version 1)
-            (allow default)
-            (deny file-write* (require-not (require-any (subpath \(quoted(cwd + "/sock"))) (literal "/dev/null") (literal "/dev/dtracehelper"))))
-            (deny file-read* (subpath "/Users") (subpath "/Library/Application Support/MugVPN") (subpath "/Library/Keychains")
-                (subpath "/private/var/root") (subpath "/Library/Logs"))
-            (allow file-read* (subpath \(quoted(cwd))) (literal \(quoted(path))))
-            (deny process-fork)
-            (deny process-exec (require-not (literal \(quoted(path)))))
-            (deny job-creation)
-            (deny iokit-open)
-            (deny ipc-posix*)
-            (deny ipc-sysv*)
-            (deny user-preference-write)
-            (deny mach-register)
-            (deny mach-lookup (require-not (require-any \(HelperLookups.allowed.map { "(global-name \(quoted($0)))" }.joined(separator: " ")))))
-            (deny network-outbound (remote unix-socket (subpath "/Library/Application Support/MugVPN")))
-            (deny network-bind (local unix-socket (require-not (subpath \(quoted(cwd + "/sock"))))))
-            """
+        let profile = OpenVPNSandbox.profile(binary: path, runDir: cwd, lookups: HelperLookups.allowed)
         let full = ["/usr/bin/sandbox-exec", "-p", profile, path] + args
         let cArgs: [UnsafeMutablePointer<CChar>?] = full.map { strdup($0) } + [nil]
         let cEnv: [UnsafeMutablePointer<CChar>?] = [strdup("PATH=/usr/bin:/bin:/usr/sbin:/sbin"), nil]
@@ -320,7 +295,6 @@ final class RealSystem: HelperSystem {
     func interfaceExists(_ name: String) -> Bool { if_nametoindex(name) != 0 }
 
     /// MugVPN's note in a DNS backup: which service it came from.
-    static let backupServiceKey = "MugVPNService"
 
     /// The helper's own copy of every utun it handed out: while it has records of a
     /// device, the kernel cannot give that name to another connection.
@@ -365,42 +339,11 @@ final class RealSystem: HelperSystem {
         return DefaultGateway(address: gateway, interface: interface)
     }
 
-    /// What openvpn's macos-dns-updown.sh does, without a shell: split DNS as a
-    /// supplemental resolver for the tunnel; all names by replacing the primary
-    /// service's DNS (kept to restore) — for one tunnel at a time.
-    func setDNS(_ plan: DNSPlan) -> Bool {
-        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil) else { return false }
-        let base = "State:/Network/Service/openvpn-\(plan.device)"
-        defer { run("/usr/bin/dscacheutil", ["-flushcache"]); run("/usr/bin/killall", ["-HUP", "mDNSResponder"]) }
-        if plan.split {
-            let dns: [String: Any] = ["ServerAddresses": plan.servers, "SupplementalMatchDomains": plan.matchDomains,
-                                      "SupplementalMatchDomainsNoSearch": 1]
-            return SCDynamicStoreSetValue(store, "\(base)/DNS" as CFString, dns as CFDictionary)
-        }
-        let others = SCDynamicStoreCopyKeyList(store, "State:/Network/Service/openvpn-.*/DnsBackup" as CFString) as? [String] ?? []
-        guard others.allSatisfy({ $0 == "\(base)/DnsBackup" }) else {
-            log("DNS for all names is already another tunnel's: not set for \(plan.device)")
-            return false
-        }
-        guard let ipv4 = SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any],
-              let primary = ipv4["PrimaryService"] as? String else { return false }
-        let key = "Setup:/Network/Service/\(primary)/DNS" as CFString
-        let backupKey = "\(base)/DnsBackup" as CFString
-        if others.isEmpty {
-            // An empty backup: the primary service had no DNS of its own (it came from DHCP).
-            // The service it belongs to goes with it: the primary may change before it is restored.
-            var backup = SCDynamicStoreCopyValue(store, key) as? [String: Any] ?? [:]
-            backup[RealSystem.backupServiceKey] = primary
-            guard SCDynamicStoreSetValue(store, backupKey, backup as CFDictionary) else { return false }
-        }
-        var dns: [String: Any] = ["ServerAddresses": plan.servers, "SearchOrder": 5000]
-        if !plan.searchDomains.isEmpty { dns["SearchDomains"] = plan.searchDomains }
-        guard SCDynamicStoreSetValue(store, key, dns as CFDictionary) else {
-            // Nothing set: no backup to hold the next tunnel back.
-            SCDynamicStoreRemoveValue(store, backupKey)
-            return false
-        }
-        return true
+    private var systemDNS: SystemDNS { SystemDNS(store: SCStore(), log: log) }
+
+    func setDNS(_ plan: DNSPlan) -> DNSSet {
+        defer { flushDNSCache() }
+        return systemDNS.set(plan)
     }
 
     /// Every process whose executable is exactly `path` (no pattern matching).
@@ -414,33 +357,21 @@ final class RealSystem: HelperSystem {
         }
     }
 
-    /// The reverse of openvpn's macos-dns-updown.sh for one device. False when a key could not be
-    /// changed (the caller then keeps it as set).
-    @discardableResult func restoreDNS(device dev: String) -> Bool {
-        guard let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil) else { return false }
-        defer { run("/usr/bin/dscacheutil", ["-flushcache"]); run("/usr/bin/killall", ["-HUP", "mDNSResponder"]) }
-        // Gone, or not there to begin with.
-        func remove(_ key: CFString) -> Bool { SCDynamicStoreRemoveValue(store, key) || SCDynamicStoreCopyValue(store, key) == nil }
-        let base = "State:/Network/Service/openvpn-\(dev)"
-        guard remove("\(base)/DNS" as CFString) else { return false }
-        let backupKey = "\(base)/DnsBackup" as CFString
-        if var backup = SCDynamicStoreCopyValue(store, backupKey) as? [String: Any],
-           let primary = backup.removeValue(forKey: RealSystem.backupServiceKey) as? String
-               ?? (SCDynamicStoreCopyValue(store, "State:/Network/Global/IPv4" as CFString) as? [String: Any])?["PrimaryService"] as? String {
-            // The service whose DNS was replaced, even if another is primary now.
-            let key = "Setup:/Network/Service/\(primary)/DNS" as CFString
-            // An empty backup: there was no DNS of the service's own before.
-            guard backup.isEmpty ? remove(key) : SCDynamicStoreSetValue(store, key, backup as CFDictionary) else {
-                log("could not restore the primary DNS from \(dev)'s backup")
-                return false   // the backup stays: what to put back, and all names still held
-            }
-            log("restored the primary DNS from \(dev)'s backup")
-        }
-        return remove(backupKey)
+    @discardableResult func restoreDNS(device dev: String) -> DNSRestore {
+        defer { flushDNSCache() }
+        return systemDNS.restore(device: dev)
     }
 
-    func deleteRoute(_ args: [String]) {
-        run("/sbin/route", ["-n", "delete"] + args)
+    func removeDNSBackup(device dev: String) -> Bool { systemDNS.removeBackup(device: dev) }
+
+    private func flushDNSCache() {
+        run("/usr/bin/dscacheutil", ["-flushcache"])
+        run("/usr/bin/killall", ["-HUP", "mDNSResponder"])
+    }
+
+    @discardableResult func deleteRoute(_ args: [String]) -> Bool {
+        let r = run("/sbin/route", ["-n", "delete"] + args, input: nil)
+        return r.status == 0 || r.output.contains("not in table")
     }
 
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void) {
@@ -479,7 +410,8 @@ final class RealSystem: HelperSystem {
         case S_IFLNK: kind = .link
         default: kind = .other
         }
-        return FileInfo(owner: st.st_uid, mode: UInt16(st.st_mode & 0o7777), kind: kind)
+        return FileInfo(owner: st.st_uid, mode: UInt16(st.st_mode & 0o7777), kind: kind,
+                        modified: TimeInterval(st.st_mtimespec.tv_sec))
     }
 
     /// Run a system tool and wait for it, but never for long: the helper's
@@ -573,7 +505,13 @@ final class RealSystem: HelperSystem {
                 return false
             }
             let token = e.output[m].split(separator: ":").last!.trimmingCharacters(in: .whitespaces)
-            try? writeFile(tokenFile, Data("\(bootTime()) \(token)".utf8), mode: 0o600)
+            // Its token on record, or PF given straight back: unrecorded, it could not be released later.
+            guard (try? writeFile(tokenFile, Data("\(bootTime()) \(token)".utf8), mode: 0o600)) != nil else {
+                log("could not record PF's token: MugVPN's rules taken out again")
+                run(pfctl, ["-X", token])
+                run(pfctl, ["-a", PFRules.anchorName, "-F", "all"], input: nil)
+                return false
+            }
         }
         return pfEnabled()
     }
@@ -587,8 +525,9 @@ final class RealSystem: HelperSystem {
         return there >= ours
     }
 
-    func addRoute(_ args: [String]) {
-        run("/sbin/route", ["-n", "add"] + args)
+    @discardableResult func addRoute(_ args: [String]) -> Bool {
+        let r = run("/sbin/route", ["-n", "add"] + args, input: nil)
+        return r.status == 0 || r.output.contains("File exists")
     }
 
     func readFrom(_ path: String, offset: UInt64, maxBytes: Int) -> Data? {
@@ -703,5 +642,23 @@ final class RealManagementChannel: ManagementChannel {
         guard !closed else { return }
         closed = true
         source.cancel()
+    }
+}
+
+/// The SystemConfiguration dynamic store for SystemDNS.
+private struct SCStore: DNSStore {
+    let store = SCDynamicStoreCreate(nil, "MugVPNHelper" as CFString, nil, nil)
+    func value(_ key: String) -> [String: Any]? {
+        store.flatMap { SCDynamicStoreCopyValue($0, key as CFString) as? [String: Any] }
+    }
+    func set(_ key: String, _ value: [String: Any]) -> Bool {
+        store.map { SCDynamicStoreSetValue($0, key as CFString, value as CFDictionary) } ?? false
+    }
+    func remove(_ key: String) -> Bool {
+        guard let store else { return false }
+        return SCDynamicStoreRemoveValue(store, key as CFString) || SCDynamicStoreCopyValue(store, key as CFString) == nil
+    }
+    func keys(matching pattern: String) -> [String] {
+        store.flatMap { SCDynamicStoreCopyKeyList($0, pattern as CFString) as? [String] } ?? []
     }
 }

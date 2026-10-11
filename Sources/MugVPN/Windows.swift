@@ -17,6 +17,7 @@ func localizedCore(_ s: String) -> String {
     case "cannot reach openvpn's management socket": return L("cannot reach openvpn's management socket")
     case "the persistent connection is not running": return L("the persistent connection is not running")
     case "the pre-connect script failed": return L("the pre-connect script failed")
+    case ConnectionController.keychainSaveFailed: return L("The keychain did not save it: it is used for this connection only.")
     case ConnectionManager.helperTooOldForDNSDomains: return L("the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated")
     default: return s
     }
@@ -49,7 +50,7 @@ final class DropView: NSView {
 
 final class AppWindow: NSWindow {
     /// Windows that ask something and wait for the answer.
-    static let dialogKinds: Set<String> = ["confirm", "error", "message", "warning", "credentials", "secret", "challenge", "string",
+    static let dialogKinds: Set<String> = ["confirm", "error", "message", "warning", "diagnostics", "credentials", "secret", "challenge", "string",
                                            "pkcs11", "uninstall", "import_as", "import_url", "helper_setup"]
     /// Questions a connection waits on (it looks stuck while one is hidden): kept above MugVPN's other windows.
     static let waitingKinds: Set<String> = ["credentials", "secret", "challenge", "string", "pkcs11"]
@@ -342,6 +343,13 @@ final class PromptUI: ConnectionUI {
 
     private var name: String { profile.displayName }
 
+    func dismissPrompts() {
+        for w in WindowRegistry.shared.windows where w.profile == name && AppWindow.waitingKinds.contains(w.kind) {
+            w.sheetParent?.endSheet(w)
+            w.close()   // not a Cancel: nothing to answer any more
+        }
+    }
+
     func askCredentials(type: String, username: String?, challenge: StaticChallenge?, error: String?,
                         reply: @escaping (CredentialsAnswer?) -> Void) {
         let isProxy = type == "HTTP Proxy"
@@ -427,7 +435,7 @@ final class PromptUI: ConnectionUI {
         services.showMessage(profile: name, title: title, text: text)
     }
 
-    func notify(title: String, text: String) { services.notify(title: title, text: text) }
+    func notify(title: String, text: String) { services.notify(title: title, text: localizedCore(text)) }
 
     private func certificateTitle(_ e: PKCS11Entry) -> String {
         if let d = Data(base64Encoded: e.certificate), let cert = SecCertificateCreateWithData(nil, d as CFData),

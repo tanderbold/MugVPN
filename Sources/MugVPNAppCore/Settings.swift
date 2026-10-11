@@ -232,11 +232,25 @@ public final class SettingsStore {
 
 /// Saved secrets follow a profile's name.
 public enum ProfileSecrets {
-    public static func renamed(_ store: SecretStore, from old: String, to new: String) {
+    /// The old ones go only once every one is saved under the new name (a keychain that refuses keeps them).
+    /// - Returns: false when some could not be moved (they stay under the old name).
+    @discardableResult
+    public static func renamed(_ store: SecretStore, from old: String, to new: String) -> Bool {
+        var all = true
         for k in [SecretKey.username, .password, .keyPassword, .proxyUsername, .proxyPassword] {
-            if let v = store.get(old, k) { store.set(new, k, v) }
+            if let v = store.get(old, k), !store.set(new, k, v) { all = false }
         }
-        store.removeAll(old)
+        if all { store.removeAll(old) }
+        return all
+    }
+
+    /// Saved under the new name too, the old ones kept. - Returns: false when one was not taken.
+    public static func copied(_ store: SecretStore, from old: String, to new: String) -> Bool {
+        var all = true
+        for k in [SecretKey.username, .password, .keyPassword, .proxyUsername, .proxyPassword] {
+            if let v = store.get(old, k), !store.set(new, k, v) { all = false }
+        }
+        return all
     }
 
     public static func deleted(_ store: SecretStore, _ profile: String) {

@@ -94,9 +94,9 @@ final class Service: NSObject, MugVPNHelperProtocol {
         let uid = caller
         queue.async {
             do {
-                try core.uninstall(uid: uid, keepProfiles: keepProfiles) {
-                    log("uninstalled by uid \(uid)")
-                    reply(nil)
+                try core.uninstall(uid: uid, keepProfiles: keepProfiles) { refusal in
+                    log(refusal.map { "not uninstalled: \($0)" } ?? "uninstalled by uid \(uid)")
+                    reply(refusal)
                 }
             } catch {
                 reply("\(error)")

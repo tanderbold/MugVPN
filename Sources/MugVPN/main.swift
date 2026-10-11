@@ -71,6 +71,11 @@ case .uninstall(let confirmed, let keep):
     let deadline = Date().addingTimeInterval(60)
     while result == nil && Date() < deadline { RunLoop.main.run(until: Date().addingTimeInterval(0.1)) }
     withExtendedLifetime(client) {}
+    if let r = result ?? nil, HelperRefusal.isHelpersOwn(r) {
+        // The helper held back on purpose (DNS, routes, PF, its files): no removal around it.
+        FileHandle.standardError.write(Data("MugVPN: not uninstalled yet: \(r)\n".utf8))
+        exit(1)
+    }
     if let err = result ?? "the helper did not answer" {
         FileHandle.standardError.write(Data(("MugVPN: cannot uninstall: \(err)\n"
             + "To remove MugVPN's system part without the helper, as an administrator:\n  sudo sh -c \""
@@ -78,8 +83,13 @@ case .uninstall(let confirmed, let keep):
         exit(1)
     }
     services.helperSetup.unregister()
-    services.removeUserData(user)
-    services.moveAppToTrash()
+    var stayed = services.removeUserData(user)
+    if !services.moveAppToTrash() { stayed.append(Bundle.main.bundlePath) }
+    guard stayed.isEmpty else {
+        // Said, not claimed gone.
+        FileHandle.standardError.write(Data("MugVPN is uninstalled, but these could not be removed: \(stayed.joined(separator: ", "))\n".utf8))
+        exit(1)
+    }
     print("MugVPN is uninstalled.")
     exit(0)
 case .command(let c, let wait):

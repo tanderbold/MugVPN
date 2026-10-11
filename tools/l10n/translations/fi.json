@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "Liikenne kohteeseen %@ kiertää VPN:n (kautta %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS-palvelin %@ tavoitetaan VPN:n ohi (kautta %@)",
  "Block IPv6 outside the VPN": "Estä IPv6 VPN:n ulkopuolella",
- "If it drops unexpectedly, block the Internet until I reconnect": "Jos yhteys katkeaa odottamatta, estä internet, kunnes yhdistän uudelleen",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "Internet estetty: %@ katkesi. Yhdistä uudelleen tai poista esto.",
  "Send DNS only through the VPN": "Lähetä DNS vain VPN:n kautta",
  "Unblock Internet": "Poista internetin esto",

@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "前往 %@ 的流量繞過了 VPN（經由 %@）",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS 伺服器 %@ 在 VPN 之外被存取（經由 %@）",
  "Block IPv6 outside the VPN": "阻擋 VPN 之外的 IPv6",
- "If it drops unexpectedly, block the Internet until I reconnect": "意外中斷時阻擋網際網路，直到我重新連線",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "網際網路已阻擋：%@ 已中斷。請重新連線或解除阻擋。",
  "Send DNS only through the VPN": "僅透過 VPN 傳送 DNS",
  "Unblock Internet": "解除網際網路阻擋",

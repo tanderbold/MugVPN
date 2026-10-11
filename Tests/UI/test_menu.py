@@ -1,4 +1,6 @@
 """UI-01..04: the status menu and its icon."""
+import time
+
 from conftest import wait_for
 
 PROFILE_ITEMS = ["Connect", "Disconnect", "Reconnect", "Show Status", "View Log", "Edit Config", "Clear Saved Passwords",
@@ -212,3 +214,17 @@ def test_ui79_open_settings_from_a_warning_finds_its_connection_whatever_the_sea
     c = app.window("connections")
     assert app.control(c, "list")["value"] == "stand-b"
     assert app.control(c, "search")["value"] == "", "the search that hid it is cleared"
+
+
+def test_ui83_dns_warning_from_the_log_once_the_helper_turns_out_older(app):
+    """The helper's version learnt after the first look (it answered late, or was replaced): the DNS
+    warnings are looked at again (an older helper does not say its DNS state; its refusal in the log does)."""
+    app.connect("stand-a")
+    app.connect("stand-b")
+    app.call("fake_log", profile="stand-b",
+             text="MugVPN: the helper refused DNSUP utun6: DNS for all names is already another tunnel's\n")
+    app.feed("stand-b", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
+    time.sleep(1)
+    assert not any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), "a helper that says its state"
+    app.call("fake_helper_version", version="0.2.5")
+    wait_for(lambda: any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), 10, "the warning")

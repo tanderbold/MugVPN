@@ -69,11 +69,14 @@ func registerProtectionTests() {
         expect(r.contains("pass out quick proto { tcp udp } user 469999999 >< 470004096"), "MugVPN's openvpn reaches its servers: \(r)")
         expect(r.contains("pass out quick proto udp from any port 68 to any port 67"), "DHCP")
         expect(r.contains("pass out quick proto { tcp udp } to any port 53 user 65"), "the resolver, for openvpn's server names")
-        expectEqual(r.last, "block return out quick proto { tcp udp } all")
+        expectEqual(Array(r.suffix(2)), ["block return out quick proto { tcp udp } all", "block drop out quick all"],
+                    "every protocol, not only TCP and UDP (ICMP, GRE, ESP...)")
+        expect(r.contains("pass out quick inet6 proto icmp6 all icmp6-type { neighbrsol neighbradv routersol }"),
+               "IPv6 neighbours still found (a server on IPv6)")
         s.locks = [.init(owner: 0, allowLAN: true, everyone: true)]
-        expectEqual(rules(s).last, "block return out quick proto { tcp udp } to ! <mugvpn_lan>")
+        expectEqual(Array(rules(s).suffix(2)), ["block return out quick proto { tcp udp } to ! <mugvpn_lan>", "block drop out quick to ! <mugvpn_lan>"])
         s.locks = [.init(owner: 0, allowLAN: true, everyone: true), .init(owner: 0, allowLAN: false, everyone: true)]
-        expectEqual(rules(s).last, "block return out quick proto { tcp udp } all", "the stricter")
+        expectEqual(rules(s).last, "block drop out quick all", "the stricter")
     }
     test("PF-07", "the anchor's name and where it hangs") {
         expectEqual(PFRules.anchorName, "com.apple/mugvpn")

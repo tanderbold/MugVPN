@@ -98,7 +98,7 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
                                              ("stay", L("Stay connected"))], selected: "global")
     private let proxy = Form.popup("proxy", [("global", L("As in Settings")), ("none", L("No proxy")),
                                              ("manual", L("Manual"))], selected: "global")
-    private let killSwitch = Form.checkbox("kill_switch", L("If it drops unexpectedly, block the Internet until I reconnect"))
+    private let killSwitch = Form.checkbox("kill_switch", L("If it drops unexpectedly, block my TCP and UDP traffic until I reconnect"))
     private let blockIPv6 = Form.checkbox("block_ipv6", L("Block IPv6 outside the VPN"))
     private let dnsOnly = Form.checkbox("dns_only", L("Send DNS only through the VPN"))
     private let dnsMode = Form.popup("dns_mode", [("server", L("From the VPN server")), ("own", L("These DNS servers")),
@@ -372,6 +372,8 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         guard rows != before else {
             // The same rows: the selection (reloading drops it) stays where it was.
             if current >= 0, current < rows.count { list.selectRowIndexes([current], byExtendingSelection: false) }
+            // Its file changed on disk (another editor) and nothing is typed here: shown as it now is.
+            if !dirty, case .profile(let p)? = selected, let disk = app.store.config(of: p), disk != savedText { load() }
             return
         }
         if let selected, let i = rows.firstIndex(where: { sameRow($0, selected) }) {
@@ -744,7 +746,10 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         case "revert": load()
         case "remove": removeSelected()
         case "clear_passwords":
-            if let p = selected?.profile { app.secrets.removeAll(p.secretsKey) }
+            if let p = selected?.profile {
+                app.secrets.removeAll(p.secretsKey)
+                if app.secrets.hasSaved(p.secretsKey) { showError(L("The keychain did not remove the saved passwords of %@.", p.displayName)) }
+            }
             refresh()
         case "reveal":
             if let p = selected?.profile { app.services.reveal(p.path) }
@@ -821,8 +826,20 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         }
     }
 
-    private func saveSelected() {
+    private func saveSelected(overwrite: Bool = false) {
         guard let s = selected else { return }
+        // Changed (or removed) on disk since it was opened (another editor, the Finder): asked before it is written.
+        if !overwrite, editable, case .profile(let p) = s, app.store.config(of: p) != savedText {
+            let removed = app.store.config(of: p) == nil
+            showForm(kind: "confirm", profile: p.displayName, title: L("Connections"),
+                     views: [Form.label(removed ? L("%@ was removed outside MugVPN since it was opened here.", p.displayName)
+                                                : L("%@ was changed outside MugVPN since it was opened here.", p.displayName),
+                                        id: "prompt_text")],
+                     okTitle: L("Overwrite"), cancelTitle: L("Reload"), parent: window,
+                     ok: { [weak self] _ in DispatchQueue.main.async { self?.saveSelected(overwrite: true) }; return true },
+                     cancel: { [weak self] in DispatchQueue.main.async { self?.load() } })
+            return
+        }
         let opts = formOptions()
         if case .manual(let h, let p) = opts.proxy, !ConnectionController.isHost(h) || !(1...65535).contains(p) {
             return showError(L("Enter the proxy's address and a port from 1 to 65535."))
@@ -850,15 +867,24 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
                     if newName != p.name, app.manager.active[p.id] != nil {
                         return showError(L("Disconnect %@ before renaming it.", p.displayName))
                     }
-                    if text != savedText {
-                        if let problems = try problems(text, since: savedDraft) { return showError(problems) }
-                        try app.store.save(p, config: text)
-                    }
-                    app.options.set(p.id, opts)
+                    let changed = text != savedText || overwrite
+                    if changed, let problems = try problems(text, since: savedDraft) { return showError(problems) }
+                    // Renamed first, then its text, then its options: a step that fails leaves it as it was.
+                    let old = p
                     if newName != p.name {
                         p = try app.store.rename(p, to: newName, active: Set(app.manager.active.keys),
                                                  secrets: app.secrets, options: app.options)
                     }
+                    do {
+                        if changed { try app.store.save(p, config: text) }
+                    } catch {
+                        if p != old {
+                            _ = try? app.store.rename(p, to: old.name, active: Set(app.manager.active.keys),
+                                                      secrets: app.secrets, options: app.options)
+                        }
+                        throw error
+                    }
+                    app.options.set(p.id, opts)
                 } else {
                     app.options.set(p.id, opts)
                 }

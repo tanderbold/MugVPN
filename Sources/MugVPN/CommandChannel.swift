@@ -65,11 +65,27 @@ enum CommandChannel {
                     answered = true
                     let out = ((try? JSONEncoder().encode(reply)) ?? Data()) + Data("\n".utf8)
                     DispatchQueue.global().async {
-                        _ = out.withUnsafeBytes { write(client, $0.baseAddress, $0.count) }
+                        _ = CommandChannel.writeAll(client, out)
                         close(client)
                     }
                 }
             }
+        }
+    }
+
+    /// All of it, however many writes it takes (a long answer does not fit one); at most 10 s.
+    static func writeAll(_ fd: Int32, _ data: Data) -> Bool {
+        var tv = timeval(tv_sec: 10, tv_usec: 0)
+        setsockopt(fd, SOL_SOCKET, SO_SNDTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
+        return data.withUnsafeBytes { raw -> Bool in
+            var off = 0
+            while off < raw.count {
+                let n = write(fd, raw.baseAddress! + off, raw.count - off)
+                if n > 0 { off += n; continue }
+                if n < 0, errno == EINTR { continue }
+                return false
+            }
+            return true
         }
     }
 
@@ -99,7 +115,7 @@ enum CommandChannel {
                     var uid: uid_t = 0, gid: gid_t = 0
                     if getpeereid(sock, &uid, &gid) == 0, uid == getuid() {
                         let msg = json + Data("\n".utf8)
-                        _ = msg.withUnsafeBytes { write(sock, $0.baseAddress, $0.count) }
+                        _ = CommandChannel.writeAll(sock, msg)
                         var tv = timeval(tv_sec: Int(answerWithin.rounded(.up)), tv_usec: 0)
                         setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, &tv, socklen_t(MemoryLayout<timeval>.size))
                         var reply = Data()

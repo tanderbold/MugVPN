@@ -53,12 +53,20 @@ final class FakeUI: ConnectionUI {
     func openURL(_ url: String) { opened.append(url) }
     func showMessage(title: String, text: String) { messages.append((title, text)) }
     func notify(title: String, text: String) { notes.append((title, text)) }
+    var dismissed = 0
+    func dismissPrompts() { dismissed += 1 }
 }
 
 final class FakeSecrets: SecretStore {
     var items: [String: String] = [:] // "profile|key"
     func get(_ profile: String, _ key: SecretKey) -> String? { items["\(profile)|\(key.rawValue)"] }
-    func set(_ profile: String, _ key: SecretKey, _ value: String) { items["\(profile)|\(key.rawValue)"] = value }
+    /// The keychain refuses to save (locked, not reachable).
+    var refuses = false
+    func set(_ profile: String, _ key: SecretKey, _ value: String) -> Bool {
+        if refuses { return false }
+        items["\(profile)|\(key.rawValue)"] = value
+        return true
+    }
     func remove(_ profile: String, _ key: SecretKey) { items["\(profile)|\(key.rawValue)"] = nil }
     func removeAll(_ profile: String) { items = items.filter { !$0.key.hasPrefix(profile + "|") } }
 }
@@ -162,6 +170,24 @@ func registerConnectionTests() {
         expectEqual(got, ["typed"])
         h.line(">PASSWORD:Need 'Auth' username/password")
         expectEqual(got, ["typed"], "not other passwords")
+    }
+    test("CON-37", "a password the keychain cannot save: said, and used for this connection all the same") {
+        let h = Harness()
+        h.secrets.refuses = true
+        h.line(">PASSWORD:Need 'Private Key' password")
+        h.ui.secretReply?(SecretAnswer(secret: "new", save: true))
+        expect(h.ui.notes.contains { $0.1 == ConnectionController.keychainSaveFailed }, "\(h.ui.notes)")
+        expect(h.sent.last?.contains("new") == true, "used for this connection all the same")
+        h.line(">PASSWORD:Need 'Auth' username/password")
+        h.ui.credentialsReply?(CredentialsAnswer(username: "u", password: "p", save: true))
+        expectEqual(h.ui.notes.filter { $0.1 == ConnectionController.keychainSaveFailed }.count, 2)
+    }
+    test("CON-38", "a connection that ends takes its open questions with it (a password asked for nothing)") {
+        let h = Harness()
+        h.line(">PASSWORD:Need 'Auth' username/password")
+        expectEqual(h.ui.dismissed, 0)
+        h.line(">STATE:1700000000,EXITING,SIGTERM,,,,,")
+        expectEqual(h.ui.dismissed, 1)
     }
     test("CON-06", "private key password") {
         let h = Harness()
@@ -354,9 +380,9 @@ func registerConnectionTests() {
             asked.append((kind, msg))
             reply(answer)
         }
-        h.c.sendWithFD = { cmd, fh in
+        h.c.sendWithFD = { cmd, fh, done in
             withFD.append((cmd, fh.fileDescriptor))
-            return true
+            done(true)
         }
         answer = .success(FileHandle(fileDescriptor: 42, closeOnDealloc: false))
         h.line(">NEED-OK:Need 'OPENTUN' confirmation MSG:tun")

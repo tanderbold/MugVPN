@@ -354,6 +354,13 @@ func registerPolicyTests() {
         }
         expect(!(try checked("client\nremote a")).needsServerCheck, "no CA named: nothing to check against")
     }
+    test("POL-58", "an inline peer-fingerprint with no fingerprint in it is refused (openvpn would check nothing)") {
+        for body in ["", "# only a comment\n", "\n  \n"] {
+            expectThrows(body, matching: "fingerprint") { _ = try checked("client\nremote a\nca ca.crt\n<peer-fingerprint>\n\(body)</peer-fingerprint>", files: ["ca.crt"]) }
+        }
+        let one = Array(repeating: "AB", count: 32).joined(separator: ":")
+        expect(!(try checked("client\nremote a\nca ca.crt\n<peer-fingerprint>\n# srv\n\(one)\n</peer-fingerprint>", files: ["ca.crt"]).needsServerCheck))
+    }
     test("POL-41", "the server check that counts is the one openvpn uses (the last), and a whole name") {
         expect(try checked("client\nremote a\nca ca.crt\nremote-cert-tls server\nremote-cert-tls client", files: ["ca.crt"]).needsServerCheck)
         expect(!(try checked("client\nremote a\nca ca.crt\nremote-cert-tls client\nremote-cert-tls server", files: ["ca.crt"]).needsServerCheck))

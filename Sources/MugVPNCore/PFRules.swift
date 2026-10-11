@@ -84,7 +84,9 @@ public enum PFRules {
             r.append("block return out quick inet6 all")
         }
         if !whole.isEmpty {
-            // Still out: MugVPN's openvpn (its ids), DHCP, and the resolver for openvpn's server names.
+            // Still out: MugVPN's openvpn (its ids), DHCP, IPv6 neighbour discovery (a server on IPv6), and the
+            // resolver for openvpn's server names.
+            r.append("pass out quick inet6 proto icmp6 all icmp6-type { neighbrsol neighbradv routersol }")
             r.append("pass out quick proto { tcp udp } user \(serviceIDs.lowerBound - 1) >< \(serviceIDs.upperBound)")
             r.append("pass out quick proto udp from any port 68 to any port 67")
             r.append("pass out quick proto { tcp udp } to any port 53 user 65")
@@ -97,8 +99,11 @@ public enum PFRules {
                           : "block return out quick proto { tcp udp } all user \(owner)")
         }
         if !whole.isEmpty {
-            r.append(whole.allSatisfy(\.allowLAN) ? "block return out quick proto { tcp udp } to ! <mugvpn_lan>"
-                                                   : "block return out quick proto { tcp udp } all")
+            // The whole Mac: every protocol (ICMP, GRE, ESP...), TCP and UDP refused at once, the rest dropped.
+            // (A user's block can only be TCP and UDP: PF tells users apart by their sockets.)
+            let lanOpen = whole.allSatisfy(\.allowLAN)
+            r.append(lanOpen ? "block return out quick proto { tcp udp } to ! <mugvpn_lan>" : "block return out quick proto { tcp udp } all")
+            r.append(lanOpen ? "block drop out quick to ! <mugvpn_lan>" : "block drop out quick all")
         }
         return r.joined(separator: "\n") + "\n"
     }

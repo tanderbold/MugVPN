@@ -62,10 +62,19 @@ public final class ProfileDownloader {
     /// A profile with its keys inline is a few KB.
     public static let maxBytes = 1 << 20
 
+    /// A server that keeps asking challenges is given up on after this many.
+    public static let maxChallengeRounds = 5
+
     /// `completion` is not called when the user cancels a challenge.
     public func download(_ source: ImportSource, username: String, password: String,
                          askChallenge: @escaping (DynamicChallenge, @escaping (String?) -> Void) -> Void,
                          completion: @escaping (Result<DownloadedProfile, ProfileError>) -> Void) {
+        download(source, username: username, password: password, round: 0, askChallenge: askChallenge, completion: completion)
+    }
+
+    private func download(_ source: ImportSource, username: String, password: String, round: Int,
+                          askChallenge: @escaping (DynamicChallenge, @escaping (String?) -> Void) -> Void,
+                          completion: @escaping (Result<DownloadedProfile, ProfileError>) -> Void) {
         guard let url = ProfileDownloader.requestURL(source) else {
             return completion(.failure(ProfileError("that is not a server address or https URL")))
         }
@@ -86,9 +95,12 @@ public final class ProfileDownloader {
                 let body = String(decoding: r.body, as: UTF8.self)
                 if let start = body.range(of: "<Message>CRV1:"), let end = body.range(of: "</Message>", range: start.upperBound..<body.endIndex),
                    let ch = ManagementEvent.parseCRV1(String(body[start.upperBound..<end.lowerBound])) {
+                    guard round < ProfileDownloader.maxChallengeRounds else {
+                        return completion(.failure(ProfileError("the server kept asking for another challenge")))
+                    }
                     askChallenge(ch) { response in
                         guard let response else { return }
-                        self.download(source, username: username, password: "CRV1::\(ch.stateID)::\(response)",
+                        self.download(source, username: username, password: "CRV1::\(ch.stateID)::\(response)", round: round + 1,
                                       askChallenge: askChallenge, completion: completion)
                     }
                 } else {

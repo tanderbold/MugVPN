@@ -4,7 +4,18 @@ import MugVPNCore
 
 final class FakeHelperClient: HelperClient {
     var version: String? = MugVPNIDs.helperVersion
-    func version(reply: @escaping (String?) -> Void) { reply(version) }
+    /// Version answers held back (answered later with `answerVersions`).
+    var holdVersion = false
+    var heldVersions: [(String?) -> Void] = []
+    func version(reply: @escaping (String?) -> Void) {
+        if holdVersion { return heldVersions.append(reply) }
+        reply(version)
+    }
+    func answerVersions() {
+        let r = heldVersions
+        heldVersions = []
+        r.forEach { $0(version) }
+    }
     var restarts = 0
     /// What a restart brings (the new helper's version), or nil: busy.
     var restartTo: String?? = .some(MugVPNIDs.helperVersion)
@@ -94,10 +105,10 @@ final class FakeLink: ManagementLink {
     }
     func write(_ data: Data) { written += String(decoding: data, as: UTF8.self).split(separator: "\n").map(String.init) }
     var passed: [Int32] = []
-    func write(_ data: Data, passing fd: Int32) -> Bool {
+    func write(_ data: Data, passing fd: Int32, done: @escaping (Bool) -> Void) {
         write(data)
         passed.append(fd)
-        return true
+        done(true)
     }
     func close() { closed = true }
     func push(_ s: String) { onData(Data(s.utf8)) }
@@ -364,6 +375,66 @@ func registerManagerTests() {
         h2.m.dnsDomains = { _ in ["intranet.example"] }
         h2.m.connect(h2.a)
         expect(h2.helper.starts.isEmpty)
+    }
+    test("MAN-40", "the helper's version asked before a start with domains for its DNS: still pending, Disconnect cancels it") {
+        let h = ManagerHarness()
+        h.m.dnsDomains = { _ in ["intranet.example"] }
+        h.helper.holdVersion = true
+        var done = 0
+        h.m.connect(h.a) { done += 1 }
+        expect(h.m.isPending(h.a.id), "pending while the helper is asked")
+        expectEqual(done, 0, "not answered yet (the CLI would say: not started)")
+        h.m.disconnect(h.a.id)
+        h.helper.answerVersions()
+        expect(h.helper.starts.isEmpty, "cancelled: not started later")
+        expectEqual(done, 1)
+        // Answered: started, then the caller hears it; an older version seen before is forgotten.
+        h.helper.version = "0.2.5"
+        h.m.appStarted()
+        h.helper.answerVersions()
+        expectEqual(h.m.helperVersionMismatch, "0.2.5")
+        h.helper.version = MugVPNIDs.helperVersion
+        h.m.connect(h.a) { done += 1 }
+        h.helper.answerVersions()
+        expectEqual(h.helper.starts.count, 1)
+        expectEqual(done, 2)
+        expectEqual(h.m.helperVersionMismatch, nil, "the newer answer counts")
+    }
+    test("MAN-41", "a tunnel found at start goes with its profile by id, not by a name another profile shares") {
+        let h = ManagerHarness()
+        let one = Profile(name: "office", path: "/cfg/office.ovpn", source: .user, folder: "")
+        let two = Profile(name: "office", path: "/cfg/berlin/office.ovpn", source: .user, folder: "berlin")
+        h.m.profiles = [one, two]
+        var info = ConnectionInfo(id: "H1", name: "office", pid: 9, managementSocket: "/run/H1/m.sock", ownerUID: getuid())
+        info.profileID = two.id
+        h.helper.running = [info]
+        h.m.appStarted()
+        expectEqual(h.m.active[two.id]?.helperID, "H1")
+        expect(h.m.active[one.id] == nil, "not the other one of that name")
+        expectEqual(h.helper.starts.isEmpty, true)
+    }
+    test("MAN-42", "a tunnel without an id (an older helper's) goes by name only if one profile has it (in any case)") {
+        let h = ManagerHarness()
+        let one = Profile(name: "office", path: "/cfg/office.ovpn", source: .user, folder: "")
+        let two = Profile(name: "Office", path: "/cfg/berlin/Office.ovpn", source: .user, folder: "berlin")
+        h.m.profiles = [one, two, h.a]
+        h.helper.running = [ConnectionInfo(id: "H1", name: "office", pid: 9, managementSocket: "/run/H1/m.sock", ownerUID: getuid()),
+                            ConnectionInfo(id: "H2", name: "a", pid: 10, managementSocket: "/run/H2/m.sock", ownerUID: getuid())]
+        h.m.appStarted()
+        expect(h.m.active[one.id] == nil && h.m.active[two.id] == nil, "which one is not known: neither gets it (nor its passwords)")
+        expectEqual(h.helper.stops, ["H1"])
+        expectEqual(h.m.active[h.a.id]?.helperID, "H2", "a name only one profile has")
+    }
+    test("MAN-43", "the profile's id goes to the helper with it") {
+        let h = ManagerHarness()
+        h.m.connect(h.a)
+        expectEqual(h.helper.starts.last?.profileID, h.a.id)
+    }
+    test("MAN-44", "Append to the log goes to the helper with the profile") {
+        let h = ManagerHarness()
+        h.m.appendLog = { true }
+        h.m.connect(h.a)
+        expectEqual(h.helper.starts.last?.appendLog, true)
     }
     test("MAN-24", "another helper version: started again once nothing of this app's uses it, then asked again") {
         let h = ManagerHarness()

@@ -37,7 +37,7 @@ jobs:
         run: tools/build.sh
       - name: Zip the app
         run: ditto -c -k --keepParent build/MugVPN.app "build/MugVPN-preview-${GITHUB_SHA::7}.zip"
-      - uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02 # v4.6.2
         with:
           name: MugVPN-preview
           path: build/MugVPN-preview-*.zip

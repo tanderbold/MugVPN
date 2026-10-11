@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ bir metin dosyası (PEM) değil.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ kendi klasörü dışındaki dosyalara başvuruyor. Profile kopyalansın mı? VPN sunucusu içeriklerini alabilir.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)";
+"%@ was changed outside MugVPN since it was opened here." = "%@, burada açıldığından beri MugVPN dışında değiştirildi.";
+"%@ was removed outside MugVPN since it was opened here." = "%@, burada açıldığından beri MugVPN dışında silindi.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS yalnızca kendi alan adları için, başka bir bağlantı tüm adları alıyor";
 "%@: DNS not set, another connection takes all names" = "%@: DNS ayarlanmadı, başka bir bağlantı tüm adları alıyor";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Birden çok bağlantıyı aynı anda açık tutan, OpenVPN profilleri için bir istemci. MIT Lisansı.";
 "A program asked MugVPN to import %@. Import it?" = "Bir program MugVPN’den %@ dosyasını içe aktarmasını istedi. İçe aktarılsın mı?";
+"A summary (versions, which connections are up) always goes in. Also:" = "Özet (sürümler, hangi bağlantıların açık olduğu) her zaman eklenir. Ayrıca:";
 "About MugVPN" = "MugVPN Hakkında";
 "Add a connection" = "Bağlantı ekle";
 "Add at least one server." = "En az bir sunucu ekleyin.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Bağlanıyor (%@)";
 "Connecting to %@." = "%@ bağlantısı kuruluyor.";
 "Connection Settings…" = "Bağlantı ayarları…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Bağlantı günlükleri (her biri en fazla 1 MB: adresler, sunucular, hatalar)";
 "Connection settings" = "Bağlantı ayarları";
 "Connections" = "Bağlantılar";
 "Connections…" = "Bağlantılar…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "En fazla 8 DNS sunucusu girin.";
 "Enter the proxy's address and a port from 1 to 65535." = "Proxy adresini ve 1 ile 65535 arasında bir port girin.";
 "Every time" = "Her seferinde";
+"Export Diagnostics" = "Tanılamayı dışa aktar";
 "Export Diagnostics…" = "Tanılamayı dışa aktar…";
+"Export…" = "Dışa aktar…";
 "Flat" = "Düz";
 "From the VPN server" = "VPN sunucusundan";
 "General" = "Genel";
 "Hide" = "Gizle";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6 trafiği VPN’i atlıyor (%@ üzerinden)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Beklenmedik şekilde koparsa, yeniden bağlanana kadar interneti engelle";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Beklenmedik şekilde koparsa yeniden bağlanana kadar TCP ve UDP trafiğimi engelle";
 "Ignore messages from servers" = "Sunuculardan gelen mesajları yok say";
 "Import" = "İçe aktar";
 "Import File…" = "Dosyadan içe aktar…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN’i Uygulamalar klasörüne taşıyın, oradan açın ve yeniden bağlanın.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN Ayarları";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kaldırmayı tamamlayamadı (%@). Yüklü kalıyor: bir dakika sonra yeniden deneyin.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN bir VPN’in ayarladığı DNS’i veya yönlendirmeleri hâlâ kaldırıyor ve o zamana kadar yüklü kalacak. Bir dakika sonra yeniden deneyin.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN kaldırıldı ancak şunlar silinemedi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN yardımcısı yanıt vermedi (%@). MugVPN'in sistem bölümü bunun yerine yönetici parolasıyla kaldırılsın mı?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN yardımcısı %@ sürümünde, bu uygulamadan (%@) daha yeni: MugVPN'i güncelleyin.";
@@ -140,6 +149,7 @@
 "None" = "Yok";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Trafiğin tamamı VPN’den geçmiyor: tünel varsayılan rotayı tutmuyor";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "İçe aktarılmadı (MugVPN profil betiklerini root olarak çalıştırmaz): %@";
+"Not in the archive (could not be written): %@" = "Arşivde değil (yazılamadı): %@";
 "Notify when connected:" = "Bağlanınca bildir:";
 "OK" = "Tamam";
 "Off" = "Kapalı";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Metin düzenleyicide aç";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN, OpenVPN Inc.'in tescilli ticari markasıdır.";
 "Options" = "Seçenekler";
+"Overwrite" = "Üzerine yaz";
 "Password:" = "Şifre:";
 "Paste" = "Yapıştır";
 "Persistent connections:" = "Kalıcı bağlantılar:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Bağlantı öncesi betik (sn):";
 "Private key:" = "Özel anahtar:";
 "Profile menu:" = "Profil menüsü:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Parola ve anahtar olmadan profiller (sunucular, sertifikalar, seçenekler)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "MugVPN'den çık";
@@ -165,6 +177,7 @@
 "Reconnect" = "Yeniden bağlan";
 "Reconnecting" = "Yeniden bağlanıyor";
 "Redo" = "Yinele";
+"Reload" = "Yeniden yükle";
 "Remove" = "Kaldır";
 "Response" = "Yanıt";
 "Revert" = "Geri döndür";
@@ -184,6 +197,7 @@
 "Settings…" = "Ayarlar…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Birden çok bağlantı her biri kendi alan adlarına hizmet edebilir; tüm adları aynı anda yalnızca biri alabilir.";
 "Show Status" = "Durumu göster";
+"Show Windows" = "Pencereleri göster";
 "Show in Finder" = "Finder'da göster";
 "Show the status window" = "Durum penceresini göster";
 "Sign in to This Network…" = "Bu ağda oturum aç…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "İstemci sertifikası için özel anahtarı gerekir.";
 "The configuration cannot be read: %@" = "Yapılandırma okunamıyor: %@";
 "The first time" = "İlk seferde";
+"The keychain did not remove the saved passwords of %@." = "Anahtar Zinciri %@ için kaydedilmiş parolaları silmedi.";
+"The keychain did not save it: it is used for this connection only." = "Anahtar Zinciri bunu kaydetmedi: yalnızca bu bağlantı için kullanılacak.";
+"The network state (routes, DNS, network interfaces)" = "Ağ durumu (yönlendirmeler, DNS, ağ arabirimleri)";
 "The private key needs its client certificate." = "Özel anahtar için istemci sertifikası gerekir.";
 "The proxy for %@ needs a username and password." = "%@ için proxy, kullanıcı adı ve şifre gerektiriyor.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Çalışan yardımcı kendini güncelleyemeyen eski bir sürüm. Yenisini yerleştirmek bu Mac'teki tüm kullanıcıların tüm MugVPN bağlantılarını durdurur. Devam edilsin mi?";
@@ -233,6 +250,7 @@
 "not connected" = "bağlı değil";
 "nothing" = "hiçbir şey";
 "passwords" = "şifreler";
+"saved passwords" = "kaydedilmiş parolalar";
 "the connection ended unexpectedly" = "bağlantı beklenmedik şekilde sona erdi";
 "the persistent connection is not running" = "kalıcı bağlantı çalışmıyor";
 "the port must be 1–65535" = "port 1–65535 olmalıdır";

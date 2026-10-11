@@ -114,12 +114,28 @@ public final class ProfileStore {
             else if p.source == .persistent { found[i].displayName = "\(p.name) (persistent)" }
             else if !p.folder.isEmpty { found[i].displayName = "\(p.name) (\(p.folder))" }
         }
+        // Still the same (same-named folders, a user's folder named "system"): numbered, in a stable order, so
+        // every profile has a name of its own (windows and messages go by it).
+        var taken = Set<String>()
+        let all = Set(found.map { $0.displayName.lowercased() })
+        for i in found.indices.sorted(by: { found[$0].path < found[$1].path }) {
+            let base = found[i].displayName
+            var name = base, n = 1
+            // (Not one another profile is shown by already.)
+            while taken.contains(name.lowercased()) || (n > 1 && all.contains(name.lowercased())) {
+                n += 1
+                name = "\(base) \(n)"
+            }
+            taken.insert(name.lowercased())
+            found[i].displayName = name
+        }
         return found.sorted { $0.displayName.localizedStandardCompare($1.displayName) == .orderedAscending }
     }
 
     private func find(in dir: String, source: Profile.Source) -> [Profile] {
         var out: [Profile] = []
-        for e in fs.contents(of: dir) {
+        // Hidden entries: an import being built, the system's own files.
+        for e in fs.contents(of: dir) where !e.name.hasPrefix(".") {
             if e.isDirectory {
                 for f in fs.contents(of: dir + "/" + e.name) where !f.isDirectory && matches(f.name) {
                     out.append(Profile(name: base(f.name), path: "\(dir)/\(e.name)/\(f.name)", source: source, folder: e.name))
@@ -183,10 +199,17 @@ public final class ProfileStore {
             used.insert(to)
             plan.append((ref, from, to, data))
         }
+        let checked: ProfilePolicy.Result
         do {
-            _ = try ProfilePolicy.check(directives, bundleFiles: Set(plan.map(\.ref)))
+            checked = try ProfilePolicy.check(directives, bundleFiles: Set(plan.map(\.ref)))
         } catch {
             throw ProfileError("MugVPN cannot use this profile: \(error)")
+        }
+        // What each file holds, as the helper checks it at Connect: said now, nothing copied.
+        for f in plan {
+            for kind in checked.fileKinds[f.ref] ?? [] {
+                if let problem = ProfilePolicy.contentProblem(kind, f.data, inline: false) { throw ProfileError("\(f.ref): \(problem)") }
+            }
         }
         guard ProfileStore.hasRemote(directives) else {
             throw ProfileError("\((path as NSString).lastPathComponent) is not an OpenVPN profile: it names no server (remote)")
@@ -199,14 +222,23 @@ public final class ProfileStore {
         var n = 2
         while fs.exists("\(userDir)/\(finalName)") { finalName = "\(wanted) (\(n))"; n += 1 }
         let dir = "\(userDir)/\(finalName)"
-        try makeDirectories(dir)
-        for f in plan {
-            let dest = "\(dir)/\(f.to)"
-            try makeDirectories((dest as NSString).deletingLastPathComponent)
-            try fs.write(dest, f.data)  // what was checked, not a second read
+        // Built in a hidden folder beside it, then moved into place in one step: a failure leaves nothing.
+        try makeDirectories(userDir)
+        let staging = "\(userDir)/.import-\(UUID().uuidString)"
+        do {
+            try fs.makeDirectory(staging)
+            for f in plan {
+                let dest = "\(staging)/\(f.to)"
+                try makeDirectories((dest as NSString).deletingLastPathComponent)
+                try fs.write(dest, f.data)  // what was checked, not a second read
+            }
+            let renamed = Dictionary(plan.filter { $0.ref != $0.to }.map { ($0.ref, $0.to) }, uniquingKeysWith: { a, _ in a })
+            try fs.write("\(staging)/\(finalName).\(ext)", Data(rewrite(text, directives: directives, renamed: renamed).utf8))
+            try fs.move(staging, dir)
+        } catch {
+            try? fs.remove(staging)
+            throw error
         }
-        let renamed = Dictionary(plan.filter { $0.ref != $0.to }.map { ($0.ref, $0.to) }, uniquingKeysWith: { a, _ in a })
-        try fs.write("\(dir)/\(finalName).\(ext)", Data(rewrite(text, directives: directives, renamed: renamed).utf8))
         let profile = Profile(name: finalName, path: "\(dir)/\(finalName).\(ext)", source: .user, folder: finalName)
         forget(profile, secrets: secrets, options: options)
         return ImportResult(profile: profile, skipped: [])
@@ -248,13 +280,24 @@ public final class ProfileStore {
         let directives: [ConfigDirective]
         do { directives = try ConfigParser.parse(config) } catch { throw ProfileError("\(error)") }
         let files = ProfilePolicy.referencedFiles(directives)
-        for f in files where fs.read(f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f)) == nil {
-            throw ProfileError("cannot read \(f), named in the profile")
+        var contents: [String: Data] = [:]
+        for f in files {
+            guard let d = fs.read(f.hasPrefix("/") ? f : (dir as NSString).appendingPathComponent(f)) else {
+                throw ProfileError("cannot read \(f), named in the profile")
+            }
+            contents[f] = d
         }
+        let checked: ProfilePolicy.Result
         do {
-            _ = try ProfilePolicy.check(directives, bundleFiles: Set(files))
+            checked = try ProfilePolicy.check(directives, bundleFiles: Set(files))
         } catch {
             throw ProfileError("MugVPN cannot use this profile: \(error)")
+        }
+        // What each file holds, as the helper checks it at Connect: said at Save already.
+        for (f, data) in contents {
+            for kind in checked.fileKinds[f] ?? [] {
+                if let problem = ProfilePolicy.contentProblem(kind, data, inline: false) { throw ProfileError("\(f): \(problem)") }
+            }
         }
         guard ProfileStore.hasRemote(directives) else {
             throw ProfileError("the profile names no server (remote)")
@@ -279,7 +322,13 @@ public final class ProfileStore {
         try usable(config, dir: dir)
         try makeDirectories(dir)
         let path = "\(dir)/\(name).\(ext)"
-        try fs.write(path, Data(config.utf8))
+        do {
+            try fs.write(path, Data(config.utf8))
+        } catch {
+            // Nothing half made: an empty folder would hold the name.
+            try? fs.remove(dir)
+            throw error
+        }
         let p = scan().first { $0.path == path } ?? Profile(name: name, path: path, source: .user, folder: name)
         forget(p, secrets: secrets, options: options)
         return p
@@ -300,14 +349,40 @@ public final class ProfileStore {
         let name = try freeName(newName, except: p.id)
         let dir = (p.path as NSString).deletingLastPathComponent
         let e = (p.path as NSString).pathExtension
+        let ownFolder = p.folder == p.name && (dir as NSString).lastPathComponent == p.name
+        // Its saved passwords first, under the new name too: a keychain that does not take them stops the rename
+        // (else they would be left under the old name, and asked for again).
+        let oldKey = p.secretsKey
+        let newKey = Profile(name: name, path: "", source: .user, folder: ownFolder ? name : p.folder).secretsKey
+        if let secrets, newKey != oldKey, !ProfileSecrets.copied(secrets, from: oldKey, to: newKey) {
+            secrets.removeAll(newKey)
+            throw ProfileError("the keychain did not take the saved passwords under the new name: not renamed")
+        }
+        do {
+            return try moveForRename(p, to: name, dir: dir, ext: e, ownFolder: ownFolder, secrets: secrets, oldKey: oldKey,
+                                     newKey: newKey, options: options)
+        } catch {
+            if let secrets, newKey != oldKey { secrets.removeAll(newKey) }
+            throw error
+        }
+    }
+
+    private func moveForRename(_ p: Profile, to name: String, dir: String, ext e: String, ownFolder: Bool, secrets: SecretStore?,
+                               oldKey: String, newKey: String, options: ProfileOptionsStore?) throws -> Profile {
         let newPath: String
-        if p.folder == p.name, (dir as NSString).lastPathComponent == p.name {
+        if ownFolder {
             let newDir = ((dir as NSString).deletingLastPathComponent as NSString).appendingPathComponent(name)
             guard newDir.lowercased() == dir.lowercased() || !fs.exists(newDir) else {
                 throw ProfileError("a profile named \(name) already exists")
             }
-            try fs.move(dir, newDir)
-            try fs.move("\(newDir)/\(p.name).\(e)", "\(newDir)/\(name).\(e)")
+            // The file first, then its folder; the file back if the folder cannot follow.
+            try fs.move(p.path, "\(dir)/\(name).\(e)")
+            do {
+                try fs.move(dir, newDir)
+            } catch {
+                try? fs.move("\(dir)/\(name).\(e)", p.path)
+                throw error
+            }
             newPath = "\(newDir)/\(name).\(e)"
         } else {
             newPath = "\(dir)/\(name).\(e)"
@@ -317,7 +392,7 @@ public final class ProfileStore {
             try fs.move(p.path, newPath)
         }
         let renamed = scan().first { $0.path == newPath } ?? Profile(name: name, path: newPath, source: .user, folder: p.folder)
-        if let secrets { ProfileSecrets.renamed(secrets, from: p.secretsKey, to: renamed.secretsKey) }
+        if let secrets, newKey != oldKey { secrets.removeAll(oldKey) }
         options?.move(from: p.id, to: newPath)
         return renamed
     }
@@ -347,12 +422,20 @@ public final class ProfileStore {
         let configs = entries.map(\.name).filter { ["ovpn", "conf"].contains(($0 as NSString).pathExtension.lowercased()) }.sorted()
         guard !configs.isEmpty else { throw ProfileError("\(tblk) holds no OpenVPN configuration") }
         let scripts = entries.map(\.name).filter { ($0 as NSString).pathExtension.lowercased() == "sh" }.sorted()
-        return try configs.map { c in
-            let name = configs.count == 1 ? tbName : "\(tbName)-\(base(c))"
-            var r = try importProfile(at: "\(dir)/\(c)", as: name, allowOutside: allowOutside, secrets: secrets, options: options)
-            r.skipped = scripts
-            return r
+        // All of them or none: the ones made before one that fails are taken back.
+        var done: [ImportResult] = []
+        do {
+            for c in configs {
+                let name = configs.count == 1 ? tbName : "\(tbName)-\(base(c))"
+                var r = try importProfile(at: "\(dir)/\(c)", as: name, allowOutside: allowOutside, secrets: secrets, options: options)
+                r.skipped = scripts
+                done.append(r)
+            }
+        } catch {
+            for r in done { try? fs.remove((r.profile.path as NSString).deletingLastPathComponent) }
+            throw error
         }
+        return done
     }
 
     /// `.ovpn` files in Windows' OpenVPN folder layout, not imported yet.

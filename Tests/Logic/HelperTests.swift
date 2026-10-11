@@ -106,6 +106,12 @@ final class FakeSystem: HelperSystem {
         heldDevices.removeAll { $0 == name }
     }
     var onCommand: ([String]) -> Void = { _ in }
+    /// `route add` refused (a route cannot be put back).
+    var failRouteAdds = false
+    /// `route delete` refused (the route stays).
+    var failRouteDeletes = false
+    /// `route add` refused for these destinations.
+    var failRouteAddFor: Set<String> = []
     func runNetwork(_ command: [String]) -> Bool {
         onCommand(command)
         commands.append(command)
@@ -113,12 +119,15 @@ final class FakeSystem: HelperSystem {
         if command.count > 3, command[0] == "route" {
             var key = command
             if key[2] == "delete" {
+                if failRouteDeletes { return false }
                 key[2] = "add"
                 let had = routeTable.remove(key) != nil
                 var cloning = key
                 cloning.insert("-cloning", at: 3)
                 return routeTable.remove(cloning) != nil || had
             }
+            // (By destination: "-net <it>" or "-host <it>".)
+            if failRouteAdds || (command.count > 4 && failRouteAddFor.contains(command[4])) { return false }
             return routeTable.insert(command).inserted
         }
         return true
@@ -130,22 +139,35 @@ final class FakeSystem: HelperSystem {
     var failAllNamesDNS = false
     /// Only split DNS refused.
     var failSplitDNS = false
+    /// All names refused after its backup was made, and that backup not removable.
+    var leaveBackupOnFailedSet: Set<String> = []
     /// What is set on the Mac, per device: split resolvers and the primary's DNS replaced for all
     /// names are different keys (as in SystemConfiguration); one tunnel at a time has all names.
     var splitResolvers: [String: DNSPlan] = [:]
     var allNames: [String: DNSPlan] = [:]
     /// Taking a device's DNS off refused.
     var failRestoreFor: Set<String> = []
-    func setDNS(_ plan: DNSPlan) -> Bool {
-        guard !failDNSFor.contains(plan.device), !(failAllNamesDNS && !plan.split), !(failSplitDNS && plan.split) else { return false }
+    /// Its DNS taken off, its backup (all names) not removable: left behind, holding all names back.
+    var failBackupRemovalFor: Set<String> = []
+    var backupsLeft: Set<String> = []
+    /// Called as a device's DNS is taken off (what is on disk at that moment).
+    var onRestore: (String) -> Void = { _ in }
+    func setDNS(_ plan: DNSPlan) -> DNSSet {
+        guard !failDNSFor.contains(plan.device), !(failAllNamesDNS && !plan.split), !(failSplitDNS && plan.split) else {
+            if !plan.split, leaveBackupOnFailedSet.contains(plan.device) {
+                backupsLeft.insert(plan.device)
+                return .failedBackupLeft
+            }
+            return .failed
+        }
         if plan.split {
             splitResolvers[plan.device] = plan
         } else {
-            guard allNames.keys.allSatisfy({ $0 == plan.device }) else { return false }
+            guard allNames.keys.allSatisfy({ $0 == plan.device }), backupsLeft.allSatisfy({ $0 == plan.device }) else { return .failed }
             allNames[plan.device] = plan
         }
         dnsSet.append(plan)
-        return true
+        return .set
     }
     var dnsRestored: [String] = []
     var routesDeleted: [[String]] = []
@@ -170,7 +192,9 @@ final class FakeSystem: HelperSystem {
     }
     func pfIntact(_ anchor: String) -> Bool { pfIntactAnswer }
     var routesAdded: [[String]] = []
-    func addRoute(_ args: [String]) { routesAdded.append(args) }
+    /// Legacy clean-up's route commands refused.
+    var failLegacyRoutes = false
+    func addRoute(_ args: [String]) -> Bool { routesAdded.append(args); return !failLegacyRoutes }
     func grantRead(_ path: String, uid: UInt32) { readGrants[path] = uid }
     var launchFails = false
     var nextPID: Int32 = 1000
@@ -190,6 +214,7 @@ final class FakeSystem: HelperSystem {
             failAfterWrites = n - 1
         }
         files[path] = (data, mode)
+        mtimes[path] = clock
     }
     func readFile(_ path: String) -> Data? { files[path]?.data }
     func readTail(_ path: String, maxBytes: Int) -> Data? { files[path].map { $0.data.suffix(maxBytes) } }
@@ -209,15 +234,20 @@ final class FakeSystem: HelperSystem {
     /// Owner and mode a copy ends up with, to model a copy that is not root's.
     var copiedInfo: (owner: UInt32, mode: UInt16)?
     var removedPaths: [String] = []
+    /// Paths whose removal fails (they stay).
+    var failRemoves: Set<String> = []
     func remove(_ path: String) {
         removedPaths.append(path)
+        if failRemoves.contains(path) { return }
         files = files.filter { !($0.key == path || $0.key.hasPrefix(path + "/")) }
         dirs = dirs.filter { !($0.key == path || $0.key.hasPrefix(path + "/")) }
     }
     var owners: [String: (uid: UInt32, gid: UInt32)] = [:]
     var failMoves: Set<String> = []
+    /// When each file was last written (the fake clock).
+    var mtimes: [String: TimeInterval] = [:]
     func move(_ from: String, _ to: String) {
-        if let f = files.removeValue(forKey: from) { files[to] = f }
+        if let f = files.removeValue(forKey: from) { files[to] = f; mtimes[to] = mtimes.removeValue(forKey: from) }
     }
     func replace(_ from: String, _ to: String) throws {
         if failMoves.contains(to) { throw CocoaError(.fileWriteNoPermission) }
@@ -248,14 +278,29 @@ final class FakeSystem: HelperSystem {
         return p
     }
     func killStrayOpenVPN(path: String) { strayKills.append(path) }
-    func restoreDNS(device: String) -> Bool {
-        guard !failRestoreFor.contains(device) else { return false }
+    func restoreDNS(device: String) -> DNSRestore {
+        onRestore(device)
+        guard !failRestoreFor.contains(device) else { return .failed }
         dnsRestored.append(device)
+        let hadAll = allNames[device] != nil || backupsLeft.contains(device)
         splitResolvers[device] = nil
         allNames[device] = nil
+        if hadAll, failBackupRemovalFor.contains(device) {
+            backupsLeft.insert(device)
+            return .backupLeft
+        }
+        backupsLeft.remove(device)
+        return .done
+    }
+    /// Backups removed while all names were still set on the device (the Mac's own DNS lost).
+    var lostBackups: Set<String> = []
+    func removeDNSBackup(device: String) -> Bool {
+        guard !failBackupRemovalFor.contains(device) else { return false }
+        if allNames[device] != nil { lostBackups.insert(device) }
+        backupsLeft.remove(device)
         return true
     }
-    func deleteRoute(_ args: [String]) { routesDeleted.append(args) }
+    func deleteRoute(_ args: [String]) -> Bool { routesDeleted.append(args); return !failLegacyRoutes }
     func after(_ seconds: TimeInterval, _ f: @escaping () -> Void) { timers.append((seconds, f)) }
     func userName(uid: UInt32) -> String? { users[uid] }
     func isAdmin(uid: UInt32) -> Bool { admins.contains(uid) }
@@ -263,7 +308,7 @@ final class FakeSystem: HelperSystem {
         guard files[path] != nil || dirs[path] != nil || links.contains(path) else { return nil }
         let i = infos[path] ?? (0, files[path]?.mode ?? 0o755)
         let kind: FileInfo.Kind = links.contains(path) ? .link : dirs[path] != nil ? .directory : .regular
-        return FileInfo(owner: i.owner, mode: i.mode, kind: kind)
+        return FileInfo(owner: i.owner, mode: i.mode, kind: kind, modified: mtimes[path] ?? 0)
     }
 
     /// Fire every pending timer (once).
@@ -1179,7 +1224,7 @@ func registerPersistentHelperTests() {
         h.startPersistentProfiles()
         try bringUp(sys, h, h.list(uid: 0)[0].id, uid: 0)
         sys.launched[0].process.onExit(.signaled(9))
-        let blocked = "block return out quick proto { tcp udp } all"
+        let blocked = "block drop out quick all"
         expectEqual((sys.pf.last ?? "").split(separator: "\n").last.map(String.init), blocked, sys.pf.last ?? "")
         sys.fireTimers()                                          // started again
         expectEqual(sys.launched.count, 2)
@@ -1285,9 +1330,9 @@ func registerUninstallHelperTests() {
     test("UNI-06", "each uninstall request gets its own answer; a refused one changes nothing") {
         let (sys, h) = try installed()
         var answers: [String] = []
-        try h.uninstall(uid: 501, keepProfiles: false) { answers.append("admin") }
-        expectThrows { try h.uninstall(uid: 502, keepProfiles: false) { answers.append("user") } }
-        try h.uninstall(uid: 0, keepProfiles: false) { answers.append("root") }
+        try h.uninstall(uid: 501, keepProfiles: false) { _ in answers.append("admin") }
+        expectThrows { try h.uninstall(uid: 502, keepProfiles: false) { _ in answers.append("user") } }
+        try h.uninstall(uid: 0, keepProfiles: false) { _ in answers.append("root") }
         sys.launched.forEach { $0.process.onExit(.exited(0)) }
         expectEqual(answers, ["admin", "root"])
     }

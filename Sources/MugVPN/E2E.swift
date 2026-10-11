@@ -18,9 +18,9 @@ final class FakeLink: ManagementLink {
         self.onClose = onClose
     }
     func write(_ data: Data) { sent += String(decoding: data, as: UTF8.self).split(separator: "\n").map(String.init) }
-    func write(_ data: Data, passing fd: Int32) -> Bool {
+    func write(_ data: Data, passing fd: Int32, done: @escaping (Bool) -> Void) {
         write(data)
-        return true
+        done(true)
     }
     func close() {}
 }
@@ -146,8 +146,10 @@ final class E2EServices: Services {
     let http: HTTPFetcher = FakeHTTP()
     var removed: [String] = []
     var trashed = ""
-    func removeUserData(_ paths: [String]) { removed += paths }
-    func moveAppToTrash() {
+    /// What stays after removing the user's data (a keychain that refuses, a file in use).
+    var userDataStays: [String] = []
+    func removeUserData(_ paths: [String]) -> [String] { removed += paths; return userDataStays }
+    func moveAppToTrash() -> Bool {
         trashed = Bundle.main.bundlePath
         // The app quits right after this: leave the record for the test in its home.
         let home = ProcessInfo.processInfo.environment["MUGVPN_E2E_HOME"] ?? NSTemporaryDirectory()
@@ -156,6 +158,7 @@ final class E2EServices: Services {
         if let d = try? JSONSerialization.data(withJSONObject: record) {
             FileManager.default.createFile(atPath: home + "/uninstall.json", contents: d)
         }
+        return true
     }
     var urls: [String] = []
     var notes: [[String: String]] = []
@@ -493,11 +496,19 @@ final class E2EServer {
         case "opened_urls": return ["urls": services.urls, "panels": services.panels]
         case "notifications": return ["items": services.notes]
         case "login_item": return ["enabled": services.launchAtLogin]
+        case "fake_user_data_stays":
+            services.userDataStays = (r["items"] as? [String]) ?? []
+            return [:]
         case "fake_uninstall_fails":
             backend.uninstallRefusal = r["message"] as? String
             return [:]
         case "fake_dns_state":
             backend.dnsStates[try str("profile")] = try str("state")
+            return [:]
+        case "fake_helper_version":
+            // Another helper answers now; the app asks again (as after an update by hand).
+            backend.helperVersion = try str("version")
+            app.manager.helperReplaced()
             return [:]
         case "fake_reregister_fails":
             backend.reregisterRefusal = r["message"] as? String
@@ -511,7 +522,8 @@ final class E2EServer {
     }
 
     private func describe(_ menu: NSMenu) -> [[String: Any]] {
-        menu.items.filter { !$0.isSeparatorItem }.map { i in
+        // As the user sees it: hidden items are not there.
+        menu.items.filter { !$0.isSeparatorItem && !$0.isHidden }.map { i in
             var d: [String: Any] = ["title": i.title, "enabled": i.isEnabled, "checked": i.state == .on]
             if let s = i.submenu { d["children"] = describe(s) }
             return d
@@ -538,6 +550,15 @@ final class E2EServer {
             return p.intrinsicContentSize.width > bounds.width + 1
         }
         return cell.cellSize.width > bounds.width + 1
+    }
+
+    private func screenOrder(_ w: NSWindow) -> [Int] {
+        let list = CGWindowListCopyWindowInfo([.optionOnScreenOnly, .excludeDesktopElements], kCGNullWindowID) as? [[String: Any]] ?? []
+        let normal = list.filter { ($0[kCGWindowLayer as String] as? Int) == 0 }
+        let mine = normal.firstIndex { ($0[kCGWindowNumber as String] as? Int) == w.windowNumber } ?? -1
+        let pid = Int(ProcessInfo.processInfo.processIdentifier)
+        let other = normal.firstIndex { ($0[kCGWindowOwnerPID as String] as? Int) != pid } ?? -1
+        return [mine, other]
     }
 
     private func describe(_ w: AppWindow) -> [String: Any] {
@@ -609,6 +630,8 @@ final class E2EServer {
                 "appearance": dark ? "darkAqua" : "aqua", "controls": controls,
                 // Among MugVPN's windows on screen, front to back.
                 "floating": w.level == .floating, "origin": [Double(w.frame.minX), Double(w.frame.minY)],
+                // On screen, front to back, among all apps' ordinary windows: this one's place, and the first other app's.
+                "screen_order": screenOrder(w),
                 "sheet_of": ((w.sheetParent as? AppWindow)?.kind).map { $0 as Any } ?? NSNull(),
                 "front_index": NSApp.orderedWindows.filter { $0.isVisible && $0 is AppWindow }.firstIndex(of: w) ?? -1]
     }

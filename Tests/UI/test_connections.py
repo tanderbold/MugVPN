@@ -455,3 +455,24 @@ def test_ui81_the_empty_domains_field_says_what_empty_means_in_each_mode(app):
     assert app.control(w, "dns_domains")["placeholder"] == "empty: as the server sends it"
     app.set(w, "dns_mode", "own")
     assert app.control(app.window("connections"), "dns_domains")["placeholder"] == "empty: all names"
+
+
+def test_ui86_a_profile_changed_by_another_editor_is_not_written_over_unasked(app):
+    """Changed on disk while open here: Save asks (Overwrite / Reload); unedited, the window shows the new text."""
+    import os
+    path = os.path.join(app.home, "config", "stand-a.ovpn")
+    w = open_window(app, "stand-a")
+    w = tab(app, "advanced")
+    with open(path, "a") as f:
+        f.write("\n# changed elsewhere\n")
+    app.call("rescan")
+    wait_for(lambda: "changed elsewhere" in app.control(app.window("connections"), "config")["value"], 5, "shown as it now is")
+    app.set(app.window("connections"), "config", app.control(app.window("connections"), "config")["value"] + "\n# mine\n")
+    with open(path, "a") as f:
+        f.write("# changed again\n")
+    app.press(app.window("connections"), "save")
+    c = app.window("confirm")
+    assert "outside MugVPN" in app.control(c, "prompt_text")["value"]
+    app.press(c, "cancel")                       # Reload
+    wait_for(lambda: "changed again" in app.control(app.window("connections"), "config")["value"], 5, "reloaded")
+    assert "# mine" not in open(path).read()

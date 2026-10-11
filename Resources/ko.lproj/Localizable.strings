@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@은(는) 텍스트 파일(PEM)이 아닙니다.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@이(가) 폴더 밖의 파일을 참조합니다. 프로필로 복사하겠습니까? VPN 서버가 해당 내용을 받을 수 있습니다.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)";
+"%@ was changed outside MugVPN since it was opened here." = "%@이(가) 여기서 연 뒤 MugVPN 밖에서 변경되었습니다.";
+"%@ was removed outside MugVPN since it was opened here." = "%@이(가) 여기서 연 뒤 MugVPN 밖에서 삭제되었습니다.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: 자체 도메인에만 DNS 적용, 다른 연결이 모든 이름을 담당";
 "%@: DNS not set, another connection takes all names" = "%@: DNS가 설정되지 않음, 다른 연결이 모든 이름을 담당";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "여러 연결을 동시에 유지하는 OpenVPN 프로필용 클라이언트. MIT 라이선스.";
 "A program asked MugVPN to import %@. Import it?" = "한 프로그램이 MugVPN에 %@ 가져오기를 요청했습니다. 가져오겠습니까?";
+"A summary (versions, which connections are up) always goes in. Also:" = "요약(버전, 연결된 항목)은 항상 포함됩니다. 그 외:";
 "About MugVPN" = "MugVPN에 관하여";
 "Add a connection" = "연결 추가";
 "Add at least one server." = "서버를 하나 이상 추가하십시오.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "연결 중(%@)";
 "Connecting to %@." = "%@에 연결하는 중입니다.";
 "Connection Settings…" = "연결 설정…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "연결 로그(각 최대 1MB: 주소, 서버, 오류)";
 "Connection settings" = "연결 설정";
 "Connections" = "연결 목록";
 "Connections…" = "연결 목록…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "DNS 서버는 최대 8개까지 입력하십시오.";
 "Enter the proxy's address and a port from 1 to 65535." = "프록시 주소와 1~65535 사이의 포트를 입력하십시오.";
 "Every time" = "매번";
+"Export Diagnostics" = "진단 정보 내보내기";
 "Export Diagnostics…" = "진단 정보 내보내기…";
+"Export…" = "내보내기…";
 "Flat" = "평면 목록";
 "From the VPN server" = "VPN 서버에서";
 "General" = "일반";
 "Hide" = "숨기기";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6 트래픽이 VPN을 우회합니다(%@ 경유)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "예기치 않게 끊기면 다시 연결할 때까지 인터넷 차단";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "예기치 않게 끊기면 다시 연결할 때까지 내 TCP 및 UDP 트래픽 차단";
 "Ignore messages from servers" = "서버 메시지 무시";
 "Import" = "불러오기";
 "Import File…" = "파일 불러오기…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN을 응용 프로그램 폴더로 옮기고 그곳에서 연 다음 다시 연결하십시오.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 설정";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN이 제거를 마치지 못했습니다(%@). 설치된 상태로 남습니다. 1분 후에 다시 시도하세요.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN이 아직 VPN이 설정한 DNS나 경로를 제거하는 중이며 그때까지 설치된 상태로 유지됩니다. 1분 후에 다시 시도하세요.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN이 제거되었지만 다음 항목은 삭제하지 못했습니다: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN이 터널을 시작하려면 도우미가 필요합니다.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요.";
@@ -140,6 +149,7 @@
 "None" = "없음";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "모든 트래픽이 VPN을 거치지 않습니다: 터널이 기본 경로를 갖고 있지 않습니다";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "불러오지 않음(MugVPN은 프로필 스크립트를 root로 실행하지 않음): %@";
+"Not in the archive (could not be written): %@" = "보관 파일에 없음(쓸 수 없음): %@";
 "Notify when connected:" = "연결 시 알림:";
 "OK" = "확인";
 "Off" = "끔";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "텍스트 편집기에서 열기";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN은 OpenVPN Inc.의 등록 상표입니다.";
 "Options" = "옵션";
+"Overwrite" = "덮어쓰기";
 "Password:" = "암호:";
 "Paste" = "붙여넣기";
 "Persistent connections:" = "영구 연결:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "연결 전 스크립트(초):";
 "Private key:" = "개인 키:";
 "Profile menu:" = "프로필 메뉴:";
+"Profiles without passwords or keys (servers, certificates, options)" = "암호나 키를 뺀 프로필(서버, 인증서, 옵션)";
 "Proxy" = "프록시";
 "Proxy:" = "프록시:";
 "Quit MugVPN" = "MugVPN 종료";
@@ -165,6 +177,7 @@
 "Reconnect" = "다시 연결";
 "Reconnecting" = "다시 연결 중";
 "Redo" = "실행 복귀";
+"Reload" = "다시 불러오기";
 "Remove" = "제거";
 "Response" = "응답";
 "Revert" = "되돌리기";
@@ -184,6 +197,7 @@
 "Settings…" = "설정…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "여러 연결이 각자 자신의 도메인을 담당할 수 있지만, 모든 이름은 한 번에 하나만 담당할 수 있습니다.";
 "Show Status" = "상태 보기";
+"Show Windows" = "윈도우 보기";
 "Show in Finder" = "Finder에서 보기";
 "Show the status window" = "상태 창 표시";
 "Sign in to This Network…" = "이 네트워크에 로그인…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "클라이언트 인증서에는 개인 키가 필요합니다.";
 "The configuration cannot be read: %@" = "구성을 읽을 수 없습니다: %@";
 "The first time" = "처음 한 번만";
+"The keychain did not remove the saved passwords of %@." = "키체인이 %@의 저장된 암호를 삭제하지 않았습니다.";
+"The keychain did not save it: it is used for this connection only." = "키체인에 저장되지 않았습니다. 이 연결에만 사용됩니다.";
+"The network state (routes, DNS, network interfaces)" = "네트워크 상태(경로, DNS, 네트워크 인터페이스)";
 "The private key needs its client certificate." = "개인 키에는 클라이언트 인증서가 필요합니다.";
 "The proxy for %@ needs a username and password." = "%@의 프록시에 사용자 이름과 암호가 필요합니다.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "실행 중인 도우미는 스스로 업데이트할 수 없는 이전 버전입니다. 새 도우미로 바꾸면 이 Mac의 모든 사용자의 MugVPN 연결이 중단됩니다. 계속하시겠습니까?";
@@ -233,6 +250,7 @@
 "not connected" = "연결 안 됨";
 "nothing" = "없음";
 "passwords" = "암호";
+"saved passwords" = "저장된 암호";
 "the connection ended unexpectedly" = "연결이 예기치 않게 종료됨";
 "the persistent connection is not running" = "영구 연결이 실행 중이 아님";
 "the port must be 1–65535" = "포트는 1–65535 범위여야 합니다";

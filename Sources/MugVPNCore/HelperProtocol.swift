@@ -1,3 +1,4 @@
+import CryptoKit
 import Foundation
 
 /// Names shared by the app and the privileged helper.
@@ -122,6 +123,24 @@ public struct PersistentSettingsError: Error, CustomStringConvertible {
 
 /// A profile as the app sends it: the config text and the files it names
 /// (ca, cert, key, tls-crypt...), keyed by the name used in the config.
+/// Refusals the app tells apart from a helper that does not answer.
+public enum HelperRefusal {
+    /// Uninstall refused: DNS (or a route) a tunnel set is still being taken off (only the helper can).
+    public static let dnsCleanupPending =
+        "the DNS or routes a tunnel set could not be taken off yet: MugVPN stays installed to try again; uninstall again in a minute"
+    /// Uninstall refused: PF kept MugVPN's rules (gone, no one could lift a block).
+    public static let pfPending = "PF did not let go of MugVPN's rules: MugVPN stays installed to try again"
+    /// Uninstall refused: its record of a pending uninstall could not be removed (a reinstall would remove itself).
+    public static let recordPending = "MugVPN's record of the uninstall could not be removed: try again"
+    /// Uninstall refused: these of its files did not go (the helper stays to try again).
+    public static let filesPending = "these of MugVPN's files could not be removed, MugVPN stays installed to try again: "
+
+    /// The helper answered and held back on purpose: never removed around it (by an administrator's script).
+    public static func isHelpersOwn(_ answer: String) -> Bool {
+        [dnsCleanupPending, pfPending, recordPending].contains(answer) || answer.hasPrefix(filesPending)
+    }
+}
+
 public struct ProfileBundle: Codable, Sendable {
     public var name: String
     public var config: String
@@ -131,6 +150,10 @@ public struct ProfileBundle: Codable, Sendable {
     public var protection = ProtectionOptions()
     /// The server's DNS only for these domains (the user's list; the server may push none).
     public var dnsDomains: [String] = []
+    /// The app's id of the profile (names repeat across folders and sources): its tunnel, block and log go by it.
+    public var profileID: String?
+    /// The kept log grows by this run instead of being replaced (Settings > Append to the log).
+    public var appendLog = false
     /// The most domains for the server's DNS a profile may list.
     public static let maxDNSDomains = 32
 
@@ -149,6 +172,20 @@ public struct ProfileBundle: Codable, Sendable {
         splitDNS = try c.decodeIfPresent(Bool.self, forKey: .splitDNS) ?? false
         protection = try c.decodeIfPresent(ProtectionOptions.self, forKey: .protection) ?? ProtectionOptions()
         dnsDomains = try c.decodeIfPresent([String].self, forKey: .dnsDomains) ?? []
+        profileID = try c.decodeIfPresent(String.self, forKey: .profileID)
+        appendLog = try c.decodeIfPresent(Bool.self, forKey: .appendLog) ?? false
+    }
+}
+
+/// What a profile's id becomes in the helper's names (blocks, kept logs): short, the same on both sides.
+public enum ProfileKey {
+    public static func short(_ id: String) -> String {
+        SHA256.hash(data: Data(id.utf8)).prefix(6).map { String(format: "%02x", $0) }.joined()
+    }
+
+    /// A profile's kept log, `<safe name>[~<key>].<uid>.log`, without ".log".
+    public static func logName(profile: String, id: String?, uid: UInt32) -> String {
+        safeLogName(profile) + (id.map { "~" + short($0) } ?? "") + ".\(uid)"
     }
 }
 
@@ -165,6 +202,8 @@ public struct ConnectionInfo: Codable, Sendable {
     /// Its DNS as the helper has set it: "all" names, "split" (its domains), "limited" (its domains,
     /// all names being another's), "waiting" (none: all names another's, no domains); nil: none asked.
     public var dns: String?
+    /// The app's id of its profile (nil: a persistent one, or an older helper's).
+    public var profileID: String?
 
     public init(id: String, name: String, pid: Int32, managementSocket: String, ownerUID: UInt32, persistent: Bool = false,
                 managementPassword: String? = nil) {
@@ -187,6 +226,7 @@ public struct ConnectionInfo: Codable, Sendable {
         persistent = try c.decodeIfPresent(Bool.self, forKey: .persistent) ?? false
         managementPassword = try c.decodeIfPresent(String.self, forKey: .managementPassword)
         dns = try c.decodeIfPresent(String.self, forKey: .dns)
+        profileID = try c.decodeIfPresent(String.self, forKey: .profileID)
     }
 }
 

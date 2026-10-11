@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ فایل متنی (PEM) نیست.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ به فایل‌هایی بیرون از پوشهٔ خود اشاره می‌کند. آن‌ها را در نمایه کپی کنیم؟ سرور VPN ممکن است محتوای آن‌ها را دریافت کند.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ از زمانی که اینجا باز شد، بیرون از MugVPN تغییر کرده است.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ از زمانی که اینجا باز شد، بیرون از MugVPN حذف شده است.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS فقط برای دامنه‌های خودش، اتصال دیگری همهٔ نام‌ها را گرفته است";
 "%@: DNS not set, another connection takes all names" = "%@: DNS تنظیم نشد، اتصال دیگری همهٔ نام‌ها را گرفته است";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "کارخواهی برای نمایه‌های OpenVPN که چند اتصال را هم‌زمان برقرار نگه می‌دارد. پروانهٔ MIT.";
 "A program asked MugVPN to import %@. Import it?" = "برنامه‌ای از MugVPN خواست %@ را وارد کند. وارد شود؟";
+"A summary (versions, which connections are up) always goes in. Also:" = "یک خلاصه (نسخه‌ها، کدام اتصال‌ها برقرارند) همیشه گنجانده می‌شود. همچنین:";
 "About MugVPN" = "دربارهٔ MugVPN";
 "Add a connection" = "افزودن اتصال";
 "Add at least one server." = "دست‌کم یک سرور اضافه کنید.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "در حال اتصال (%@)";
 "Connecting to %@." = "در حال اتصال به %@.";
 "Connection Settings…" = "تنظیمات اتصال…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "گزارش‌های اتصال (هر کدام تا ۱ مگابایت: نشانی‌ها، سرورها، خطاها)";
 "Connection settings" = "تنظیمات اتصال";
 "Connections" = "اتصال‌ها";
 "Connections…" = "اتصال‌ها…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "حداکثر ۸ سرور DNS وارد کنید.";
 "Enter the proxy's address and a port from 1 to 65535." = "نشانی پروکسی و یک درگاه از 1 تا 65535 وارد کنید.";
 "Every time" = "هر بار";
+"Export Diagnostics" = "صدور اطلاعات عیب‌یابی";
 "Export Diagnostics…" = "صدور اطلاعات عیب‌یابی…";
+"Export…" = "صدور…";
 "Flat" = "فهرست ساده";
 "From the VPN server" = "از سرور VPN";
 "General" = "عمومی";
 "Hide" = "پنهان کردن";
 "IPv6 traffic goes around the VPN (through %@)" = "ترافیک IPv6 از کنار VPN می‌گذرد (از طریق %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "اگر ناگهان قطع شد، اینترنت را تا اتصال دوباره مسدود کن";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "اگر ناگهان قطع شد، ترافیک TCP و UDP من را تا اتصال دوباره مسدود کن";
 "Ignore messages from servers" = "نادیده گرفتن پیام‌های سرورها";
 "Import" = "وارد کردن";
 "Import File…" = "وارد کردن فایل…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN را به پوشهٔ Applications منتقل کنید، آن را از همان‌جا باز کنید و دوباره وصل شوید.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "تنظیمات MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN نتوانست حذف را کامل کند (%@). نصب می‌ماند: یک دقیقه دیگر دوباره امتحان کنید.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN هنوز در حال برداشتن DNS یا مسیرهایی است که یک VPN تنظیم کرده و تا آن زمان نصب می‌ماند. یک دقیقه دیگر دوباره امتحان کنید.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN حذف شد، اما این‌ها حذف نشدند: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN برای راه‌اندازی تونل‌ها به سرویس کمکی خود نیاز دارد.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "دستیار MugVPN پاسخ نداد (%@). بخش سیستمی MugVPN با رمز مدیر حذف شود؟";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "نسخهٔ دستیار MugVPN %@ است، جدیدتر از این برنامه (%@): MugVPN را به‌روز کنید.";
@@ -140,6 +149,7 @@
 "None" = "هیچ‌کدام";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "همهٔ ترافیک از VPN نمی‌گذرد: تونل مسیر پیش‌فرض را ندارد";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "وارد نشد (MugVPN اسکریپت‌های پروفایل را با دسترسی root اجرا نمی‌کند): %@";
+"Not in the archive (could not be written): %@" = "در بایگانی نیست (نوشته نشد): %@";
 "Notify when connected:" = "اعلان هنگام اتصال:";
 "OK" = "تأیید";
 "Off" = "خاموش";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "باز کردن در ویرایشگر متن";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN علامت تجاری ثبت‌شدهٔ OpenVPN Inc. است.";
 "Options" = "گزینه‌ها";
+"Overwrite" = "بازنویسی";
 "Password:" = "رمز عبور:";
 "Paste" = "چسباندن";
 "Persistent connections:" = "اتصال‌های دائمی:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "اسکریپت پیش از اتصال (ثانیه):";
 "Private key:" = "کلید خصوصی:";
 "Profile menu:" = "منوی پروفایل‌ها:";
+"Profiles without passwords or keys (servers, certificates, options)" = "پروفایل‌ها بدون گذرواژه یا کلید (سرورها، گواهی‌ها، گزینه‌ها)";
 "Proxy" = "پروکسی";
 "Proxy:" = "پروکسی:";
 "Quit MugVPN" = "خروج از MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "اتصال دوباره";
 "Reconnecting" = "در حال اتصال دوباره";
 "Redo" = "ازنو";
+"Reload" = "بارگذاری دوباره";
 "Remove" = "برداشتن";
 "Response" = "پاسخ";
 "Revert" = "بازگرداندن";
@@ -184,6 +197,7 @@
 "Settings…" = "تنظیمات…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "چند اتصال می‌توانند هر کدام دامنه‌های خود را سرویس دهند؛ همهٔ نام‌ها را در هر زمان فقط یکی می‌تواند بگیرد.";
 "Show Status" = "نمایش وضعیت";
+"Show Windows" = "نمایش پنجره‌ها";
 "Show in Finder" = "نمایش در Finder";
 "Show the status window" = "نمایش پنجرهٔ وضعیت";
 "Sign in to This Network…" = "ورود به این شبکه…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "گواهی کلاینت به کلید خصوصی خود نیاز دارد.";
 "The configuration cannot be read: %@" = "پیکربندی خوانده نمی‌شود: %@";
 "The first time" = "اولین بار";
+"The keychain did not remove the saved passwords of %@." = "زنجیرهٔ کلید گذرواژه‌های ذخیره‌شدهٔ %@ را حذف نکرد.";
+"The keychain did not save it: it is used for this connection only." = "زنجیرهٔ کلید آن را ذخیره نکرد: فقط برای همین اتصال استفاده می‌شود.";
+"The network state (routes, DNS, network interfaces)" = "وضعیت شبکه (مسیرها، DNS، رابط‌های شبکه)";
 "The private key needs its client certificate." = "کلید خصوصی به گواهی کلاینت خود نیاز دارد.";
 "The proxy for %@ needs a username and password." = "پروکسی %@ به نام کاربری و رمز عبور نیاز دارد.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "دستیار در حال اجرا نسخهٔ قدیمی‌تری است که نمی‌تواند خودش را به‌روز کند. جایگزینی آن با نسخهٔ جدید همهٔ اتصال‌های MugVPN این Mac را برای همهٔ کاربران متوقف می‌کند. ادامه می‌دهید؟";
@@ -233,6 +250,7 @@
 "not connected" = "متصل نیست";
 "nothing" = "هیچ";
 "passwords" = "رمزهای عبور";
+"saved passwords" = "گذرواژه‌های ذخیره‌شده";
 "the connection ended unexpectedly" = "اتصال به‌طور غیرمنتظره پایان یافت";
 "the persistent connection is not running" = "اتصال دائمی در حال اجرا نیست";
 "the port must be 1–65535" = "درگاه باید بین 1–65535 باشد";

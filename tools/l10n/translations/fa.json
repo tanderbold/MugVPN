@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "ترافیک به %@ از کنار VPN می‌گذرد (از طریق %@)",
  "DNS server %@ is reached outside the VPN (through %@)": "سرور DNS %@ بیرون از VPN در دسترس است (از طریق %@)",
  "Block IPv6 outside the VPN": "مسدود کردن IPv6 بیرون از VPN",
- "If it drops unexpectedly, block the Internet until I reconnect": "اگر ناگهان قطع شد، اینترنت را تا اتصال دوباره مسدود کن",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "اینترنت مسدود شد: %@ قطع شد. دوباره وصل شوید یا مسدودی را بردارید.",
  "Send DNS only through the VPN": "ارسال DNS فقط از طریق VPN",
  "Unblock Internet": "رفع مسدودی اینترنت",

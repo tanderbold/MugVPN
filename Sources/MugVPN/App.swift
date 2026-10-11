@@ -34,8 +34,10 @@ protocol Services: AnyObject {
     /// Ask where to save a file; nil on Cancel.
     func chooseSaveLocation(suggested: String) -> String?
     /// Uninstalling: the user's files, settings and passwords; then the app itself.
-    func removeUserData(_ paths: [String])
-    func moveAppToTrash()
+    /// - Returns: what is still there afterwards (paths; "saved passwords" for keychain items).
+    func removeUserData(_ paths: [String]) -> [String]
+    /// - Returns: false when it could not be moved there.
+    func moveAppToTrash() -> Bool
 }
 
 final class RealServices: Services {
@@ -46,14 +48,16 @@ final class RealServices: Services {
         if on { try SMAppService.mainApp.register() } else { try SMAppService.mainApp.unregister() }
     }
 
-    func removeUserData(_ paths: [String]) {
+    func removeUserData(_ paths: [String]) -> [String] {
         paths.forEach { try? FileManager.default.removeItem(atPath: $0) }
         UserDefaults.standard.removePersistentDomain(forName: MugVPNIDs.appBundleID)
-        KeychainStore().removeEverything()
+        var stayed = paths.filter { FileManager.default.fileExists(atPath: $0) }
+        if !KeychainStore().removeEverything() { stayed.append(L("saved passwords")) }
+        return stayed
     }
 
-    func moveAppToTrash() {
-        try? FileManager.default.trashItem(at: Bundle.main.bundleURL, resultingItemURL: nil)
+    func moveAppToTrash() -> Bool {
+        (try? FileManager.default.trashItem(at: Bundle.main.bundleURL, resultingItemURL: nil)) != nil
     }
 
     /// Permission asked at the first notification, not at launch.
@@ -253,6 +257,7 @@ final class AppController: NSObject, NSMenuDelegate {
     private func wireOptions() {
         manager.splitDNS = { [weak self] p in self?.options.options(p.id).splitDNS ?? false }
         manager.dnsDomains = { [weak self] p in self?.options.options(p.id).serverDNSDomains ?? [] }
+        manager.appendLog = { [weak self] in self?.settingsStore.settings.logAppend ?? false }
         // Before any start, whichever way it comes (menu, command line, auto-connect, wake): the certificate.
         manager.preflight = { [weak self] p, done in
             guard let self else { return done() }
@@ -363,6 +368,11 @@ final class AppController: NSObject, NSMenuDelegate {
         // Conflicts, leaks and blocks are looked at when connections change state,
         // not on every log line or byte count (each check runs processes).
         let statuses = manager.active.values.map { "\($0.profile.id)=\($0.controller.status)" }.sorted().joined(separator: ";")
+        // An older helper found out later: DNS warnings come from the logs instead (looked at again).
+        if manager.helperKnowsDNSDomains != lastDNSStateKnown {
+            lastDNSStateKnown = manager.helperKnowsDNSDomains
+            if statuses == lastCheckedStatuses { checkConflicts() }
+        }
         if statuses != lastCheckedStatuses {
             lastCheckedStatuses = statuses
             checkConflicts()
@@ -484,6 +494,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// Statuses of the connections: checks run again when these change, not on every log line.
     private var lastCheckedStatuses = ""
+    private var lastDNSStateKnown = true
     private var leakGeneration = 0
     private var leakRunning = false
 
@@ -593,20 +604,30 @@ final class AppController: NSObject, NSMenuDelegate {
         return main
     }
 
-    /// The menu bar icon clicked: MugVPN's windows come forward (an app without a Dock icon has no
-    /// other way back to a window lost behind others), prompts that wait for an answer on top. Only
-    /// shown: the app the user is typing in keeps the keyboard until a window is clicked.
-    func menuWillOpen(_ menu: NSMenu) { bringWindowsForward() }
+    private weak var showWindowsItem: NSMenuItem?
 
-    func bringWindowsForward() {
+    /// The menu bar icon clicked: a question a connection waits on (a password prompt lost behind other
+    /// apps) comes forward, only shown (the app in use keeps the keyboard); MugVPN's other windows stay
+    /// where they are (Show Windows brings them).
+    func menuWillOpen(_ menu: NSMenu) {
+        showWindowsItem?.isHidden = !WindowRegistry.shared.windows.contains(where: \.isVisible)
         let wasActive = NSApp.isActive
+        for w in WindowRegistry.shared.windows where w.isVisible && w.sheetParent == nil && AppWindow.waitingKinds.contains(w.kind) {
+            w.orderFrontRegardless()
+        }
+        // Ordering a window can activate an accessory app on some event-loop turns.
+        if !wasActive { NSApp.deactivate() }
+    }
+
+    /// All of MugVPN's windows forward, asked for: questions on top, the last of them to type in.
+    @objc func showWindows() {
         let open = WindowRegistry.shared.windows.filter { $0.isVisible && $0.sheetParent == nil }
+        guard !open.isEmpty else { return }
+        NSApp.activate(ignoringOtherApps: true)
         let prompts = AppWindow.dialogKinds
         for w in open where !prompts.contains(w.kind) { w.orderFrontRegardless() }
         for w in open where prompts.contains(w.kind) { w.orderFrontRegardless() }
-        // Ordering an existing key window can activate an accessory app on some event-loop turns.
-        // Opening the menu-bar menu must not take the keyboard from the app the user is in.
-        if !wasActive { NSApp.deactivate() }
+        (open.last { prompts.contains($0.kind) } ?? open.last)?.makeKey()
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -659,6 +680,11 @@ final class AppController: NSObject, NSMenuDelegate {
             menu.addItem(action(L("Disconnect All"), #selector(disconnectAll)))
         }
         menu.addItem(.separator())
+        // MugVPN's windows lost behind other apps' (an app without a Dock icon has no other way back).
+        let show = action(L("Show Windows"), #selector(showWindows))
+        show.isHidden = !WindowRegistry.shared.windows.contains(where: \.isVisible)
+        showWindowsItem = show
+        menu.addItem(show)
         menu.addItem(action(L("Connections…"), #selector(openConnections)))
         let imp = NSMenuItem(title: L("Import"), action: nil, keyEquivalent: "")
         imp.submenu = NSMenu()
@@ -814,21 +840,40 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// A zip for a bug report or an administrator: versions, the network's state, the profiles
     /// without their secrets, the logs (Diagnostics).
+    /// What goes in is said first, and each part can be left out (logs and the network state name addresses).
     @objc func exportDiagnostics() {
+        showForm(kind: "diagnostics", profile: "", title: L("Export Diagnostics"),
+                 views: [Form.label(L("A summary (versions, which connections are up) always goes in. Also:"), id: "prompt_text"),
+                         Form.checkbox("include_logs", L("Connection logs (up to 1 MB each: addresses, servers, errors)"), on: true),
+                         Form.checkbox("include_network", L("The network state (routes, DNS, network interfaces)"), on: true),
+                         Form.checkbox("include_profiles", L("Profiles without passwords or keys (servers, certificates, options)"), on: true)],
+                 okTitle: L("Export…"), ok: { [weak self] w in
+            var parts = Set<Diagnostics.Part>()
+            if checked(w, "include_logs") { parts.insert(.logs) }
+            if checked(w, "include_network") { parts.insert(.network) }
+            if checked(w, "include_profiles") { parts.insert(.profiles) }
+            DispatchQueue.main.async { self?.writeDiagnostics(parts) }
+            return true
+        })
+    }
+
+    private func writeDiagnostics(_ parts: Set<Diagnostics.Part>) {
         let stamp = ISO8601DateFormatter().string(from: Date()).replacingOccurrences(of: ":", with: "-")
         guard let dest = services.chooseSaveLocation(suggested: "MugVPN Diagnostics \(stamp).zip") else { return }
-        let profiles = manager.profiles.map { ($0.displayName, store.config(of: $0) ?? "") }
-        let logs: [(String, String)] = manager.profiles.compactMap { p in
-            let path = LogLocation.path(profile: safeLogName(p.name), helperID: manager.active[p.id]?.helperID,
-                                        uid: getuid(), runDir: runDir, logsDir: logsDir,
-                                        exists: { FileManager.default.isReadableFile(atPath: $0) })
-            return path.flatMap { try? String(contentsOfFile: $0, encoding: .utf8) }.map { (p.displayName, String($0.suffix(1 << 20))) }
+        // Only what was chosen is gathered; files are read later, off the main thread (the last 1 MiB of a log).
+        let profileFiles: [(String, String)] = parts.contains(.profiles) ? manager.profiles.map { ($0.displayName, $0.path) } : []
+        let logFiles: [(String, String)] = !parts.contains(.logs) ? [] : manager.profiles.compactMap { p in
+            LogLocation.path(profile: p.name, id: p.id, nameIsUnique: manager.profiles.filter { $0.name.caseInsensitiveCompare(p.name) == .orderedSame }.count == 1,
+                             helperID: manager.active[p.id]?.helperID,
+                             uid: getuid(), runDir: runDir, logsDir: logsDir,
+                             exists: { FileManager.default.isReadableFile(atPath: $0) }).map { (p.displayName, $0) }
         }
         let appVersion = Self.appVersion
         let os = ProcessInfo.processInfo.operatingSystemVersionString
         let connected = manager.active.values.map { "\($0.profile.displayName): \($0.controller.status)" }.sorted()
         manager.helperClient.version { [weak self] helperVersion in
             DispatchQueue.global().async {
+                /// A system tool's output; one that does not finish in 10 s is stopped (its output so far kept).
                 func run(_ tool: String, _ args: [String]) -> String {
                     let p = Process()
                     p.executableURL = URL(fileURLWithPath: tool)
@@ -837,31 +882,82 @@ final class AppController: NSObject, NSMenuDelegate {
                     p.standardOutput = out
                     p.standardError = out
                     guard (try? p.run()) != nil else { return "(\(tool) did not run)" }
+                    let killer = DispatchWorkItem { if p.isRunning { p.terminate() } }
+                    DispatchQueue.global().asyncAfter(deadline: .now() + 10, execute: killer)
                     let d = out.fileHandleForReading.readDataToEndOfFile()
                     p.waitUntilExit()
+                    killer.cancel()
                     return String(decoding: d, as: UTF8.self)
                 }
+                func tail(_ path: String, _ bytes: UInt64) -> String? {
+                    guard let h = FileHandle(forReadingAtPath: path) else { return nil }
+                    defer { try? h.close() }
+                    let end = (try? h.seekToEnd()) ?? 0
+                    try? h.seek(toOffset: end > bytes ? end - bytes : 0)
+                    return (try? h.readToEnd()).map { String(decoding: $0, as: UTF8.self) }
+                }
+                let profiles = profileFiles.map { ($0.0, tail($0.1, 1 << 20) ?? "") }
+                let logs = logFiles.compactMap { f in tail(f.1, 1 << 20).map { (f.0, $0) } }
                 let openvpn = run(MugVPNIDs.libexecDir + "/openvpn", ["--version"]).components(separatedBy: "\n").first ?? ""
                 let files = Diagnostics.files(
                     summary: ["MugVPN": appVersion, "helper": helperVersion ?? "not answering", "openvpn": openvpn, "macOS": os,
                               "connections": connected.isEmpty ? "none" : connected.joined(separator: "; ")],
-                    commands: ["routes.txt": run("/usr/sbin/netstat", ["-rn"]), "dns.txt": run("/usr/sbin/scutil", ["--dns"]),
-                               "interfaces.txt": run("/sbin/ifconfig", [])],
-                    profiles: profiles, logs: logs)
-                let dir = FileManager.default.temporaryDirectory.appendingPathComponent("MugVPN Diagnostics \(stamp)")
+                    commands: !parts.contains(.network) ? [:] :
+                        ["routes.txt": run("/usr/sbin/netstat", ["-rn"]), "dns.txt": run("/usr/sbin/scutil", ["--dns"]),
+                         "interfaces.txt": run("/sbin/ifconfig", [])],
+                    profiles: profiles, logs: logs, include: parts)
+                // Its own folder: two exports at once do not take each other's files.
+                let staging = FileManager.default.temporaryDirectory.appendingPathComponent(UUID().uuidString)
+                let dir = staging.appendingPathComponent("MugVPN Diagnostics \(stamp)")
                 try? FileManager.default.removeItem(at: dir)
+                // What could not be written is said, not left out without a word.
+                var missing: [String] = []
                 for f in files {
                     let url = dir.appendingPathComponent(f.name)
-                    try? FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
-                    try? Data(f.text.utf8).write(to: url)
+                    do {
+                        try FileManager.default.createDirectory(at: url.deletingLastPathComponent(), withIntermediateDirectories: true)
+                        try Data(f.text.utf8).write(to: url)
+                    } catch {
+                        missing.append(f.name)
+                    }
                 }
-                try? FileManager.default.removeItem(atPath: dest)
-                let zipped = run("/usr/bin/ditto", ["-c", "-k", "--keepParent", dir.path, dest])
-                try? FileManager.default.removeItem(at: dir)
+                // Made beside it first; the chosen file is replaced only by an archive ditto finished.
+                let made = dir.path + ".zip"
+                try? FileManager.default.removeItem(atPath: made)
+                let ditto = Process()
+                ditto.executableURL = URL(fileURLWithPath: "/usr/bin/ditto")
+                ditto.arguments = ["-c", "-k", "--keepParent", dir.path, made]
+                let out = Pipe()
+                ditto.standardOutput = out
+                ditto.standardError = out
+                var zipped = "ditto did not run"
+                var ok = false
+                if (try? ditto.run()) != nil {
+                    zipped = String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+                    ditto.waitUntilExit()
+                    ok = ditto.terminationStatus == 0 && FileManager.default.fileExists(atPath: made)
+                }
+                if ok {
+                    do {
+                        if FileManager.default.fileExists(atPath: dest) {
+                            _ = try FileManager.default.replaceItemAt(URL(fileURLWithPath: dest), withItemAt: URL(fileURLWithPath: made))
+                        } else {
+                            try FileManager.default.moveItem(atPath: made, toPath: dest)
+                        }
+                    } catch {
+                        ok = false
+                        zipped = "\(error)"
+                    }
+                }
+                try? FileManager.default.removeItem(atPath: made)
+                try? FileManager.default.removeItem(at: staging)
                 DispatchQueue.main.async {
                     guard let self else { return }
-                    if FileManager.default.fileExists(atPath: dest) { self.services.reveal(dest) }
-                    else { showError(L("Cannot export diagnostics: %@", zipped)) }
+                    guard ok else { return showError(L("Cannot export diagnostics: %@", zipped)) }
+                    self.services.reveal(dest)
+                    if !missing.isEmpty {
+                        showError(L("Not in the archive (could not be written): %@", missing.joined(separator: ", ")))
+                    }
                 }
             }
         }
@@ -869,7 +965,8 @@ final class AppController: NSObject, NSMenuDelegate {
 
     @objc func viewLog(_ sender: NSMenuItem) {
         guard let p = sender.representedObject as? Profile else { return }
-        let path = LogLocation.path(profile: safeLogName(p.name), helperID: manager.active[p.id]?.helperID,
+        let path = LogLocation.path(profile: p.name, id: p.id, nameIsUnique: manager.profiles.filter { $0.name.caseInsensitiveCompare(p.name) == .orderedSame }.count == 1,
+                                        helperID: manager.active[p.id]?.helperID,
                                     uid: getuid(), runDir: runDir, logsDir: logsDir,
                                     exists: { FileManager.default.isReadableFile(atPath: $0) })
         guard let path else {
@@ -886,6 +983,8 @@ final class AppController: NSObject, NSMenuDelegate {
     @objc func clearPasswords(_ sender: NSMenuItem) {
         guard let p = sender.representedObject as? Profile else { return }
         secrets.removeAll(p.secretsKey)
+        // Still there (the keychain refused): said, not claimed cleared.
+        if secrets.hasSaved(p.secretsKey) { showError(L("The keychain did not remove the saved passwords of %@.", p.displayName)) }
         rebuildMenu()
     }
 
@@ -1093,6 +1192,16 @@ final class AppController: NSObject, NSMenuDelegate {
             let keep = checked(w, "keep_profiles")
             self?.uninstall(keepProfiles: keep) { err in
                 guard let err else { self?.onQuit(); return }
+                // Held back on purpose: DNS a tunnel set is still being taken off, and only the helper can.
+                // Removing it around that would leave the VPN's DNS on the Mac: try again later.
+                // So for any refusal the helper itself gives (PF, its files, its record): never removed around it.
+                if HelperRefusal.isHelpersOwn(err) {
+                    return DispatchQueue.main.async {
+                        showError(err == HelperRefusal.dnsCleanupPending
+                            ? L("MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute.")
+                            : L("MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.", err))
+                    }
+                }
                 // The helper does not answer (a broken install): an administrator removes the system part.
                 DispatchQueue.main.async { self?.uninstallWithoutHelper(keepProfiles: keep, helperError: err) }
             }
@@ -1113,9 +1222,7 @@ final class AppController: NSObject, NSMenuDelegate {
                     return showError(L("Cannot uninstall: %@", "\(error)"))
                 }
                 self.services.helperSetup.unregister()
-                self.services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
-                self.services.moveAppToTrash()
-                self.onQuit()
+                self.removeUserPart(keepProfiles: keepProfiles)
             }
             return true
         })
@@ -1128,10 +1235,25 @@ final class AppController: NSObject, NSMenuDelegate {
             guard let self else { return }
             if let err { return done(err) }
             self.services.helperSetup.unregister()
-            self.services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
-            self.services.moveAppToTrash()
-            done(nil)
+            self.removeUserPart(keepProfiles: keepProfiles, then: { done(nil) })
         }
+    }
+
+    /// The user's part, then the app; what stays is said before MugVPN quits (not claimed gone).
+    private func removeUserPart(keepProfiles: Bool, then: (() -> Void)? = nil) {
+        var stayed = services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
+        if !services.moveAppToTrash() { stayed.append(Bundle.main.bundlePath) }
+        let finish: () -> Void = { [weak self] in
+            if let then { then() } else { self?.onQuit() }
+        }
+        guard !stayed.isEmpty else {
+            finish()
+            return
+        }
+        showForm(kind: "message", profile: "", title: L("Uninstall MugVPN"),
+                 views: [Form.label(L("MugVPN is uninstalled, but these could not be removed: %@", stayed.joined(separator: ", ")),
+                                    id: "text")],
+                 cancelTitle: nil, ok: { _ in DispatchQueue.main.async(execute: finish); return true })
     }
 
     @objc func quit() {

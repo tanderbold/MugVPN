@@ -167,7 +167,6 @@
  "Traffic to %@ goes around the VPN (through %@)": "%@(으)로 가는 트래픽이 VPN을 우회합니다(%@ 경유)",
  "DNS server %@ is reached outside the VPN (through %@)": "DNS 서버 %@에 VPN 밖에서 연결됩니다(%@ 경유)",
  "Block IPv6 outside the VPN": "VPN 밖의 IPv6 차단",
- "If it drops unexpectedly, block the Internet until I reconnect": "예기치 않게 끊기면 다시 연결할 때까지 인터넷 차단",
  "Internet blocked: %@ dropped. Reconnect it or unblock.": "인터넷 차단됨: %@ 연결이 끊겼습니다. 다시 연결하거나 차단을 해제하십시오.",
  "Send DNS only through the VPN": "DNS를 VPN으로만 보내기",
  "Unblock Internet": "인터넷 차단 해제",

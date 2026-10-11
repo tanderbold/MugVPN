@@ -8,10 +8,13 @@
 "%@ is not a text file (PEM)." = "%@ är inte en textfil (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ hänvisar till filer utanför sin mapp. Kopiera dem till profilen? VPN-servern kan få deras innehåll.\n\n%@";
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)";
+"%@ was changed outside MugVPN since it was opened here." = "%@ har ändrats utanför MugVPN sedan den öppnades här.";
+"%@ was removed outside MugVPN since it was opened here." = "%@ har tagits bort utanför MugVPN sedan den öppnades här.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS bara för egna domäner, en annan anslutning tar alla namn";
 "%@: DNS not set, another connection takes all names" = "%@: DNS inte inställd, en annan anslutning tar alla namn";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "En klient för OpenVPN-profiler som håller flera anslutningar uppe samtidigt. MIT-licens.";
 "A program asked MugVPN to import %@. Import it?" = "Ett program bad MugVPN importera %@. Importera?";
+"A summary (versions, which connections are up) always goes in. Also:" = "En sammanfattning (versioner, vilka anslutningar som är uppe) ingår alltid. Dessutom:";
 "About MugVPN" = "Om MugVPN";
 "Add a connection" = "Lägg till en anslutning";
 "Add at least one server." = "Lägg till minst en server.";
@@ -57,6 +60,7 @@
 "Connecting (%@)" = "Ansluter (%@)";
 "Connecting to %@." = "Ansluter till %@.";
 "Connection Settings…" = "Anslutningsinställningar…";
+"Connection logs (up to 1 MB each: addresses, servers, errors)" = "Anslutningsloggar (upp till 1 MB var: adresser, servrar, fel)";
 "Connection settings" = "Anslutningsinställningar";
 "Connections" = "Anslutningar";
 "Connections…" = "Anslutningar…";
@@ -92,13 +96,15 @@
 "Enter at most 8 DNS servers." = "Ange högst 8 DNS-servrar.";
 "Enter the proxy's address and a port from 1 to 65535." = "Ange proxyns adress och en port mellan 1 och 65535.";
 "Every time" = "Varje gång";
+"Export Diagnostics" = "Exportera diagnostik";
 "Export Diagnostics…" = "Exportera diagnostik…";
+"Export…" = "Exportera…";
 "Flat" = "Platt";
 "From the VPN server" = "Från VPN-servern";
 "General" = "Allmänt";
 "Hide" = "Göm";
 "IPv6 traffic goes around the VPN (through %@)" = "IPv6-trafik går förbi VPN (via %@)";
-"If it drops unexpectedly, block the Internet until I reconnect" = "Om den bryts oväntat, blockera internet tills jag ansluter igen";
+"If it drops unexpectedly, block my TCP and UDP traffic until I reconnect" = "Om den bryts oväntat, blockera min TCP- och UDP-trafik tills jag ansluter igen";
 "Ignore messages from servers" = "Ignorera meddelanden från servrar";
 "Import" = "Importera";
 "Import File…" = "Importera fil…";
@@ -121,6 +127,9 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Flytta MugVPN till mappen Program, öppna det därifrån och anslut igen.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Inställningar för MugVPN";
+"MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kunde inte slutföra avinstallationen (%@). Det förblir installerat: försök igen om en minut.";
+"MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN tar fortfarande bort den DNS eller de rutter som ett VPN satte och förblir installerat tills dess. Försök igen om en minut.";
+"MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN är avinstallerat, men detta kunde inte tas bort: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN behöver sin hjälpkomponent för att starta tunnlar.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPNs hjälpare svarade inte (%@). Ta bort MugVPNs systemdel med ett administratörslösenord i stället?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPNs hjälpare är version %@, nyare än den här appen (%@): uppdatera MugVPN.";
@@ -140,6 +149,7 @@
 "None" = "Ingen";
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Inte all trafik går genom VPN: tunneln har inte standardvägen";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Inte importerat (MugVPN kör inte profilskript som root): %@";
+"Not in the archive (could not be written): %@" = "Inte i arkivet (kunde inte skrivas): %@";
 "Notify when connected:" = "Meddela vid anslutning:";
 "OK" = "OK";
 "Off" = "Av";
@@ -151,6 +161,7 @@
 "Open in Text Editor" = "Öppna i textredigerare";
 "OpenVPN is a registered trademark of OpenVPN Inc." = "OpenVPN är ett registrerat varumärke som tillhör OpenVPN Inc.";
 "Options" = "Alternativ";
+"Overwrite" = "Skriv över";
 "Password:" = "Lösenord:";
 "Paste" = "Klistra in";
 "Persistent connections:" = "Beständiga anslutningar:";
@@ -158,6 +169,7 @@
 "Pre-connect script (s):" = "Föranslutningsskript (s):";
 "Private key:" = "Privat nyckel:";
 "Profile menu:" = "Profilmeny:";
+"Profiles without passwords or keys (servers, certificates, options)" = "Profiler utan lösenord eller nycklar (servrar, certifikat, alternativ)";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Avsluta MugVPN";
@@ -165,6 +177,7 @@
 "Reconnect" = "Anslut igen";
 "Reconnecting" = "Återansluter";
 "Redo" = "Gör om";
+"Reload" = "Läs in igen";
 "Remove" = "Ta bort";
 "Response" = "Svar";
 "Revert" = "Återställ";
@@ -184,6 +197,7 @@
 "Settings…" = "Inställningar…";
 "Several connections can each serve their own domains; only one at a time can take all names." = "Flera anslutningar kan var och en betjäna sina egna domäner; bara en åt gången kan ta alla namn.";
 "Show Status" = "Visa status";
+"Show Windows" = "Visa fönster";
 "Show in Finder" = "Visa i Finder";
 "Show the status window" = "Visa statusfönstret";
 "Sign in to This Network…" = "Logga in på det här nätverket…";
@@ -197,6 +211,9 @@
 "The client certificate needs its private key." = "Klientcertifikatet kräver sin privata nyckel.";
 "The configuration cannot be read: %@" = "Det går inte att läsa konfigurationen: %@";
 "The first time" = "Första gången";
+"The keychain did not remove the saved passwords of %@." = "Nyckelringen tog inte bort de sparade lösenorden för %@.";
+"The keychain did not save it: it is used for this connection only." = "Nyckelringen sparade det inte: det används bara för den här anslutningen.";
+"The network state (routes, DNS, network interfaces)" = "Nätverkets tillstånd (rutter, DNS, nätverksgränssnitt)";
 "The private key needs its client certificate." = "Den privata nyckeln kräver sitt klientcertifikat.";
 "The proxy for %@ needs a username and password." = "Proxyn för %@ kräver användarnamn och lösenord.";
 "The running helper is an older one that cannot update itself. Putting the new one in place stops every MugVPN connection on this Mac, of every user. Go ahead?" = "Hjälparen som körs är en äldre som inte kan uppdatera sig själv. Att sätta in den nya stoppar alla MugVPN-anslutningar på den här Macen, för alla användare. Fortsätta?";
@@ -233,6 +250,7 @@
 "not connected" = "inte ansluten";
 "nothing" = "inget";
 "passwords" = "lösenord";
+"saved passwords" = "sparade lösenord";
 "the connection ended unexpectedly" = "anslutningen avslutades oväntat";
 "the persistent connection is not running" = "den beständiga anslutningen körs inte";
 "the port must be 1–65535" = "porten måste vara 1–65535";

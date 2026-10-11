@@ -27,6 +27,12 @@
   "key": "%@ takes %@ networks out of %@'s routes (the more specific route wins)"
  },
  {
+  "key": "%@ was changed outside MugVPN since it was opened here."
+ },
+ {
+  "key": "%@ was removed outside MugVPN since it was opened here."
+ },
+ {
   "key": "%@: DNS for its own domains only, another connection takes all names"
  },
  {
@@ -37,6 +43,9 @@
  },
  {
   "key": "A program asked MugVPN to import %@. Import it?"
+ },
+ {
+  "key": "A summary (versions, which connections are up) always goes in. Also:"
  },
  {
   "key": "About MugVPN"
@@ -174,6 +183,9 @@
   "key": "Connection Settings…"
  },
  {
+  "key": "Connection logs (up to 1 MB each: addresses, servers, errors)"
+ },
+ {
   "key": "Connection settings"
  },
  {
@@ -279,7 +291,13 @@
   "key": "Every time"
  },
  {
+  "key": "Export Diagnostics"
+ },
+ {
   "key": "Export Diagnostics…"
+ },
+ {
+  "key": "Export…"
  },
  {
   "key": "Flat"
@@ -297,7 +315,7 @@
   "key": "IPv6 traffic goes around the VPN (through %@)"
  },
  {
-  "key": "If it drops unexpectedly, block the Internet until I reconnect"
+  "key": "If it drops unexpectedly, block my TCP and UDP traffic until I reconnect"
  },
  {
   "key": "Ignore messages from servers"
@@ -366,6 +384,15 @@
   "key": "MugVPN Settings"
  },
  {
+  "key": "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute."
+ },
+ {
+  "key": "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute."
+ },
+ {
+  "key": "MugVPN is uninstalled, but these could not be removed: %@"
+ },
+ {
   "key": "MugVPN needs its helper to start tunnels."
  },
  {
@@ -423,6 +450,9 @@
   "key": "Not imported (MugVPN does not run profile scripts as root): %@"
  },
  {
+  "key": "Not in the archive (could not be written): %@"
+ },
+ {
   "key": "Notify when connected:"
  },
  {
@@ -456,6 +486,9 @@
   "key": "Options"
  },
  {
+  "key": "Overwrite"
+ },
+ {
   "key": "Password:"
  },
  {
@@ -477,6 +510,9 @@
   "key": "Profile menu:"
  },
  {
+  "key": "Profiles without passwords or keys (servers, certificates, options)"
+ },
+ {
   "key": "Proxy"
  },
  {
@@ -496,6 +532,9 @@
  },
  {
   "key": "Redo"
+ },
+ {
+  "key": "Reload"
  },
  {
   "key": "Remove"
@@ -555,6 +594,9 @@
   "key": "Show Status"
  },
  {
+  "key": "Show Windows"
+ },
+ {
   "key": "Show in Finder"
  },
  {
@@ -592,6 +634,15 @@
  },
  {
   "key": "The first time"
+ },
+ {
+  "key": "The keychain did not remove the saved passwords of %@."
+ },
+ {
+  "key": "The keychain did not save it: it is used for this connection only."
+ },
+ {
+  "key": "The network state (routes, DNS, network interfaces)"
  },
  {
   "key": "The private key needs its client certificate."
@@ -700,6 +751,9 @@
  },
  {
   "key": "passwords"
+ },
+ {
+  "key": "saved passwords"
  },
  {
   "key": "the connection ended unexpectedly"
