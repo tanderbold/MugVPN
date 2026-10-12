@@ -144,6 +144,13 @@ final class AppController: NSObject, NSMenuDelegate {
     private var autoStatus: Set<String> = []
     private var notified: Set<String> = []
     private var conflictsShown: [NetworkConflict] = []
+    /// Each connection's DNS as the helper has it (ConnectionInfo.dns), by profile id.
+    private var dnsStates: [String: String] = [:]
+    private var dnsPollPending = false
+    static var dnsPoll: TimeInterval = 10
+    /// (The helper tries again every 30 s: what it changed is shown within a minute.)
+    static let dnsPollMax: TimeInterval = 60
+    private var dnsPollDelay: TimeInterval = AppController.dnsPoll
     private(set) var leaksShown: [LeakFinding] = []
     /// Profiles whose kill switch blocks traffic (the helper's word).
     private(set) var blockedBy: [String] = []
@@ -444,12 +451,34 @@ final class AppController: NSObject, NSMenuDelegate {
             guard let self else { return }
             let up = self.manager.active.values.filter { if case .connected = $0.controller.status { return true }; return false }
                 .sorted { $0.profile.displayName < $1.profile.displayName }
-            var dns: [String: String] = [:]
-            for c in up { if let id = c.helperID, let state = infos.first(where: { $0.id == id })?.dns { dns[c.profile.displayName] = state } }
+            var dns: [String: String] = [:], states: [String: String] = [:], domains: [String: [String]] = [:]
+            for c in up {
+                if let id = c.helperID, let info = infos.first(where: { $0.id == id }), let state = info.dns {
+                    dns[c.profile.displayName] = state
+                    states[c.profile.id] = state
+                    domains[c.profile.displayName] = info.dnsDomains
+                }
+            }
+            if states != self.dnsStates {
+                self.dnsStates = states
+                self.dnsPollDelay = AppController.dnsPoll
+                self.updateStatusWindows()
+            }
+            // DNS in line for all names may change hands later (the helper tries again on its own): looked at again
+            // while any is so, less and less often while nothing changes (a steady arrangement wakes it rarely).
+            if states.values.contains(where: { $0 == "limited" || $0 == "waiting" }), !self.dnsPollPending {
+                self.dnsPollPending = true
+                let delay = self.dnsPollDelay
+                self.dnsPollDelay = min(delay * 2, AppController.dnsPollMax)
+                DispatchQueue.main.asyncAfter(deadline: .now() + delay) { [weak self] in
+                    self?.dnsPollPending = false
+                    self?.checkConflicts(again: false)
+                }
+            }
             let found = NetworkConflicts.find(up.map { c in
                 let log = self.logText(c)
                 return (c.profile.displayName, OpenVPNLogFacts.parse(log), log)
-            }, dns: self.manager.helperKnowsDNSDomains ? dns : nil)
+            }, dns: self.manager.helperKnowsDNSDomains ? dns : nil, domains: domains)
             // Notes (narrower routes, DNS limited to a connection's own domains) are in the menu, not notified.
             for c in found where !self.conflictsShown.contains(c) {
                 switch c {
@@ -559,10 +588,14 @@ final class AppController: NSObject, NSMenuDelegate {
         case .overlappingRoutes(let a, let b, let net): return L("%@ and %@ both route %@", a, b, net)
         case .narrowerRoutes(let broad, let narrow, let n):
             return L("%@ takes %@ networks out of %@'s routes (the more specific route wins)", narrow, String(n), broad)
-        case .dnsLimited(let a):
-            return L("%@: DNS for its own domains only, another connection takes all names", a)
+        case .dnsLimited(let a, let domains, let holder):
+            // (MugVPN's own arrangement: a note, the domains it keeps named.)
+            guard !domains.isEmpty else { return L("%@: DNS for its own domains only, another connection takes all names", a) }
+            let shown = domains.prefix(3).joined(separator: ", ") + (domains.count > 3 ? " (+\(domains.count - 3))" : "")
+            if let holder { return L("%@: DNS only for %@; %@ has the other names", a, shown, holder) }
+            return L("%@: DNS only for %@", a, shown)
         case .dnsTakenByAnother(let a):
-            return L("%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains).", a)
+            return L("%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).", a)
         }
     }
 
@@ -1077,6 +1110,17 @@ final class AppController: NSObject, NSMenuDelegate {
         w.present()
     }
 
+    /// A connection's DNS as the helper has it, in words.
+    private func dnsText(_ state: String) -> String {
+        switch state {
+        case "all": return L("For all names")
+        case "split": return L("For its domains")
+        case "limited": return L("Limited automatically to its server's domains (another connection has all names)")
+        case "waiting": return L("Not set: another connection also needs DNS for all names, and this server gave no domains")
+        default: return state
+        }
+    }
+
     private func updateStatusWindows() {
         for (id, (_, v)) in statusWindows {
             guard let c = manager.active[id] else {
@@ -1085,7 +1129,7 @@ final class AppController: NSObject, NSMenuDelegate {
             }
             var ip = ""
             if case .connected(let a, let a6, _) = c.controller.status { ip = [a, a6].filter { !$0.isEmpty }.joined(separator: ", ") }
-            v.update(state: describe(c.controller.status), ip: ip, bytesIn: c.controller.bytesIn,
+            v.update(state: describe(c.controller.status), ip: ip, dns: dnsStates[id].map(dnsText), bytesIn: c.controller.bytesIn,
                      bytesOut: c.controller.bytesOut, log: c.controller.log, total: c.controller.logTotal, active: true)
         }
     }

@@ -138,9 +138,12 @@ def test_int47_dragged_to_the_trash(vpn, mac):
         assert mac.run("test -e /Library/LaunchDaemons/com.mugvpn.cleanup.plist").returncode != 0, "no boot cleanup left"
         assert mac.run("sudo launchctl print system/com.mugvpn.cleanup").returncode != 0, "nor in launchd"
     finally:
-        mac.run(f"hdiutil detach -quiet {vol}; rm -rf ~/Library/Logs/MugVPN /tmp/int47.dmg")
         mac.run(f"test -e {APP} || mv {trashed} {APP}; rm -rf {user_cfg}/keep.ovpn; bash /tmp/install-helper.sh")
+        # (Busy a moment after the test: tried again, then forced; left mounted it would hold the folder for others.)
+        mac.run(f"for i in 1 2 3 4 5; do mount | grep -q ' on {vol} ' || break; hdiutil detach -quiet {vol} || sleep 1; done;"
+                f" mount | grep -q ' on {vol} ' && hdiutil detach -force -quiet {vol}; rm -rf ~/Library/Logs/MugVPN /tmp/int47.dmg")
         wait_for(lambda: vpn.cli("list").returncode == 0, 60, "the helper back")
+        assert mac.run(f"mount | grep -q ' on {vol} '").returncode != 0, "the test's volume unmounted"
 
 
 def test_int47b_trash_then_helper_restarted(vpn, mac):

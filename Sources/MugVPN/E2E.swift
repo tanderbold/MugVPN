@@ -65,10 +65,12 @@ final class E2EBackend: HelperClient, ManagementTransport, HelperSetup {
     }
     /// DNS states a test gives the fake helper's connections (ConnectionInfo.dns), by profile.
     var dnsStates: [String: String] = [:]
+    var dnsDomains: [String: [String]] = [:]
     func list(reply: @escaping ([ConnectionInfo]) -> Void) {
         reply(dnsStates.map { name, state in
             var i = ConnectionInfo(id: "F-" + name, name: name, pid: 1, managementSocket: "fake:" + name, ownerUID: getuid())
             i.dns = state
+            i.dnsDomains = dnsDomains[name]
             return i
         })
     }
@@ -521,6 +523,7 @@ final class E2EServer {
             return [:]
         case "fake_dns_state":
             backend.dnsStates[try str("profile")] = try str("state")
+            backend.dnsDomains[try str("profile")] = r["domains"] as? [String]
             return [:]
         case "fake_helper_version":
             // Another helper answers now; the app asks again (as after an update by hand).

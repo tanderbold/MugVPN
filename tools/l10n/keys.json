@@ -12,7 +12,7 @@
   "key": "%@ copy"
  },
  {
-  "key": "%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)."
+  "key": "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)."
  },
  {
   "key": "%@ is not a domain name."
@@ -37,6 +37,12 @@
  },
  {
   "key": "%@: DNS not set, another connection takes all names"
+ },
+ {
+  "key": "%@: DNS only for %@"
+ },
+ {
+  "key": "%@: DNS only for %@; %@ has the other names"
  },
  {
   "key": "A client for OpenVPN profiles that keeps several connections up at once. MIT License."
@@ -306,6 +312,12 @@
   "key": "Flat"
  },
  {
+  "key": "For all names"
+ },
+ {
+  "key": "For its domains"
+ },
+ {
   "key": "From the VPN server"
  },
  {
@@ -364,6 +376,9 @@
  },
  {
   "key": "Light"
+ },
+ {
+  "key": "Limited automatically to its server's domains (another connection has all names)"
  },
  {
   "key": "Line %@: %@"
@@ -460,6 +475,9 @@
  },
  {
   "key": "Not in the archive (could not be written): %@"
+ },
+ {
+  "key": "Not set: another connection also needs DNS for all names, and this server gave no domains"
  },
  {
   "key": "Notify when connected:"

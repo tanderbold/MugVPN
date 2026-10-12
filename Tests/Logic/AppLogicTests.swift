@@ -426,7 +426,10 @@ func registerAppLogicTests() {
         expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "all", "d": "waiting"]),
                     [.dnsTakenByAnother("d")])
         expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "all", "d": "limited"]),
-                    [.dnsLimited("d")])
+                    [.dnsLimited("d", domains: [], allNames: "b")])
+        expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "all", "d": "limited"],
+                                          domains: ["d": ["corp.example", "lab.example"]]),
+                    [.dnsLimited("d", domains: ["corp.example", "lab.example"], allNames: "b")], "the domains it keeps, who has the rest")
         expectEqual(NetworkConflicts.find([("b", facts([]), ""), ("d", facts([]), "")], dns: ["b": "split", "d": "all"]), [])
     }
     test("NET-10", "an older helper that does not say its DNS state: the log says it (the refusal is the last word on DNS)") {

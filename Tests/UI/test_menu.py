@@ -247,3 +247,30 @@ def test_ui90_a_single_profile_named_in_the_menu(tmp_path):
         app.click("Connect")
         app.feed("office", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
         wait_for(lambda: app.menu_item("office")["checked"], 5, f"checked: {app.menu_item('office')}")
+
+
+def test_ui91_dns_arranged_automatically_a_note_in_the_menu_and_the_status_window(app):
+    """One connection limited to its server's domains while another has all names (MugVPN's own arrangement):
+    a note in the menu naming its domains (not a warning, no notification); each Status window says how its DNS
+    is used."""
+    app.connect("stand-a")
+    app.connect("stand-b")
+    app.call("fake_dns_state", profile="stand-a", state="all")
+    app.call("fake_dns_state", profile="stand-b", state="limited", domains=["corp.example", "lab.example"])
+    for p, ip in (("stand-a", "10.8.0.2"), ("stand-b", "10.9.0.2")):
+        app.feed(p, f">STATE:1700000005,CONNECTED,SUCCESS,{ip},203.0.113.1,1194,,")
+    def dns(p):
+        w = next((w for w in app.windows("status") if w["profile"] == p), None)
+        return app.control(w, "dns_text")["value"] if w else None
+    app.click("stand-b", "Show Status")
+    wait_for(lambda: dns("stand-b")
+             == "Limited automatically to its server's domains (another connection has all names)", 10, "its DNS said")
+    # In the menu as a note (no notification): the domains it keeps, and who has the other names.
+    note = "ⓘ stand-b: DNS only for corp.example, lab.example; stand-a has the other names"
+    wait_for(lambda: note in [i["title"] for i in app.menu()], 5, f"the note: {[i['title'] for i in app.menu()]}")
+    assert not any("DNS" in n["text"] for n in app.call("notifications")["items"]), "no notification for it"
+    app.click("stand-a", "Show Status")
+    wait_for(lambda: dns("stand-a") == "For all names", 10, "all names")
+    # Changed by the helper later on its own (no connection changes): looked at again while it is in line.
+    app.call("fake_dns_state", profile="stand-b", state="waiting")
+    wait_for(lambda: (dns("stand-b") or "").startswith("Not set: another connection"), 50, "not set, said why")

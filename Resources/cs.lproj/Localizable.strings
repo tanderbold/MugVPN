@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ i %@ směrují %@";
 "%@ and %@ both route all traffic" = "%@ i %@ směrují veškerý provoz";
 "%@ copy" = "%@ kopie";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ nemohl nastavit svůj DNS: jiné připojení už převzalo všechna jména. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ nemohl použít svůj DNS: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).";
 "%@ is not a domain name." = "%@ není název domény.";
 "%@ is not a text file (PEM)." = "%@ není textový soubor (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ odkazuje na soubory mimo svou složku. Zkopírovat je do profilu? VPN server může získat jejich obsah.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ byl od otevření zde odstraněn mimo MugVPN.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS jen pro vlastní domény, všechna jména převzalo jiné připojení";
 "%@: DNS not set, another connection takes all names" = "%@: DNS nenastaven, všechna jména převzalo jiné připojení";
+"%@: DNS only for %@" = "%@: DNS jen pro %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS jen pro %@; ostatní jména má %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Klient pro profily OpenVPN, který udrží několik připojení najednou. Licence MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Program požádal MugVPN o import %@. Importovat?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Souhrn (verze, která připojení běží) je vždy uvnitř. Dále:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Exportovat diagnostiku…";
 "Export…" = "Exportovat…";
 "Flat" = "Ploché";
+"For all names" = "Pro všechna jména";
+"For its domains" = "Pro jeho domény";
 "From the VPN server" = "Od VPN serveru";
 "General" = "Obecné";
 "Hide" = "Skrýt";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Ponechat moje profily";
 "Later" = "Později";
 "Light" = "Světlý";
+"Limited automatically to its server's domains (another connection has all names)" = "Automaticky omezeno na domény jeho serveru (všechna jména má jiné připojení)";
 "Line %@: %@" = "Řádek %@: %@";
 "List only" = "Pouze zobrazit";
 "Log theme:" = "Motiv protokolu:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Ne všechen provoz jde přes VPN: tunel nedrží výchozí trasu";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Neimportováno (MugVPN nespouští skripty profilů jako root): %@";
 "Not in the archive (could not be written): %@" = "Není v archivu (nešlo zapsat): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "Nenastaveno: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény";
 "Notify when connected:" = "Upozornit při připojení:";
 "OK" = "OK";
 "Off" = "Vypnuto";

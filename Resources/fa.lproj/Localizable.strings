@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ و %@ هر دو %@ را مسیریابی می‌کنند";
 "%@ and %@ both route all traffic" = "%@ و %@ هر دو همهٔ ترافیک را مسیریابی می‌کنند";
 "%@ copy" = "%@ کپی";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ نتوانست DNS خود را تنظیم کند: اتصال دیگری از قبل همهٔ نام‌ها را گرفته است. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ نتوانست از DNS خود استفاده کند: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).";
 "%@ is not a domain name." = "%@ نام دامنه نیست.";
 "%@ is not a text file (PEM)." = "%@ فایل متنی (PEM) نیست.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ به فایل‌هایی بیرون از پوشهٔ خود اشاره می‌کند. آن‌ها را در نمایه کپی کنیم؟ سرور VPN ممکن است محتوای آن‌ها را دریافت کند.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ از زمانی که اینجا باز شد، بیرون از MugVPN حذف شده است.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS فقط برای دامنه‌های خودش، اتصال دیگری همهٔ نام‌ها را گرفته است";
 "%@: DNS not set, another connection takes all names" = "%@: DNS تنظیم نشد، اتصال دیگری همهٔ نام‌ها را گرفته است";
+"%@: DNS only for %@" = "%@: DNS فقط برای %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "کارخواهی برای نمایه‌های OpenVPN که چند اتصال را هم‌زمان برقرار نگه می‌دارد. پروانهٔ MIT.";
 "A program asked MugVPN to import %@. Import it?" = "برنامه‌ای از MugVPN خواست %@ را وارد کند. وارد شود؟";
 "A summary (versions, which connections are up) always goes in. Also:" = "یک خلاصه (نسخه‌ها، کدام اتصال‌ها برقرارند) همیشه گنجانده می‌شود. همچنین:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "صدور اطلاعات عیب‌یابی…";
 "Export…" = "صدور…";
 "Flat" = "فهرست ساده";
+"For all names" = "برای همهٔ نام‌ها";
+"For its domains" = "برای دامنه‌های خودش";
 "From the VPN server" = "از سرور VPN";
 "General" = "عمومی";
 "Hide" = "پنهان کردن";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "نمایه‌های من نگه داشته شود";
 "Later" = "بعداً";
 "Light" = "روشن";
+"Limited automatically to its server's domains (another connection has all names)" = "به‌طور خودکار به دامنه‌های سرورش محدود شد (اتصال دیگری همهٔ نام‌ها را دارد)";
 "Line %@: %@" = "خط %@: %@";
 "List only" = "فقط فهرست";
 "Log theme:" = "پوستهٔ گزارش:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "همهٔ ترافیک از VPN نمی‌گذرد: تونل مسیر پیش‌فرض را ندارد";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "وارد نشد (MugVPN اسکریپت‌های پروفایل را با دسترسی root اجرا نمی‌کند): %@";
 "Not in the archive (could not be written): %@" = "در بایگانی نیست (نوشته نشد): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "تنظیم نشد: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد";
 "Notify when connected:" = "اعلان هنگام اتصال:";
 "OK" = "تأیید";
 "Off" = "خاموش";

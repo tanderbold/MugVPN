@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ 和 %@ 都在路由 %@";
 "%@ and %@ both route all traffic" = "%@ 和 %@ 都在路由所有流量";
 "%@ copy" = "%@ 拷貝";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ 無法設定其 DNS：另一個連線已接手所有名稱。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ 無法使用其 DNS：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。";
 "%@ is not a domain name." = "%@ 不是網域名稱。";
 "%@ is not a text file (PEM)." = "%@ 不是文字檔案（PEM）。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ 參照了其檔案夾以外的檔案。要將它們拷貝到描述檔中嗎？VPN 伺服器可能會收到其內容。\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ 在此處開啟後已在 MugVPN 之外被刪除。";
 "%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 僅用於其自身網域，另一個連線已接手所有名稱";
 "%@: DNS not set, another connection takes all names" = "%@：未設定 DNS，另一個連線已接手所有名稱";
+"%@: DNS only for %@" = "%@：DNS 僅用於 %@";
+"%@: DNS only for %@; %@ has the other names" = "%@：DNS 僅用於 %@；其他名稱由 %@ 使用";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同時維持多個連線的 OpenVPN 設定檔用戶端。MIT 授權。";
 "A program asked MugVPN to import %@. Import it?" = "某個程式要求 MugVPN 輸入 %@。要輸入嗎？";
 "A summary (versions, which connections are up) always goes in. Also:" = "一律包含摘要（版本、已連線的連線）。另外：";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "輸出診斷資訊…";
 "Export…" = "匯出…";
 "Flat" = "平面";
+"For all names" = "用於所有名稱";
+"For its domains" = "用於其網域";
 "From the VPN server" = "來自 VPN 伺服器";
 "General" = "一般";
 "Hide" = "隱藏";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "保留我的設定檔";
 "Later" = "稍後";
 "Light" = "淺色";
+"Limited automatically to its server's domains (another connection has all names)" = "已自動限於其伺服器的網域（所有名稱由另一個連線使用）";
 "Line %@: %@" = "第 %@ 行：%@";
 "List only" = "僅列出";
 "Log theme:" = "紀錄主題：";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "並非所有流量都經過 VPN：通道未持有預設路由";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "未匯入（MugVPN 不會以 root 身分執行設定檔指令碼）：%@";
 "Not in the archive (could not be written): %@" = "未包含在封存檔中（無法寫入）：%@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "未設定：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域";
 "Notify when connected:" = "連線時通知：";
 "OK" = "好";
 "Off" = "關閉";

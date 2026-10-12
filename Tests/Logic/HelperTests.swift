@@ -83,6 +83,8 @@ final class FakeSystem: HelperSystem {
     var failAfterWrites: Int?
     /// Only the nth write from now fails (1: the next one).
     var failNthWrite: Int?
+    /// The Nth write of this one file refused (counting from when it is set).
+    var failNthWriteMatching: (path: String, n: Int)?
     /// The Mac's own DNS servers.
     var systemDNS: [String]? = []
     /// The Mac's resolvers, with what MugVPN's own tunnels set (but the excluded one's).
@@ -253,6 +255,10 @@ final class FakeSystem: HelperSystem {
     func writeFile(_ path: String, _ data: Data, mode: UInt16) throws {
         if folderMissing(path) { throw CocoaError(.fileNoSuchFile) }
         if failWrites.contains(where: { path.hasSuffix($0) }) { throw CocoaError(.fileWriteOutOfSpace) }
+        if let m = failNthWriteMatching, m.path == path {
+            failNthWriteMatching = m.n > 1 ? (m.path, m.n - 1) : nil
+            if m.n == 1 { throw CocoaError(.fileWriteOutOfSpace) }
+        }
         if let n = failNthWrite {
             failNthWrite = n > 1 ? n - 1 : nil
             if n == 1 { throw CocoaError(.fileWriteOutOfSpace) }

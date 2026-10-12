@@ -6,6 +6,9 @@ final class StatusView: NSObject {
     let view: NSView
     private let state = Form.label("", id: "state_text", bold: true, wraps: false)
     private let ip = Form.label("", id: "ip_text", wraps: false)
+    /// How its DNS is used now (as the helper has it), hidden when not known.
+    private let dns = Form.label("", id: "dns_text", wraps: true)
+    private var dnsRow: NSView!
     private let bytesIn = Form.label("", id: "bytes_in", wraps: false)
     private let bytesOut = Form.label("", id: "bytes_out", wraps: false)
     private let logView = NSTextView()
@@ -53,7 +56,9 @@ final class StatusView: NSObject {
         scroll.heightAnchor.constraint(equalToConstant: 260).isActive = true
         themePopup = Form.popup("log_theme", [("system", L("Automatic")), ("light", L("Light")), ("dark", L("Dark"))],
                                 selected: "system")
-        let stack = Form.column([state, Form.row(L("Address:"), ip), Form.row(L("Received:"), bytesIn),
+        dnsRow = Form.row(L("DNS:"), dns)
+        dnsRow.isHidden = true
+        let stack = Form.column([state, Form.row(L("Address:"), ip), dnsRow, Form.row(L("Received:"), bytesIn),
                                  Form.row(L("Sent:"), bytesOut), Form.row(L("Log theme:"), themePopup), scroll])
         view = stack
         super.init()
@@ -120,8 +125,10 @@ final class StatusView: NSObject {
 
     /// - log: nil keeps what the window shows (the last connection's lines).
     /// - total: lines the connection ever logged (`log` keeps the last ones).
-    func update(state s: String, ip a: String, bytesIn i: UInt64, bytesOut o: UInt64, log: [String]?, total: Int = 0,
-                active: Bool) {
+    func update(state s: String, ip a: String, dns d: String? = nil, bytesIn i: UInt64, bytesOut o: UInt64, log: [String]?,
+                total: Int = 0, active: Bool) {
+        dns.stringValue = d ?? ""
+        dnsRow.isHidden = d == nil
         connectButton.isEnabled = !active
         disconnectButton.isEnabled = active
         reconnectButton.isEnabled = active

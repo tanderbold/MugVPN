@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ і %@ одночасно маршрутизують %@";
 "%@ and %@ both route all traffic" = "%@ і %@ одночасно маршрутизують увесь трафік";
 "%@ copy" = "%@ копія";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ не зміг встановити свій DNS: усі імена вже взяло інше підключення. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ не зміг використати свій DNS: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).";
 "%@ is not a domain name." = "%@ — не доменне ім’я.";
 "%@ is not a text file (PEM)." = "%@ не є текстовим файлом (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ посилається на файли поза своєю папкою. Скопіювати їх у профіль? Їхній вміст може отримати VPN-сервер.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ видалено поза MugVPN відтоді, як його відкрито тут.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS лише для своїх доменів, усі імена в іншого підключення";
 "%@: DNS not set, another connection takes all names" = "%@: DNS не встановлено, усі імена в іншого підключення";
+"%@: DNS only for %@" = "%@: DNS лише для %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS лише для %@; решта імен у %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Клієнт для профілів OpenVPN, що тримає кілька підключень одночасно. Ліцензія MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Програма попросила MugVPN імпортувати %@. Імпортувати?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Зведення (версії, які підключення активні) входить завжди. Також:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Експорт діагностики…";
 "Export…" = "Експорт…";
 "Flat" = "Плоске";
+"For all names" = "Для всіх імен";
+"For its domains" = "Для своїх доменів";
 "From the VPN server" = "Від VPN-сервера";
 "General" = "Загальні";
 "Hide" = "Сховати";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Зберегти мої профілі";
 "Later" = "Пізніше";
 "Light" = "Світла";
+"Limited automatically to its server's domains (another connection has all names)" = "Автоматично обмежено доменами свого сервера (усі імена в іншого підключення)";
 "Line %@: %@" = "Рядок %@: %@";
 "List only" = "Лише показувати";
 "Log theme:" = "Тема журналу:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Не весь трафік іде через VPN: тунель не тримає маршрут за замовчуванням";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Не імпортовано (MugVPN не запускає скрипти профілів від імені root): %@";
 "Not in the archive (could not be written): %@" = "Не ввійшло до архіву (не вдалося записати): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "Не задано: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів";
 "Notify when connected:" = "Сповіщати про підключення:";
 "OK" = "OK";
 "Off" = "Вимкнено";

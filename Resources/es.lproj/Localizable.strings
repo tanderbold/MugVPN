@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ y %@ enrutan ambos %@";
 "%@ and %@ both route all traffic" = "%@ y %@ enrutan ambos todo el tráfico";
 "%@ copy" = "%@ copia";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ no pudo establecer su DNS: otra conexión ya toma todos los nombres. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ no pudo usar su DNS: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).";
 "%@ is not a domain name." = "%@ no es un nombre de dominio.";
 "%@ is not a text file (PEM)." = "%@ no es un archivo de texto (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ hace referencia a archivos fuera de su carpeta. ¿Copiarlos al perfil? El servidor VPN puede recibir su contenido.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ se eliminó fuera de MugVPN desde que se abrió aquí.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS solo para sus dominios, otra conexión toma todos los nombres";
 "%@: DNS not set, another connection takes all names" = "%@: DNS no establecido, otra conexión toma todos los nombres";
+"%@: DNS only for %@" = "%@: DNS solo para %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS solo para %@; %@ tiene los demás nombres";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Un cliente para perfiles de OpenVPN que mantiene varias conexiones a la vez. Licencia MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Un programa pidió a MugVPN importar %@. ¿Importarlo?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Siempre se incluye un resumen (versiones, qué conexiones están activas). Además:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Exportar diagnóstico…";
 "Export…" = "Exportar…";
 "Flat" = "Plano";
+"For all names" = "Para todos los nombres";
+"For its domains" = "Para sus dominios";
 "From the VPN server" = "Del servidor VPN";
 "General" = "General";
 "Hide" = "Ocultar";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Conservar mis perfiles";
 "Later" = "Más tarde";
 "Light" = "Claro";
+"Limited automatically to its server's domains (another connection has all names)" = "Limitado automáticamente a los dominios de su servidor (otra conexión tiene todos los nombres)";
 "Line %@: %@" = "Línea %@: %@";
 "List only" = "Solo listar";
 "Log theme:" = "Tema del registro:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "No todo el tráfico pasa por la VPN: el túnel no tiene la ruta predeterminada";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "No importado (MugVPN no ejecuta scripts de perfil como root): %@";
 "Not in the archive (could not be written): %@" = "No están en el archivo (no se pudieron escribir): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "No establecido: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios";
 "Notify when connected:" = "Notificar al conectar:";
 "OK" = "Aceptar";
 "Off" = "Desactivado";

@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ と %@ の両方が %@ をルーティングしています";
 "%@ and %@ both route all traffic" = "%@ と %@ の両方がすべてのトラフィックをルーティングしています";
 "%@ copy" = "%@ のコピー";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ の DNS を設定できませんでした: 別の接続がすでにすべての名前を引き受けています。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ の DNS を使用できませんでした: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。";
 "%@ is not a domain name." = "%@ はドメイン名ではありません。";
 "%@ is not a text file (PEM)." = "%@ はテキストファイル（PEM）ではありません。";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ はフォルダ外のファイルを参照しています。プロファイルにコピーしますか？ その内容がVPNサーバに送られる可能性があります。\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ はここで開いた後に MugVPN の外で削除されました。";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS は自身のドメインのみ、別の接続がすべての名前を引き受けています";
 "%@: DNS not set, another connection takes all names" = "%@: DNS は未設定、別の接続がすべての名前を引き受けています";
+"%@: DNS only for %@" = "%@: DNS は %@ のみ";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS は %@ のみ。その他の名前は %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "複数の接続を同時に維持できる OpenVPN プロファイル用クライアント。MIT ライセンス。";
 "A program asked MugVPN to import %@. Import it?" = "あるプログラムが MugVPN に %@ の読み込みを求めています。読み込みますか？";
 "A summary (versions, which connections are up) always goes in. Also:" = "概要（バージョン、接続中の接続）は常に含まれます。そのほか:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "診断情報を書き出す…";
 "Export…" = "書き出す…";
 "Flat" = "フラット";
+"For all names" = "すべての名前";
+"For its domains" = "自身のドメイン";
 "From the VPN server" = "VPNサーバから";
 "General" = "一般";
 "Hide" = "隠す";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "プロファイルを残す";
 "Later" = "後で";
 "Light" = "ライト";
+"Limited automatically to its server's domains (another connection has all names)" = "サーバのドメインに自動で限定（すべての名前は別の接続）";
 "Line %@: %@" = "%@ 行目: %@";
 "List only" = "一覧のみ";
 "Log theme:" = "ログのテーマ:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "すべての通信がVPNを通っていません: トンネルがデフォルトルートを持っていません";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "インポートされませんでした（MugVPN はプロファイルのスクリプトを root として実行しません）: %@";
 "Not in the archive (could not be written): %@" = "アーカイブに含まれていません（書き込めませんでした）: %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "未設定: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません";
 "Notify when connected:" = "接続時に通知:";
 "OK" = "OK";
 "Off" = "オフ";

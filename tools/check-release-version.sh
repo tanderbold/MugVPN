@@ -7,11 +7,12 @@ app=$(/usr/libexec/PlistBuddy -c "Print CFBundleShortVersionString" "$ROOT/Resou
 helper=$(sed -n 's/.*static let helperVersion = "\([^"]*\)".*/\1/p' "$ROOT/Sources/MugVPNCore/HelperProtocol.swift")
 [ -n "$app" ] && [ -n "$helper" ] || { echo "cannot read the versions (app '$app', helper '$helper')" >&2; exit 1; }
 [ "$app" = "$helper" ] || { echo "the app is $app but the helper is $helper" >&2; exit 1; }
-# The site says which version is out (its structured data): the same one.
-site=$(sed -n 's/.*"softwareVersion": "\([^"]*\)".*/\1/p' "$ROOT/docs/index.html")
-[ "$site" = "$app" ] || { echo "docs/index.html says version '$site' but the app is $app" >&2; exit 1; }
-grep -q "Current version: $app\." "$ROOT/docs/llms.txt" || { echo "docs/llms.txt does not say version $app" >&2; exit 1; }
+# The site says which version is out (its structured data): for a release, the one being released (between
+# releases the site keeps saying the last one out, while the code already carries the next).
 if [ $# -gt 0 ]; then
     [ "$1" = "v$app" ] || { echo "the tag $1 is not v$app (the version the app and helper carry)" >&2; exit 1; }
+    site=$(sed -n 's/.*"softwareVersion": "\([^"]*\)".*/\1/p' "$ROOT/docs/index.html")
+    [ "$site" = "$app" ] || { echo "docs/index.html says version '$site' but the app is $app" >&2; exit 1; }
+    grep -q "Current version: $app\." "$ROOT/docs/llms.txt" || { echo "docs/llms.txt does not say version $app" >&2; exit 1; }
 fi
 echo "version $app${1:+ (tag $1)}"

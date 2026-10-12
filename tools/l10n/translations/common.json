@@ -91,7 +91,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Dotazy na jména přes systémový resolver dál odcházejí, aby VPN znovu našla svůj server.",
   "MugVPN in Login Items": "MugVPN v Položkách při přihlášení",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Klíčenka ponechala uložené heslo, které měl MugVPN zapomenout: odstraňte ho v aplikaci Klíčenka.",
-  "Connection: %@": "Připojení: %@"
+  "Connection: %@": "Připojení: %@",
+  "DNS:": "DNS:",
+  "For all names": "Pro všechna jména",
+  "For its domains": "Pro jeho domény",
+  "Limited automatically to its server's domains (another connection has all names)": "Automaticky omezeno na domény jeho serveru (všechna jména má jiné připojení)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nenastaveno: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl použít svůj DNS: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).",
+  "%@: DNS only for %@": "%@: DNS jen pro %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS jen pro %@; ostatní jména má %@"
  },
  "de": {
   "OK": "OK",
@@ -185,7 +193,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namensabfragen über den Resolver des Mac gehen weiter hinaus, damit das VPN seinen Server wiederfindet.",
   "MugVPN in Login Items": "MugVPN in den Anmeldeobjekten",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Der Schlüsselbund hat ein gesichertes Passwort behalten, das MugVPN vergessen sollte: Entfernen Sie es in der Schlüsselbundverwaltung.",
-  "Connection: %@": "Verbindung: %@"
+  "Connection: %@": "Verbindung: %@",
+  "DNS:": "DNS:",
+  "For all names": "Für alle Namen",
+  "For its domains": "Für seine Domains",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatisch auf die Domains seines Servers beschränkt (eine andere Verbindung hat alle Namen)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nicht gesetzt: Eine andere Verbindung braucht ebenfalls DNS für alle Namen, und dieser Server hat keine Domains gesendet",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht verwenden: Eine andere Verbindung braucht ebenfalls DNS für alle Namen, und dieser Server hat keine Domains gesendet. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains).",
+  "%@: DNS only for %@": "%@: DNS nur für %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS nur für %@; %@ hat die übrigen Namen"
  },
  "da": {
   "OK": "OK",
@@ -279,7 +295,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneopslag via Mac’ens resolver går stadig ud, så VPN’en kan finde sin server igen.",
   "MugVPN in Login Items": "MugVPN i Login-emner",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøgleringen beholdt en gemt adgangskode, som MugVPN skulle glemme: fjern den i Nøgleringsadgang.",
-  "Connection: %@": "Forbindelse: %@"
+  "Connection: %@": "Forbindelse: %@",
+  "DNS:": "DNS:",
+  "For all names": "For alle navne",
+  "For its domains": "For dens domæner",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatisk begrænset til serverens domæner (en anden forbindelse har alle navne)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ikke sat: en anden forbindelse har også brug for DNS til alle navne, og denne server sendte ingen domæner",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruge sin DNS: en anden forbindelse har også brug for DNS til alle navne, og denne server sendte ingen domæner. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner).",
+  "%@: DNS only for %@": "%@: DNS kun for %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS kun for %@; %@ har de andre navne"
  },
  "el": {
   "OK": "OK",
@@ -373,7 +397,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Οι αναζητήσεις ονομάτων μέσω του επιλυτή του Mac συνεχίζουν να βγαίνουν, ώστε το VPN να ξαναβρεί τον διακομιστή του.",
   "MugVPN in Login Items": "Το MugVPN στα Στοιχεία σύνδεσης",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Η κλειδοθήκη κράτησε έναν αποθηκευμένο κωδικό που το MugVPN έπρεπε να ξεχάσει: αφαιρέστε τον στην Πρόσβαση στην κλειδοθήκη.",
-  "Connection: %@": "Σύνδεση: %@"
+  "Connection: %@": "Σύνδεση: %@",
+  "DNS:": "DNS:",
+  "For all names": "Για όλα τα ονόματα",
+  "For its domains": "Για τους τομείς του",
+  "Limited automatically to its server's domains (another connection has all names)": "Περιορίστηκε αυτόματα στους τομείς του διακομιστή του (άλλη σύνδεση έχει όλα τα ονόματα)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Δεν ορίστηκε: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να χρησιμοποιήσει το DNS του: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).",
+  "%@: DNS only for %@": "%@: DNS μόνο για %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@"
  },
  "es": {
   "OK": "Aceptar",
@@ -467,7 +499,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Las consultas de nombres a través del resolvedor del Mac siguen saliendo, para que la VPN vuelva a encontrar su servidor.",
   "MugVPN in Login Items": "MugVPN en Ítems de inicio",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "El llavero conservó una contraseña guardada que MugVPN debía olvidar: elimínela en Acceso a Llaveros.",
-  "Connection: %@": "Conexión: %@"
+  "Connection: %@": "Conexión: %@",
+  "DNS:": "DNS:",
+  "For all names": "Para todos los nombres",
+  "For its domains": "Para sus dominios",
+  "Limited automatically to its server's domains (another connection has all names)": "Limitado automáticamente a los dominios de su servidor (otra conexión tiene todos los nombres)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "No establecido: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo usar su DNS: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).",
+  "%@: DNS only for %@": "%@: DNS solo para %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo para %@; %@ tiene los demás nombres"
  },
  "fa": {
   "OK": "تأیید",
@@ -561,7 +601,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "پرس‌وجوی نام از طریق حل‌کنندهٔ Mac همچنان بیرون می‌رود تا VPN دوباره سرورش را پیدا کند.",
   "MugVPN in Login Items": "MugVPN در موارد ورود",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "زنجیرهٔ کلید گذرواژه‌ای را که MugVPN باید فراموش می‌کرد نگه داشت: آن را در Keychain Access حذف کنید.",
-  "Connection: %@": "اتصال: %@"
+  "Connection: %@": "اتصال: %@",
+  "DNS:": "DNS:",
+  "For all names": "برای همهٔ نام‌ها",
+  "For its domains": "برای دامنه‌های خودش",
+  "Limited automatically to its server's domains (another connection has all names)": "به‌طور خودکار به دامنه‌های سرورش محدود شد (اتصال دیگری همهٔ نام‌ها را دارد)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "تنظیم نشد: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست از DNS خود استفاده کند: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).",
+  "%@: DNS only for %@": "%@: DNS فقط برای %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است"
  },
  "fi": {
   "OK": "OK",
@@ -655,7 +703,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Nimihaut Macin selvittimen kautta lähtevät yhä, jotta VPN löytää palvelimensa uudelleen.",
   "MugVPN in Login Items": "MugVPN kirjautumiskohteissa",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Avainnippu säilytti tallennetun salasanan, joka MugVPN:n piti unohtaa: poista se Avainnippujen hallinnassa.",
-  "Connection: %@": "Yhteys: %@"
+  "Connection: %@": "Yhteys: %@",
+  "DNS:": "DNS:",
+  "For all names": "Kaikille nimille",
+  "For its domains": "Sen verkkotunnuksille",
+  "Limited automatically to its server's domains (another connection has all names)": "Rajattu automaattisesti palvelimensa verkkotunnuksiin (toisella yhteydellä on kaikki nimet)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ei asetettu: toinenkin yhteys tarvitsee DNS:n kaikille nimille, eikä tämä palvelin antanut verkkotunnuksia",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut käyttää DNS:äänsä: toinenkin yhteys tarvitsee DNS:n kaikille nimille, eikä tämä palvelin antanut verkkotunnuksia. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille).",
+  "%@: DNS only for %@": "%@: DNS vain kohteille %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS vain kohteille %@; muut nimet ovat yhteydellä %@"
  },
  "fr": {
   "OK": "OK",
@@ -749,7 +805,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Les résolutions de noms via le résolveur du Mac sortent toujours, pour que le VPN retrouve son serveur.",
   "MugVPN in Login Items": "MugVPN dans les éléments de connexion",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Le trousseau a gardé un mot de passe que MugVPN devait oublier : supprimez-le dans Trousseaux d’accès.",
-  "Connection: %@": "Connexion : %@"
+  "Connection: %@": "Connexion : %@",
+  "DNS:": "DNS :",
+  "For all names": "Pour tous les noms",
+  "For its domains": "Pour ses domaines",
+  "Limited automatically to its server's domains (another connection has all names)": "Limité automatiquement aux domaines de son serveur (une autre connexion a tous les noms)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Non défini : une autre connexion a aussi besoin du DNS pour tous les noms, et ce serveur n'a donné aucun domaine",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu utiliser son DNS : une autre connexion a aussi besoin du DNS pour tous les noms, et ce serveur n'a donné aucun domaine. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines).",
+  "%@: DNS only for %@": "%@ : DNS seulement pour %@",
+  "%@: DNS only for %@; %@ has the other names": "%@ : DNS seulement pour %@ ; %@ a les autres noms"
  },
  "it": {
   "OK": "OK",
@@ -843,7 +907,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Le risoluzioni dei nomi tramite il resolver del Mac continuano a uscire, così la VPN ritrova il suo server.",
   "MugVPN in Login Items": "MugVPN negli elementi di login",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Il portachiavi ha conservato una password salvata che MugVPN doveva dimenticare: rimuovila in Accesso Portachiavi.",
-  "Connection: %@": "Connessione: %@"
+  "Connection: %@": "Connessione: %@",
+  "DNS:": "DNS:",
+  "For all names": "Per tutti i nomi",
+  "For its domains": "Per i suoi domini",
+  "Limited automatically to its server's domains (another connection has all names)": "Limitato automaticamente ai domini del suo server (un'altra connessione ha tutti i nomi)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Non impostato: anche un'altra connessione richiede il DNS per tutti i nomi e questo server non ha fornito domini",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto usare il suo DNS: anche un'altra connessione richiede il DNS per tutti i nomi e questo server non ha fornito domini. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini).",
+  "%@: DNS only for %@": "%@: DNS solo per %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo per %@; %@ ha gli altri nomi"
  },
  "ja": {
   "OK": "OK",
@@ -937,7 +1009,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN がサーバを再び見つけられるよう、Mac のリゾルバ経由の名前解決は引き続き外部へ送られます。",
   "MugVPN in Login Items": "ログイン項目の MugVPN",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN が忘れるべき保存したパスワードをキーチェーンが保持しています。キーチェーンアクセスで削除してください。",
-  "Connection: %@": "接続: %@"
+  "Connection: %@": "接続: %@",
+  "DNS:": "DNS:",
+  "For all names": "すべての名前",
+  "For its domains": "自身のドメイン",
+  "Limited automatically to its server's domains (another connection has all names)": "サーバのドメインに自動で限定（すべての名前は別の接続）",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "未設定: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を使用できませんでした: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。",
+  "%@: DNS only for %@": "%@: DNS は %@ のみ",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS は %@ のみ。その他の名前は %@"
  },
  "ko": {
   "OK": "확인",
@@ -1031,7 +1111,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN이 서버를 다시 찾을 수 있도록 Mac 리졸버를 통한 이름 조회는 계속 나갑니다.",
   "MugVPN in Login Items": "로그인 항목의 MugVPN",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN이 잊어야 할 저장된 암호를 키체인이 보관했습니다. 키체인 접근에서 삭제하세요.",
-  "Connection: %@": "연결: %@"
+  "Connection: %@": "연결: %@",
+  "DNS:": "DNS:",
+  "For all names": "모든 이름",
+  "For its domains": "자체 도메인",
+  "Limited automatically to its server's domains (another connection has all names)": "서버의 도메인으로 자동 제한됨(다른 연결이 모든 이름을 담당)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "설정 안 됨: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 사용할 수 없습니다: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.",
+  "%@: DNS only for %@": "%@: %@에만 DNS 적용",
+  "%@: DNS only for %@; %@ has the other names": "%@: %@에만 DNS 적용, 나머지 이름은 %@"
  },
  "nl": {
   "OK": "OK",
@@ -1125,7 +1213,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Naamopzoekingen via de resolver van de Mac gaan nog steeds naar buiten, zodat het VPN zijn server terugvindt.",
   "MugVPN in Login Items": "MugVPN in Inlogonderdelen",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "De sleutelhanger heeft een bewaard wachtwoord gehouden dat MugVPN moest vergeten: verwijder het in Sleutelhangertoegang.",
-  "Connection: %@": "Verbinding: %@"
+  "Connection: %@": "Verbinding: %@",
+  "DNS:": "DNS:",
+  "For all names": "Voor alle namen",
+  "For its domains": "Voor zijn domeinen",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatisch beperkt tot de domeinen van zijn server (een andere verbinding heeft alle namen)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Niet ingesteld: een andere verbinding heeft ook DNS voor alle namen nodig en deze server gaf geen domeinen",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet gebruiken: een andere verbinding heeft ook DNS voor alle namen nodig en deze server gaf geen domeinen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen).",
+  "%@: DNS only for %@": "%@: DNS alleen voor %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS alleen voor %@; %@ heeft de overige namen"
  },
  "nb": {
   "OK": "OK",
@@ -1219,7 +1315,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneoppslag via Macens resolver går fortsatt ut, så VPN-et kan finne serveren sin igjen.",
   "MugVPN in Login Items": "MugVPN i påloggingsobjekter",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøkkelringen beholdt et lagret passord MugVPN skulle glemme: fjern det i Nøkkelringtilgang.",
-  "Connection: %@": "Tilkobling: %@"
+  "Connection: %@": "Tilkobling: %@",
+  "DNS:": "DNS:",
+  "For all names": "For alle navn",
+  "For its domains": "For egne domener",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatisk begrenset til serverens domener (en annen tilkobling har alle navn)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ikke satt: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruke sin DNS: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).",
+  "%@: DNS only for %@": "%@: DNS bare for %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS bare for %@; %@ har de andre navnene"
  },
  "pl": {
   "OK": "OK",
@@ -1313,7 +1417,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Zapytania o nazwy przez resolver Maca nadal wychodzą, aby VPN mógł znów znaleźć swój serwer.",
   "MugVPN in Login Items": "MugVPN w Rzeczach otwieranych podczas logowania",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Pęk kluczy zachował zapisane hasło, które MugVPN miał zapomnieć: usuń je w Pęku kluczy.",
-  "Connection: %@": "Połączenie: %@"
+  "Connection: %@": "Połączenie: %@",
+  "DNS:": "DNS:",
+  "For all names": "Dla wszystkich nazw",
+  "For its domains": "Dla jego domen",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatycznie ograniczone do domen jego serwera (wszystkie nazwy ma inne połączenie)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nie ustawiono: inne połączenie też potrzebuje DNS dla wszystkich nazw, a ten serwer nie podał domen",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł użyć swojego DNS: inne połączenie też potrzebuje DNS dla wszystkich nazw, a ten serwer nie podał domen. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen).",
+  "%@: DNS only for %@": "%@: DNS tylko dla %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS tylko dla %@; pozostałe nazwy ma %@"
  },
  "pt-BR": {
   "OK": "OK",
@@ -1407,7 +1519,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "As consultas de nomes pelo resolvedor do Mac continuam saindo, para a VPN encontrar seu servidor de novo.",
   "MugVPN in Login Items": "MugVPN nos Itens de Início",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "As Chaves mantiveram uma senha salva que o MugVPN deveria esquecer: remova-a no Acesso às Chaves.",
-  "Connection: %@": "Conexão: %@"
+  "Connection: %@": "Conexão: %@",
+  "DNS:": "DNS:",
+  "For all names": "Para todos os nomes",
+  "For its domains": "Para seus domínios",
+  "Limited automatically to its server's domains (another connection has all names)": "Limitado automaticamente aos domínios do servidor (outra conexão tem todos os nomes)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Não definido: outra conexão também precisa de DNS para todos os nomes e este servidor não enviou domínios",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde usar seu DNS: outra conexão também precisa de DNS para todos os nomes e este servidor não enviou domínios. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios).",
+  "%@: DNS only for %@": "%@: DNS só para %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS só para %@; %@ tem os demais nomes"
  },
  "ru": {
   "OK": "ОК",
@@ -1501,7 +1621,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запросы имён через системный резолвер по-прежнему уходят наружу, чтобы VPN снова нашёл свой сервер.",
   "MugVPN in Login Items": "MugVPN в объектах входа",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Связка ключей сохранила пароль, который MugVPN должен был забыть: удалите его в «Связке ключей».",
-  "Connection: %@": "Подключение: %@"
+  "Connection: %@": "Подключение: %@",
+  "DNS:": "DNS:",
+  "For all names": "Для всех имён",
+  "For its domains": "Для своих доменов",
+  "Limited automatically to its server's domains (another connection has all names)": "Автоматически ограничен доменами своего сервера (все имена у другого подключения)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Не задан: другому подключению тоже нужен DNS для всех имён, а этот сервер не передал доменов",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог использовать свой DNS: другому подключению тоже нужен DNS для всех имён, а этот сервер не передал доменов. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов).",
+  "%@: DNS only for %@": "%@: DNS только для %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS только для %@; остальные имена у %@"
  },
  "sv": {
   "OK": "OK",
@@ -1595,7 +1723,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namnuppslag via Macens resolver går fortfarande ut, så att VPN:et kan hitta sin server igen.",
   "MugVPN in Login Items": "MugVPN i Inloggningsobjekt",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nyckelringen behöll ett sparat lösenord som MugVPN skulle glömma: ta bort det i Nyckelhanterare.",
-  "Connection: %@": "Anslutning: %@"
+  "Connection: %@": "Anslutning: %@",
+  "DNS:": "DNS:",
+  "For all names": "För alla namn",
+  "For its domains": "För dess domäner",
+  "Limited automatically to its server's domains (another connection has all names)": "Automatiskt begränsad till serverns domäner (en annan anslutning har alla namn)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Inte inställd: en annan anslutning behöver också DNS för alla namn, och den här servern gav inga domäner",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte använda sin DNS: en annan anslutning behöver också DNS för alla namn, och den här servern gav inga domäner. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner).",
+  "%@: DNS only for %@": "%@: DNS bara för %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS bara för %@; %@ har övriga namn"
  },
  "tr": {
   "OK": "Tamam",
@@ -1689,7 +1825,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN’in sunucusunu yeniden bulabilmesi için Mac’in çözümleyicisi üzerinden ad sorguları dışarı çıkmaya devam eder.",
   "MugVPN in Login Items": "Giriş Öğeleri’ndeki MugVPN",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Anahtar Zinciri, MugVPN’in unutması gereken kayıtlı bir parolayı tuttu: Anahtar Zinciri Erişimi’nde silin.",
-  "Connection: %@": "Bağlantı: %@"
+  "Connection: %@": "Bağlantı: %@",
+  "DNS:": "DNS:",
+  "For all names": "Tüm adlar için",
+  "For its domains": "Kendi alan adları için",
+  "Limited automatically to its server's domains (another connection has all names)": "Sunucusunun alan adlarıyla otomatik olarak sınırlandı (tüm adlar başka bir bağlantıda)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ayarlanmadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini kullanamadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.",
+  "%@: DNS only for %@": "%@: DNS yalnızca %@ için",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında"
  },
  "uk": {
   "OK": "OK",
@@ -1783,7 +1927,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запити імен через системний резолвер і далі йдуть назовні, щоб VPN знову знайшов свій сервер.",
   "MugVPN in Login Items": "MugVPN в об’єктах входу",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Зв’язка ключів зберегла пароль, який MugVPN мав забути: видаліть його в «Доступі до зв’язки ключів».",
-  "Connection: %@": "Підключення: %@"
+  "Connection: %@": "Підключення: %@",
+  "DNS:": "DNS:",
+  "For all names": "Для всіх імен",
+  "For its domains": "Для своїх доменів",
+  "Limited automatically to its server's domains (another connection has all names)": "Автоматично обмежено доменами свого сервера (усі імена в іншого підключення)",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "Не задано: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг використати свій DNS: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).",
+  "%@: DNS only for %@": "%@: DNS лише для %@",
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS лише для %@; решта імен у %@"
  },
  "zh-Hans": {
   "OK": "好",
@@ -1877,7 +2029,15 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "通过 Mac 解析器的名称查询仍会发出，以便 VPN 能再次找到其服务器。",
   "MugVPN in Login Items": "登录项中的 MugVPN",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "钥匙串保留了 MugVPN 应忘记的存储密码：请在“钥匙串访问”中移除它。",
-  "Connection: %@": "连接：%@"
+  "Connection: %@": "连接：%@",
+  "DNS:": "DNS：",
+  "For all names": "用于所有名称",
+  "For its domains": "用于其域名",
+  "Limited automatically to its server's domains (another connection has all names)": "已自动限于其服务器的域名（所有名称由另一个连接使用）",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "未设置：另一个连接也需要用于所有名称的 DNS，而此服务器未提供域名",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法使用其 DNS：另一个连接也需要用于所有名称的 DNS，而此服务器未提供域名。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。",
+  "%@: DNS only for %@": "%@：DNS 仅用于 %@",
+  "%@: DNS only for %@; %@ has the other names": "%@：DNS 仅用于 %@；其他名称由 %@ 使用"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1971,6 +2131,14 @@
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "透過 Mac 解析器的名稱查詢仍會送出，讓 VPN 能再次找到其伺服器。",
   "MugVPN in Login Items": "登入項目中的 MugVPN",
   "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "鑰匙圈保留了 MugVPN 應忘記的儲存密碼：請在「鑰匙圈存取」中移除它。",
-  "Connection: %@": "連線：%@"
+  "Connection: %@": "連線：%@",
+  "DNS:": "DNS：",
+  "For all names": "用於所有名稱",
+  "For its domains": "用於其網域",
+  "Limited automatically to its server's domains (another connection has all names)": "已自動限於其伺服器的網域（所有名稱由另一個連線使用）",
+  "Not set: another connection also needs DNS for all names, and this server gave no domains": "未設定：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域",
+  "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法使用其 DNS：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。",
+  "%@: DNS only for %@": "%@：DNS 僅用於 %@",
+  "%@: DNS only for %@; %@ has the other names": "%@：DNS 僅用於 %@；其他名稱由 %@ 使用"
  }
 }

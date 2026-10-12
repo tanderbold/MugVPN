@@ -12,15 +12,17 @@ public enum NetworkConflict: Equatable, Sendable {
     case narrowerRoutes(broad: String, narrow: String, count: Int)
     /// No DNS: another connection has all names, and it has no domains of its own (next in line).
     case dnsTakenByAnother(String)
-    /// Only its own domains: another connection has all names (next in line).
-    case dnsLimited(String)
+    /// Only its own domains (these, when known): another connection (this one, when known) has all names; next in line.
+    case dnsLimited(String, domains: [String], allNames: String?)
 }
 
 public enum NetworkConflicts {
     /// - tunnels: (profile name, facts from its log, the log text)
     /// - dns: each connection's DNS as the helper has it now (ConnectionInfo.dns), by name; nil: a helper
     ///   older than 0.2.6 does not say, and the log's refusal is all there is to go by.
-    public static func find(_ tunnels: [(String, OpenVPNLogFacts, String)], dns: [String: String]? = [:]) -> [NetworkConflict] {
+    /// - domains: the domains a connection's DNS is for (ConnectionInfo.dnsDomains), by name.
+    public static func find(_ tunnels: [(String, OpenVPNLogFacts, String)], dns: [String: String]? = [:],
+                            domains: [String: [String]] = [:]) -> [NetworkConflict] {
         var out: [NetworkConflict] = []
         // What each tunnel asked for: a route another tunnel already holds is the conflict itself.
         let nets = tunnels.map { t in (t.0, t.1.requestedRoutes.compactMap(IPv4Net.init(route:))) }
@@ -70,7 +72,8 @@ public enum NetworkConflicts {
         for t in tunnels {
             switch dns[t.0] {
             case "waiting": out.append(.dnsTakenByAnother(t.0))
-            case "limited": out.append(.dnsLimited(t.0))
+            case "limited":
+                out.append(.dnsLimited(t.0, domains: domains[t.0] ?? [], allNames: tunnels.first { dns[$0.0] == "all" }?.0))
             default: break
             }
         }

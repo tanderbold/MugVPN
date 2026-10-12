@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "Både %@ og %@ ruter %@";
 "%@ and %@ both route all traffic" = "Både %@ og %@ ruter all trafikk";
 "%@ copy" = "%@ kopi";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ kunne ikke sette sin DNS: en annen tilkobling tar allerede alle navn. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ kunne ikke bruke sin DNS: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).";
 "%@ is not a domain name." = "%@ er ikke et domenenavn.";
 "%@ is not a text file (PEM)." = "%@ er ikke en tekstfil (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ viser til filer utenfor mappen sin. Kopiere dem inn i profilen? VPN-serveren kan motta innholdet.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@ er fjernet utenfor MugVPN siden den ble åpnet her.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS bare for egne domener, en annen tilkobling tar alle navn";
 "%@: DNS not set, another connection takes all names" = "%@: DNS ikke satt, en annen tilkobling tar alle navn";
+"%@: DNS only for %@" = "%@: DNS bare for %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS bare for %@; %@ har de andre navnene";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "En klient for OpenVPN-profiler som holder flere tilkoblinger oppe samtidig. MIT-lisens.";
 "A program asked MugVPN to import %@. Import it?" = "Et program ba MugVPN importere %@. Importere?";
 "A summary (versions, which connections are up) always goes in. Also:" = "En oversikt (versjoner, hvilke tilkoblinger som er oppe) er alltid med. I tillegg:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Eksporter diagnostikk…";
 "Export…" = "Eksporter…";
 "Flat" = "Flat liste";
+"For all names" = "For alle navn";
+"For its domains" = "For egne domener";
 "From the VPN server" = "Fra VPN-serveren";
 "General" = "Generelt";
 "Hide" = "Skjul";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Behold profilene mine";
 "Later" = "Senere";
 "Light" = "Lys";
+"Limited automatically to its server's domains (another connection has all names)" = "Automatisk begrenset til serverens domener (en annen tilkobling har alle navn)";
 "Line %@: %@" = "Linje %@: %@";
 "List only" = "Bare liste";
 "Log theme:" = "Loggtema:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Ikke all trafikk går gjennom VPN: tunnelen har ikke standardruten";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Ikke importert (MugVPN kjører ikke profilskript som root): %@";
 "Not in the archive (could not be written): %@" = "Ikke i arkivet (kunne ikke skrives): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "Ikke satt: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener";
 "Notify when connected:" = "Varsle ved tilkobling:";
 "OK" = "OK";
 "Off" = "Av";

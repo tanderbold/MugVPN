@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "Τα %@ και %@ δρομολογούν και τα δύο το %@";
 "%@ and %@ both route all traffic" = "Τα %@ και %@ δρομολογούν και τα δύο όλη την κίνηση";
 "%@ copy" = "%@ αντίγραφο";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "Το %@ δεν μπόρεσε να ορίσει το DNS του: μια άλλη σύνδεση παίρνει ήδη όλα τα ονόματα. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "Το %@ δεν μπόρεσε να χρησιμοποιήσει το DNS του: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).";
 "%@ is not a domain name." = "Το %@ δεν είναι όνομα τομέα.";
 "%@ is not a text file (PEM)." = "Το %@ δεν είναι αρχείο κειμένου (PEM).";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "Το %@ αναφέρεται σε αρχεία εκτός του φακέλου του. Αντιγραφή τους στο προφίλ; Ο διακομιστής VPN μπορεί να λάβει το περιεχόμενό τους.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "Το %@ αφαιρέθηκε εκτός MugVPN από τότε που ανοίχτηκε εδώ.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS μόνο για τους δικούς του τομείς, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "%@: DNS not set, another connection takes all names" = "%@: Το DNS δεν ορίστηκε, άλλη σύνδεση παίρνει όλα τα ονόματα";
+"%@: DNS only for %@" = "%@: DNS μόνο για %@";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Πρόγραμμα για προφίλ OpenVPN που διατηρεί πολλές συνδέσεις ταυτόχρονα. Άδεια MIT.";
 "A program asked MugVPN to import %@. Import it?" = "Ένα πρόγραμμα ζήτησε από το MugVPN να εισαγάγει το %@. Εισαγωγή;";
 "A summary (versions, which connections are up) always goes in. Also:" = "Μια σύνοψη (εκδόσεις, ποιες συνδέσεις είναι ενεργές) περιλαμβάνεται πάντα. Επίσης:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Εξαγωγή διαγνωστικών…";
 "Export…" = "Εξαγωγή…";
 "Flat" = "Επίπεδο";
+"For all names" = "Για όλα τα ονόματα";
+"For its domains" = "Για τους τομείς του";
 "From the VPN server" = "Από τον διακομιστή VPN";
 "General" = "Γενικά";
 "Hide" = "Απόκρυψη";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Διατήρηση των προφίλ μου";
 "Later" = "Αργότερα";
 "Light" = "Ανοιχτόχρωμο";
+"Limited automatically to its server's domains (another connection has all names)" = "Περιορίστηκε αυτόματα στους τομείς του διακομιστή του (άλλη σύνδεση έχει όλα τα ονόματα)";
 "Line %@: %@" = "Γραμμή %@: %@";
 "List only" = "Μόνο εμφάνιση";
 "Log theme:" = "Θέμα καταγραφής:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Δεν περνά όλη η κίνηση από το VPN: η σήραγγα δεν κρατά την προεπιλεγμένη διαδρομή";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "Δεν εισήχθησαν (το MugVPN δεν εκτελεί σενάρια προφίλ ως root): %@";
 "Not in the archive (could not be written): %@" = "Δεν περιλαμβάνονται στο αρχείο (δεν ήταν δυνατή η εγγραφή): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "Δεν ορίστηκε: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς";
 "Notify when connected:" = "Ειδοποίηση κατά τη σύνδεση:";
 "OK" = "OK";
 "Off" = "Ανενεργό";

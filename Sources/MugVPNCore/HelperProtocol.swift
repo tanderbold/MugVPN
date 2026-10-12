@@ -14,7 +14,7 @@ public enum MugVPNIDs {
     public static let libexecDir = supportDir + "/libexec"
     /// Persistent profiles: started at boot by the helper.
     public static let autoDir = supportDir + "/config-auto"
-    public static let helperVersion = "0.2.6"
+    public static let helperVersion = "0.2.7"
 }
 
 /// The helper's XPC interface. Everything that crosses it is plain data: the
@@ -204,6 +204,8 @@ public struct ConnectionInfo: Codable, Sendable {
     /// Its DNS as the helper has set it: "all" names, "split" (its domains), "limited" (its domains,
     /// all names being another's), "waiting" (none: all names another's, no domains); nil: none asked.
     public var dns: String?
+    /// The domains its DNS is for when "split" or "limited" (to its owner and administrators; nil: an older helper's).
+    public var dnsDomains: [String]?
     /// The app's id of its profile (nil: a persistent one, or an older helper's).
     public var profileID: String?
 
@@ -228,6 +230,7 @@ public struct ConnectionInfo: Codable, Sendable {
         persistent = try c.decodeIfPresent(Bool.self, forKey: .persistent) ?? false
         managementPassword = try c.decodeIfPresent(String.self, forKey: .managementPassword)
         dns = try c.decodeIfPresent(String.self, forKey: .dns)
+        dnsDomains = try c.decodeIfPresent([String].self, forKey: .dnsDomains)
         profileID = try c.decodeIfPresent(String.self, forKey: .profileID)
     }
 }

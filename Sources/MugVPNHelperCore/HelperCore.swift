@@ -1070,6 +1070,7 @@ public final class HelperCore {
                 if let c = connections[i.id] {
                     if c.dnsWantsAll != nil { i.dns = c.tunnel.dnsApplied ? "limited" : "waiting" }
                     else if c.tunnel.dnsApplied { i.dns = c.tunnel.dnsDomains.isEmpty ? "all" : "split" }
+                    if admin || c.info.ownerUID == uid, c.tunnel.dnsApplied, !c.tunnel.dnsDomains.isEmpty { i.dnsDomains = c.tunnel.dnsDomains }
                 }
                 // Anyone who can reach a persistent tunnel's socket can hold its only management
                 // slot, and the socket's path follows from the id: neither goes to non-admins.
@@ -1204,6 +1205,13 @@ public final class HelperCore {
         requestTokens[c.info.ownerUID] = bucket
         var reply = TunnelReply()
         reassignAfterRequest = false
+        handedOver = nil
+        /// All names another tunnel gave up for this request: back to it once this request's own DNS is undone.
+        func giveBackHandedOver() {
+            guard let y = handedOver else { return }
+            handedOver = nil
+            giveBackAllNames(y.owner, y.all, y.record)
+        }
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         // All or nothing: a refused or failed request leaves the records as they were.
         var before = c.tunnel
@@ -1255,6 +1263,7 @@ public final class HelperCore {
             // Asked for all names while another has them: in line for them (that is the answer, not a failure).
             if !(error is DNSWaiting) { (c.dnsWantsAll, c.dnsAskOrder) = queueBefore }
             do { try saveTunnel(c) } catch { failClosed(c) }
+            giveBackHandedOver()
             if let e = error as? TunnelRequestError { throw HelperCoreError.message(e.description) }
             if let e = error as? DNSWaiting { throw HelperCoreError.message(e.description) }
             throw error
@@ -1278,6 +1287,7 @@ public final class HelperCore {
             }
             putDNSBack(on: routesBack ? before : c.tunnel)
             (c.dnsWantsAll, c.dnsAskOrder) = queueBefore
+            giveBackHandedOver()
             if let dev = c.tunnel.device, dev != before.device {
                 takeDown(c.tunnel)
                 system.releaseDevice(dev)
@@ -1312,6 +1322,8 @@ public final class HelperCore {
             refreshProtection()
             throw HelperCoreError.message("the kill switch could not be recorded: not taking all traffic")
         }
+        // Done: what another tunnel gave up stays given.
+        handedOver = nil
         // Recorded: all names it let go of go to the next in line now.
         if reassignAfterRequest {
             reassignAfterRequest = false
@@ -1514,6 +1526,14 @@ public final class HelperCore {
             }
             try checkDNS(c, plan, policy: policy)
             let heldAll = c.tunnel.dnsApplied && c.tunnel.dnsDomains.isEmpty
+            // All names asked by a tunnel with no domains of its own, held by one of the same user's that has its
+            // server's: that one goes to those domains (in line for all names again), this one gets all names, so
+            // that the order of connecting does not decide. Refused at any step: as it was, this one in line.
+            // (Part of this request: undone with it, whatever undoes it.)
+            if !plan.split, plan.searchDomains.isEmpty,
+               let owner = connections.values.first(where: { $0 !== c && !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }) {
+                handedOver = yieldAllNames(owner, to: c)
+            }
             // All names are one tunnel's at a time. Asked while another has them: its own domains, split, if
             // it has some, or nothing yet; either way it is next in line when the owner lets go (not the
             // order of connecting).
@@ -1556,6 +1576,8 @@ public final class HelperCore {
     /// A request freed all names: handed on once its own change is recorded (not before: a rollback
     /// of it must not leave two owners).
     private var reassignAfterRequest = false
+    /// All names another tunnel gave up during the request being carried out.
+    private var handedOver: (owner: Connection, all: DNSPlan, record: TunnelState)?
     /// Asked for all names while another tunnel has them: in line (the request's answer, not a failure).
     private struct DNSWaiting: Error, CustomStringConvertible {
         var description: String { "DNS for all names is already another tunnel's" }
@@ -1654,14 +1676,95 @@ public final class HelperCore {
         }
     }
 
+    /// `owner` (all names) to the domains its server gave, for `to` that has none: only between one user's own
+    /// tunnels (never another user's, nor a persistent one), with what passes the checks (a standard user's: as
+    /// the administrator's policy lets it). Its
+    /// record first, the Mac after; nil (nothing changed) when any of it is refused.
+    private func yieldAllNames(_ owner: Connection, to c: Connection) -> (owner: Connection, all: DNSPlan, record: TunnelState)? {
+        guard owner.info.ownerUID == c.info.ownerUID, !owner.info.persistent, !c.info.persistent,
+              let all = owner.appliedDNS, !all.split, !all.searchDomains.isEmpty, owner.dnsDomains.isEmpty else { return nil }
+        let split = DNSPlan(device: all.device, servers: all.servers, matchDomains: all.searchDomains,
+                            searchDomains: all.searchDomains, split: true)
+        guard (try? checkDNS(owner, split, policy: "")) != nil else { return nil }
+        // Domains another user's tunnel answers for stay theirs.
+        guard !answeredByAnotherUser(owner, split.matchDomains) else { return nil }
+        let record = owner.tunnel
+        owner.tunnel.dnsDomains = split.matchDomains
+        owner.tunnel.dnsServers = split.servers
+        guard (try? saveTunnel(owner)) != nil else { owner.tunnel = record; return nil }
+        guard replaceDNS(owner, with: split) else {
+            // Refused: what is set now (its all names put back, or none) on record.
+            owner.tunnel = record
+            owner.tunnel.dnsApplied = owner.appliedDNS != nil
+            owner.tunnel.dnsServers = owner.appliedDNS?.servers ?? []
+            owner.tunnel.dnsDomains = owner.appliedDNS?.matchDomains ?? []
+            // Not even its all names back: no DNS of its own, its domains would go to whoever has all names (another
+            // tunnel's servers): undone and stopped instead.
+            if (try? saveTunnel(owner)) == nil || owner.appliedDNS == nil { failClosed(owner) }
+            return nil
+        }
+        owner.dnsWantsAll = all
+        dnsAsks += 1
+        owner.dnsAskOrder = dnsAsks
+        return (owner, all, record)
+    }
+
+    /// The tunnel that gave up all names for one that did not get them: all names back (its record first).
+    /// Refused: its split stays (in line); a record that cannot say what is set: failed closed.
+    private func giveBackAllNames(_ owner: Connection, _ all: DNSPlan, _ record: TunnelState) {
+        guard !owner.exited, owner.appliedDNS?.split == true, owner.tunnel.device == all.device else { return }
+        let split = owner.tunnel
+        owner.tunnel.dnsDomains = record.dnsDomains
+        owner.tunnel.dnsServers = record.dnsServers
+        // Its record not written: its split stays (as on record), in line, tried again.
+        guard (try? saveTunnel(owner)) != nil else { owner.tunnel = split; return reassignLater() }
+        if replaceDNS(owner, with: all) {
+            owner.dnsWantsAll = nil
+            return
+        }
+        owner.tunnel.dnsApplied = owner.appliedDNS != nil
+        owner.tunnel.dnsServers = owner.appliedDNS?.servers ?? []
+        owner.tunnel.dnsDomains = owner.appliedDNS?.matchDomains ?? []
+        // Neither its all names nor its split: no DNS of its own (its domains would go astray): stopped.
+        if (try? saveTunnel(owner)) == nil || owner.appliedDNS == nil { return failClosed(owner) }
+        reassignLater()
+    }
+
+    /// One of `domains`, or a part of one, another user's tunnel answers for (the more specific one wins).
+    private func answeredByAnotherUser(_ c: Connection, _ domains: [String]) -> Bool {
+        func norm(_ d: String) -> String { d.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) }
+        let theirs = connections.values.filter { $0.info.ownerUID != c.info.ownerUID && $0.tunnel.dnsApplied }.flatMap(\.tunnel.dnsDomains)
+        return domains.contains { m in theirs.contains { norm(m) == norm($0) || norm(m).hasSuffix("." + norm($0)) } }
+    }
+
+    private var reassignPending = false
+    /// No tunnel has all names while one is in line for them (a hand-over or its undoing refused): tried again
+    /// later, until one has them or none waits.
+    private func reassignLater() {
+        guard !reassignPending else { return }
+        reassignPending = true
+        system.after(HelperCore.dnsLeftRetry) { [weak self] in
+            guard let self else { return }
+            self.reassignPending = false
+            self.reassignAllNames()
+            let held = self.connections.values.contains { !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }
+            if !held, self.connections.values.contains(where: { !$0.exited && $0.dnsWantsAll != nil }) { self.reassignLater() }
+        }
+    }
+
     private var dnsAsks = 0
     /// DNS for all names free again: to the tunnel that has asked for them longest (its split DNS, if it
     /// had its own domains meanwhile, taken off first).
     private func reassignAllNames() {
         guard !connections.values.contains(where: { !$0.exited && $0.tunnel.dnsApplied && $0.tunnel.dnsDomains.isEmpty }),
               !dnsLeftHoldsAllNames, !connections.values.contains(where: { $0.tunnel.dnsBackupLeft != nil }) else { return }
+        // Those with nothing (no domains of their own) before those that have their domains meanwhile; then who
+        // asked first.
         let next = connections.values.filter { !$0.exited && $0.dnsWantsAll != nil && $0.tunnel.device != nil }
-            .sorted { $0.dnsAskOrder < $1.dnsAskOrder }
+            .sorted { a, b in
+                let (na, nb) = (a.dnsWantsAll?.searchDomains.isEmpty ?? false, b.dnsWantsAll?.searchDomains.isEmpty ?? false)
+                return na != nb ? na : a.dnsAskOrder < b.dnsAskOrder
+            }
         for c in next {
             guard let plan = c.dnsWantsAll, plan.device == c.tunnel.device else { continue }
             // Asked a while ago: the checks again, on its tunnel as it is now.
@@ -1685,6 +1788,8 @@ public final class HelperCore {
             refreshProtection()
             return
         }
+        // In line, none could have them now: tried again.
+        if next.contains(where: { $0.dnsWantsAll != nil }) { reassignLater() }
     }
 
 

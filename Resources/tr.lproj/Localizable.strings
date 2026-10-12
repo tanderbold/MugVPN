@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@ ve %@ aynı anda %@ ağını yönlendiriyor";
 "%@ and %@ both route all traffic" = "%@ ve %@ aynı anda tüm trafiği yönlendiriyor";
 "%@ copy" = "%@ kopyası";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ DNS'ini ayarlayamadı: başka bir bağlantı zaten tüm adları alıyor. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@ DNS'ini kullanamadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.";
 "%@ is not a domain name." = "%@ bir alan adı değil.";
 "%@ is not a text file (PEM)." = "%@ bir metin dosyası (PEM) değil.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@ kendi klasörü dışındaki dosyalara başvuruyor. Profile kopyalansın mı? VPN sunucusu içeriklerini alabilir.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@, burada açıldığından beri MugVPN dışında silindi.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS yalnızca kendi alan adları için, başka bir bağlantı tüm adları alıyor";
 "%@: DNS not set, another connection takes all names" = "%@: DNS ayarlanmadı, başka bir bağlantı tüm adları alıyor";
+"%@: DNS only for %@" = "%@: DNS yalnızca %@ için";
+"%@: DNS only for %@; %@ has the other names" = "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Birden çok bağlantıyı aynı anda açık tutan, OpenVPN profilleri için bir istemci. MIT Lisansı.";
 "A program asked MugVPN to import %@. Import it?" = "Bir program MugVPN’den %@ dosyasını içe aktarmasını istedi. İçe aktarılsın mı?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Özet (sürümler, hangi bağlantıların açık olduğu) her zaman eklenir. Ayrıca:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "Tanılamayı dışa aktar…";
 "Export…" = "Dışa aktar…";
 "Flat" = "Düz";
+"For all names" = "Tüm adlar için";
+"For its domains" = "Kendi alan adları için";
 "From the VPN server" = "VPN sunucusundan";
 "General" = "Genel";
 "Hide" = "Gizle";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "Profillerimi sakla";
 "Later" = "Daha sonra";
 "Light" = "Açık";
+"Limited automatically to its server's domains (another connection has all names)" = "Sunucusunun alan adlarıyla otomatik olarak sınırlandı (tüm adlar başka bir bağlantıda)";
 "Line %@: %@" = "Satır %@: %@";
 "List only" = "Yalnızca listele";
 "Log theme:" = "Günlük teması:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "Trafiğin tamamı VPN’den geçmiyor: tünel varsayılan rotayı tutmuyor";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "İçe aktarılmadı (MugVPN profil betiklerini root olarak çalıştırmaz): %@";
 "Not in the archive (could not be written): %@" = "Arşivde değil (yazılamadı): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "Ayarlanmadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi";
 "Notify when connected:" = "Bağlanınca bildir:";
 "OK" = "Tamam";
 "Off" = "Kapalı";

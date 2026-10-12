@@ -862,7 +862,7 @@ func registerPrivsepHelperTests() {
         let p = sys.dnsSet.last
         expect(p?.split == true && p?.matchDomains == ["intranet.example"] && p?.servers == ["10.8.0.53"], "\(String(describing: p))")
     }
-    test("PS-54", "who has DNS for all names is worked out again when its owner lets go (not by who came first)") {
+    test("PS-54", "who has DNS for all names is worked out again when its owner lets go: those with nothing first, then who asked first") {
         let sys = FakeSystem()
         let h = makeHelper(sys)
         func up(_ dev: String, _ net: String, _ vars: [String]) throws -> String {
@@ -881,18 +881,18 @@ func registerPrivsepHelperTests() {
         expectThrows("waits", matching: "already another tunnel's") { _ = try h.tunnelRequest(id: c, uid: 501, kind: "DNSUP", message: "utun7") }
         let states = { Dictionary(uniqueKeysWithValues: h.list(uid: 501).map { ($0.id, $0.dns ?? "-") }) }
         expectEqual(states(), [a: "all", b: "limited", c: "waiting"])
-        // The owner lets go: the one asking longest gets all names (b, limited to its domains till now).
+        // The owner lets go: c, which got nothing, before b (its domains meanwhile), though b asked first.
         sys.clock += 5
         _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSDOWN", message: "utun5")
-        expectEqual(sys.dnsSet.last?.device, "utun6")
+        expectEqual(sys.dnsSet.last?.device, "utun7")
         expectEqual(sys.dnsSet.last?.split, false, "all names now")
+        expectEqual(states()[c], "all")
+        expectEqual(states()[b], "limited")
+        // c ends: b, limited to its domains till now, gets all names (its split DNS taken off first).
+        sys.launched[2].process.onExit(.exited(0))
+        expectEqual(sys.dnsSet.last?.device, "utun6")
         expect(sys.dnsRestored.contains("utun6"), "its split DNS taken off first")
         expectEqual(states()[b], "all")
-        expectEqual(states()[c], "waiting")
-        // b ends: c, which got nothing, gets all names.
-        sys.launched[1].process.onExit(.exited(0))
-        expectEqual(sys.dnsSet.last?.device, "utun7")
-        expectEqual(states()[c], "all")
     }
     test("PS-55", "a DNS domain that is not a name: refused before openvpn is started (none left behind)") {
         let sys = FakeSystem()
@@ -2350,6 +2350,270 @@ func registerPrivsepHelperTests() {
         try m.uninstall(uid: 0, keepProfiles: true)
         expect(mnotes.isEmpty, "an uninstall someone asked for is answered instead")
     }
+    test("PS-139", "two tunnels asking all names, one with the server's domains: the same split whichever came first") {
+        // A: DNS servers and its own search domains; B: DNS servers only. Neither asks for split DNS.
+        let aVars = ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"]
+        let bVars = ["dns_server_1_address_1=10.9.0.53"]
+        func outcome(aFirst: Bool) throws -> (all: String?, split: [String: [String]], states: [String]) {
+            let sys = FakeSystem()
+            let h = makeHelper(sys)
+            var ids: [String: String] = [:]
+            for (name, dev, net, vars) in aFirst ? [("A", "utun5", "10.8.0", aVars), ("B", "utun6", "10.9.0", bVars)]
+                                                 : [("B", "utun6", "10.9.0", bVars), ("A", "utun5", "10.8.0", aVars)] {
+                ids[name] = try dnsUp(sys, h, dev, net, vars)
+                sys.clock += 5
+            }
+            let st = Dictionary(uniqueKeysWithValues: h.list(uid: 501).map { ($0.id, $0.dns ?? "-") })
+            return (sys.allNames.keys.first, sys.splitResolvers.mapValues(\.matchDomains), [st[ids["A"]!]!, st[ids["B"]!]!])
+        }
+        let ab = try outcome(aFirst: true), ba = try outcome(aFirst: false)
+        expectEqual(ab.all, "utun6", "B (no domains of its own) has all names")
+        expectEqual(ab.split, ["utun5": ["corp.lan"]], "A its server's domains")
+        expectEqual(ab.states, ["limited", "all"])
+        expectEqual(ba.all, ab.all, "the same either way")
+        expectEqual(ba.split, ab.split)
+        expectEqual(ba.states, ab.states)
+    }
+    test("PS-140", "all names taken from a tunnel that has its server's domains: on record first, given back when the other lets go") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        sys.clock += 5
+        var order: [String] = []
+        sys.onRestore = { dev in
+            if dev == "utun5" { order.append(String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self)) }
+        }
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expect(order.first?.contains("corp.lan") == true, "A's record says its split DNS before its all names go: \(order)")
+        expect(sys.dnsRestored.contains("utun5"), "A's all names taken off (the primary's DNS put back) first")
+        expectEqual(sys.allNames.keys.sorted(), ["utun6"])
+        // Asked again (reconnect, a network change): the same.
+        sys.clock += 5
+        _ = try? h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6")
+        sys.clock += 5
+        _ = try? h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        expectEqual(sys.allNames.keys.sorted(), ["utun6"])
+        expectEqual(sys.splitResolvers["utun5"]?.matchDomains, ["corp.lan"])
+        // B lets go: A has all names again.
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSDOWN", message: "utun6")
+        expectEqual(sys.allNames.keys.sorted(), ["utun5"])
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+        expect(!String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self).contains("corp.lan\"]"),
+               "its record: all names again")
+    }
+    test("PS-141", "all names kept by a tunnel whose split is the user's choice, by another user's, or when neither has domains") {
+        // Split DNS asked for (the switch): it never held all names; the other simply gets them.
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        var bundleA = ProfileBundle(name: "a", config: "client\ndev tun\nremote vpn.example.com 1194 udp", files: [:])
+        bundleA.splitDNS = true
+        let (a, _) = try h.start(bundle: try JSONEncoder().encode(bundleA), uid: 501)
+        sys.utunName = "utun5"
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "IFCONFIG", message: "10.8.0.2 255.255.255.0 1500 subnet")
+        for v in ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"] { _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSVAR", message: v) }
+        _ = try h.tunnelRequest(id: a, uid: 501, kind: "DNSUP", message: "utun5")
+        sys.clock += 5
+        _ = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(sys.allNames.keys.sorted(), ["utun6"])
+        expectEqual(sys.splitResolvers["utun5"]?.matchDomains, ["corp.lan"])
+        // Neither has domains: the second waits (said), the first keeps all names.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        _ = try dnsUp(s2, h2, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53"])
+        s2.clock += 5
+        let b2 = try dnsUp(s2, h2, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(s2.allNames.keys.sorted(), ["utun5"])
+        expectEqual(h2.list(uid: 501).first { $0.id == b2 }?.dns, "waiting")
+        // Another user's tunnel holds all names (it has domains): not taken from them.
+        let s3 = FakeSystem()
+        try s3.makeDirectory("/L", mode: 0o755)
+        try s3.writeFile("/L/policy.json", Data(#"{"usersMayChangeDNS": true}"#.utf8), mode: 0o644)
+        s3.systemDNS = ["192.168.64.1"]
+        let h3 = makeHelper(s3)
+        _ = try dnsUp(s3, h3, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        s3.clock += 5
+        let (c, _) = try h3.start(bundle: psBundle(), uid: 502)
+        s3.utunName = "utun6"
+        _ = try h3.tunnelRequest(id: c, uid: 502, kind: "OPENTUN", message: "tun")
+        _ = try h3.tunnelRequest(id: c, uid: 502, kind: "IFCONFIG", message: "10.9.0.2 255.255.255.0 1500 subnet")
+        _ = try h3.tunnelRequest(id: c, uid: 502, kind: "DNSVAR", message: "dns_server_1_address_1=10.9.0.53")
+        expectThrows("waits", matching: "already another tunnel's") { _ = try h3.tunnelRequest(id: c, uid: 502, kind: "DNSUP", message: "utun6") }
+        expectEqual(s3.allNames.keys.sorted(), ["utun5"], "another user's all names stay theirs")
+    }
+    test("PS-142", "the new tunnel's all names refused: the other's all names given back (on record too); not even that: its split stays") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        sys.clock += 5
+        sys.failDNSFor = ["utun6"]
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(sys.allNames.keys.sorted(), ["utun5"], "A has all names again")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+        expect(h.list(uid: 501).first { $0.id == b }?.dns != "all")
+        let rec = String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self)
+        expect(!rec.contains("\"dnsDomains\":[\"corp.lan\"]"), "A's record: all names, as on the Mac: \(rec)")
+        // A's split cannot be set: nothing changes (A keeps all names, B waits).
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        let a2 = try dnsUp(s2, h2, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        s2.clock += 5
+        s2.failSplitDNS = true
+        let b2 = try dnsUp(s2, h2, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(s2.allNames.keys.sorted(), ["utun5"])
+        expectEqual(h2.list(uid: 501).first { $0.id == a2 }?.dns, "all")
+        expectEqual(h2.list(uid: 501).first { $0.id == b2 }?.dns, "waiting")
+        // A's record cannot be written first: nothing changes either.
+        let s3 = FakeSystem()
+        let h3 = makeHelper(s3)
+        let a3 = try dnsUp(s3, h3, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        s3.clock += 5
+        s3.failWrites = ["/L/run/\(a3)/state.json"]
+        _ = try dnsUp(s3, h3, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(s3.allNames.keys.sorted(), ["utun5"], "no change without its record")
+    }
+    test("PS-143", "three tunnels: those without domains of their own come first for all names, whatever the order") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        sys.clock += 5
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        sys.clock += 5
+        let c = try dnsUp(sys, h, "utun7", "10.10.0", ["dns_server_1_address_1=10.10.0.53"])
+        let states = { Dictionary(uniqueKeysWithValues: h.list(uid: 501).map { ($0.id, $0.dns ?? "-") }) }
+        expectEqual(states(), [a: "limited", b: "all", c: "waiting"])
+        // B lets go: C (nothing at all till now) before A (which has its domains), though A asked first.
+        sys.clock += 5
+        _ = try h.tunnelRequest(id: b, uid: 501, kind: "DNSDOWN", message: "utun6")
+        expectEqual(states()[c], "all")
+        expectEqual(states()[a], "limited")
+    }
+    test("PS-144", "the helper dies after all names changed hands: the next one takes both tunnels' DNS off by their records") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        _ = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.lan"])
+        sys.clock += 5
+        _ = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expect(!sys.allNames.isEmpty && !sys.splitResolvers.isEmpty)
+        try makeHelper(sys).prepareRunDirectory()
+        expect(sys.allNames.isEmpty, "all names off: \(sys.allNames)")
+        expect(sys.splitResolvers.isEmpty, "the split resolver off: \(sys.splitResolvers)")
+        expect(sys.dnsRestored.contains("utun5") && sys.dnsRestored.contains("utun6"))
+    }
+    test("PS-145", "all names handed over, then neither side can have them: the other stays in line and is tried again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        sys.clock += 5
+        // B's all names refused, and A's back too: A keeps its split (in line), retried later.
+        sys.failDNSFor = ["utun6"]
+        sys.failAllNamesDNS = true
+        _ = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "limited", "its domains still, in line")
+        expect(sys.allNames.isEmpty)
+        sys.failAllNamesDNS = false
+        sys.fireTimers()
+        expectEqual(sys.allNames.keys.sorted(), ["utun5"], "tried again: A has all names back")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+    }
+    test("PS-146", "the request's own record fails after all names were handed over: undone as a whole, the other's all names back") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        sys.clock += 5
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"], dnsUp: false)
+        // B's record: written inside the request (DNS on record first), then refused at the request's end.
+        sys.failNthWriteMatching = ("/L/run/\(b)/state.json", 2)
+        _ = try? h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6")
+        expectEqual(sys.allNames.keys.sorted(), ["utun5"], "A has all names again")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "all")
+    }
+    test("PS-147", "giving all names back cannot be recorded: its split stays (record and Mac agree), in line, tried again") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        sys.clock += 5
+        let b = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"], dnsUp: false)
+        sys.failDNSFor = ["utun6"]
+        // A's record: written once to hand over (split), refused when giving all names back.
+        sys.failNthWriteMatching = ("/L/run/\(a)/state.json", 2)
+        _ = try? h.tunnelRequest(id: b, uid: 501, kind: "DNSUP", message: "utun6")
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dns, "limited")
+        expectEqual(sys.splitResolvers["utun5"]?.matchDomains, ["corp.example"])
+        expect(String(decoding: sys.files["/L/run/\(a)/state.json"]?.data ?? Data(), as: UTF8.self).contains("corp.example"),
+               "its record says its split, as on the Mac")
+        sys.fireTimers()
+        expectEqual(sys.allNames.keys.sorted(), ["utun5"], "tried again")
+    }
+    test("PS-148", "a standard user's two tunnels (the administrator lets users change DNS): the same whichever came first") {
+        func outcome(aFirst: Bool) throws -> [String: String] {
+            let sys = FakeSystem()
+            try sys.makeDirectory("/L", mode: 0o755)
+            try sys.writeFile("/L/policy.json", Data(#"{"usersMayChangeDNS": true}"#.utf8), mode: 0o644)
+            sys.systemDNS = ["192.168.64.1"]
+            let h = makeHelper(sys)
+            func up(_ dev: String, _ net: String, _ vars: [String]) throws -> String {
+                let (id, _) = try h.start(bundle: psBundle(), uid: 502)
+                sys.utunName = dev
+                _ = try h.tunnelRequest(id: id, uid: 502, kind: "OPENTUN", message: "tun")
+                _ = try h.tunnelRequest(id: id, uid: 502, kind: "IFCONFIG", message: "\(net).2 255.255.255.0 1500 subnet")
+                for v in vars { _ = try h.tunnelRequest(id: id, uid: 502, kind: "DNSVAR", message: v) }
+                _ = try? h.tunnelRequest(id: id, uid: 502, kind: "DNSUP", message: dev)
+                sys.clock += 5
+                return id
+            }
+            let aV = ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"], bV = ["dns_server_1_address_1=10.9.0.53"]
+            var ids: [String: String] = [:]
+            if aFirst { ids["A"] = try up("utun5", "10.8.0", aV); ids["B"] = try up("utun6", "10.9.0", bV) }
+            else { ids["B"] = try up("utun6", "10.9.0", bV); ids["A"] = try up("utun5", "10.8.0", aV) }
+            let st = Dictionary(uniqueKeysWithValues: h.list(uid: 502).map { ($0.id, $0.dns ?? "-") })
+            return ["A": st[ids["A"]!]!, "B": st[ids["B"]!]!, "all": sys.allNames.keys.first ?? "-"]
+        }
+        let ab = try outcome(aFirst: true)
+        expectEqual(ab, ["A": "limited", "B": "all", "all": "utun6"])
+        expectEqual(try outcome(aFirst: false), ab)
+    }
+    test("PS-149", "a tunnel limited to its domains says which, to its owner and administrators only") {
+        let sys = FakeSystem()
+        sys.admins = [501]
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        sys.clock += 5
+        _ = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expectEqual(h.list(uid: 501).first { $0.id == a }?.dnsDomains, ["corp.example"])
+        expectEqual(h.list(uid: 0).first { $0.id == a }?.dnsDomains, ["corp.example"])
+        expect(h.list(uid: 502).isEmpty, "another user does not see it at all")
+    }
+    test("PS-150", "handing all names over, the holder's DNS lost (neither its split nor its all names set): it is stopped, not left without its DNS") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let a = try dnsUp(sys, h, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        sys.clock += 5
+        sys.failDNSFor = ["utun5"]
+        _ = try dnsUp(sys, h, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"])
+        expect(!sys.launched[0].process.signals.isEmpty, "A undone and stopped (its domains would go to B's servers)")
+        expect(h.list(uid: 501).first { $0.id == a }?.dns != "waiting", "never in line with domains it does not have")
+        // Giving all names back fails the same way: stopped too.
+        let s2 = FakeSystem()
+        let h2 = makeHelper(s2)
+        _ = try dnsUp(s2, h2, "utun5", "10.8.0", ["dns_server_1_address_1=10.8.0.53", "dns_search_domain_1=corp.example"])
+        s2.clock += 5
+        let b2 = try dnsUp(s2, h2, "utun6", "10.9.0", ["dns_server_1_address_1=10.9.0.53"], dnsUp: false)
+        s2.failDNSFor = ["utun6"]
+        // A's DNS taken off twice: to hand over (all names to split), then to give back (split to all names): from
+        // then on nothing of A's can be set.
+        var restores = 0
+        s2.onRestore = { dev in
+            guard dev == "utun5" else { return }
+            restores += 1
+            if restores == 2 { s2.failDNSFor.insert("utun5") }
+        }
+        _ = try? h2.tunnelRequest(id: b2, uid: 501, kind: "DNSUP", message: "utun6")
+        expectEqual(restores, 2, "handed over, then given back")
+        expect(!s2.launched[0].process.signals.isEmpty, "A stopped: neither its all names back nor its split")
+    }
+
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

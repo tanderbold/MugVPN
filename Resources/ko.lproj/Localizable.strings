@@ -3,7 +3,7 @@
 "%@ and %@ both route %@" = "%@와(과) %@ 모두 %@을(를) 라우팅합니다";
 "%@ and %@ both route all traffic" = "%@와(과) %@ 모두 모든 트래픽을 라우팅합니다";
 "%@ copy" = "%@ 사본";
-"%@ could not set its DNS: another connection already takes all names. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@의 DNS를 설정할 수 없습니다: 다른 연결이 이미 모든 이름을 담당합니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.";
+"%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains)." = "%@의 DNS를 사용할 수 없습니다: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.";
 "%@ is not a domain name." = "%@은(는) 도메인 이름이 아닙니다.";
 "%@ is not a text file (PEM)." = "%@은(는) 텍스트 파일(PEM)이 아닙니다.";
 "%@ names files outside its folder. Copy them into the profile? The VPN server may receive their contents.\n\n%@" = "%@이(가) 폴더 밖의 파일을 참조합니다. 프로필로 복사하겠습니까? VPN 서버가 해당 내용을 받을 수 있습니다.\n\n%@";
@@ -12,6 +12,8 @@
 "%@ was removed outside MugVPN since it was opened here." = "%@이(가) 여기서 연 뒤 MugVPN 밖에서 삭제되었습니다.";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: 자체 도메인에만 DNS 적용, 다른 연결이 모든 이름을 담당";
 "%@: DNS not set, another connection takes all names" = "%@: DNS가 설정되지 않음, 다른 연결이 모든 이름을 담당";
+"%@: DNS only for %@" = "%@: %@에만 DNS 적용";
+"%@: DNS only for %@; %@ has the other names" = "%@: %@에만 DNS 적용, 나머지 이름은 %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "여러 연결을 동시에 유지하는 OpenVPN 프로필용 클라이언트. MIT 라이선스.";
 "A program asked MugVPN to import %@. Import it?" = "한 프로그램이 MugVPN에 %@ 가져오기를 요청했습니다. 가져오겠습니까?";
 "A summary (versions, which connections are up) always goes in. Also:" = "요약(버전, 연결된 항목)은 항상 포함됩니다. 그 외:";
@@ -101,6 +103,8 @@
 "Export Diagnostics…" = "진단 정보 내보내기…";
 "Export…" = "내보내기…";
 "Flat" = "평면 목록";
+"For all names" = "모든 이름";
+"For its domains" = "자체 도메인";
 "From the VPN server" = "VPN 서버에서";
 "General" = "일반";
 "Hide" = "숨기기";
@@ -121,6 +125,7 @@
 "Keep my profiles" = "내 프로필 유지";
 "Later" = "나중에";
 "Light" = "라이트";
+"Limited automatically to its server's domains (another connection has all names)" = "서버의 도메인으로 자동 제한됨(다른 연결이 모든 이름을 담당)";
 "Line %@: %@" = "%@행: %@";
 "List only" = "목록만";
 "Log theme:" = "로그 테마:";
@@ -153,6 +158,7 @@
 "Not all traffic goes through the VPN: the tunnel does not hold the default route" = "모든 트래픽이 VPN을 거치지 않습니다: 터널이 기본 경로를 갖고 있지 않습니다";
 "Not imported (MugVPN does not run profile scripts as root): %@" = "불러오지 않음(MugVPN은 프로필 스크립트를 root로 실행하지 않음): %@";
 "Not in the archive (could not be written): %@" = "보관 파일에 없음(쓸 수 없음): %@";
+"Not set: another connection also needs DNS for all names, and this server gave no domains" = "설정 안 됨: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다";
 "Notify when connected:" = "연결 시 알림:";
 "OK" = "확인";
 "Off" = "끔";

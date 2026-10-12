@@ -41,14 +41,36 @@ def test_int04_legacy_dns_takes_the_primary_and_gives_it_back(vpn):
     assert vpn.primary_dns() == vpn.baseline_dns
 
 
-def test_int05_second_full_redirect_dns_is_refused(vpn, mac):
-    vpn.connected("stand-b")
+def test_int05_all_names_go_to_the_tunnel_without_domains_whatever_the_order(vpn, mac):
+    """b (DNS for all names, with its domain b.test) and d (DNS for all names, no domains): d has all names and b
+    its own domain, in either order; d gone, b has all names again. Nothing switched on by the user."""
+    def arranged():
+        assert vpn.primary_dns() == ["10.84.0.1"], f"d has all names: {vpn.primary_dns()}"
+        assert vpn.resolve("host.d.test") == "10.94.0.1"
+        assert vpn.resolve("host.b.test") == "10.92.0.1", "b answers for its own domain"
+        assert vpn.ping("10.92.0.1") and vpn.ping("10.94.0.1")
+    for order in (("stand-b", "stand-d"), ("stand-d", "stand-b")):
+        ids = {p: vpn.connected(p) for p in order}
+        wait_for(lambda: vpn.primary_dns() == ["10.84.0.1"], 10, f"all names to d ({order})")
+        arranged()
+        vpn.disconnect_all()
+        assert vpn.primary_dns() == vpn.baseline_dns
+    # d leaves: b has all names again; d back (reconnects): d again.
+    b = vpn.connected("stand-b")
     d = vpn.connected("stand-d")
-    assert "already another tunnel's" in vpn.helper_log(), "the helper refuses the second (privilege separation)"
-    assert vpn.primary_dns() == ["10.82.0.1"], "the first tunnel keeps the primary DNS"
+    wait_for(lambda: vpn.primary_dns() == ["10.84.0.1"], 10, "all names to d")
     vpn.cli(f"disconnect {d}")
     wait_for(lambda: "stand-d" not in vpn.list().values(), 20, "d to stop")
-    assert vpn.primary_dns() == ["10.82.0.1"], "d did not own the primary DNS and does not restore it"
+    wait_for(lambda: vpn.primary_dns() == ["10.82.0.1"], 10, f"all names back to b: {vpn.primary_dns()}")
+    assert vpn.resolve("host.b.test") == "10.92.0.1"
+    vpn.connected("stand-d")
+    wait_for(lambda: vpn.primary_dns() == ["10.84.0.1"], 10, "all names to d again")
+    arranged()
+    vpn.cli(f"reconnect {b}")
+    wait_for(lambda: vpn.resolve("host.b.test") == "10.92.0.1", 30, "b reconnected, its domain again")
+    arranged()
+    vpn.disconnect_all()
+    assert vpn.primary_dns() == vpn.baseline_dns
 
 
 def test_int06_disconnect_in_any_order(vpn):
