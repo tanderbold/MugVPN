@@ -2209,7 +2209,8 @@ func registerPrivsepHelperTests() {
         func tool(_ name: String, _ body: String) {
             fm.createFile(atPath: bin + "/" + name, contents: Data("#!/bin/sh\n\(body)\n".utf8), attributes: [.posixPermissions: 0o755])
         }
-        tool("launchctl", "echo \"$*\" >> \(root)/calls; [ \"$1\" = print ] && exit $(/bin/cat \(root)/print-status); exit 0")
+        tool("launchctl", "echo \"$*\" >> \(root)/calls; [ \"$1\" = print ] && exit $(/bin/cat \(root)/print-status); "
+             + "[ \"$2\" = system/com.mugvpn.cleanup ] && [ -e \(root)/self-bootout-fails ] && exit 5; exit 0")
         tool("pgrep", "echo \"pgrep $*\" >> \(root)/calls; exit $(/bin/cat \(root)/pgrep-status)")
         tool("pkill", "echo \"pkill $*\" >> \(root)/calls; exit 0")
         tool("logger", "echo \"$*\" >> \(root)/said")
@@ -2260,6 +2261,11 @@ func registerPrivsepHelperTests() {
         expect(said.contains("Login Items") && said.contains("Library/Logs/MugVPN"), "what it leaves is said in the system log: \(said)")
         let calls = (try? String(contentsOfFile: root + "/calls", encoding: .utf8)) ?? ""
         expect(calls.contains("bootout system/com.mugvpn.cleanup"), "and it leaves launchd: \(calls)")
+        expect(!said.contains("keeps this finished job"))
+        fm.createFile(atPath: root + "/self-bootout-fails", contents: Data())
+        expectEqual(try run(print: 113), 0)
+        let saidAgain = (try? String(contentsOfFile: root + "/said", encoding: .utf8)) ?? ""
+        expect(saidAgain.contains("launchd keeps this finished job until the next restart"), "launchd not letting go of it is said: \(saidAgain)")
         expect(calls.contains("pgrep -f Contents/MacOS/MugVPNHelpe[r]"), "\(calls)")
         expect(calls.contains("pkill -9 -f \(root)/L/libexec/openvp[n]"), "\(calls)")
     }

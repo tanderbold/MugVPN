@@ -520,7 +520,10 @@ public final class HelperCore {
             + "rm -f \(q(paths.cleanupDaemonPlist)); [ ! -e \(q(paths.cleanupDaemonPlist)) ] || "
             + "{ say 'the system part is removed, but not its own launch daemon file: it runs again at the next start'; exit 1; }; "
             + "say 'the system part is removed (the app left with the Trash emptied). Left: profiles, the MugVPN logs and settings in each home (Library/Logs/MugVPN, Library/Preferences/com.mugvpn.app.plist), and the entry in System Settings, General, Login Items'; "
-            + "launchctl bootout system/\(MugVPNIDs.cleanupLabel) >/dev/null 2>&1; exit 0"
+            // (Let go, launchd ends this script; not let go, it is said: the finished job stays until the next restart,
+            // never loaded again, its file gone.)
+            + "launchctl bootout system/\(MugVPNIDs.cleanupLabel) >/dev/null 2>&1 || "
+            + "say 'launchd keeps this finished job until the next restart (its file is gone: it does not run again)'; exit 0"
     }
 
     /// Not finished after the Trash (no one asked, no one is answered): said once per reason, for the system log.
