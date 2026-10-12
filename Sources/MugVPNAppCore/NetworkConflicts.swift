@@ -19,7 +19,7 @@ public enum NetworkConflict: Equatable, Sendable {
 public enum NetworkConflicts {
     /// - tunnels: (profile name, facts from its log, the log text)
     /// - dns: each connection's DNS as the helper has it now (ConnectionInfo.dns), by name; nil: a helper
-    ///   older than 0.2.6 does not say, and the log's refusal is all there is to go by.
+    ///   older than 0.2.5 does not say, and the log's refusal is all there is to go by.
     public static func find(_ tunnels: [(String, OpenVPNLogFacts, String)], dns: [String: String]? = [:]) -> [NetworkConflict] {
         var out: [NetworkConflict] = []
         // What each tunnel asked for: a route another tunnel already holds is the conflict itself.

@@ -361,7 +361,7 @@ func registerManagerTests() {
     }
     test("MAN-39", "domains for the server's DNS with a helper too old to know them: not started, said why") {
         let h = ManagerHarness()
-        h.helper.version = "0.2.5"
+        h.helper.version = "0.2.4"
         h.m.dnsDomains = { $0.name == "a" ? ["intranet.example"] : [] }
         h.m.connect(h.a)
         expect(h.helper.starts.isEmpty, "not started with DNS other than asked")
@@ -389,10 +389,10 @@ func registerManagerTests() {
         expect(h.helper.starts.isEmpty, "cancelled: not started later")
         expectEqual(done, 1)
         // Answered: started, then the caller hears it; an older version seen before is forgotten.
-        h.helper.version = "0.2.5"
+        h.helper.version = "0.2.4"
         h.m.appStarted()
         h.helper.answerVersions()
-        expectEqual(h.m.helperVersionMismatch, "0.2.5")
+        expectEqual(h.m.helperVersionMismatch, "0.2.4")
         h.helper.version = MugVPNIDs.helperVersion
         h.m.connect(h.a) { done += 1 }
         h.helper.answerVersions()

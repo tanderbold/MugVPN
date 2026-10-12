@@ -226,5 +226,5 @@ def test_ui83_dns_warning_from_the_log_once_the_helper_turns_out_older(app):
     app.feed("stand-b", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
     time.sleep(1)
     assert not any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), "a helper that says its state"
-    app.call("fake_helper_version", version="0.2.5")
+    app.call("fake_helper_version", version="0.2.4")
     wait_for(lambda: any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), 10, "the warning")
