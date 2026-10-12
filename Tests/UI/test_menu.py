@@ -1,4 +1,5 @@
 """UI-01..04: the status menu and its icon."""
+import os
 import time
 
 from conftest import wait_for
@@ -44,11 +45,11 @@ def test_ui02_profile_submenu_and_what_is_enabled(app):
 
 
 def test_ui02b_single_profile_items_at_the_top(app):
-    import os
+    """Only one profile: its commands at the top of the menu, under its name."""
     os.unlink(os.path.join(app.home, "config", "stand-b.ovpn"))
     app.call("rescan")
     titles = [i["title"] for i in app.menu()]
-    assert titles[:len(PROFILE_ITEMS)] == PROFILE_ITEMS, titles
+    assert titles[:1 + len(PROFILE_ITEMS)] == ["stand-a"] + PROFILE_ITEMS, titles
 
 
 def test_ui03_general_items(app):
@@ -228,3 +229,20 @@ def test_ui83_dns_warning_from_the_log_once_the_helper_turns_out_older(app):
     assert not any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), "a helper that says its state"
     app.call("fake_helper_version", version="0.2.4")
     wait_for(lambda: any("DNS" in i["title"] and i["title"].startswith("⚠︎") for i in app.menu()), 10, "the warning")
+
+
+def test_ui90_a_single_profile_named_in_the_menu(tmp_path):
+    """Only one profile: its commands are in the menu itself, under its name (checked once connected)."""
+    from conftest import MINIMAL, launched
+    home = str(tmp_path)
+    os.makedirs(os.path.join(home, "config"))
+    with open(os.path.join(home, "config", "office.ovpn"), "w") as f:
+        f.write(MINIMAL)
+    with launched(home) as app:
+        titles = [i["title"] for i in app.menu()]
+        assert "office" in titles and titles.index("office") + 1 == titles.index("Connect"), titles
+        heading = app.menu_item("office")
+        assert not heading.get("enabled", True), heading
+        app.click("Connect")
+        app.feed("office", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
+        wait_for(lambda: app.menu_item("office")["checked"], 5, f"checked: {app.menu_item('office')}")

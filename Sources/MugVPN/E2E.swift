@@ -326,7 +326,8 @@ final class E2EServer {
             try window().orderFrontRegardless()
             return [:]
         case "send_windows_back":
-            WindowRegistry.shared.windows.filter(\.isVisible).forEach { $0.orderBack(nil) }
+            // Front to back, each behind the last: their order among themselves kept.
+            WindowRegistry.shared.windows.filter(\.isVisible).sorted { $0.orderedIndex < $1.orderedIndex }.forEach { $0.orderBack(nil) }
             // Another app in use (Finder): deactivating alone leaves MugVPN active when nothing else takes over.
             NSRunningApplication.runningApplications(withBundleIdentifier: "com.apple.finder").first?.activate()
             NSApp.deactivate()
@@ -408,6 +409,22 @@ final class E2EServer {
             }
             try NSBitmapImageRep(cgImage: img).representation(using: .png, properties: [:])!.write(to: URL(fileURLWithPath: try str("path")))
             return ["width": img.width, "height": img.height]
+        case "status_click":
+            // The menu bar icon clicked as a user does (the status item's own click, the menu tracked): where a
+            // window is while the menu is open, then once it is closed and the event loop had its turns.
+            let w = try window()
+            var during: [Int] = [], activeDuring = false
+            let look = Timer(timeInterval: 0.5, repeats: false) { [self] _ in
+                during = screenOrder(w)
+                activeDuring = NSApp.isActive
+                app.menu.cancelTracking()
+            }
+            RunLoop.main.add(look, forMode: .common)
+            app.statusItem.button?.performClick(nil)
+            let until = Date().addingTimeInterval(1.0)
+            while Date() < until { RunLoop.main.run(mode: .default, before: until) }
+            return ["during": during, "active_during": activeDuring, "after": screenOrder(w), "active_after": NSApp.isActive,
+                    "key_after": w.isKeyWindow]
         case "snapshot_menu":
             // Open the status menu, capture its window, close it.
             let path = try str("path")
@@ -626,7 +643,7 @@ final class E2EServer {
             }
         }
         let dark = w.effectiveAppearance.bestMatch(from: [.aqua, .darkAqua]) == .darkAqua
-        return ["id": w.windowID, "kind": w.kind, "title": w.title, "profile": w.profile,
+        return ["id": w.windowID, "kind": w.kind, "title": w.title, "profile": w.profile, "key": w.isKeyWindow,
                 "appearance": dark ? "darkAqua" : "aqua", "controls": controls,
                 // Among MugVPN's windows on screen, front to back.
                 "floating": w.level == .floating, "origin": [Double(w.frame.minX), Double(w.frame.minY)],

@@ -147,25 +147,24 @@ def test_ui10c_pkcs11_choice(app):
 
 
 def test_ui70_menu_bar_icon_brings_windows_forward(app):
-    """A password prompt lost behind other apps: clicking MugVPN's menu bar icon brings its windows
-    forward, the prompt on top, without taking the keyboard from the app in use."""
+    """A password prompt lost behind other apps: clicking MugVPN's menu bar icon (the status item's own click,
+    its menu tracked and closed) brings the prompt forward, MugVPN in use, the prompt ready to type in."""
     app.click("stand-a", "Connect")
     app.feed("stand-a", ">PASSWORD:Need 'Auth' username/password")
-    app.window("credentials")
+    w = app.window("credentials")
     finder_window()
     app.call("send_windows_back")
     wait_for(lambda: not app.call("status")["active"], 5, "another app in use")
     time.sleep(1)   # the other app done bringing its windows forward
-    app.call("menu_will_open")
-    w = app.window("credentials")
-    assert w["front_index"] == 0, w["front_index"]
+    r = app.call("status_click", window=w["id"])
+    assert 0 <= r["during"][0] < r["during"][1], f"forward as the menu opens: {r}"
 
-    def above():
-        mine, other = app.window("credentials")["screen_order"]
-        return 0 <= mine < other
-    wait_for(above, 3, f"above the other app's window: {app.window('credentials')['screen_order']}")
-    time.sleep(0.5)
-    assert not app.call("status")["active"], "only shown: the keyboard stays with the app in use"
+    def ready():
+        w = app.window("credentials")
+        mine, other = w["screen_order"]
+        return 0 <= mine < other and w["key"] and app.call("status")["active"]
+    wait_for(ready, 3, f"in front, MugVPN in use, the prompt key: {app.window('credentials')}")
+    assert app.window("credentials")["front_index"] == 0
 
 
 def test_ui71_paste_into_the_password_field(app):
@@ -205,20 +204,28 @@ def test_ui82_a_window_shown_again_stays_where_it_was_put(app):
     assert app.window("connections")["origin"] == before
 
 
-def test_ui84_menu_bar_icon_leaves_ordinary_windows_where_they_are(app):
-    """Opening the menu does not pull Connections over the app in use; Show Windows does, asked for."""
+def test_ui84_menu_bar_icon_brings_every_window_forward_as_it_was(app):
+    """MugVPN's windows lost behind another app: clicking the menu bar icon brings all of them forward, in the
+    order they were in among themselves (the last used on top), MugVPN in use."""
+    app.click("Settings…")
+    app.window("settings")
     app.click("Connections…")
     app.window("connections")
     finder_window()
     app.call("send_windows_back")
     wait_for(lambda: not app.call("status")["active"], 5, "another app in use")
-    app.call("menu_will_open")
-    mine, other = app.window("connections")["screen_order"]
-    assert other >= 0 and mine > other, f"still behind the other app's window: {[mine, other]}"
-    app.click("Show Windows")
-    wait_for(lambda: app.call("status")["active"], 5, "MugVPN in use")
+    time.sleep(1)
+    r = app.call("status_click", window=app.window("connections")["id"])
+    assert 0 <= r["during"][0] < r["during"][1], f"forward while the menu is open: {r}"
 
-    def in_front():
-        mine, other = app.window("connections")["screen_order"]
-        return 0 <= mine < other
-    wait_for(in_front, 5, f"Connections in front: {app.window('connections')['screen_order']}")
+    def ready():
+        c, s = app.window("connections"), app.window("settings")
+        return (0 <= c["screen_order"][0] < s["screen_order"][0] < c["screen_order"][1]
+                and c["key"] and app.call("status")["active"])
+    wait_for(ready, 3, f"both in front as they were, Connections on top and key: "
+                       f"{app.window('connections')['screen_order']} {app.window('settings')['screen_order']}")
+    # The menu closed, another app taken to (as View Log or Edit Config open one): MugVPN takes nothing back.
+    subprocess.run(["open", "-a", "Finder"], check=True)
+    wait_for(lambda: not app.call("status")["active"], 5, "Finder in use")
+    time.sleep(1.5)
+    assert not app.call("status")["active"], "the focus stays with the app the user went to"

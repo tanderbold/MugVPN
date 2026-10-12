@@ -606,28 +606,33 @@ final class AppController: NSObject, NSMenuDelegate {
 
     private weak var showWindowsItem: NSMenuItem?
 
-    /// The menu bar icon clicked: a question a connection waits on (a password prompt lost behind other
-    /// apps) comes forward, only shown (the app in use keeps the keyboard); MugVPN's other windows stay
-    /// where they are (Show Windows brings them).
+    /// The menu bar icon clicked: MugVPN's windows come forward as they were among themselves (the last used on
+    /// top, questions a connection waits on above all), MugVPN in use, the top one key. Done as the menu opens, not
+    /// as it closes: an item that opens another app (View Log, Edit Config, Sign in…) leaves that app in front, and
+    /// a click elsewhere that closes the menu takes nothing back.
     func menuWillOpen(_ menu: NSMenu) {
-        showWindowsItem?.isHidden = !WindowRegistry.shared.windows.contains(where: \.isVisible)
-        let wasActive = NSApp.isActive
-        for w in WindowRegistry.shared.windows where w.isVisible && w.sheetParent == nil && AppWindow.waitingKinds.contains(w.kind) {
-            w.orderFrontRegardless()
-        }
-        // Ordering a window can activate an accessory app on some event-loop turns.
-        if !wasActive { NSApp.deactivate() }
+        guard menu === self.menu else { return }
+        let open = WindowRegistry.shared.windows.filter { $0.isVisible && $0.sheetParent == nil }
+        showWindowsItem?.isHidden = open.isEmpty
+        if !open.isEmpty { showWindows() }
     }
 
-    /// All of MugVPN's windows forward, asked for: questions on top, the last of them to type in.
+    /// Back to front as they are now (orderedIndex: 0 frontmost), questions a connection waits on last (on top).
+    private func orderForward(_ open: [AppWindow]) {
+        let byOrder = open.sorted { $0.orderedIndex > $1.orderedIndex }
+        for w in byOrder where !AppWindow.waitingKinds.contains(w.kind) { w.orderFrontRegardless() }
+        for w in byOrder where AppWindow.waitingKinds.contains(w.kind) { w.orderFrontRegardless() }
+    }
+
+    /// All of MugVPN's windows forward, asked for: as they were among themselves, questions on top, the top one key.
     @objc func showWindows() {
         let open = WindowRegistry.shared.windows.filter { $0.isVisible && $0.sheetParent == nil }
         guard !open.isEmpty else { return }
         NSApp.activate(ignoringOtherApps: true)
-        let prompts = AppWindow.dialogKinds
-        for w in open where !prompts.contains(w.kind) { w.orderFrontRegardless() }
-        for w in open where prompts.contains(w.kind) { w.orderFrontRegardless() }
-        (open.last { prompts.contains($0.kind) } ?? open.last)?.makeKey()
+        orderForward(open)
+        let top = open.filter { AppWindow.waitingKinds.contains($0.kind) }.min { $0.orderedIndex < $1.orderedIndex }
+            ?? open.min { $0.orderedIndex < $1.orderedIndex }
+        top?.makeKeyAndOrderFront(nil)
     }
 
     func menuNeedsUpdate(_ menu: NSMenu) {
@@ -671,7 +676,15 @@ final class AppController: NSObject, NSMenuDelegate {
             i.isEnabled = false
             menu.addItem(i)
         } else if profiles.count == 1 {
-            profileItems(profiles[0]).forEach(menu.addItem)
+            // Its name above its commands (checked when connected), as a heading.
+            let p = profiles[0]
+            let name = NSMenuItem(title: p.displayName, action: nil, keyEquivalent: "")
+            name.attributedTitle = NSAttributedString(string: p.displayName, attributes: [.font: NSFont.boldSystemFont(ofSize: NSFont.systemFontSize)])
+            name.isEnabled = false
+            if case .connected = manager.active[p.id]?.controller.status { name.state = .on }
+            name.setAccessibilityIdentifier("profile_heading")
+            menu.addItem(name)
+            profileItems(p).forEach(menu.addItem)
         } else {
             for node in ProfileStore.menu(profiles, mode: settingsStore.settings.menuView) { menu.addItem(item(node)) }
         }
