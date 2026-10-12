@@ -479,9 +479,11 @@ public final class HelperCore {
 
     /// The boot cleanup's launch daemon: the system's shell, nothing of MugVPN's (which may be gone by then).
     public static func bootCleanupPlist(helper: String, app: String?, paths: HelperPaths) -> Data {
-        let p: [String: Any] = ["Label": MugVPNIDs.cleanupLabel, "RunAtLoad": true,
-                                "EnvironmentVariables": ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin"],
-                                "ProgramArguments": ["/bin/sh", "-c", bootCleanupScript(helper: helper, app: app, paths: paths)]]
+        // The paths it looks at in its environment, not its arguments (process patterns see arguments only).
+        var env = ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "MUGVPN_HELPER": helper]
+        if let app { env["MUGVPN_APP_INFO"] = app + "/Info.plist" }
+        let p: [String: Any] = ["Label": MugVPNIDs.cleanupLabel, "RunAtLoad": true, "EnvironmentVariables": env,
+                                "ProgramArguments": ["/bin/sh", "-c", bootCleanupScript(paths: paths)]]
         return (try? PropertyListSerialization.data(fromPropertyList: p, format: .xml, options: 0)) ?? Data()
     }
 
@@ -489,24 +491,44 @@ public final class HelperCore {
     /// removed unless launchd is known to have no helper and none runs (113: launchctl's "no such service"); a removal
     /// that fails leaves it for the next boot. What it did, and what it leaves (it reaches no user's home: profiles,
     /// users' logs and settings, the Login Items entry only the app could take away), goes to the system log.
-    public static func bootCleanupScript(helper: String, app: String?, paths: HelperPaths) -> String {
-        func q(_ s: String) -> String { "'" + s.replacingOccurrences(of: "'", with: "'\\''") + "'" }
+    public static let helperProcessPattern = ShellProcessCheck.helperPattern
+
+    /// The paths it looks at come in its environment: MUGVPN_HELPER (the helper in the Trash), MUGVPN_APP_INFO (a
+    /// replacement where it was installed), so that its own command line holds nothing a process pattern matches.
+    /// Its own launch daemon file goes last, checked, before success is said (launchd then lets go of the job; not
+    /// loaded again, its file gone).
+    public static func bootCleanupScript(paths: HelperPaths) -> String {
+        let q = ShellProcessCheck.quoted
         let s = paths.supportDir, h = "system/" + MugVPNIDs.helperLabel
-        var script = "[ -e \(q(helper)) ] && exit 0; "
-        if let app { script += "[ -e \(q(app + "/Info.plist")) ] && exit 0; " }
-        script += "say() { logger -t MugVPN \"MugVPN boot cleanup: $1\"; }; "
-            + "pgrep -f /Contents/MacOS/MugVPNHelper >/dev/null && { say 'its helper runs: left to it'; exit 0; }; "
+        let helper = q(ShellProcessCheck.helperPattern), openvpn = q(ShellProcessCheck.pattern(paths.openvpn))
+        // (Not told where the helper is: nothing is done.)
+        return "[ -n \"$MUGVPN_HELPER\" ] || exit 1; [ -e \"$MUGVPN_HELPER\" ] && exit 0; "
+            + "[ -n \"$MUGVPN_APP_INFO\" ] && [ -e \"$MUGVPN_APP_INFO\" ] && exit 0; "
+            + "say() { logger -t MugVPN \"MugVPN boot cleanup: $1\"; }; "
+            + ShellProcessCheck.noneLeftFunction(onError: "say 'could not tell which of its processes run: nothing removed, tried again at the next start'")
+            + ShellProcessCheck.goneFromLaunchdFunction
+            + "none_left \(helper) 0 || { say 'its helper runs: left to it'; exit 0; }; "
             + "launchctl bootout \(h) >/dev/null 2>&1; "
-            + "launchctl print \(h) >/dev/null 2>&1; [ $? -eq 113 ] || { say 'launchd still has its helper (or could not tell): nothing removed, tried again at the next start'; exit 1; }; "
-            + "pgrep -f /Contents/MacOS/MugVPNHelper >/dev/null && { say 'its helper runs: left to it'; exit 0; }; "
-            + "pkill -9 -f \(q(paths.openvpn)) >/dev/null 2>&1; "
+            + "gone_from_launchd \(MugVPNIDs.helperLabel) 30 || { say 'launchd still has its helper (or could not tell): nothing removed, tried again at the next start'; exit 1; }; "
+            + "none_left \(helper) 20 || { say 'its helper still runs: nothing removed, tried again at the next start'; exit 1; }; "
+            + "pkill -9 -f \(openvpn); [ $? -le 1 ] || { say 'could not stop its openvpn: nothing removed, tried again at the next start'; exit 1; }; "
+            + "none_left \(openvpn) 5 || { say 'its openvpn still runs: nothing removed, tried again at the next start'; exit 1; }; "
             + "rm -rf " + [paths.runDir, paths.libexecDir, paths.logsDir, s + "/locks.json", s + "/app-location",
                            s + "/uninstall-pending.json", s + "/dns-left.json", s + "/pf.token", s + "/pf.release",
                            paths.devDaemonPlist].map(q).joined(separator: " ")
             + " || { say 'not all removed: tried again at the next start'; exit 1; }; "
+            + "rm -f \(q(paths.cleanupDaemonPlist)); [ ! -e \(q(paths.cleanupDaemonPlist)) ] || "
+            + "{ say 'the system part is removed, but not its own launch daemon file: it runs again at the next start'; exit 1; }; "
             + "say 'the system part is removed (the app left with the Trash emptied). Left: profiles, the MugVPN logs and settings in each home (Library/Logs/MugVPN, Library/Preferences/com.mugvpn.app.plist), and the entry in System Settings, General, Login Items'; "
-            + "rm -f \(q(paths.cleanupDaemonPlist)); launchctl bootout system/\(MugVPNIDs.cleanupLabel) >/dev/null 2>&1; exit 0"
-        return script
+            + "launchctl bootout system/\(MugVPNIDs.cleanupLabel) >/dev/null 2>&1; exit 0"
+    }
+
+    /// Not finished after the Trash (no one asked, no one is answered): said once per reason, for the system log.
+    private var lastTrashNote: String?
+    private func noteTrash(_ u: (keepProfiles: Bool, fromTrash: Bool), _ why: String) {
+        guard u.fromTrash, why != lastTrashNote else { return }
+        lastTrashNote = why
+        onNote("uninstalling after the Trash is not finished yet (tried again): " + why)
     }
 
     private func finishUninstall() {
@@ -520,6 +542,7 @@ public final class HelperCore {
             let replies = uninstallReplies
             uninstallReplies = []
             replies.forEach { $0(HelperRefusal.dnsCleanupPending) }
+            noteTrash(u, HelperRefusal.dnsCleanupPending)
             // The app went to the Trash: no one asks again, so it is done once that DNS is off.
             if u.fromTrash, uninstallWhenDNSOff == nil { uninstallWhenDNSOff = u.keepProfiles }
             return
@@ -535,6 +558,7 @@ public final class HelperCore {
             let replies = uninstallReplies
             uninstallReplies = []
             replies.forEach { $0(HelperRefusal.pfPending) }
+            noteTrash(u, HelperRefusal.pfPending)
             uninstallRetryNeeded = uninstallWhenDNSOff != nil
             retryDNSLeftLater()
             return
@@ -551,6 +575,7 @@ public final class HelperCore {
                 let replies = uninstallReplies
                 uninstallReplies = []
                 replies.forEach { $0(HelperRefusal.recordPending) }
+                noteTrash(u, HelperRefusal.recordPending)
                 uninstallRetryNeeded = true
                 retryDNSLeftLater()
                 return
@@ -589,6 +614,7 @@ public final class HelperCore {
             let replies = uninstallReplies
             uninstallReplies = []
             replies.forEach { $0(answer) }
+            noteTrash(u, answer)
             if u.fromTrash {
                 uninstallWhenDNSOff = u.keepProfiles
                 uninstallRetryNeeded = true

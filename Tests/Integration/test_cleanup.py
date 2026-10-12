@@ -135,6 +135,8 @@ def test_int47_dragged_to_the_trash(vpn, mac):
         assert mac.run(f"test -f {user_cfg}/keep.ovpn").returncode == 0, "the user's profiles stay"
         assert mac.run(f"sudo test -d {support}/config").returncode == 0, "administrators' profiles stay"
         assert mac.run("sudo launchctl print system/com.mugvpn.helper").returncode != 0, "the service is gone"
+        assert mac.run("test -e /Library/LaunchDaemons/com.mugvpn.cleanup.plist").returncode != 0, "no boot cleanup left"
+        assert mac.run("sudo launchctl print system/com.mugvpn.cleanup").returncode != 0, "nor in launchd"
     finally:
         mac.run(f"hdiutil detach -quiet {vol}; rm -rf ~/Library/Logs/MugVPN /tmp/int47.dmg")
         mac.run(f"test -e {APP} || mv {trashed} {APP}; rm -rf {user_cfg}/keep.ovpn; bash /tmp/install-helper.sh")
@@ -161,6 +163,7 @@ def test_int47b_trash_then_helper_restarted(vpn, mac):
         wait_for(lambda: not helper_up(), 200, "the helper to take MugVPN away all the same")
         assert mac.run(f"sudo test -e {support}/libexec").returncode != 0, "its files are gone"
         assert mac.run(f"sudo test -e {support}/uninstall-pending.json").returncode != 0, "no wish left behind"
+        assert mac.run("test -e /Library/LaunchDaemons/com.mugvpn.cleanup.plist").returncode != 0, "no boot cleanup left"
         assert mac.run("sudo launchctl print system/com.mugvpn.helper").returncode != 0, "the service is gone"
     finally:
         mac.run(f"test -e {APP} || mv {trashed} {APP}; bash /tmp/install-helper.sh")

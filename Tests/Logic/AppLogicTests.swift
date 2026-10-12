@@ -441,7 +441,9 @@ func registerAppLogicTests() {
 func registerUninstallAppTests() {
     test("UNI-07", "the system part removed without the helper (it does not answer): one command for an administrator") {
         let keep = UninstallPlan.systemRemovalScript(keepProfiles: true)
-        expect(keep.hasPrefix("launchctl bootout system/com.mugvpn.helper"), keep)
+        expect(keep.hasPrefix("none_left() {"), "only functions defined before the helper is stopped: \(keep)")
+        expect(keep.contains("{ [ $r -eq 113 ] || echo \"$out\" | grep -q 'Could not find service'; } && return 0;"), "absence: 113 or said so")
+        expect(keep.components(separatedBy: "launchctl bootout system/com.mugvpn.helper")[0].hasSuffix("done; }; "), "the helper stopped first")
         for p in ["'/Library/Application Support/MugVPN/libexec'", "'/Library/Application Support/MugVPN/run'",
                   "'/Library/Logs/MugVPN'", "'/Library/LaunchDaemons/com.mugvpn.helper.plist'",
                   "'/Library/Application Support/MugVPN/uninstall-pending.json'", "'/Library/Application Support/MugVPN/app-location'"] {
@@ -451,9 +453,14 @@ func registerUninstallAppTests() {
         expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all"), "MugVPN's PF rules go: \(keep)")
         expect(keep.contains("pfctl -X"), "and PF is given back with its token")
         expect(keep.contains("pfctl -a 'com.apple/mugvpn' -F all || exit 1"), "PF must let go, or nothing is removed: \(keep)")
-        expect(keep.contains("launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1"), "the helper must be gone first")
-        expect(keep.contains("launchctl bootout system/com.mugvpn.cleanup 2>/dev/null; launchctl print system/com.mugvpn.cleanup >/dev/null 2>&1 && exit 1"),
-               "the boot cleanup out of launchd too: \(keep)")
+        for label in ["com.mugvpn.helper", "com.mugvpn.cleanup"] {
+            expect(keep.contains("launchctl bootout system/\(label) 2>/dev/null; gone_from_launchd \(label) 30 || {"),
+                   "\(label) gone only when launchd says so (no other answer taken for it), given its time: \(keep)")
+        }
+        expect(!keep.contains(">/dev/null 2>&1 && exit 1"), "a failing print is not absence")
+        expect(keep.contains("none_left 'Contents/MacOS/MugVPNHelpe[r]' 20 || {"), "no helper process left, given its time to stop")
+        expect(keep.contains("[ $r -eq 1 ] && return 0; [ $r -eq 0 ] || {"), "only pgrep's no-match is none; any other answer stops it")
+        expect(keep.range(of: "none_left 'Contents")!.lowerBound < keep.range(of: "pfctl")!.lowerBound, "before PF or any file")
         expect(keep.contains("'/Library/LaunchDaemons/com.mugvpn.cleanup.plist'"), "and its file")
         for k in [keep, UninstallPlan.systemRemovalScript(keepProfiles: false)] {
             let rm = k.components(separatedBy: "rm -rf ").last?.components(separatedBy: ";").first ?? ""
@@ -465,7 +472,9 @@ func registerUninstallAppTests() {
                    "a run folder that would not go is not success: \(k)")
             expect(!k.contains("rmdir") || !k.contains("2>/dev/null; exit 0") && !k.contains("2>/dev/null; rmdir"),
                    "no rmdir's failure hidden: \(k)")
-            expect(k.contains("pkill -9 -f '/Library/Application Support/MugVPN/libexec/openvpn'"), "its openvpn stopped")
+            expect(k.contains("pkill -9 -f '/Library/Application Support/MugVPN/libexec/openvp[n]'; [ $? -le 1 ] || {"),
+                   "its openvpn stopped (a pattern that never matches the shell running this), pkill's failure not ignored: \(k)")
+            expect(k.contains("none_left '/Library/Application Support/MugVPN/libexec/openvp[n]' 5 || {"), "and checked gone")
             expect(k.contains("ls -A '/Library/Application Support/MugVPN/run' 2>/dev/null | grep -q . && {"), "a run left: nothing removed")
             expect(k.contains("[ -e '/Library/Application Support/MugVPN/dns-left.json' ] && {"), "DNS on record: nothing removed")
             expect(k.range(of: "exit 2")!.lowerBound < k.range(of: "rm -rf")!.lowerBound, "checked before anything goes")
@@ -489,7 +498,19 @@ func registerUninstallAppTests() {
         expect(all.contains("[ ! -e '/Library/Application Support/MugVPN' ] || rmdir '/Library/Application Support/MugVPN' || {"),
                "the support folder that would not go (something left in it) is not success: \(all)")
         expect(!keep.contains("rmdir '/Library/Application Support/MugVPN' "), "profiles kept: the folder stays")
-        expect(!all.contains("\"") && !all.contains("$"), "nothing for a shell to expand")
+        // As printed for pasting: the administrator's shell gives sh exactly this script.
+        for k in [keep, all] {
+            let printed = UninstallPlan.printedCommand(keepProfiles: k == keep)
+            expect(printed.hasPrefix("sudo sh -c '"), printed)
+            let sh = Process()
+            sh.executableURL = URL(fileURLWithPath: "/bin/sh")
+            sh.arguments = ["-c", "set -- " + printed.dropFirst("sudo sh -c ".count) + "; printf %s \"$1\""]
+            let out = Pipe()
+            sh.standardOutput = out
+            try sh.run()
+            sh.waitUntilExit()
+            expectEqual(String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self), k, "pasted, the same script")
+        }
     }
     test("UNI-08", "a helper that answers and refuses (DNS, routes, PF, its record) is not removed around: only one that does not answer") {
         for r in [HelperRefusal.dnsCleanupPending, HelperRefusal.pfPending, HelperRefusal.recordPending, HelperRefusal.filesPending + "/L/run"] {

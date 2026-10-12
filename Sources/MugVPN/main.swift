@@ -78,8 +78,8 @@ case .uninstall(let confirmed, let keep):
     }
     if let err = result ?? "the helper did not answer" {
         FileHandle.standardError.write(Data(("MugVPN: cannot uninstall: \(err)\n"
-            + "To remove MugVPN's system part without the helper, as an administrator:\n  sudo sh -c \""
-            + UninstallPlan.systemRemovalScript(keepProfiles: keep) + "\"\n").utf8))
+            + "To remove MugVPN's system part without the helper, as an administrator:\n  "
+            + UninstallPlan.printedCommand(keepProfiles: keep) + "\n").utf8))
         exit(1)
     }
     var stayed = services.removeUserData(user)

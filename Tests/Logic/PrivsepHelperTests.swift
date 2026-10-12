@@ -1,6 +1,7 @@
 import Foundation
 import MugVPNCore
 import MugVPNHelperCore
+import MugVPNAppCore
 
 // The helper side of privilege separation: requests from an unprivileged openvpn
 // (through its owner's app), what the helper carries out, and what it undoes.
@@ -2145,13 +2146,18 @@ func registerPrivsepHelperTests() {
         let p = try PropertyListSerialization.propertyList(from: sys.files[plist]?.data ?? Data(), format: nil) as? [String: Any]
         expectEqual(p?["Label"] as? String, "com.mugvpn.cleanup")
         expectEqual(p?["RunAtLoad"] as? Bool, true)
-        expectEqual((p?["EnvironmentVariables"] as? [String: String])?["PATH"], "/usr/bin:/bin:/usr/sbin:/sbin")
+        let env = p?["EnvironmentVariables"] as? [String: String] ?? [:]
+        expectEqual(env, ["PATH": "/usr/bin:/bin:/usr/sbin:/sbin", "MUGVPN_HELPER": helper,
+                          "MUGVPN_APP_INFO": "/Applications/MugVPN.app/Contents/Info.plist"],
+                    "where to look, in its environment (its arguments hold nothing a process pattern matches)")
         let args = p?["ProgramArguments"] as? [String] ?? []
         expectEqual(Array(args.prefix(2)), ["/bin/sh", "-c"], "nothing of MugVPN's runs it (gone by then)")
         let script = args.last ?? ""
-        expect(script.hasPrefix("[ -e '\(helper)' ] && exit 0; [ -e '/Applications/MugVPN.app/Contents/Info.plist' ] && exit 0; "),
-               "left be while the helper (or a replacement) is there: \(script)")
-        expect(script.contains("[ $? -eq 113 ] || {"), "nothing removed unless launchd is known to have no helper")
+        expect(!script.contains(helper) && !script.contains("MugVPNHelper") && !script.contains("libexec/openvpn"),
+               "no path a process pattern looks for: \(script)")
+        expect(script.hasPrefix("[ -n \"$MUGVPN_HELPER\" ] || exit 1; [ -e \"$MUGVPN_HELPER\" ] && exit 0; "),
+               "left be while the helper (or a replacement) is there; not told where: nothing done \(script)")
+        expect(script.contains("gone_from_launchd com.mugvpn.helper 30 || {"), "nothing removed unless launchd is known to have no helper")
         expect(script.contains("|| { say 'not all removed"), "a removal that fails is not success")
         expect(!script.contains("/L/config") && !script.contains("/L/auto") && !script.contains("policy"), "profiles stay")
         let sh = Process()
@@ -2160,8 +2166,6 @@ func registerPrivsepHelperTests() {
         try sh.run()
         sh.waitUntilExit()
         expectEqual(sh.terminationStatus, 0, "valid sh")
-        let odd = HelperCore.bootCleanupScript(helper: "/Users/o'k/.Trash/M.app/Contents/MacOS/MugVPNHelper", app: nil, paths: h.paths)
-        expect(odd.hasPrefix("[ -e '/Users/o'\\''k/.Trash/"), "a quote in a path stays quoted: \(odd)")
         sys.loadedJobs = ["com.mugvpn.cleanup"]
         sys.failUnload = ["com.mugvpn.cleanup"]
         h.bootCleanup(armed: false, helper: helper, app: nil)
@@ -2206,8 +2210,8 @@ func registerPrivsepHelperTests() {
             fm.createFile(atPath: bin + "/" + name, contents: Data("#!/bin/sh\n\(body)\n".utf8), attributes: [.posixPermissions: 0o755])
         }
         tool("launchctl", "echo \"$*\" >> \(root)/calls; [ \"$1\" = print ] && exit $(/bin/cat \(root)/print-status); exit 0")
-        tool("pgrep", "exit $(/bin/cat \(root)/pgrep-status)")
-        tool("pkill", "exit 0")
+        tool("pgrep", "echo \"pgrep $*\" >> \(root)/calls; exit $(/bin/cat \(root)/pgrep-status)")
+        tool("pkill", "echo \"pkill $*\" >> \(root)/calls; exit 0")
         tool("logger", "echo \"$*\" >> \(root)/said")
         tool("rm", "exec /bin/rm \"$@\"")
         let paths = HelperPaths(openvpn: root + "/L/libexec/openvpn", runDir: root + "/L/run", logsDir: root + "/Logs",
@@ -2220,14 +2224,14 @@ func registerPrivsepHelperTests() {
             }
             try? fm.removeItem(atPath: root + "/calls")
         }
-        func run(print: Int, pgrep: Int = 1, helper: String = "/nonexistent/MugVPNHelper") throws -> Int32 {
+        func run(print: Int, pgrep: Int = 1, helper: String? = "/nonexistent/MugVPNHelper") throws -> Int32 {
             try setUp()
             try "\(print)".write(toFile: root + "/print-status", atomically: true, encoding: .utf8)
             try "\(pgrep)".write(toFile: root + "/pgrep-status", atomically: true, encoding: .utf8)
             let sh = Process()
             sh.executableURL = URL(fileURLWithPath: "/bin/sh")
-            sh.arguments = ["-c", HelperCore.bootCleanupScript(helper: helper, app: nil, paths: paths)]
-            sh.environment = ["PATH": bin]
+            sh.arguments = ["-c", HelperCore.bootCleanupScript(paths: paths)]
+            sh.environment = ["PATH": bin].merging(helper.map { ["MUGVPN_HELPER": $0] } ?? [:]) { $1 }
             try sh.run()
             sh.waitUntilExit()
             return sh.terminationStatus
@@ -2238,6 +2242,10 @@ func registerPrivsepHelperTests() {
         expectEqual(try run(print: 5), 1, "launchd could not tell: stopped")
         expect(exists("/L/run/x"))
         expectEqual(try run(print: 113, pgrep: 0), 0, "a helper runs (from anywhere): left to it")
+        expect(exists("/L/run/x"))
+        expectEqual(try run(print: 113, pgrep: 2), 1, "pgrep could not tell: stopped")
+        expect(exists("/L/run/x"))
+        expectEqual(try run(print: 113, helper: nil), 1, "not told where the helper is: nothing done")
         expect(exists("/L/run/x"))
         fm.createFile(atPath: root + "/helper", contents: Data())
         expectEqual(try run(print: 113, helper: root + "/helper"), 0)
@@ -2252,8 +2260,90 @@ func registerPrivsepHelperTests() {
         expect(said.contains("Login Items") && said.contains("Library/Logs/MugVPN"), "what it leaves is said in the system log: \(said)")
         let calls = (try? String(contentsOfFile: root + "/calls", encoding: .utf8)) ?? ""
         expect(calls.contains("bootout system/com.mugvpn.cleanup"), "and it leaves launchd: \(calls)")
+        expect(calls.contains("pgrep -f Contents/MacOS/MugVPNHelpe[r]"), "\(calls)")
+        expect(calls.contains("pkill -9 -f \(root)/L/libexec/openvp[n]"), "\(calls)")
+    }
+    test("PS-137", "the cleanup scripts' process patterns (real pgrep) never match a process whose command line is the script") {
+        let paths = HelperPaths.standard
+        let scripts = [HelperCore.bootCleanupScript(paths: paths), UninstallPlan.systemRemovalScript(keepProfiles: true)]
+        let patterns = [ShellProcessCheck.helperPattern, ShellProcessCheck.pattern(paths.openvpn)]
+        for p in patterns { expect(scripts.allSatisfy { $0.contains("'\(p)'") }, "\(p) is what both scripts use") }
+        expectEqual(ShellProcessCheck.helperPattern, "Contents/MacOS/MugVPNHelpe[r]")
+        expectEqual(ShellProcessCheck.pattern(paths.openvpn), "/Library/Application Support/MugVPN/libexec/openvp[n]")
+        func matched(_ pattern: String, _ pid: Int32) throws -> Bool {
+            let g = Process()
+            g.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+            g.arguments = ["-f", pattern]
+            let out = Pipe()
+            g.standardOutput = out
+            try g.run()
+            g.waitUntilExit()
+            return String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self)
+                .split(separator: "\n").contains(Substring("\(pid)"))
+        }
+        // The helper as SMAppService starts it (relative argv[0]) and as a plain launch daemon (absolute): both found.
+        for argv0 in ["Contents/MacOS/MugVPNHelper", "/Applications/MugVPN.app/Contents/MacOS/MugVPNHelper"] {
+            let fake = Process()
+            fake.executableURL = URL(fileURLWithPath: "/bin/sh")
+            fake.arguments = ["-c", "sleep 30; :", argv0]
+            try fake.run()
+            usleep(200_000)
+            defer { fake.terminate() }
+            expect(try matched(ShellProcessCheck.helperPattern, fake.processIdentifier), "a helper run as \(argv0) is found")
+        }
+        for script in scripts {
+            // A process holding the script in its arguments, as `sh -c <script>` does (asleep: it runs nothing).
+            let holder = Process()
+            holder.executableURL = URL(fileURLWithPath: "/bin/sh")
+            let marker = "mugvpn-ps137-\(UUID().uuidString)"
+            holder.arguments = ["-c", "sleep 30; :", script, marker]
+            try holder.run()
+            usleep(200_000)
+            defer { holder.terminate() }
+            for p in patterns {
+                expect(!(try matched(p, holder.processIdentifier)), "\(p) does not match the script's own process")
+            }
+            // (pgrep sees that process at all.)
+            let g = Process()
+            g.executableURL = URL(fileURLWithPath: "/usr/bin/pgrep")
+            g.arguments = ["-f", marker]
+            let out = Pipe()
+            g.standardOutput = out
+            try g.run()
+            g.waitUntilExit()
+            let pids = String(decoding: out.fileHandleForReading.readDataToEndOfFile(), as: UTF8.self).split(separator: "\n")
+            expect(pids.contains(Substring("\(holder.processIdentifier)")), "pgrep sees the holder at all")
+        }
     }
 
+    test("PS-138", "uninstalling after the Trash not finished: said for the system log, once per reason (retries say nothing new)") {
+        let sys = FakeSystem()
+        try sys.makeDirectory("/L/libexec", mode: 0o755)
+        sys.failRemoves = ["/L/libexec"]
+        let h = makeHelper(sys)
+        var notes: [String] = []
+        h.onNote = { notes.append($0) }
+        h.uninstallMovedToTrash()
+        sys.fireTimers()
+        sys.fireTimers()
+        let said = notes.filter { $0.contains("not finished") }
+        expectEqual(said.count, 1, "\(notes)")
+        expect(said.first?.contains("/L/libexec") == true, "what stayed is named: \(said)")
+        sys.failRemoves = []
+        sys.loadedJobs = ["com.mugvpn.cleanup"]
+        sys.failUnload = ["com.mugvpn.cleanup"]
+        try sys.writeFile("/LD/com.mugvpn.cleanup.plist", Data(), mode: 0o644)
+        sys.fireTimers()
+        expect(notes.contains { $0.contains("not finished") && $0.contains("com.mugvpn.cleanup.plist") }, "a new reason is said: \(notes)")
+        let manual = FakeSystem()
+        let m = makeHelper(manual)
+        var mnotes: [String] = []
+        m.onNote = { mnotes.append($0) }
+        try manual.makeDirectory("/L/libexec", mode: 0o755)
+        manual.failRemoves = ["/L/libexec"]
+        try m.uninstall(uid: 0, keepProfiles: true)
+        expect(mnotes.isEmpty, "an uninstall someone asked for is answered instead")
+    }
     test("PS-49", "closed after PF is lost: the kill switch fires and stays, the utun is given back (ext. audit 6: P2)") {
         let sys = FakeSystem()
         sys.admins = []

@@ -199,8 +199,8 @@ is named as MugVPN shows it, by its file path, or by its name when only one prof
 helper itself, its files and logs, and every user's MugVPN logs and settings. Profiles stay (yours and
 those administrators installed, and `policy.json`), for a reinstall to find. Should the Trash be emptied
 and the Mac restarted within that minute, the system part goes at the next start; users' logs and
-settings and the Login Items entry then stay. Anything left is named in the system log (Console,
-process MugVPN or MugVPNHelper).
+settings and the Login Items entry then stay. Anything left is named in the system log (in Console, search
+for MugVPN).
 
 **About MugVPN > Uninstall MugVPN…**, or `MugVPN --uninstall --yes` in Terminal (`--uninstall` alone
 lists what would go), removes everything; an administrator's. It disconnects every tunnel and removes

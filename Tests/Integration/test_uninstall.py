@@ -46,3 +46,31 @@ def test_int31_uninstall(vpn, mac, restore_stand):
     assert mac.run(in_session("security find-generic-password -s MugVPN")).returncode != 0
     assert mac.run(f"test -e {APP}").returncode != 0, "the app went to the Trash"
     assert mac.run("ls ~/.Trash | grep -q '^MugVPN'").returncode == 0
+
+
+def test_int31b_uninstall_without_the_helper(vpn, mac, restore_stand):
+    """INT-31b: the helper does not answer: the command printed for an administrator, pasted as printed, while
+    launchd still has the helper loaded with a tunnel up: stops it (giving it the time to take its tunnel down),
+    checks it gone and removes MugVPN's system part."""
+    wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
+    mac.run("sudo launchctl bootout system/com.mugvpn.helper; true")
+    r = mac.run(f"{CLI} --uninstall --yes", timeout=120)
+    assert r.returncode != 0
+    line = next((l.strip() for l in r.stderr.splitlines() if l.strip().startswith("sudo sh -c '")), None)
+    assert line, r.stderr
+    # Loaded again, a tunnel up: the command has to take it out itself.
+    mac.run("bash /tmp/install-helper.sh", check=True)
+    wait_for(lambda: vpn.cli("list").returncode == 0, 30, "the helper to answer")
+    vpn.connected("stand-a")
+    # The command's own pattern finds the helper as launchd runs it (relative argv[0], like SMAppService's).
+    assert "Contents/MacOS/MugVPNHelper" in mac.out("ps -axo args= | grep '^Contents/MacOS/MugVPNHelpe[r]'"), "relative argv[0]"
+    assert mac.run("pgrep -f 'Contents/MacOS/MugVPNHelpe[r]'").returncode == 0, "found by the pattern"
+    done = mac.run(line, timeout=120)
+    assert done.returncode == 0, done.stdout + done.stderr
+    assert mac.run("sudo launchctl print system/com.mugvpn.helper").returncode != 0, "out of launchd"
+    assert mac.run("pgrep -f Contents/MacOS/MugVPNHelper").returncode != 0, "no helper left running"
+    assert mac.run(f"sudo test -e '{SUPPORT}'").returncode != 0, "its files gone (profiles too: not kept)"
+    assert mac.run("sudo test -e /Library/Logs/MugVPN").returncode != 0
+    assert mac.run("test -e /Library/LaunchDaemons/com.mugvpn.helper.plist").returncode != 0
+    assert mac.run("pgrep -f 'MugVPN/libexec/openvpn'").returncode != 0, "its openvpn stopped"
+    assert vpn.stand_routes() == [], "its tunnel taken down"

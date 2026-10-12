@@ -62,9 +62,12 @@ func leaveLaunchd() {
 let systemLog = Logger(subsystem: MugVPNIDs.helperLabel, category: "helper")
 core.onNote = { note in
     log(note)
-    systemLog.notice("\(note, privacy: .public)")
+    systemLog.notice("MugVPN: \(note, privacy: .public)")
 }
+/// Uninstalled (everything removed and checked): nothing is armed again on the way out.
+var uninstalled = false
 core.onUninstalled = {
+    uninstalled = true
     DispatchQueue.global().asyncAfter(deadline: .now() + 0.5, execute: leaveLaunchd)
 }
 
@@ -219,7 +222,9 @@ let termSource = DispatchSource.makeSignalSource(signal: SIGTERM, queue: .global
 termSource.setEventHandler {
     // Stopped (a restart, a shutdown) with the app in the Trash: the boot cleanup is kept before anything else.
     let w = whereabouts()
-    if HelperPaths.isInTrash(w.running), !w.inPlace { queue.sync { core.bootCleanup(armed: true, helper: w.running, app: appContents) } }
+    queue.sync {
+        if !uninstalled, HelperPaths.isInTrash(w.running), !w.inPlace { core.bootCleanup(armed: true, helper: w.running, app: appContents) }
+    }
     queue.sync { core.stopAll() }
     let deadline = Date().addingTimeInterval(HelperCore.stopGrace + 2)
     while Date() < deadline, queue.sync(execute: { !core.isEmpty }) { usleep(100_000) }
@@ -261,7 +266,7 @@ var trashWatch = TrashWatch()
 let trashTimer = DispatchSource.makeTimerSource(queue: queue)
 var trashDone = false
 func lookAtTrash() {
-    guard !trashDone else { return }
+    guard !trashDone, !uninstalled else { return }
     let w = whereabouts()
     let due = trashWatch.look(bundleInPlace: w.inPlace, runningFrom: w.running, now: ProcessInfo.processInfo.systemUptime)
     // From its first sight in the Trash: kept for the next boot (an emptied Trash takes the helper with it).

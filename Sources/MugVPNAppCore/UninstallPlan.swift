@@ -1,9 +1,14 @@
 import Foundation
+import MugVPNCore
 
 /// What uninstalling removes for the user (the helper removes the system part).
 public enum UninstallPlan {
-    /// The system part, removed without the helper (one that does not answer): a command for an
-    /// administrator (fixed paths, single-quoted: nothing for a shell to expand).
+    /// That command as printed for an administrator to paste (single-quoted: nothing in it for their shell).
+    public static func printedCommand(keepProfiles: Bool) -> String {
+        "sudo sh -c " + ShellProcessCheck.quoted(systemRemovalScript(keepProfiles: keepProfiles))
+    }
+
+    /// The system part, removed without the helper (one that does not answer): a command for an administrator.
     public static func systemRemovalScript(keepProfiles: Bool) -> String {
         let support = "/Library/Application Support/MugVPN"
         // What a tunnel left that only a helper can undo (its run records, DNS on record): nothing is removed while
@@ -13,13 +18,23 @@ public enum UninstallPlan {
                      "/Library/Logs/MugVPN", "/Library/LaunchDaemons/com.mugvpn.helper.plist",
                      "/Library/LaunchDaemons/com.mugvpn.cleanup.plist"]
         if !keepProfiles { paths += [support + "/config", support + "/config-auto", support + "/policy.json"] }
-        // (Nothing for a shell to expand: the command is also printed for pasting into sudo sh -c "...".)
         // Each step must hold, or nothing is removed (the helper's files are what could put things back): the
         // helper gone from launchd, its openvpn stopped, MugVPN's PF rules out (its token given back).
-        // (And the boot cleanup kept while the app was in the Trash.)
-        let gone = "launchctl bootout system/com.mugvpn.helper 2>/dev/null; launchctl print system/com.mugvpn.helper >/dev/null 2>&1 && exit 1; "
-            + "launchctl bootout system/com.mugvpn.cleanup 2>/dev/null; launchctl print system/com.mugvpn.cleanup >/dev/null 2>&1 && exit 1; "
-        let openvpn = "pkill -9 -f '\(support)/libexec/openvpn' 2>/dev/null; "
+        // Gone only when launchd says so ("Could not find service"; any other answer, or none, stops it), and no helper
+        // process left once it had its time to stop its tunnels (up to 17 s). (And the boot cleanup kept while the app
+        // was in the Trash.) Any answer of pgrep or pkill but "found" or "none" stops it all.
+        func unload(_ label: String) -> String {
+            "launchctl bootout system/\(label) 2>/dev/null; gone_from_launchd \(label) 30 || "
+                + "{ echo 'launchd still has \(label) (or could not tell): try again.' >&2; exit 1; }; "
+        }
+        let openvpnPattern = ShellProcessCheck.quoted(ShellProcessCheck.pattern(support + "/libexec/openvpn"))
+        let gone = ShellProcessCheck.noneLeftFunction(onError: "echo 'Could not tell which MugVPN processes run: try again.' >&2")
+            + ShellProcessCheck.goneFromLaunchdFunction
+            + unload("com.mugvpn.helper") + unload("com.mugvpn.cleanup")
+            + "none_left \(ShellProcessCheck.quoted(ShellProcessCheck.helperPattern)) 20 || "
+            + "{ echo 'The MugVPN helper still runs: try again.' >&2; exit 1; }; "
+        let openvpn = "pkill -9 -f \(openvpnPattern); [ $? -le 1 ] || { echo 'Could not stop the MugVPN openvpn: try again.' >&2; exit 1; }; "
+            + "none_left \(openvpnPattern) 5 || { echo 'The MugVPN openvpn still runs: try again.' >&2; exit 1; }; "
         // PF's token taken back. Refused: only an earlier boot's token may go without (it means nothing now); this
         // boot's, or one whose boot cannot be told, stops it all. No file of its own anywhere (a world-writable
         // folder could hold a link): the boot time goes to grep as patterns on its standard input.
