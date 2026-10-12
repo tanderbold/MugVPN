@@ -317,8 +317,9 @@ public final class ConnectionManager {
         }
     }
 
-    /// The first helper that sets the server's DNS for the domains a profile lists (older ones ignore them).
-    public static let dnsDomainsHelper = "0.2.5"
+    /// The first helper that sets the server's DNS for the domains a profile lists (older ones ignore them). 0.2.5's
+    /// did too, but builds from before it that ignore them also said 0.2.5: none of them is taken for one that does.
+    public static let dnsDomainsHelper = "0.2.6"
     public static let helperTooOldForDNSDomains =
         "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated"
 

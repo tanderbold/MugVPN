@@ -14,7 +14,7 @@ public enum MugVPNIDs {
     public static let libexecDir = supportDir + "/libexec"
     /// Persistent profiles: started at boot by the helper.
     public static let autoDir = supportDir + "/config-auto"
-    public static let helperVersion = "0.2.5"
+    public static let helperVersion = "0.2.6"
 }
 
 /// The helper's XPC interface. Everything that crosses it is plain data: the

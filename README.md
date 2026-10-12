@@ -26,7 +26,7 @@ its own `openvpn` 2.7, which runs without root: a small helper checks every prof
 
 **Several connections at once**
 - Every connection has its own `utun`, routes and DNS; connect, disconnect and reconnect each on its own.
-- **Split DNS per connection**: names in the domains a server pushes go to that tunnel's DNS, everything else as before — so two VPNs can each answer for their own domains. For servers that push only `dhcp-option DOMAIN`, one switch makes those domains split too. A server that pushes no domains at all can still be used for the domains you list in the connection's options (the server's DNS, no addresses to type).
+- **Split DNS per connection**: names in the domains a server pushes go to that tunnel's DNS, everything else as before — so two VPNs can each answer for their own domains. For servers that push only `dhcp-option DOMAIN`, one switch makes those domains split too. Or list domains in the connection's options: only those go to the server's DNS (no addresses to type), whether it pushes domains of its own or none.
 - **Your own DNS for a connection**: its servers for the domains you list (or for all names), or leave the Mac's DNS alone.
 - Warnings when connections collide: two that both take all traffic, overlapping routes (IPv4 and IPv6), DNS already taken.
 
@@ -77,7 +77,7 @@ kill switch, leak protection and leak check work with all of them together.
 | openvpn runs without root | **Yes** | No (root) | Not documented | Not documented |
 | Editor for servers, certificates, keys | **Yes** | No (text files) | Yes | Name, server, proxy only |
 | Hotel/airport Wi-Fi sign-in | **Yes**, even while the kill switch blocks | Not documented | Not documented | Yes |
-| Command line | **connect/disconnect/status/list, exit codes, JSON** | AppleScript | AppleScript | No connect/disconnect on macOS |
+| Command line | **connect/disconnect/reconnect/status/list, exit codes, JSON** | AppleScript | AppleScript | No connect/disconnect on macOS |
 | Connections at boot, before login | **Yes** | Yes | No | No (Windows only) |
 | Managed settings (MDM) | **Yes** | Partial | Yes | Yes |
 | Price, license | **Free, MIT** | Free, GPL v2 | US$16, proprietary | Free, proprietary |
@@ -110,7 +110,7 @@ brew install --cask tanderbold/tap/mugvpn
 or download `MugVPN-<version>.dmg` from the [latest release](https://github.com/tanderbold/MugVPN/releases/latest)
 (signed with a Developer ID and notarized by Apple; its SHA-256 is beside it), open it and drag
 MugVPN to **Applications**, then open it from there. The first time you connect, macOS asks you to
-allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN opens that page for you.
+allow MugVPN's helper in **System Settings > General > Login Items**; MugVPN offers to open that page.
 Install it as an administrator. A newer version replaces the app in the same way (`brew upgrade`);
 its helper is updated once no connection needs it. A helper too old to update itself is offered from
 the menu (**Update MugVPN's Helper…**, which stops every user's MugVPN connections).
@@ -141,8 +141,8 @@ reach, in `/Library/Application Support/MugVPN/policy.json` (owned by root):
 `usersMayRouteAllTraffic` lets standard users send all traffic through a VPN; `usersMayChangeDNS`
 lets them set DNS for any names, all names included; `trustedUsers` are treated as administrators.
 
-**Managed settings.** A configuration profile (MDM) for `com.mugvpn.app` can set and lock any of
-MugVPN's settings; MugVPN then shows them as set by the administrator. Among them:
+**Managed settings.** A configuration profile (MDM) for `com.mugvpn.app` can set and lock
+MugVPN's settings (those in Settings); MugVPN then shows them as set by the administrator. Among them:
 `require_kill_switch`, `require_leak_protection` (IPv6 and DNS only through the VPN),
 `disable_save_passwords`, `allow_lan_when_blocked`, `persistent_connections` (`auto`, `manual`,
 `disable`) and the proxy.
@@ -199,14 +199,14 @@ is named as MugVPN shows it, by its file path, or by its name when only one prof
 helper itself, its files and logs, and every user's MugVPN logs and settings. Profiles stay (yours and
 those administrators installed, and `policy.json`), for a reinstall to find. Should the Trash be emptied
 and the Mac restarted within that minute, the system part goes at the next start; users' logs and
-settings and the Login Items entry then stay. Anything left is named in the system log (in Console, search
-for MugVPN).
+settings and the Login Items entry then stay. Saved passwords stay in each user's keychain. Anything left is
+named in the system log (in Console, search for MugVPN).
 
 **About MugVPN > Uninstall MugVPN…**, or `MugVPN --uninstall --yes` in Terminal (`--uninstall` alone
-lists what would go), removes everything; an administrator's. It disconnects every tunnel and removes
+lists what would go), removes everything (administrators only). It disconnects every tunnel and removes
 the helper, its files and logs, the profiles administrators installed (`config`, `config-auto`) and
 `policy.json`, your own profiles, settings and saved passwords, and moves the app to the Trash; other
-users' own profiles and passwords stay. *Keep my profiles* (`--keep-profiles`) keeps every profile and
+users' own profiles, passwords, logs and settings stay. *Keep my profiles* (`--keep-profiles`) keeps every profile and
 `policy.json`. If the helper does not answer, MugVPN asks for an administrator's password to remove
 its system part itself (the command line prints the command instead).
 
