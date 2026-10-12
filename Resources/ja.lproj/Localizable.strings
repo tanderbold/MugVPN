@@ -62,6 +62,7 @@
 "Connection Settings…" = "接続設定…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "接続ログ（各最大 1 MB: アドレス、サーバ、エラー）";
 "Connection settings" = "接続設定";
+"Connection: %@" = "接続: %@";
 "Connections" = "接続一覧";
 "Connections…" = "接続一覧…";
 "Copy" = "コピー";

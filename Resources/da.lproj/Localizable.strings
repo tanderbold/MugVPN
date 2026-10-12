@@ -62,6 +62,7 @@
 "Connection Settings…" = "Forbindelsesindstillinger…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Forbindelseslogge (op til 1 MB hver: adresser, servere, fejl)";
 "Connection settings" = "Forbindelsesindstillinger";
+"Connection: %@" = "Forbindelse: %@";
 "Connections" = "Forbindelser";
 "Connections…" = "Forbindelser…";
 "Copy" = "Kopiér";

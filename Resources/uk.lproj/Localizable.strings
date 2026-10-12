@@ -62,6 +62,7 @@
 "Connection Settings…" = "Налаштування підключення…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Журнали підключень (до 1 МБ кожен: адреси, сервери, помилки)";
 "Connection settings" = "Налаштування підключення";
+"Connection: %@" = "Підключення: %@";
 "Connections" = "Підключення";
 "Connections…" = "Підключення…";
 "Copy" = "Копіювати";

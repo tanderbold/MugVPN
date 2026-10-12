@@ -62,6 +62,7 @@
 "Connection Settings…" = "Yhteyden asetukset…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Yhteyslokit (enintään 1 Mt kukin: osoitteet, palvelimet, virheet)";
 "Connection settings" = "Yhteyden asetukset";
+"Connection: %@" = "Yhteys: %@";
 "Connections" = "Yhteydet";
 "Connections…" = "Yhteydet…";
 "Copy" = "Kopioi";

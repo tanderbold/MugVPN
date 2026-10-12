@@ -541,7 +541,7 @@ final class E2EServer {
     private func describe(_ menu: NSMenu) -> [[String: Any]] {
         // As the user sees it: hidden items are not there.
         menu.items.filter { !$0.isSeparatorItem && !$0.isHidden }.map { i in
-            var d: [String: Any] = ["title": i.title, "enabled": i.isEnabled, "checked": i.state == .on]
+            var d: [String: Any] = ["title": i.title, "enabled": i.isEnabled, "checked": i.state == .on, "tooltip": i.toolTip ?? ""]
             if let s = i.submenu { d["children"] = describe(s) }
             return d
         }

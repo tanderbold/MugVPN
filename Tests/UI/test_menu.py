@@ -243,6 +243,7 @@ def test_ui90_a_single_profile_named_in_the_menu(tmp_path):
         assert "office" in titles and titles.index("office") + 1 == titles.index("Connect"), titles
         heading = app.menu_item("office")
         assert not heading.get("enabled", True), heading
+        assert heading["tooltip"] == "Connection: office", "told apart from a command of the same name"
         app.click("Connect")
         app.feed("office", ">STATE:1700000005,CONNECTED,SUCCESS,10.9.0.2,203.0.113.1,1194,,")
         wait_for(lambda: app.menu_item("office")["checked"], 5, f"checked: {app.menu_item('office')}")

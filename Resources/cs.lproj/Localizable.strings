@@ -62,6 +62,7 @@
 "Connection Settings…" = "Nastavení připojení…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Protokoly připojení (každý do 1 MB: adresy, servery, chyby)";
 "Connection settings" = "Nastavení připojení";
+"Connection: %@" = "Připojení: %@";
 "Connections" = "Připojení";
 "Connections…" = "Připojení…";
 "Copy" = "Kopírovat";

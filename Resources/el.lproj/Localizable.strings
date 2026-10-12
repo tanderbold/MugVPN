@@ -62,6 +62,7 @@
 "Connection Settings…" = "Ρυθμίσεις σύνδεσης…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Αρχεία καταγραφής συνδέσεων (έως 1 MB το καθένα: διευθύνσεις, διακομιστές, σφάλματα)";
 "Connection settings" = "Ρυθμίσεις σύνδεσης";
+"Connection: %@" = "Σύνδεση: %@";
 "Connections" = "Συνδέσεις";
 "Connections…" = "Συνδέσεις…";
 "Copy" = "Αντιγραφή";

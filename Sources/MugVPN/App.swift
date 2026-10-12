@@ -683,6 +683,9 @@ final class AppController: NSObject, NSMenuDelegate {
             name.isEnabled = false
             if case .connected = manager.active[p.id]?.controller.status { name.state = .on }
             name.setAccessibilityIdentifier("profile_heading")
+            // (Told apart from a command of the same name: a heading, said as one.)
+            name.setAccessibilityLabel(L("Connection: %@", p.displayName))
+            name.toolTip = L("Connection: %@", p.displayName)
             menu.addItem(name)
             profileItems(p).forEach(menu.addItem)
         } else {

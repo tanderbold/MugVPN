@@ -189,6 +189,9 @@
   "key": "Connection settings"
  },
  {
+  "key": "Connection: %@"
+ },
+ {
   "key": "Connections"
  },
  {

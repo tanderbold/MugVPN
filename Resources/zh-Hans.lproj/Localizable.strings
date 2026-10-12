@@ -62,6 +62,7 @@
 "Connection Settings…" = "连接设置…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "连接日志（每个最多 1 MB：地址、服务器、错误）";
 "Connection settings" = "连接设置";
+"Connection: %@" = "连接：%@";
 "Connections" = "连接";
 "Connections…" = "连接…";
 "Copy" = "拷贝";

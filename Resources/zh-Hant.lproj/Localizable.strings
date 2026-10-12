@@ -62,6 +62,7 @@
 "Connection Settings…" = "連線設定…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "連線記錄（每個最多 1 MB：位址、伺服器、錯誤）";
 "Connection settings" = "連線設定";
+"Connection: %@" = "連線：%@";
 "Connections" = "連線";
 "Connections…" = "連線…";
 "Copy" = "拷貝";

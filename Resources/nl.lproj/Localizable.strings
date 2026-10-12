@@ -62,6 +62,7 @@
 "Connection Settings…" = "Verbindingsinstellingen…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Verbindingslogs (elk tot 1 MB: adressen, servers, fouten)";
 "Connection settings" = "Verbindingsinstellingen";
+"Connection: %@" = "Verbinding: %@";
 "Connections" = "Verbindingen";
 "Connections…" = "Verbindingen…";
 "Copy" = "Kopieer";

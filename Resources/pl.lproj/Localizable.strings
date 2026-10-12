@@ -62,6 +62,7 @@
 "Connection Settings…" = "Ustawienia połączenia…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Dzienniki połączeń (do 1 MB każdy: adresy, serwery, błędy)";
 "Connection settings" = "Ustawienia połączenia";
+"Connection: %@" = "Połączenie: %@";
 "Connections" = "Połączenia";
 "Connections…" = "Połączenia…";
 "Copy" = "Kopiuj";

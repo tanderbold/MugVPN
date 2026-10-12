@@ -90,7 +90,8 @@
   "These could not be removed either: %@": "Tyto položky také nešlo odstranit: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Dotazy na jména přes systémový resolver dál odcházejí, aby VPN znovu našla svůj server.",
   "MugVPN in Login Items": "MugVPN v Položkách při přihlášení",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Klíčenka ponechala uložené heslo, které měl MugVPN zapomenout: odstraňte ho v aplikaci Klíčenka."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Klíčenka ponechala uložené heslo, které měl MugVPN zapomenout: odstraňte ho v aplikaci Klíčenka.",
+  "Connection: %@": "Připojení: %@"
  },
  "de": {
   "OK": "OK",
@@ -183,7 +184,8 @@
   "These could not be removed either: %@": "Auch dies konnte nicht entfernt werden: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namensabfragen über den Resolver des Mac gehen weiter hinaus, damit das VPN seinen Server wiederfindet.",
   "MugVPN in Login Items": "MugVPN in den Anmeldeobjekten",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Der Schlüsselbund hat ein gesichertes Passwort behalten, das MugVPN vergessen sollte: Entfernen Sie es in der Schlüsselbundverwaltung."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Der Schlüsselbund hat ein gesichertes Passwort behalten, das MugVPN vergessen sollte: Entfernen Sie es in der Schlüsselbundverwaltung.",
+  "Connection: %@": "Verbindung: %@"
  },
  "da": {
   "OK": "OK",
@@ -276,7 +278,8 @@
   "These could not be removed either: %@": "Disse kunne heller ikke fjernes: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneopslag via Mac’ens resolver går stadig ud, så VPN’en kan finde sin server igen.",
   "MugVPN in Login Items": "MugVPN i Login-emner",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøgleringen beholdt en gemt adgangskode, som MugVPN skulle glemme: fjern den i Nøgleringsadgang."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøgleringen beholdt en gemt adgangskode, som MugVPN skulle glemme: fjern den i Nøgleringsadgang.",
+  "Connection: %@": "Forbindelse: %@"
  },
  "el": {
   "OK": "OK",
@@ -369,7 +372,8 @@
   "These could not be removed either: %@": "Ούτε αυτά δεν αφαιρέθηκαν: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Οι αναζητήσεις ονομάτων μέσω του επιλυτή του Mac συνεχίζουν να βγαίνουν, ώστε το VPN να ξαναβρεί τον διακομιστή του.",
   "MugVPN in Login Items": "Το MugVPN στα Στοιχεία σύνδεσης",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Η κλειδοθήκη κράτησε έναν αποθηκευμένο κωδικό που το MugVPN έπρεπε να ξεχάσει: αφαιρέστε τον στην Πρόσβαση στην κλειδοθήκη."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Η κλειδοθήκη κράτησε έναν αποθηκευμένο κωδικό που το MugVPN έπρεπε να ξεχάσει: αφαιρέστε τον στην Πρόσβαση στην κλειδοθήκη.",
+  "Connection: %@": "Σύνδεση: %@"
  },
  "es": {
   "OK": "Aceptar",
@@ -462,7 +466,8 @@
   "These could not be removed either: %@": "Tampoco se pudo quitar esto: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Las consultas de nombres a través del resolvedor del Mac siguen saliendo, para que la VPN vuelva a encontrar su servidor.",
   "MugVPN in Login Items": "MugVPN en Ítems de inicio",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "El llavero conservó una contraseña guardada que MugVPN debía olvidar: elimínela en Acceso a Llaveros."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "El llavero conservó una contraseña guardada que MugVPN debía olvidar: elimínela en Acceso a Llaveros.",
+  "Connection: %@": "Conexión: %@"
  },
  "fa": {
   "OK": "تأیید",
@@ -555,7 +560,8 @@
   "These could not be removed either: %@": "این‌ها هم حذف نشدند: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "پرس‌وجوی نام از طریق حل‌کنندهٔ Mac همچنان بیرون می‌رود تا VPN دوباره سرورش را پیدا کند.",
   "MugVPN in Login Items": "MugVPN در موارد ورود",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "زنجیرهٔ کلید گذرواژه‌ای را که MugVPN باید فراموش می‌کرد نگه داشت: آن را در Keychain Access حذف کنید."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "زنجیرهٔ کلید گذرواژه‌ای را که MugVPN باید فراموش می‌کرد نگه داشت: آن را در Keychain Access حذف کنید.",
+  "Connection: %@": "اتصال: %@"
  },
  "fi": {
   "OK": "OK",
@@ -648,7 +654,8 @@
   "These could not be removed either: %@": "Myöskään näitä ei voitu poistaa: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Nimihaut Macin selvittimen kautta lähtevät yhä, jotta VPN löytää palvelimensa uudelleen.",
   "MugVPN in Login Items": "MugVPN kirjautumiskohteissa",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Avainnippu säilytti tallennetun salasanan, joka MugVPN:n piti unohtaa: poista se Avainnippujen hallinnassa."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Avainnippu säilytti tallennetun salasanan, joka MugVPN:n piti unohtaa: poista se Avainnippujen hallinnassa.",
+  "Connection: %@": "Yhteys: %@"
  },
  "fr": {
   "OK": "OK",
@@ -741,7 +748,8 @@
   "These could not be removed either: %@": "Ces éléments n’ont pas pu être supprimés non plus : %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Les résolutions de noms via le résolveur du Mac sortent toujours, pour que le VPN retrouve son serveur.",
   "MugVPN in Login Items": "MugVPN dans les éléments de connexion",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Le trousseau a gardé un mot de passe que MugVPN devait oublier : supprimez-le dans Trousseaux d’accès."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Le trousseau a gardé un mot de passe que MugVPN devait oublier : supprimez-le dans Trousseaux d’accès.",
+  "Connection: %@": "Connexion : %@"
  },
  "it": {
   "OK": "OK",
@@ -834,7 +842,8 @@
   "These could not be removed either: %@": "Neanche questi sono stati rimossi: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Le risoluzioni dei nomi tramite il resolver del Mac continuano a uscire, così la VPN ritrova il suo server.",
   "MugVPN in Login Items": "MugVPN negli elementi di login",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Il portachiavi ha conservato una password salvata che MugVPN doveva dimenticare: rimuovila in Accesso Portachiavi."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Il portachiavi ha conservato una password salvata che MugVPN doveva dimenticare: rimuovila in Accesso Portachiavi.",
+  "Connection: %@": "Connessione: %@"
  },
  "ja": {
   "OK": "OK",
@@ -927,7 +936,8 @@
   "These could not be removed either: %@": "次のものも削除できませんでした: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN がサーバを再び見つけられるよう、Mac のリゾルバ経由の名前解決は引き続き外部へ送られます。",
   "MugVPN in Login Items": "ログイン項目の MugVPN",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN が忘れるべき保存したパスワードをキーチェーンが保持しています。キーチェーンアクセスで削除してください。"
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN が忘れるべき保存したパスワードをキーチェーンが保持しています。キーチェーンアクセスで削除してください。",
+  "Connection: %@": "接続: %@"
  },
  "ko": {
   "OK": "확인",
@@ -1020,7 +1030,8 @@
   "These could not be removed either: %@": "다음 항목도 삭제하지 못했습니다: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN이 서버를 다시 찾을 수 있도록 Mac 리졸버를 통한 이름 조회는 계속 나갑니다.",
   "MugVPN in Login Items": "로그인 항목의 MugVPN",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN이 잊어야 할 저장된 암호를 키체인이 보관했습니다. 키체인 접근에서 삭제하세요."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "MugVPN이 잊어야 할 저장된 암호를 키체인이 보관했습니다. 키체인 접근에서 삭제하세요.",
+  "Connection: %@": "연결: %@"
  },
  "nl": {
   "OK": "OK",
@@ -1113,7 +1124,8 @@
   "These could not be removed either: %@": "Ook dit kon niet worden verwijderd: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Naamopzoekingen via de resolver van de Mac gaan nog steeds naar buiten, zodat het VPN zijn server terugvindt.",
   "MugVPN in Login Items": "MugVPN in Inlogonderdelen",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "De sleutelhanger heeft een bewaard wachtwoord gehouden dat MugVPN moest vergeten: verwijder het in Sleutelhangertoegang."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "De sleutelhanger heeft een bewaard wachtwoord gehouden dat MugVPN moest vergeten: verwijder het in Sleutelhangertoegang.",
+  "Connection: %@": "Verbinding: %@"
  },
  "nb": {
   "OK": "OK",
@@ -1206,7 +1218,8 @@
   "These could not be removed either: %@": "Disse kunne heller ikke fjernes: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Navneoppslag via Macens resolver går fortsatt ut, så VPN-et kan finne serveren sin igjen.",
   "MugVPN in Login Items": "MugVPN i påloggingsobjekter",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøkkelringen beholdt et lagret passord MugVPN skulle glemme: fjern det i Nøkkelringtilgang."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nøkkelringen beholdt et lagret passord MugVPN skulle glemme: fjern det i Nøkkelringtilgang.",
+  "Connection: %@": "Tilkobling: %@"
  },
  "pl": {
   "OK": "OK",
@@ -1299,7 +1312,8 @@
   "These could not be removed either: %@": "Tego również nie udało się usunąć: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Zapytania o nazwy przez resolver Maca nadal wychodzą, aby VPN mógł znów znaleźć swój serwer.",
   "MugVPN in Login Items": "MugVPN w Rzeczach otwieranych podczas logowania",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Pęk kluczy zachował zapisane hasło, które MugVPN miał zapomnieć: usuń je w Pęku kluczy."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Pęk kluczy zachował zapisane hasło, które MugVPN miał zapomnieć: usuń je w Pęku kluczy.",
+  "Connection: %@": "Połączenie: %@"
  },
  "pt-BR": {
   "OK": "OK",
@@ -1392,7 +1406,8 @@
   "These could not be removed either: %@": "Também não foi possível remover: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "As consultas de nomes pelo resolvedor do Mac continuam saindo, para a VPN encontrar seu servidor de novo.",
   "MugVPN in Login Items": "MugVPN nos Itens de Início",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "As Chaves mantiveram uma senha salva que o MugVPN deveria esquecer: remova-a no Acesso às Chaves."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "As Chaves mantiveram uma senha salva que o MugVPN deveria esquecer: remova-a no Acesso às Chaves.",
+  "Connection: %@": "Conexão: %@"
  },
  "ru": {
   "OK": "ОК",
@@ -1485,7 +1500,8 @@
   "These could not be removed either: %@": "Это тоже удалить не удалось: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запросы имён через системный резолвер по-прежнему уходят наружу, чтобы VPN снова нашёл свой сервер.",
   "MugVPN in Login Items": "MugVPN в объектах входа",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Связка ключей сохранила пароль, который MugVPN должен был забыть: удалите его в «Связке ключей»."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Связка ключей сохранила пароль, который MugVPN должен был забыть: удалите его в «Связке ключей».",
+  "Connection: %@": "Подключение: %@"
  },
  "sv": {
   "OK": "OK",
@@ -1578,7 +1594,8 @@
   "These could not be removed either: %@": "Detta kunde inte heller tas bort: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Namnuppslag via Macens resolver går fortfarande ut, så att VPN:et kan hitta sin server igen.",
   "MugVPN in Login Items": "MugVPN i Inloggningsobjekt",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nyckelringen behöll ett sparat lösenord som MugVPN skulle glömma: ta bort det i Nyckelhanterare."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Nyckelringen behöll ett sparat lösenord som MugVPN skulle glömma: ta bort det i Nyckelhanterare.",
+  "Connection: %@": "Anslutning: %@"
  },
  "tr": {
   "OK": "Tamam",
@@ -1671,7 +1688,8 @@
   "These could not be removed either: %@": "Bunlar da silinemedi: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "VPN’in sunucusunu yeniden bulabilmesi için Mac’in çözümleyicisi üzerinden ad sorguları dışarı çıkmaya devam eder.",
   "MugVPN in Login Items": "Giriş Öğeleri’ndeki MugVPN",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Anahtar Zinciri, MugVPN’in unutması gereken kayıtlı bir parolayı tuttu: Anahtar Zinciri Erişimi’nde silin."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Anahtar Zinciri, MugVPN’in unutması gereken kayıtlı bir parolayı tuttu: Anahtar Zinciri Erişimi’nde silin.",
+  "Connection: %@": "Bağlantı: %@"
  },
  "uk": {
   "OK": "OK",
@@ -1764,7 +1782,8 @@
   "These could not be removed either: %@": "Це теж видалити не вдалося: %@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "Запити імен через системний резолвер і далі йдуть назовні, щоб VPN знову знайшов свій сервер.",
   "MugVPN in Login Items": "MugVPN в об’єктах входу",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Зв’язка ключів зберегла пароль, який MugVPN мав забути: видаліть його в «Доступі до зв’язки ключів»."
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "Зв’язка ключів зберегла пароль, який MugVPN мав забути: видаліть його в «Доступі до зв’язки ключів».",
+  "Connection: %@": "Підключення: %@"
  },
  "zh-Hans": {
   "OK": "好",
@@ -1857,7 +1876,8 @@
   "These could not be removed either: %@": "以下内容也无法移除：%@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "通过 Mac 解析器的名称查询仍会发出，以便 VPN 能再次找到其服务器。",
   "MugVPN in Login Items": "登录项中的 MugVPN",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "钥匙串保留了 MugVPN 应忘记的存储密码：请在“钥匙串访问”中移除它。"
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "钥匙串保留了 MugVPN 应忘记的存储密码：请在“钥匙串访问”中移除它。",
+  "Connection: %@": "连接：%@"
  },
  "zh-Hant": {
   "OK": "好",
@@ -1950,6 +1970,7 @@
   "These could not be removed either: %@": "以下項目也無法移除：%@",
   "Name lookups through the Mac's resolver still go out, so the VPN can find its server again.": "透過 Mac 解析器的名稱查詢仍會送出，讓 VPN 能再次找到其伺服器。",
   "MugVPN in Login Items": "登入項目中的 MugVPN",
-  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "鑰匙圈保留了 MugVPN 應忘記的儲存密碼：請在「鑰匙圈存取」中移除它。"
+  "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.": "鑰匙圈保留了 MugVPN 應忘記的儲存密碼：請在「鑰匙圈存取」中移除它。",
+  "Connection: %@": "連線：%@"
  }
 }

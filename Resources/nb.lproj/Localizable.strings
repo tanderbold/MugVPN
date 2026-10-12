@@ -62,6 +62,7 @@
 "Connection Settings…" = "Tilkoblingsinnstillinger…";
 "Connection logs (up to 1 MB each: addresses, servers, errors)" = "Tilkoblingslogger (opptil 1 MB hver: adresser, servere, feil)";
 "Connection settings" = "Tilkoblingsinnstillinger";
+"Connection: %@" = "Tilkobling: %@";
 "Connections" = "Tilkoblinger";
 "Connections…" = "Tilkoblinger…";
 "Copy" = "Kopier";
