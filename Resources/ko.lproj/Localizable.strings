@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN이 아직 VPN이 설정한 DNS나 경로를 제거하는 중이며 그때까지 설치된 상태로 유지됩니다. 1분 후에 다시 시도하세요.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN이 제거되었지만 다음 항목은 삭제하지 못했습니다: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN이 터널을 시작하려면 도우미가 필요합니다.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 도우미는 버전 %@로, 이 앱의 %@가 아닙니다. 사용하는 연결이 없을 때(또는 재시동 후) 업데이트됩니다.";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "실행 중인 도우미가 오래되어 서버 DNS용 도메인을 무시합니다. 업데이트된 후 다시 연결하세요";
 "username %@" = "사용자 이름 %@";
 "write a server as: host port udp|tcp" = "서버는 '호스트 포트 udp|tcp' 형식으로 작성하십시오";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.";

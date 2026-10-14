@@ -99,7 +99,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nenastaveno: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl použít svůj DNS: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).",
   "%@: DNS only for %@": "%@: DNS jen pro %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS jen pro %@; ostatní jména má %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS jen pro %@; ostatní jména má %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny."
  },
  "de": {
   "OK": "OK",
@@ -201,7 +202,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nicht gesetzt: Eine andere Verbindung braucht ebenfalls DNS für alle Namen, und dieser Server hat keine Domains gesendet",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht verwenden: Eine andere Verbindung braucht ebenfalls DNS für alle Namen, und dieser Server hat keine Domains gesendet. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains).",
   "%@: DNS only for %@": "%@: DNS nur für %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS nur für %@; %@ hat die übrigen Namen"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS nur für %@; %@ hat die übrigen Namen",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Die VPN-Konfiguration von MugVPN, Protokolle, Einstellungen und gespeicherte Passwörter werden entfernt. Tunnel werden getrennt."
  },
  "da": {
   "OK": "OK",
@@ -303,7 +305,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ikke sat: en anden forbindelse har også brug for DNS til alle navne, og denne server sendte ingen domæner",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruge sin DNS: en anden forbindelse har også brug for DNS til alle navne, og denne server sendte ingen domæner. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner).",
   "%@: DNS only for %@": "%@: DNS kun for %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS kun for %@; %@ har de andre navne"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS kun for %@; %@ har de andre navne",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes."
  },
  "el": {
   "OK": "OK",
@@ -405,7 +408,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Δεν ορίστηκε: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να χρησιμοποιήσει το DNS του: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).",
   "%@: DNS only for %@": "%@: DNS μόνο για %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται."
  },
  "es": {
   "OK": "Aceptar",
@@ -507,7 +511,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "No establecido: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo usar su DNS: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).",
   "%@: DNS only for %@": "%@: DNS solo para %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo para %@; %@ tiene los demás nombres"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo para %@; %@ tiene los demás nombres",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan."
  },
  "fa": {
   "OK": "تأیید",
@@ -609,7 +614,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "تنظیم نشد: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست از DNS خود استفاده کند: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).",
   "%@: DNS only for %@": "%@: DNS فقط برای %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند."
  },
  "fi": {
   "OK": "OK",
@@ -711,7 +717,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ei asetettu: toinenkin yhteys tarvitsee DNS:n kaikille nimille, eikä tämä palvelin antanut verkkotunnuksia",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut käyttää DNS:äänsä: toinenkin yhteys tarvitsee DNS:n kaikille nimille, eikä tämä palvelin antanut verkkotunnuksia. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille).",
   "%@: DNS only for %@": "%@: DNS vain kohteille %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS vain kohteille %@; muut nimet ovat yhteydellä %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS vain kohteille %@; muut nimet ovat yhteydellä %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan."
  },
  "fr": {
   "OK": "OK",
@@ -813,7 +820,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Non défini : une autre connexion a aussi besoin du DNS pour tous les noms, et ce serveur n'a donné aucun domaine",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu utiliser son DNS : une autre connexion a aussi besoin du DNS pour tous les noms, et ce serveur n'a donné aucun domaine. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines).",
   "%@: DNS only for %@": "%@ : DNS seulement pour %@",
-  "%@: DNS only for %@; %@ has the other names": "%@ : DNS seulement pour %@ ; %@ a les autres noms"
+  "%@: DNS only for %@; %@ has the other names": "%@ : DNS seulement pour %@ ; %@ a les autres noms",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés."
  },
  "it": {
   "OK": "OK",
@@ -915,7 +923,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Non impostato: anche un'altra connessione richiede il DNS per tutti i nomi e questo server non ha fornito domini",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto usare il suo DNS: anche un'altra connessione richiede il DNS per tutti i nomi e questo server non ha fornito domini. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini).",
   "%@: DNS only for %@": "%@: DNS solo per %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo per %@; %@ ha gli altri nomi"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS solo per %@; %@ ha gli altri nomi",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configurazione VPN di MugVPN, i registri, le impostazioni e le password salvate verranno rimossi. I tunnel vengono disconnessi."
  },
  "ja": {
   "OK": "OK",
@@ -1017,7 +1026,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "未設定: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を使用できませんでした: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。",
   "%@: DNS only for %@": "%@: DNS は %@ のみ",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS は %@ のみ。その他の名前は %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS は %@ のみ。その他の名前は %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN の VPN 構成、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。"
  },
  "ko": {
   "OK": "확인",
@@ -1119,7 +1129,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "설정 안 됨: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 사용할 수 없습니다: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.",
   "%@: DNS only for %@": "%@: %@에만 DNS 적용",
-  "%@: DNS only for %@; %@ has the other names": "%@: %@에만 DNS 적용, 나머지 이름은 %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: %@에만 DNS 적용, 나머지 이름은 %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다."
  },
  "nl": {
   "OK": "OK",
@@ -1221,7 +1232,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Niet ingesteld: een andere verbinding heeft ook DNS voor alle namen nodig en deze server gaf geen domeinen",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet gebruiken: een andere verbinding heeft ook DNS voor alle namen nodig en deze server gaf geen domeinen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen).",
   "%@: DNS only for %@": "%@: DNS alleen voor %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS alleen voor %@; %@ heeft de overige namen"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS alleen voor %@; %@ heeft de overige namen",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "De VPN-configuratie van MugVPN, logboeken, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken."
  },
  "nb": {
   "OK": "OK",
@@ -1323,7 +1335,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ikke satt: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruke sin DNS: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).",
   "%@: DNS only for %@": "%@: DNS bare for %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS bare for %@; %@ har de andre navnene"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS bare for %@; %@ har de andre navnene",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPNs VPN-konfigurasjon, logger, innstillinger og lagrede passord fjernes. Tunneler kobles fra."
  },
  "pl": {
   "OK": "OK",
@@ -1425,7 +1438,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Nie ustawiono: inne połączenie też potrzebuje DNS dla wszystkich nazw, a ten serwer nie podał domen",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł użyć swojego DNS: inne połączenie też potrzebuje DNS dla wszystkich nazw, a ten serwer nie podał domen. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen).",
   "%@: DNS only for %@": "%@: DNS tylko dla %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS tylko dla %@; pozostałe nazwy ma %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS tylko dla %@; pozostałe nazwy ma %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfiguracja VPN aplikacji MugVPN, dzienniki, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1527,7 +1541,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Não definido: outra conexão também precisa de DNS para todos os nomes e este servidor não enviou domínios",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde usar seu DNS: outra conexão também precisa de DNS para todos os nomes e este servidor não enviou domínios. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios).",
   "%@: DNS only for %@": "%@: DNS só para %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS só para %@; %@ tem os demais nomes"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS só para %@; %@ tem os demais nomes",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "A configuração de VPN do MugVPN, os registros, os ajustes e as senhas salvas serão removidos. Os túneis são desconectados."
  },
  "ru": {
   "OK": "ОК",
@@ -1629,7 +1644,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Не задан: другому подключению тоже нужен DNS для всех имён, а этот сервер не передал доменов",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог использовать свой DNS: другому подключению тоже нужен DNS для всех имён, а этот сервер не передал доменов. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов).",
   "%@: DNS only for %@": "%@: DNS только для %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS только для %@; остальные имена у %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS только для %@; остальные имена у %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфигурация VPN приложения MugVPN, журналы, настройки и сохранённые пароли будут удалены. Туннели будут отключены."
  },
  "sv": {
   "OK": "OK",
@@ -1731,7 +1747,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Inte inställd: en annan anslutning behöver också DNS för alla namn, och den här servern gav inga domäner",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte använda sin DNS: en annan anslutning behöver också DNS för alla namn, och den här servern gav inga domäner. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner).",
   "%@: DNS only for %@": "%@: DNS bara för %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS bara för %@; %@ har övriga namn"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS bara för %@; %@ har övriga namn",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:s VPN-konfiguration, loggar, inställningar och sparade lösenord tas bort. Tunnlar kopplas från."
  },
  "tr": {
   "OK": "Tamam",
@@ -1833,7 +1850,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Ayarlanmadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini kullanamadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.",
   "%@: DNS only for %@": "%@: DNS yalnızca %@ için",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir."
  },
  "uk": {
   "OK": "OK",
@@ -1935,7 +1953,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "Не задано: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг використати свій DNS: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).",
   "%@: DNS only for %@": "%@: DNS лише для %@",
-  "%@: DNS only for %@; %@ has the other names": "%@: DNS лише для %@; решта імен у %@"
+  "%@: DNS only for %@; %@ has the other names": "%@: DNS лише для %@; решта імен у %@",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано."
  },
  "zh-Hans": {
   "OK": "好",
@@ -2037,7 +2056,8 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "未设置：另一个连接也需要用于所有名称的 DNS，而此服务器未提供域名",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法使用其 DNS：另一个连接也需要用于所有名称的 DNS，而此服务器未提供域名。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。",
   "%@: DNS only for %@": "%@：DNS 仅用于 %@",
-  "%@: DNS only for %@; %@ has the other names": "%@：DNS 仅用于 %@；其他名称由 %@ 使用"
+  "%@: DNS only for %@; %@ has the other names": "%@：DNS 仅用于 %@；其他名称由 %@ 使用",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -2139,6 +2159,7 @@
   "Not set: another connection also needs DNS for all names, and this server gave no domains": "未設定：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域",
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法使用其 DNS：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。",
   "%@: DNS only for %@": "%@：DNS 僅用於 %@",
-  "%@: DNS only for %@; %@ has the other names": "%@：DNS 僅用於 %@；其他名稱由 %@ 使用"
+  "%@: DNS only for %@; %@ has the other names": "%@：DNS 僅用於 %@；其他名稱由 %@ 使用",
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 設定、記錄、設定值和已儲存的密碼將被移除。通道將中斷連線。"
  }
 }

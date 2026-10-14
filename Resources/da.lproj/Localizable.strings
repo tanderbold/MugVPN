@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN er stadig ved at fjerne den DNS eller de ruter, en VPN har sat, og forbliver installeret indtil da. Prøv igen om et minut.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN er afinstalleret, men disse kunne ikke fjernes: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN skal bruge sin hjælper for at starte tunneler.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN's hjælper svarede ikke (%@). Fjern MugVPN's systemdel med en administratoradgangskode i stedet?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN's hjælper er version %@, nyere end denne app (%@): opdater MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN's hjælper er version %@, ikke denne apps %@: den opdateres, når ingen forbindelse bruger den (eller efter en genstart).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "den kørende hjælper er ældre og ville ignorere domænerne til serverens DNS: forbind igen, når den er opdateret";
 "username %@" = "brugernavn %@";
 "write a server as: host port udp|tcp" = "angiv en server som: vært port udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes.";

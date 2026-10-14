@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN 仍在移除 VPN 设置的 DNS 或路由，在此之前会保持安装。请一分钟后再试。";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN 已卸载，但以下内容无法移除：%@";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其辅助程序来启动隧道。";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "正在运行的辅助程序较旧，会忽略用于服务器 DNS 的域名：请在其更新后重新连接";
 "username %@" = "用户名 %@";
 "write a server as: host port udp|tcp" = "服务器格式应为：主机 端口 udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。";

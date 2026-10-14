@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ще знімає DNS або маршрути, встановлені VPN, і доти залишається встановленим. Повторіть за хвилину.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN видалено, але це видалити не вдалося: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN потрібен допоміжний компонент для запуску тунелів.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Помічник MugVPN не відповів (%@). Видалити системну частину MugVPN з паролем адміністратора?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Помічник MugVPN версії %@ — новіший за цей застосунок (%@): оновіть MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Помічник MugVPN версії %@, а не %@, як застосунок: він оновиться, коли його не використовуватиме жодне підключення (або після перезавантаження).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "запущений помічник старіший і проігнорує домени для DNS сервера: підключіться знову, коли він оновиться";
 "username %@" = "ім'я користувача %@";
 "write a server as: host port udp|tcp" = "вкажіть сервер у форматі: хост порт udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано.";

@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN retire encore le DNS ou les routes définis par un VPN et reste installé jusque-là. Réessayez dans une minute.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN est désinstallé, mais ces éléments n’ont pas pu être supprimés : %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN a besoin de son outil d'assistance pour démarrer les tunnels.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "L'assistant de MugVPN n'a pas répondu (%@). Supprimer la partie système de MugVPN avec un mot de passe administrateur ?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "L'assistant de MugVPN est en version %@, plus récente que cette app (%@) : mettez MugVPN à jour.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "L'assistant de MugVPN est en version %@, pas celle de cette app (%@) : il est mis à jour dès qu'aucune connexion ne l'utilise (ou après un redémarrage).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "l’assistant en cours d’exécution est plus ancien et ignorerait les domaines pour le DNS du serveur : reconnectez-vous une fois qu’il sera mis à jour";
 "username %@" = "nom d'utilisateur %@";
 "write a server as: host port udp|tcp" = "indiquez un serveur sous la forme : hôte port udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.";

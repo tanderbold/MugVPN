@@ -14,7 +14,8 @@ import re
 import sys
 
 ROOT = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-SRC = os.path.join(ROOT, "Sources", "MugVPN")
+# The interface (MugVPNUI) and each product's own executable.
+SRCS = [os.path.join(ROOT, "Sources", d) for d in ("MugVPNUI", "MugVPN")]
 RES = os.path.join(ROOT, "Resources")
 TRANS = os.path.join(ROOT, "tools", "l10n", "translations")
 
@@ -24,9 +25,11 @@ LANGS = ["en", "cs", "de", "da", "el", "es", "fa", "fi", "fr", "it", "ja", "ko",
 
 def keys():
     out = set()
-    for f in sorted(os.listdir(SRC)):
-        if f.endswith(".swift"):
-            text = open(os.path.join(SRC, f), encoding="utf-8").read()
+    for src in SRCS:
+        for f in sorted(os.listdir(src)):
+            if not f.endswith(".swift"):
+                continue
+            text = open(os.path.join(src, f), encoding="utf-8").read()
             for m in re.finditer(r'\bL\("((?:[^"\\]|\\.)*)"', text):
                 out.add(m.group(1).replace('\\"', '"').replace("\\n", "\n").replace("\\\\", "\\"))
     return sorted(out)

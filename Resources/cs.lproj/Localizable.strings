@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ještě odstraňuje DNS nebo trasy, které nastavila VPN, a do té doby zůstane nainstalován. Zkuste to znovu za minutu.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN je odinstalován, ale tyto položky nešlo odstranit: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Pomocník MugVPN neodpověděl (%@). Odstranit systémovou část MugVPN pomocí hesla správce?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Pomocník MugVPN má verzi %@, novější než tato aplikace (%@): aktualizujte MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "spuštěná pomocná služba je starší a domény pro DNS serveru by ignorovala: připojte se znovu, až se aktualizuje";
 "username %@" = "uživatelské jméno %@";
 "write a server as: host port udp|tcp" = "zadejte server ve tvaru: hostitel port udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";

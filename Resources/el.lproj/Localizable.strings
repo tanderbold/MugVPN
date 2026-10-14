@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "Το MugVPN αφαιρεί ακόμη το DNS ή τις διαδρομές που όρισε ένα VPN και θα παραμείνει εγκατεστημένο μέχρι τότε. Δοκιμάστε ξανά σε ένα λεπτό.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "Το MugVPN απεγκαταστάθηκε, αλλά αυτά δεν αφαιρέθηκαν: %@";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "η βοηθητική υπηρεσία που εκτελείται είναι παλαιότερη και θα αγνοούσε τους τομείς για το DNS του διακομιστή: συνδεθείτε ξανά μόλις ενημερωθεί";
 "username %@" = "όνομα χρήστη %@";
 "write a server as: host port udp|tcp" = "γράψτε τον διακομιστή ως: κεντρικός υπολογιστής θύρα udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.";

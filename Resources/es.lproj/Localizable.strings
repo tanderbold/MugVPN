@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN todavía está quitando el DNS o las rutas que estableció una VPN y seguirá instalado hasta entonces. Inténtelo de nuevo en un minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN está desinstalado, pero no se pudo quitar esto: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necesita su asistente para iniciar túneles.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "El asistente de MugVPN no respondió (%@). ¿Eliminar la parte del sistema de MugVPN con una contraseña de administrador?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "El asistente de MugVPN es la versión %@, más reciente que esta app (%@): actualice MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "El asistente de MugVPN es la versión %@, no la %@ de esta app: se actualiza cuando ninguna conexión lo usa (o tras reiniciar).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "el asistente en ejecución es más antiguo e ignoraría los dominios para el DNS del servidor: vuelva a conectar cuando se haya actualizado";
 "username %@" = "usuario %@";
 "write a server as: host port udp|tcp" = "escribe el servidor así: host puerto udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan.";

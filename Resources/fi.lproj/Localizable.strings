@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN poistaa vielä VPN:n asettamaa DNS:ää tai reittejä ja pysyy asennettuna siihen asti. Yritä uudelleen minuutin kuluttua.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN on poistettu, mutta näitä ei voitu poistaa: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "käynnissä oleva apupalvelu on vanhempi ja ohittaisi palvelimen DNS:n verkkotunnukset: yhdistä uudelleen, kun se on päivittynyt";
 "username %@" = "käyttäjänimi %@";
 "write a server as: host port udp|tcp" = "kirjoita palvelin muodossa: isäntä portti udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";

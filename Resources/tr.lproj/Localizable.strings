@@ -138,6 +138,7 @@
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN bir VPN’in ayarladığı DNS’i veya yönlendirmeleri hâlâ kaldırıyor ve o zamana kadar yüklü kalacak. Bir dakika sonra yeniden deneyin.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN kaldırıldı ancak şunlar silinemedi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN yardımcısı yanıt vermedi (%@). MugVPN'in sistem bölümü bunun yerine yönetici parolasıyla kaldırılsın mı?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN yardımcısı %@ sürümünde, bu uygulamadan (%@) daha yeni: MugVPN'i güncelleyin.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.";
@@ -271,4 +272,3 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "çalışan yardımcı daha eski ve sunucunun DNS’i için alan adlarını yok sayar: güncellendikten sonra yeniden bağlanın";
 "username %@" = "kullanıcı adı %@";
 "write a server as: host port udp|tcp" = "sunucuyu şöyle yazın: ana bilgisayar port udp|tcp";
-"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.";

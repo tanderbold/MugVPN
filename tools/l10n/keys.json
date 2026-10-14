@@ -417,6 +417,9 @@
   "key": "MugVPN needs its helper to start tunnels."
  },
  {
+  "key": "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected."
+ },
+ {
   "key": "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?"
  },
  {
