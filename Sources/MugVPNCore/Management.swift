@@ -34,6 +34,16 @@ public struct ManagementState: Equatable, Sendable {
     public var remoteIP: String
     public var localIPv6: String
 
+    public init(time: Int, name: String, description: String = "", localIP: String = "", remoteIP: String = "",
+                localIPv6: String = "") {
+        self.time = time
+        self.name = name
+        self.description = description
+        self.localIP = localIP
+        self.remoteIP = remoteIP
+        self.localIPv6 = localIPv6
+    }
+
     public init?(payload: String) {
         let f = payload.split(separator: ",", omittingEmptySubsequences: false).map(String.init)
         guard f.count >= 2, let t = Int(f[0]) else { return nil }

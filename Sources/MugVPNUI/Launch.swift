@@ -175,7 +175,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         let defaults: UserDefaults
         let services: Services
         let backendParts: Backend
-        let transport: ManagementTransport
+        let transport: TunnelTransport
         let secrets: SecretStore
         var forced: [String: Any] = [:]
         var userDir = home + "/Library/Application Support/MugVPN/config"
@@ -205,7 +205,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 (backendParts, transport) = product.makeBackend()
             } else {
                 backendParts = Backend(helper: b)
-                transport = b
+                transport = ManagementTunnelTransport(b)
             }
             secrets = MemorySecrets()
             defaults = UserDefaults(suiteName: "com.mugvpn.app.e2e")!

@@ -7,7 +7,7 @@ import MugVPNCore
 public struct Product {
     public var capabilities: BackendCapabilities
     /// The backend and the channel to its sessions' management (made once, when the app starts).
-    public var makeBackend: () -> (backend: Backend, transport: ManagementTransport)
+    public var makeBackend: () -> (backend: Backend, transport: TunnelTransport)
     /// Its system part's registration (a helper's, a VPN configuration's).
     public var makeHelperSetup: () -> HelperSetup
     /// Where each session's files are (its log: `<runDir>/<id>/openvpn.log`), and the backend's logs.
@@ -27,7 +27,7 @@ public struct Product {
     /// Another product's profiles, offered once to import (its name, its profiles' folder) while this one has none.
     public var importProfilesFrom: (name: String, folder: String)?
 
-    public init(capabilities: BackendCapabilities, makeBackend: @escaping () -> (backend: Backend, transport: ManagementTransport),
+    public init(capabilities: BackendCapabilities, makeBackend: @escaping () -> (backend: Backend, transport: TunnelTransport),
                 makeHelperSetup: @escaping () -> HelperSetup, runDir: String, logsDir: String, sharedDataPaths: [String],
                 systemParts: @escaping (Bool) -> [String], commandSocketPath: String, engineVersion: @escaping (_ run: (String, [String]) -> String) -> String,
                 devHelper: (() -> MugVPNHelperProtocol)? = nil, devCommands: [String: ([String]) -> Never] = [:],

@@ -122,7 +122,7 @@ public enum ManagementEvent: Equatable, Sendable {
         }
     }
 
-    static func parsePassword(_ p: String) -> PasswordRequest {
+    public static func parsePassword(_ p: String) -> PasswordRequest {
         if p.hasPrefix("Auth-Token:") { return .authToken(String(p.dropFirst("Auth-Token:".count))) }
         if p.hasPrefix("Verification Failed: '"), let type = quoted(p).first {
             var challenge: DynamicChallenge?
@@ -148,8 +148,9 @@ public enum ManagementEvent: Equatable, Sendable {
         return .other(p)
     }
 
-    /// `<flags>:<state id>:<username b64>:<text>`; the text may contain colons.
-    static func parseCRV1(_ s: String) -> DynamicChallenge? {
+    /// A server's dynamic challenge after its `CRV1:`: `<flags>:<state id>:<username b64>:<text>` (the text may
+    /// contain colons).
+    public static func parseCRV1(_ s: String) -> DynamicChallenge? {
         let f = s.split(separator: ":", maxSplits: 3, omittingEmptySubsequences: false).map(String.init)
         guard f.count == 4 else { return nil }
         let flags = Set(f[0].split(separator: ",").map(String.init))
@@ -158,7 +159,8 @@ public enum ManagementEvent: Equatable, Sendable {
                                 stateID: f[1], username: user, text: f[3])
     }
 
-    static func parseEcho(_ s: String) -> EchoMessage {
+    /// A server's echo message (`msg-window ...`, `forget-passwords`...).
+    public static func parseEcho(_ s: String) -> EchoMessage {
         func arg(_ cmd: String) -> String? {
             if s == cmd { return "" }
             return s.hasPrefix(cmd + " ") ? String(s.dropFirst(cmd.count + 1)) : nil
@@ -171,7 +173,8 @@ public enum ManagementEvent: Equatable, Sendable {
         return .other(s)
     }
 
-    static func parseInfo(_ s: String) -> InfoMessage {
+    /// A server's info message (`WEB_AUTH::<url>`, `OPEN_URL:<url>`, `CR_TEXT:<flags>:<text>`...).
+    public static func parseInfo(_ s: String) -> InfoMessage {
         for prefix in ["WEB_AUTH:", "OPEN_URL:"] where s.hasPrefix(prefix) {
             let rest = String(s.dropFirst(prefix.count))
             if prefix == "OPEN_URL:" { return .webAuth(flags: "", url: rest) }

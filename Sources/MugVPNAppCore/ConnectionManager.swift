@@ -163,8 +163,7 @@ public final class ActiveConnection {
     public let profile: Profile
     public let controller: ConnectionController
     public internal(set) var helperID: String?
-    var proto = ManagementProtocol()
-    var link: ManagementLink?
+    var link: TunnelLink?
     var stopRequested = false
     var upScriptRan = false
     /// Management password (persistent connections).
@@ -340,7 +339,7 @@ public final class ConnectionManager {
     }
 
     public let backend: Backend
-    private let transport: ManagementTransport
+    private let transport: TunnelTransport
     private let reader: ProfileBundleReader
     private let scheduler: Scheduler
     private let secrets: SecretStore
@@ -360,11 +359,11 @@ public final class ConnectionManager {
     public convenience init(helper: HelperClient, transport: ManagementTransport, reader: ProfileBundleReader, scheduler: Scheduler,
                             secrets: SecretStore, settings: @escaping () -> ConnectionSettings, ui: @escaping (Profile) -> ConnectionUI,
                             memory: ActiveMemory, scripts: ScriptSupport? = nil) {
-        self.init(backend: Backend(helper: helper), transport: transport, reader: reader, scheduler: scheduler, secrets: secrets,
-                  settings: settings, ui: ui, memory: memory, scripts: scripts)
+        self.init(backend: Backend(helper: helper), transport: ManagementTunnelTransport(transport), reader: reader,
+                  scheduler: scheduler, secrets: secrets, settings: settings, ui: ui, memory: memory, scripts: scripts)
     }
 
-    public init(backend: Backend, transport: ManagementTransport, reader: ProfileBundleReader, scheduler: Scheduler,
+    public init(backend: Backend, transport: TunnelTransport, reader: ProfileBundleReader, scheduler: Scheduler,
                 secrets: SecretStore, settings: @escaping () -> ConnectionSettings, ui: @escaping (Profile) -> ConnectionUI,
                 memory: ActiveMemory, scripts: ScriptSupport? = nil) {
         self.scripts = scripts
@@ -686,14 +685,11 @@ public final class ConnectionManager {
         controller.displayName = p.displayName
         controller.onKeyPassword = { [weak self] pw in self?.onKeyPassword(p, pw) }
         let c = ActiveConnection(profile: p, controller: controller)
-        controller.send = { [weak c] cmd in
-            guard let c else { return }
-            c.link?.write(c.proto.command(cmd))
-        }
+        controller.send = { [weak c] cmd in c?.link?.send(cmd) }
         controller.sendWithFD = { [weak c] cmd, fd, done in
             guard let c, let link = c.link else { return done(false) }
             // The handle kept until it is sent.
-            link.write(c.proto.command(cmd), passing: fd.fileDescriptor) { ok in withExtendedLifetime(fd) { done(ok) } }
+            link.send(cmd, passing: fd.fileDescriptor) { ok in withExtendedLifetime(fd) { done(ok) } }
         }
         controller.tunnelRequest = { [weak self, weak c] kind, message, reply in
             guard let self, let id = c?.helperID else { return reply(.failure(ProfileError("not connected"))) }
@@ -729,19 +725,18 @@ public final class ConnectionManager {
     }
 
     private func open(_ c: ActiveConnection, socket: String, attempt: Int) {
-        let link = transport.open(socket, onData: { [weak self, weak c] data in
+        let link = transport.open(socket, onEvent: { [weak self, weak c] e in
             guard let c else { return }
-            for e in c.proto.received(data) { c.controller.handle(e) }
+            c.controller.handle(e)
             self?.onChange()
         }, onClose: { [weak self, weak c] in
             guard let self, let c else { return }
-            c.proto.closed().forEach(c.controller.handle)
             self.ended(c)
         })
         if let link {
             c.link = link
             // openvpn reads the first line as the password.
-            if let pw = c.password { link.write(c.proto.command(pw)) }
+            if let pw = c.password { link.send(.managementPassword(pw)) }
             c.controller.attached()
             return
         }

@@ -90,7 +90,7 @@ final class Harness {
     init(settings: ConnectionSettings = ConnectionSettings(),
          systemProxy: @escaping (String) -> (host: String, port: Int)? = { _ in nil }) {
         c = ConnectionController(profile: "office", ui: ui, secrets: secrets, settings: settings, systemProxy: systemProxy)
-        c.send = { [unowned self] in self.sent.append($0) }
+        c.send = { [unowned self] in self.sent.append($0.managementText) }
         c.onStop = { [unowned self] in self.stops += 1 }
         c.onLost = { [unowned self] in self.lost += 1 }
     }
@@ -408,7 +408,7 @@ func registerConnectionTests() {
             reply(answer)
         }
         h.c.sendWithFD = { cmd, fh, done in
-            withFD.append((cmd, fh.fileDescriptor))
+            withFD.append((cmd.managementText, fh.fileDescriptor))
             done(true)
         }
         answer = .success(FileHandle(fileDescriptor: 42, closeOnDealloc: false))

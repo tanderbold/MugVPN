@@ -111,13 +111,13 @@ public final class ConnectionController {
     public static let keychainRemoveFailed = "The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access."
     /// How messages are titled (the profile's name).
     public var displayName: String
-    /// Writes one management command. A command with a line break or NUL in it
-    /// (from a server-supplied value) is dropped: it would be several commands.
-    public var send: (String) -> Void {
+    /// Sends one command to the engine. One with a line break or NUL in a value (from a server-supplied one) is
+    /// dropped: in openvpn 2's interface it would be several commands.
+    public var send: (TunnelCommand) -> Void {
         get {
             { [weak self] cmd in
                 guard let self else { return }
-                guard !cmd.unicodeScalars.contains(where: { $0 == "\n" || $0 == "\r" || $0 == "\0" }) else {
+                guard !cmd.hasLineBreak else {
                     self.addLog("MugVPN: dropped a management command with a line break")
                     return
                 }
@@ -126,12 +126,12 @@ public final class ConnectionController {
         }
         set { write = newValue }
     }
-    private var write: (String) -> Void = { _ in }
+    private var write: (TunnelCommand) -> Void = { _ in }
     /// openvpn without root asks for its tunnel (OPENTUN, routes, DNS): the helper
     /// checks and does it. nil: no helper takes them (a root openvpn), refused.
     public var tunnelRequest: ((_ kind: String, _ message: String, _ reply: @escaping (Result<FileHandle?, Error>) -> Void) -> Void)?
     /// Writes a command together with a descriptor (the utun for OPENTUN); `done(false)` if it was not sent.
-    public var sendWithFD: (String, FileHandle, @escaping (Bool) -> Void) -> Void = { _, _, done in done(false) }
+    public var sendWithFD: (TunnelCommand, FileHandle, @escaping (Bool) -> Void) -> Void = { _, _, done in done(false) }
     /// openvpn's requests that only the helper answers.
     public static let tunnelRequestNames: Set<String> = ["OPENTUN", "IFCONFIG", "IFCONFIG6", "ROUTE", "ROUTE6", "ROUTEDEL",
                                                          "ROUTE6DEL", "DNSVAR", "DNSUP", "DNSDOWN"]
@@ -188,9 +188,9 @@ public final class ConnectionController {
     /// The management socket is open.
     public func attached() {
         status = .connecting("")
-        ["state on", "log on all", "bytecount 5",
+        [TunnelCommand.watchState, .watchLog, .byteCount(seconds: 5),
          // Reconnects must not wait for the app, which may be gone by then.
-         "hold off", "hold release"].forEach(send)
+         .holdOff, .releaseHold].forEach(send)
     }
 
     /// Stop requested, or openvpn gone: nothing left to stop.
@@ -211,39 +211,39 @@ public final class ConnectionController {
     private func handleTunnelRequest(_ name: String, _ msg: String) {
         guard let tunnelRequest else {
             addLog("MugVPN: refused openvpn's \(name) request (no helper takes it)")
-            return send("needok '\(name)' cancel")
+            return send(.confirm(name: name, ok: false))
         }
         tunnelRequest(name, msg) { [weak self] result in
             guard let self else { return }
             switch result {
             case .success(let fd?) where name == "OPENTUN":
                 // openvpn waits for an answer: without the descriptor, a refusal.
-                self.sendWithFD("needok '\(name)' ok", fd) { [weak self] sent in
+                self.sendWithFD(.confirm(name: name, ok: true), fd) { [weak self] sent in
                     guard !sent, let self else { return }
                     self.addLog("MugVPN: could not hand the tunnel to openvpn")
-                    self.send("needok '\(name)' cancel")
+                    self.send(.confirm(name: name, ok: false))
                 }
             case .success(nil) where name != "OPENTUN":
-                self.send("needok '\(name)' ok")
+                self.send(.confirm(name: name, ok: true))
             case .success:
                 self.addLog("MugVPN: the helper answered \(name) without a tunnel")
-                self.send("needok '\(name)' cancel")
+                self.send(.confirm(name: name, ok: false))
             case .failure(let e):
                 self.addLog("MugVPN: the helper refused \(name) \(msg): \((e as? ProfileError)?.description ?? e.localizedDescription)")
-                self.send("needok '\(name)' cancel")
+                self.send(.confirm(name: name, ok: false))
             }
         }
     }
 
     public func reconnect() {
-        send("signal SIGUSR1")
+        send(.reconnect)
     }
 
     public func handle(_ event: ManagementEvent) {
         switch event {
         case .state(let s): handleState(s)
         case .password(let p): handlePassword(p)
-        case .hold: send("hold release")
+        case .hold: send(.releaseHold)
         case .log(let l): append(l)
         case .byteCount(let i, let o):
             bytesIn = i
@@ -255,30 +255,30 @@ public final class ConnectionController {
             handleTunnelRequest(name, msg)
         case .needOK(let name, let msg):
             ui.askConfirmation(message: msg) { [weak self] ok in
-                self?.send("needok '\(name)' \(ok ? "ok" : "cancel")")
+                self?.send(.confirm(name: name, ok: ok))
             }
         case .needString(let name, let msg):
             if name == "pkcs11-id-request" {
                 pkcs11Entries = []
-                send("pkcs11-id-count")
+                send(.countPKCS11)
             } else {
                 ui.askString(message: msg) { [weak self] s in
                     guard let self else { return }
                     guard let s else { return self.disconnect() }
-                    self.send("needstr '\(name)' \(managementQuote(s))")
+                    self.send(.answer(name: name, value: s))
                 }
             }
         case .pkcs11Count(let n):
             pkcs11Expected = n
-            if n == 0 { send("needstr 'pkcs11-id-request' \"\"") }
-            (0..<max(n, 0)).forEach { send("pkcs11-id-get \($0)") }
+            if n == 0 { send(.answer(name: "pkcs11-id-request", value: "")) }
+            (0..<max(n, 0)).forEach { send(.getPKCS11($0)) }
         case .pkcs11Entry(let i, let id, let cert):
             pkcs11Entries.append(PKCS11Entry(index: i, id: id, certificate: cert))
             if pkcs11Entries.count == pkcs11Expected {
                 ui.choosePKCS11(pkcs11Entries.sorted { $0.index < $1.index }) { [weak self] id in
                     guard let self else { return }
                     guard let id else { return self.disconnect() }
-                    self.send("needstr 'pkcs11-id-request' \(managementQuote(id))")
+                    self.send(.answer(name: "pkcs11-id-request", value: id))
                 }
             }
         case .proxy(_, let proto, let host): answerProxy(proto: proto, host: host)
@@ -386,15 +386,15 @@ public final class ConnectionController {
     }
 
     private func sendCredentials(type: String, username: String, password: String) {
-        send("username \(managementQuote(type)) \(managementQuote(username))")
-        send("password \(managementQuote(type)) \(managementQuote(password))")
+        send(.username(type: type, value: username))
+        send(.password(type: type, value: password))
     }
 
     private func answerSecret(type: String) {
         let error = lastError.removeValue(forKey: type)
         if error == nil, settings.savePasswordsAllowed, let saved = secrets.get(profile, .keyPassword) {
             if type == "Private Key" { onKeyPassword(saved) }
-            return send("password \(managementQuote(type)) \(managementQuote(saved))")
+            return send(.password(type: type, value: saved))
         }
         ui.askSecret(type: type, error: error) { [weak self] a in
             guard let self else { return }
@@ -403,7 +403,7 @@ public final class ConnectionController {
                 self.ui.notify(title: self.displayName, text: ConnectionController.keychainSaveFailed)
             }
             if type == "Private Key" { self.onKeyPassword(a.secret) }
-            self.send("password \(managementQuote(type)) \(managementQuote(a.secret))")
+            self.send(.password(type: type, value: a.secret))
         }
     }
 
@@ -489,7 +489,7 @@ public final class ConnectionController {
             ui.askChallenge(text: text, echo: echo) { [weak self] r in
                 guard let self else { return }
                 guard let r else { return self.disconnect() }
-                self.send("cr-response \(Data(r.utf8).base64EncodedString())")
+                self.send(.challengeResponse(r))
             }
         case .text(let t): append(t)
         }
@@ -504,17 +504,17 @@ public final class ConnectionController {
 
     private func answerProxy(proto: String, host: String) {
         // An HTTP proxy carries TCP only.
-        guard proto == "TCP" else { return send("proxy NONE") }
+        guard proto == "TCP" else { return send(.proxyNone) }
         switch settings.proxy {
-        case .none: send("proxy NONE")
+        case .none: send(.proxyNone)
         case .manual(let h, let p):
-            send(ConnectionController.isHost(h) && (1...65535).contains(p) ? "proxy HTTP \(h) \(p)" : "proxy NONE")
+            send(ConnectionController.isHost(h) && (1...65535).contains(p) ? .proxyHTTP(host: h, port: p) : .proxyNone)
         case .system:
             // PAC/WPAD come from the network: the answer is checked like a typed one.
             if let p = systemProxy(host), ConnectionController.isHost(p.host), (1...65535).contains(p.port) {
-                send("proxy HTTP \(p.host) \(p.port)")
+                send(.proxyHTTP(host: p.host, port: p.port))
             } else {
-                send("proxy NONE")
+                send(.proxyNone)
             }
         }
     }

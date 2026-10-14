@@ -48,7 +48,7 @@ MugVPNApp.run(Product(
     capabilities: .helper,
     makeBackend: {
         let helper = XPCHelperClient()
-        return (Backend(helper: helper), UnixSocketTransport())
+        return (Backend(helper: helper), ManagementTunnelTransport(UnixSocketTransport()))
     },
     makeHelperSetup: { SMHelperSetup() },
     runDir: MugVPNIDs.runDir,

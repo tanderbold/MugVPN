@@ -185,7 +185,7 @@ func registerManagerTests() {
         let h = ManagerHarness()
         let m = ConnectionManager(backend: Backend(connections: helper, protection: helper, lifecycle: helper, persistent: nil,
                                                    tunnelRequests: nil, capabilities: .packetTunnel),
-                                  transport: h.transport, reader: h.reader, scheduler: h.scheduler, secrets: FakeSecrets(),
+                                  transport: ManagementTunnelTransport(h.transport), reader: h.reader, scheduler: h.scheduler, secrets: FakeSecrets(),
                                   settings: { ConnectionSettings() }, ui: { [ui = h.ui] _ in ui }, memory: h.memory)
         let site = Profile(name: "site", path: "/L/config-auto/site.ovpn", source: .persistent, folder: "")
         m.profiles = [site]
