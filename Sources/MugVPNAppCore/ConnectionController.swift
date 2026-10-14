@@ -157,6 +157,9 @@ public final class ConnectionController {
     private let systemProxy: (String) -> (host: String, port: Int)?
     private var lastError: [String: String] = [:]
     private var dynamicChallenge: (challenge: DynamicChallenge, response: String)?
+    /// A dynamic challenge being answered; the next request for 'Auth' credentials waits for its answer.
+    private var challengeOpen = false
+    private var needWhileChallenge = false
     private var echoBuffer = ""
     private var pkcs11Expected = 0
     private var pkcs11Entries: [PKCS11Entry] = []
@@ -313,14 +316,24 @@ public final class ConnectionController {
 
     private func handlePassword(_ p: PasswordRequest) {
         switch p {
-        case .credentials(let type, let sc): answerCredentials(type: type, staticChallenge: sc)
+        case .credentials(let type, let sc):
+            // (Asked again while its challenge is still being answered: answered with it.)
+            if type == "Auth", challengeOpen { needWhileChallenge = true; return }
+            answerCredentials(type: type, staticChallenge: sc)
         case .secret(let type): answerSecret(type: type)
         case .failed(let type, let challenge):
             if let challenge {
+                challengeOpen = true
+                needWhileChallenge = false
                 ui.askChallenge(text: challenge.text, echo: challenge.echo) { [weak self] response in
                     guard let self else { return }
+                    self.challengeOpen = false
                     guard let response else { return self.disconnect() }
                     self.dynamicChallenge = (challenge, response)
+                    if self.needWhileChallenge {
+                        self.needWhileChallenge = false
+                        self.answerCredentials(type: "Auth", staticChallenge: nil)
+                    }
                 }
                 return
             }

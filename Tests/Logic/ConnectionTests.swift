@@ -243,6 +243,15 @@ func registerConnectionTests() {
         expectEqual(h.takeSent(), ["username \"Auth\" \"alice\"", "password \"Auth\" \"CRV1::sid::424242\""])
         expectEqual(h.ui.asked.count, 1, "no credentials dialog for the challenge round")
     }
+    test("CON-08b", "the next Need 'Auth' arriving while the challenge is still being answered: answered once it is") {
+        let h = Harness()
+        h.line(">PASSWORD:Verification Failed: 'Auth' ['CRV1:R,E:sid:\(b64("alice")):Enter OTP']")
+        h.line(">PASSWORD:Need 'Auth' username/password")
+        expectEqual(h.ui.asked, [.challenge(text: "Enter OTP", echo: true)], "no credentials dialog meanwhile")
+        expect(h.takeSent().isEmpty)
+        h.ui.challengeReply?("424242")
+        expectEqual(h.takeSent(), ["username \"Auth\" \"alice\"", "password \"Auth\" \"CRV1::sid::424242\""])
+    }
     test("CON-24", "no line break reaches the management socket") {
         let h = Harness()
         h.line(">PASSWORD:Verification Failed: 'Auth' ['CRV1:R,E:sid:\(b64("x\nsignal SIGTERM\nforget-passwords")):OTP']")

@@ -103,14 +103,14 @@ public enum ProfilePolicy {
     }
 
     /// Directives whose parameters at these positions (1-based) are files.
-    static let fileArgs: [String: [Int]] = [
+    public static let fileArgs: [String: [Int]] = [
         "ca": [1], "cert": [1], "key": [1], "extra-certs": [1], "pkcs12": [1], "dh": [1],
         "tls-auth": [1], "tls-crypt": [1], "tls-crypt-v2": [1], "secret": [1], "crl-verify": [1],
         "askpass": [1], "auth-user-pass": [1], "http-proxy-user-pass": [1],
     ]
 
     /// Directives whose inline block holds file content rather than options.
-    static let inlineFiles: Set<String> = [
+    public static let inlineFiles: Set<String> = [
         "ca", "cert", "key", "extra-certs", "pkcs12", "dh", "tls-auth", "tls-crypt", "tls-crypt-v2",
         "secret", "crl-verify", "auth-user-pass", "http-proxy-user-pass", "peer-fingerprint",
     ]
