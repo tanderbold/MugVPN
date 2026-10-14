@@ -7,6 +7,7 @@ import shutil
 import socket
 import subprocess
 import time
+from urllib.parse import unquote
 
 import pytest
 
@@ -50,7 +51,7 @@ def primary_dns():
 
 @pytest.fixture
 def real(home):
-    for n in ("a", "b", "c", "d"):
+    for n in ("a", "b", "c", "d", "e"):
         shutil.copy(f"{STAND}/stand-{n}.ovpn", os.path.join(home, "config", f"stand-{n}.ovpn"))
     for n in ("stand-a", "stand-b"):  # the conftest's placeholders
         p = os.path.join(home, "config", f"{n}.ovpn")
@@ -101,14 +102,14 @@ def test_uj03_view_log_live_and_kept(real):
     real.click("stand-a", "View Log")
     url = wait_for(lambda: next((u for u in real.call("opened_urls")["urls"] if u.endswith("openvpn.log")), None),
                    5, "the live log")
-    path = url.replace("file://", "").replace("%20", " ")
+    path = unquote(url.replace("file://", ""))
     assert "Initialization Sequence Completed" in open(path).read(), "the user can read the live log"
     real.click("stand-a", "Disconnect")
     wait_for(lambda: "stand-a" not in tunnels(), 30, "a down")
     real.click("stand-a", "View Log")
     kept = wait_for(lambda: next((u for u in real.call("opened_urls")["urls"] if re.search(r"stand-a~[0-9a-f]{12}\.\d+\.log$", u)), None),
                     5, "the kept log")
-    assert "SIGTERM" in open(kept.replace("file://", "")).read()
+    assert "SIGTERM" in open(unquote(kept.replace("file://", ""))).read()
 
 
 def test_uj04_status_window_disconnect_and_connect_again(real):
@@ -253,3 +254,91 @@ def test_uj12_kill_switch_with_a_real_tunnel(real):
     real.click("Unblock Internet")
     wait_for(can_fetch, 20, "the Internet back after Unblock")
     assert lan_dns_answers()
+
+def ping6(ip):
+    return subprocess.run(["ping6", "-c1", "-i1", ip], capture_output=True, timeout=10).returncode == 0
+
+
+def test_uj13_ipv6_through_the_tunnel(real):
+    """stand-e gives an IPv6 address and routes its IPv6 network (fd00:95::/64): reachable while connected, its
+    route gone after."""
+    real.click("stand-e", "Connect")
+    connected(real, "stand-e")
+    assert wait_for(lambda: ping6("fd00:95::1"), 10, "the server's IPv6 network")
+    real.click("stand-e", "Disconnect")
+    wait_for(lambda: "stand-e" not in tunnels(), 30, "e down")
+    wait_for(lambda: "fd00:95::" not in subprocess.run(["netstat", "-rn", "-f", "inet6"], capture_output=True, text=True).stdout,
+             15, "its IPv6 route gone")
+
+
+def test_uj14_http_proxy_with_a_password(real, home):
+    """stand-a through the stand's HTTP proxy (127.0.0.1:3128, proxy/proxypass): the proxy's password is asked,
+    then the tunnel works."""
+    try:
+        socket.create_connection(("127.0.0.1", 3128), timeout=2).close()
+    except OSError:
+        pytest.skip("the stand's proxy is not forwarded")
+    with open(f"{STAND}/stand-a.ovpn") as f:
+        text = f.read()
+    with open(os.path.join(home, "config", "stand-ap.ovpn"), "w") as f:
+        f.write(text + "http-proxy 127.0.0.1 3128 auto\n")
+    real.call("rescan")
+    real.click("stand-ap", "Connect")
+    w = real.window("credentials", timeout=30)
+    real.set(w, "username", "proxy")
+    real.set(w, "password", "proxypass")
+    real.press(w, "ok")
+    connected(real, "stand-ap")
+    assert ping("10.91.0.1")
+
+
+def test_uj15_pkcs12_with_a_password(real, home):
+    """stand-a's certificate and key as a password-protected PKCS#12 file beside the profile: the key's password is
+    asked, then the tunnel works."""
+    with open(f"{STAND}/stand-a.ovpn") as f:
+        text = f.read()
+    cert = re.search(r"<cert>\n(.*?)</cert>", text, re.S).group(1)
+    key = re.search(r"<key>\n(.*?)</key>", text, re.S).group(1)
+    work = os.path.join(home, "p12")
+    os.makedirs(work, exist_ok=True)
+    with open(f"{work}/c.pem", "w") as f:
+        f.write(cert)
+    with open(f"{work}/k.pem", "w") as f:
+        f.write(key)
+    subprocess.run(["/usr/bin/openssl", "pkcs12", "-export", "-in", f"{work}/c.pem", "-inkey", f"{work}/k.pem",
+                    "-out", os.path.join(home, "config", "client.p12"), "-passout", "pass:p12pass",
+                    "-keypbe", "AES-256-CBC", "-certpbe", "AES-256-CBC", "-macalg", "sha256"], check=True, capture_output=True)
+    profile = re.sub(r"<cert>.*?</cert>\n|<key>.*?</key>\n", "", text, flags=re.S) + "pkcs12 client.p12\n"
+    with open(os.path.join(home, "config", "stand-a12.ovpn"), "w") as f:
+        f.write(profile)
+    real.call("rescan")
+    real.click("stand-a12", "Connect")
+    w = real.window("secret", timeout=30)
+    real.set(w, "password", "p12pass")
+    real.press(w, "ok")
+    connected(real, "stand-a12")
+    assert ping("10.91.0.1")
+
+
+def test_uj16_web_sign_in(real, home):
+    """stand-g defers the password check to a web sign-in: the app opens its page; once signed in there, the
+    tunnel comes up."""
+    import urllib.request
+    try:
+        socket.create_connection(("127.0.0.1", 8080), timeout=2).close()
+    except OSError:
+        pytest.skip("the stand's sign-in page is not forwarded")
+    shutil.copy(f"{STAND}/stand-g.ovpn", os.path.join(home, "config", "stand-g.ovpn"))
+    real.call("rescan")
+    real.click("stand-g", "Connect")
+    w = real.window("credentials", timeout=30)
+    real.set(w, "username", "someone")
+    real.set(w, "password", "anything")
+    real.press(w, "ok")
+    import ssl
+    url = wait_for(lambda: next((u for u in real.call("opened_urls")["urls"] if "127.0.0.1:8080/ok/" in u), None), 30,
+                   "the sign-in page opened")
+    # (The stand's own certificate: the person signing in would trust it in their browser.)
+    assert urllib.request.urlopen(url, timeout=10, context=ssl._create_unverified_context()).read() == b"signed in\n"
+    connected(real, "stand-g")
+    assert ping("10.97.0.1")

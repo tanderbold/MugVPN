@@ -57,7 +57,7 @@ case "${1:-}" in
             "$ROOT/tools/stand/servers-setup.sh" "admin@$(ip_of $SRV_VM):/tmp/servers-setup.sh"
         srv 'sudo bash /tmp/servers-setup.sh 2>&1 | grep -v "^[.+*-]" | tail -6'
         mkdir -p "$PROFILES"
-        for n in a b c d e f; do
+        for n in a b c d e f g; do
             srv "sudo cat /etc/openvpn/stand/clients/stand-$n.ovpn" > "$PROFILES/stand-$n.ovpn"
         done
         ls "$PROFILES"
@@ -79,12 +79,12 @@ case "${1:-}" in
         mac 'bash /tmp/install-helper.sh'
         ;;
     tunnel)
-        # Tart isolates its VMs from each other, so the Mac VM's 127.0.0.1:1194-1197
-        # (and 1198-1199) are forwarded over ssh, through the host, to the servers (TCP only).
+        # Tart isolates its VMs from each other, so the Mac VM's 127.0.0.1:1194-1200 (and the proxy's 3128,
+        # the web sign-in's 8080) are forwarded over ssh, through the host, to the servers (TCP only).
         pidf="$ROOT/build/stand/tunnel.pid"
         [ -f "$pidf" ] && kill "$(cat "$pidf")" 2>/dev/null || true
         srv_ip=$(ip_of $SRV_VM)
-        fw=(); for p in 1194 1195 1196 1197 1198 1199; do fw+=(-R "127.0.0.1:$p:$srv_ip:$p"); done
+        fw=(); for p in 1194 1195 1196 1197 1198 1199 1200 3128 8080; do fw+=(-R "127.0.0.1:$p:$srv_ip:$p"); done
         ssh -N -f -o ExitOnForwardFailure=yes -o ServerAliveInterval=15 -i "$HOME/.ssh/npp-e2e" \
             -o UserKnownHostsFile="$KNOWN" "${fw[@]}" "tester@$(ip_of $MAC_VM)"
         pgrep -f "ssh -N -f .*127.0.0.1:1194:$srv_ip" > "$pidf"

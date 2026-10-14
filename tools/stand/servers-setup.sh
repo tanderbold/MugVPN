@@ -49,6 +49,50 @@ u=$(sed -n 1p "$1"); p=$(sed -n 2p "$1")
 EOF
 chmod 755 /usr/local/bin/stand-auth
 
+# Web sign-in (server g): the password check is deferred, the client given a URL to open; opening it
+# (https://127.0.0.1:8080/ok/<id> in the Mac VM, through stand.sh tunnel) signs it in.
+mkdir -p /run/stand-webauth
+cat > /usr/local/bin/stand-webauth <<'EOF'
+#!/bin/sh
+id=$(basename "$auth_control_file")
+mkdir -p /run/stand-webauth
+echo "$auth_control_file" > "/run/stand-webauth/$id"
+printf '300\nwebauth\nWEB_AUTH::https://127.0.0.1:8080/ok/%s\n' "$id" > "$auth_pending_file"
+exit 2
+EOF
+chmod 755 /usr/local/bin/stand-webauth
+cat > /usr/local/bin/stand-webauth-site <<'EOF'
+#!/usr/bin/env python3
+import http.server, os, ssl
+class H(http.server.BaseHTTPRequestHandler):
+    def do_GET(self):
+        parts = self.path.strip("/").split("/")
+        f = f"/run/stand-webauth/{parts[1]}" if len(parts) == 2 and parts[0] == "ok" and parts[1].replace("_", "").replace(".", "").isalnum() else None
+        ok = f is not None and os.path.exists(f)
+        if ok:
+            open(open(f).read().strip(), "w").write("1")
+        self.send_response(200 if ok else 404)
+        self.end_headers()
+        self.wfile.write(b"signed in\n" if ok else b"no such sign-in\n")
+srv = http.server.HTTPServer(("0.0.0.0", 8080), H)
+ctx = ssl.SSLContext(ssl.PROTOCOL_TLS_SERVER)
+ctx.load_cert_chain("/etc/openvpn/stand/pki/issued/server.crt", "/etc/openvpn/stand/pki/private/server.key")
+srv.socket = ctx.wrap_socket(srv.socket, server_side=True)
+srv.serve_forever()
+EOF
+chmod 755 /usr/local/bin/stand-webauth-site
+cat > /etc/systemd/system/stand-webauth.service <<'UNIT'
+[Unit]
+Description=MugVPN stand: the web sign-in page of server g
+[Service]
+ExecStart=/usr/local/bin/stand-webauth-site
+[Install]
+WantedBy=multi-user.target
+UNIT
+systemctl daemon-reload
+systemctl enable stand-webauth >/dev/null 2>&1
+systemctl restart stand-webauth
+
 server() { # name proto port subnet-octet extra...
     local n=$1 proto=$2 port=$3 o=$4; shift 4
     local behind="10.9${o}.0.1"
@@ -63,6 +107,7 @@ Type=forking
 ExecStartPre=-/sbin/ip link add dummy-$n type dummy
 ExecStartPre=/sbin/ip addr replace $behind/24 dev dummy-$n
 ExecStartPre=/sbin/ip link set dummy-$n up
+ExecStartPre=-/sbin/ip -6 addr replace fd00:9${o}::1/64 dev dummy-$n
 ExecStart=/usr/sbin/dnsmasq --conf-file=/dev/null --pid-file=/run/dnsmasq-stand-$n.pid --bind-dynamic --listen-address=10.8${o}.0.1 --no-resolv --no-hosts --address=/host.$n.test/$behind --address=/stand-$n/127.0.0.1
 PIDFile=/run/dnsmasq-stand-$n.pid
 
@@ -106,7 +151,7 @@ client() { # name proto port
         echo "persist-key"
         echo "remote-cert-tls server"
         echo "verb 3"
-        [ "$n" = c ] && echo "auth-user-pass"
+        { [ "$n" = c ] || [ "$n" = g ]; } && echo "auth-user-pass"
         echo "<ca>"; cat pki/ca.crt; echo "</ca>"
         echo "<cert>"; sed -n '/BEGIN/,/END/p' pki/issued/client.crt; echo "</cert>"
         echo "<key>"; cat pki/private/client.key; echo "</key>"
@@ -131,14 +176,46 @@ server d tcp-server 1197 4 \
     'push "dns server 1 address 10.84.0.1"'
 
 server e tcp-server 1198 5 \
+    'server-ipv6 fd00:85::/64' \
+    'push "route-ipv6 fd00:95::/64"' \
     'push "dns server 1 address 10.85.0.1"' \
     'push "dns server 1 resolve-domains e.test"'
 server f tcp-server 1199 6 \
     'push "dhcp-option DNS 10.86.0.1"' \
     'push "dhcp-option DOMAIN f.test"'
+server g tcp-server 1200 7 \
+    'script-security 2' \
+    'tmp-dir /run/openvpn-server' \
+    'auth-user-pass-verify /usr/local/bin/stand-webauth via-file' \
+    'push "dns server 1 address 10.87.0.1"' \
+    'push "dns server 1 resolve-domains g.test"'
+
+# An HTTP proxy that asks for a password (proxy / proxypass), reached in the Mac VM as 127.0.0.1:3128 (stand.sh
+# tunnel): CONNECT to the servers above only.
+command -v tinyproxy >/dev/null || DEBIAN_FRONTEND=noninteractive apt-get install -y -qq tinyproxy >/dev/null
+cat > /etc/tinyproxy/tinyproxy.conf <<'PROXY'
+User tinyproxy
+Group tinyproxy
+Port 3128
+Listen 0.0.0.0
+Timeout 600
+LogLevel Info
+MaxClients 50
+BasicAuth proxy proxypass
+ConnectPort 1194
+ConnectPort 1195
+ConnectPort 1196
+ConnectPort 1197
+ConnectPort 1198
+ConnectPort 1199
+PROXY
+systemctl enable tinyproxy >/dev/null 2>&1
+systemctl restart tinyproxy
 
 sleep 2
-for n in a b c d e f; do
+printf 'proxy: %s\n' "$(systemctl is-active tinyproxy)"
+printf 'web sign-in: %s\n' "$(systemctl is-active stand-webauth)"
+for n in a b c d e f g; do
     printf '%s: %s, net %s\n' "$n" "$(systemctl is-active openvpn-server@$n)" "$(systemctl is-active stand-net@$n)"
 done
 ls clients

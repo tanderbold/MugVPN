@@ -727,6 +727,14 @@ func registerHelperTests() {
         }
         expect(filters.allSatisfy { args[$0 + 1] == "ignore" })
     }
+    test("HLP-25b", "openvpn tells the server the sign-ins the app does (web page, challenge text), after the profile's options") {
+        // Servers that defer a password to a web sign-in refuse a client that does not say it can.
+        let args = HelperCore.openvpnArguments(config: "/c", dir: "/d", socket: ["/s", "unix"], access: [])
+        guard let i = args.firstIndex(of: "IV_SSO") else { return expect(false, "\(args)") }
+        expectEqual(args[i - 1], "--setenv")
+        expectEqual(args[i + 1], "openurl,webauth,crtext")
+        expect(i > args.firstIndex(of: "--config")!, "the helper's own wins over a profile's setenv")
+    }
     test("HLP-26", "files in a bundle hold what the directive naming them expects") {
         // The same content checks for files sent beside the profile.
         let sys = FakeSystem()

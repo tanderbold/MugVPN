@@ -1049,6 +1049,9 @@ public final class HelperCore {
         args += access
         if hold { args.append("--management-hold") }
         args += ["--management-query-passwords", "--auth-retry", "interact", "--script-security", "1", "--verb", "3"]
+        // The sign-ins the app does (it opens a server's page, answers a challenge's text): servers that defer a
+        // password to them refuse a client that does not say so.
+        args += ["--setenv", "IV_SSO", "openurl,webauth,crtext"]
         return args
     }
 
