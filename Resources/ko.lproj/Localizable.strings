@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "실행 중인 도우미가 오래되어 서버 DNS용 도메인을 무시합니다. 업데이트된 후 다시 연결하세요";
 "username %@" = "사용자 이름 %@";
 "write a server as: host port udp|tcp" = "서버는 '호스트 포트 udp|tcp' 형식으로 작성하십시오";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.";

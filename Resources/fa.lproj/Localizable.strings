@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "سرویس کمکی در حال اجرا قدیمی‌تر است و دامنه‌های DNS سرور را نادیده می‌گیرد: پس از به‌روزرسانی آن دوباره وصل شوید";
 "username %@" = "نام کاربری %@";
 "write a server as: host port udp|tcp" = "سرور را به این شکل بنویسید: host port udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.";

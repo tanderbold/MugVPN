@@ -195,7 +195,8 @@ enum SettingsWindow {
         err.textColor = .systemRed
         err.isHidden = true
 
-        let views: [NSView] = [
+        let can = product.capabilities
+        var views: [NSView] = [
             Form.label(L("General"), bold: true),
             Form.checkbox("launch_at_login", L("Open MugVPN at login"), on: services.launchAtLogin),
             lock(Form.checkbox("silent_connection", L("Connect silently (no status window)"), on: s.silentConnection), .silentConnection),
@@ -212,13 +213,19 @@ enum SettingsWindow {
             Form.row(L("Address:"), lock(hostField, .proxy)), Form.row(L("Port:"), lock(portField, .proxy)),
             Form.label(L("Advanced"), bold: true),
             lock(Form.checkbox("log_append", L("Append to the log instead of replacing it"), on: s.logAppend), .logAppend),
+        ]
+        if can.scripts {
+            views += [
             Form.row(L("Pre-connect script (s):"), lock(Form.field("preconnect_timeout", value: String(s.preconnectScriptTimeout)), .preconnectScriptTimeout)),
             Form.row(L("Connect script (s):"), lock(Form.field("connect_timeout", value: String(s.connectScriptTimeout)), .connectScriptTimeout)),
             Form.row(L("Disconnect script (s):"), lock(Form.field("disconnect_timeout", value: String(s.disconnectScriptTimeout)), .disconnectScriptTimeout)),
-            Form.row(L("Persistent connections:"), lock(Form.popup("persistent", [("auto", L("Attach automatically")), ("manual", L("List only")), ("disable", L("Off"))],
-                                                                selected: s.persistentConnections.rawValue), .persistentConnections)),
-            note, err,
-        ]
+            ]
+        }
+        if can.persistentConnections {
+            views.append(Form.row(L("Persistent connections:"), lock(Form.popup("persistent", [("auto", L("Attach automatically")), ("manual", L("List only")), ("disable", L("Off"))],
+                                                                              selected: s.persistentConnections.rawValue), .persistentConnections)))
+        }
+        views += [note, err]
         let w = showForm(kind: "settings", profile: "", title: L("MugVPN Settings"), views: views, ok: { w in
             func popup(_ id: String) -> String { (w.control(id) as? NSPopUpButton)?.selectedItem?.identifier?.rawValue ?? "" }
             func int(_ id: String) -> Int? { Int(text(w, id).trimmingCharacters(in: .whitespaces)) }
@@ -239,10 +246,15 @@ enum SettingsWindow {
                 default: n.proxy = .system
                 }
                 n.logAppend = checked(w, "log_append")
-                n.preconnectScriptTimeout = int("preconnect_timeout") ?? -1
-                n.connectScriptTimeout = int("connect_timeout") ?? -1
-                n.disconnectScriptTimeout = int("disconnect_timeout") ?? -1
-                n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
+                // (Fields a product does not show keep their values.)
+                if can.scripts {
+                    n.preconnectScriptTimeout = int("preconnect_timeout") ?? -1
+                    n.connectScriptTimeout = int("connect_timeout") ?? -1
+                    n.disconnectScriptTimeout = int("disconnect_timeout") ?? -1
+                }
+                if can.persistentConnections {
+                    n.persistentConnections = PersistentConnections(rawValue: popup("persistent")) ?? .auto
+                }
             }
             do {
                 try store.check(apply)

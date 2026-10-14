@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "正在執行的輔助程式較舊，會忽略用於伺服器 DNS 的網域：請在其更新後重新連線";
 "username %@" = "使用者名稱 %@";
 "write a server as: host port udp|tcp" = "伺服器格式應為：主機 連接埠 udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN 的 VPN 設定、記錄、設定值和已儲存的密碼將被移除。通道將中斷連線。";

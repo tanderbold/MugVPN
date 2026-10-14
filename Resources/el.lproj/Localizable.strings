@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "η βοηθητική υπηρεσία που εκτελείται είναι παλαιότερη και θα αγνοούσε τους τομείς για το DNS του διακομιστή: συνδεθείτε ξανά μόλις ενημερωθεί";
 "username %@" = "όνομα χρήστη %@";
 "write a server as: host port udp|tcp" = "γράψτε τον διακομιστή ως: κεντρικός υπολογιστής θύρα udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.";

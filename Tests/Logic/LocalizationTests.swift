@@ -3,14 +3,17 @@ import Foundation
 // L-LOC: the app's string catalogs, checked against the source code.
 
 private let repo = URL(fileURLWithPath: #filePath).deletingLastPathComponent().deletingLastPathComponent().deletingLastPathComponent()
-private let appSources = repo.appendingPathComponent("Sources/MugVPN")
+/// The interface's (MugVPNUI) and each product's own.
+private let appSources = ["Sources/MugVPNUI", "Sources/MugVPN"].map { repo.appendingPathComponent($0) }
 private let resources = repo.appendingPathComponent("Resources")
 let languages = ["en", "cs", "de", "da", "el", "es", "fa", "fi", "fr", "it", "ja", "ko", "nl", "nb", "pl", "pt-BR",
                  "ru", "sv", "tr", "uk", "zh-Hans", "zh-Hant"]
 
 private func sources() -> [(String, String)] {
-    ((try? FileManager.default.contentsOfDirectory(atPath: appSources.path)) ?? []).filter { $0.hasSuffix(".swift") }.sorted()
-        .map { ($0, (try? String(contentsOf: appSources.appendingPathComponent($0), encoding: .utf8)) ?? "") }
+    appSources.flatMap { dir in
+        ((try? FileManager.default.contentsOfDirectory(atPath: dir.path)) ?? []).filter { $0.hasSuffix(".swift") }.sorted()
+            .map { ($0, (try? String(contentsOf: dir.appendingPathComponent($0), encoding: .utf8)) ?? "") }
+    }
 }
 
 /// Every string literal passed to L("...") in the app.

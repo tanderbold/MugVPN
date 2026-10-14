@@ -15,7 +15,25 @@ public enum HelperRestart: Equatable, Sendable {
     case notNewer
 }
 
-public protocol HelperClient: AnyObject {
+/// The connections themselves: what every product's backend does.
+public protocol VPNConnectionBackend: AnyObject {
+    func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
+    func stop(_ id: String, reply: @escaping (String?) -> Void)
+    func list(reply: @escaping ([ConnectionInfo]) -> Void)
+}
+
+/// Kill switches' blocks.
+public protocol ProtectionBackend: AnyObject {
+    /// Profiles whose kill switch blocks traffic now.
+    func blocks(reply: @escaping ([String]) -> Void)
+    /// Lift the blocks this user may lift; an error text or nil.
+    func unblock(reply: @escaping (String?) -> Void)
+    /// Lift them for a while (to sign in to a network); an error text or nil.
+    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void)
+}
+
+/// The backend's own install: its version, updating it, removing it.
+public protocol InstallationLifecycle: AnyObject {
     /// The helper's version (MugVPNIDs.helperVersion of the build it came with).
     func version(reply: @escaping (String?) -> Void)
     /// Exit if no connection or block of anyone's needs it (launchd then starts the helper the
@@ -23,23 +41,85 @@ public protocol HelperClient: AnyObject {
     func restartIfIdle(reply: @escaping (HelperRestart) -> Void)
     /// Whether it answers a call every helper version has (an old one does; none that is not there).
     func reachable(reply: @escaping (Bool) -> Void)
-    func start(_ bundle: ProfileBundle, reply: @escaping (Result<(id: String, socket: String), Error>) -> Void)
-    func stop(_ id: String, reply: @escaping (String?) -> Void)
-    func list(reply: @escaping ([ConnectionInfo]) -> Void)
-    /// Start a persistent profile from config-auto; replies with its connection id.
-    func startPersistent(_ name: String, reply: @escaping (Result<String, Error>) -> Void)
     /// Remove MugVPN's system part; replies when done (nil) or with an error.
     func uninstall(keepProfiles: Bool, reply: @escaping (String?) -> Void)
-    /// Profiles whose kill switch blocks traffic now.
-    func blocks(reply: @escaping ([String]) -> Void)
-    /// Lift the blocks this user may lift; an error text or nil.
-    func unblock(reply: @escaping (String?) -> Void)
-    /// Lift them for a while (to sign in to a network); an error text or nil.
-    func suspendBlocks(seconds: Int, reply: @escaping (String?) -> Void)
+}
+
+/// Persistent connections (started by the helper from config-auto, the Mac's).
+public protocol PersistentConnectionBackend: AnyObject {
+    /// Start a persistent profile from config-auto; replies with its connection id.
+    func startPersistent(_ name: String, reply: @escaping (Result<String, Error>) -> Void)
     /// A persistent tunnel: the helper lets go of its management connection for the app.
     func releaseManagement(_ id: String, reply: @escaping (String?) -> Void)
-    /// What an unprivileged openvpn asks for (privilege separation); the utun for OPENTUN.
+}
+
+/// What an unprivileged openvpn asks its management client for (privilege separation).
+public protocol PrivilegedTunnelRequests: AnyObject {
+    /// The utun for OPENTUN; routes, DNS...
     func tunnelRequest(_ id: String, kind: String, message: String, reply: @escaping (Result<FileHandle?, Error>) -> Void)
+}
+
+/// MugVPN's privileged helper: every part.
+public typealias HelperClient = VPNConnectionBackend & ProtectionBackend & InstallationLifecycle & PersistentConnectionBackend
+    & PrivilegedTunnelRequests
+
+/// What a product does (the interface shows what this says, nothing else decides it).
+public struct BackendCapabilities: Equatable, Sendable {
+    /// Profile scripts (_pre/_up/_down.sh) run.
+    public var scripts: Bool
+    /// Persistent connections (the Mac's, at boot).
+    public var persistentConnections: Bool
+    /// A helper of its own: installed, updated, removed with an administrator's password when it does not answer.
+    public var systemHelper: Bool
+    /// DNS outside the tunnels blocked even when sent straight to a server (not only the system's resolver).
+    public var directDNSBlocking: Bool
+    /// A kill switch's block kept across a restart of the Mac.
+    public var protectionAcrossRestart: Bool
+    /// An administrator's policy for standard users.
+    public var adminPolicy: Bool
+
+    public init(scripts: Bool, persistentConnections: Bool, systemHelper: Bool, directDNSBlocking: Bool,
+                protectionAcrossRestart: Bool, adminPolicy: Bool) {
+        self.scripts = scripts
+        self.persistentConnections = persistentConnections
+        self.systemHelper = systemHelper
+        self.directDNSBlocking = directDNSBlocking
+        self.protectionAcrossRestart = protectionAcrossRestart
+        self.adminPolicy = adminPolicy
+    }
+
+    /// MugVPN's privileged helper.
+    public static let helper = BackendCapabilities(scripts: true, persistentConnections: true, systemHelper: true,
+                                                   directDNSBlocking: true, protectionAcrossRestart: true, adminPolicy: true)
+    /// A packet tunnel provider (Network Extension).
+    public static let packetTunnel = BackendCapabilities(scripts: false, persistentConnections: false, systemHelper: false,
+                                                         directDNSBlocking: false, protectionAcrossRestart: false, adminPolicy: false)
+}
+
+/// A product's backend: its parts (the optional ones only where it has them) and what it does.
+public struct Backend {
+    public let connections: VPNConnectionBackend
+    public let protection: ProtectionBackend
+    public let lifecycle: InstallationLifecycle
+    public let persistent: PersistentConnectionBackend?
+    public let tunnelRequests: PrivilegedTunnelRequests?
+    public let capabilities: BackendCapabilities
+
+    public init(connections: VPNConnectionBackend, protection: ProtectionBackend, lifecycle: InstallationLifecycle,
+                persistent: PersistentConnectionBackend?, tunnelRequests: PrivilegedTunnelRequests?, capabilities: BackendCapabilities) {
+        self.connections = connections
+        self.protection = protection
+        self.lifecycle = lifecycle
+        self.persistent = persistent
+        self.tunnelRequests = tunnelRequests
+        self.capabilities = capabilities
+    }
+
+    /// MugVPN's helper (it does everything).
+    public init(helper: HelperClient) {
+        self.init(connections: helper, protection: helper, lifecycle: helper, persistent: helper, tunnelRequests: helper,
+                  capabilities: .helper)
+    }
 }
 
 public protocol ManagementLink: AnyObject {
@@ -172,10 +252,10 @@ public final class ConnectionManager {
 
     /// No version answer: an old helper (it answers its older calls) or none at all (asked again later).
     private func checkHelperVersion() {
-        helper.version { [weak self] v in
+        backend.lifecycle.version { [weak self] v in
             guard let self else { return }
             guard let v else {
-                return self.helper.reachable { [weak self] up in
+                return self.backend.lifecycle.reachable { [weak self] up in
                     guard let self else { return }
                     if up { return self.versionKnown("unknown") }
                     if !self.unreachableTold {
@@ -210,7 +290,7 @@ public final class ConnectionManager {
         guard let v = helperVersionMismatch, ConnectionManager.isOlder(v, than: MugVPNIDs.helperVersion),
               active.isEmpty, !helperRestartAsked, !helperNeedsManualUpdate else { return }
         helperRestartAsked = true
-        helper.restartIfIdle { [weak self] answer in
+        backend.lifecycle.restartIfIdle { [weak self] answer in
             guard let self else { return }
             switch answer {
             case .restarting:
@@ -227,7 +307,7 @@ public final class ConnectionManager {
                 }
             case .unavailable:
                 // No answer: asked its version again before anything is concluded (a new helper may be up by now).
-                self.helper.version { [weak self] v in
+                self.backend.lifecycle.version { [weak self] v in
                     guard let self else { return }
                     if let v {
                         self.helperRestartAsked = false
@@ -240,7 +320,7 @@ public final class ConnectionManager {
                         }
                         return self.versionKnown(v)
                     }
-                    self.helper.reachable { [weak self] up in
+                    self.backend.lifecycle.reachable { [weak self] up in
                         guard let self else { return }
                         self.helperRestartAsked = false
                         if up { self.needsManualUpdate() } else { self.retryLater { [weak self] in self?.restartOutdatedHelper() } }
@@ -255,8 +335,7 @@ public final class ConnectionManager {
         }
     }
 
-    private let helper: HelperClient
-    public var helperClient: HelperClient { helper }
+    public let backend: Backend
     private let transport: ManagementTransport
     private let reader: ProfileBundleReader
     private let scheduler: Scheduler
@@ -274,11 +353,18 @@ public final class ConnectionManager {
     /// Network changes come in bursts; one reconnect per burst.
     public static let networkDebounce: TimeInterval = 2
 
-    public init(helper: HelperClient, transport: ManagementTransport, reader: ProfileBundleReader, scheduler: Scheduler,
+    public convenience init(helper: HelperClient, transport: ManagementTransport, reader: ProfileBundleReader, scheduler: Scheduler,
+                            secrets: SecretStore, settings: @escaping () -> ConnectionSettings, ui: @escaping (Profile) -> ConnectionUI,
+                            memory: ActiveMemory, scripts: ScriptSupport? = nil) {
+        self.init(backend: Backend(helper: helper), transport: transport, reader: reader, scheduler: scheduler, secrets: secrets,
+                  settings: settings, ui: ui, memory: memory, scripts: scripts)
+    }
+
+    public init(backend: Backend, transport: ManagementTransport, reader: ProfileBundleReader, scheduler: Scheduler,
                 secrets: SecretStore, settings: @escaping () -> ConnectionSettings, ui: @escaping (Profile) -> ConnectionUI,
                 memory: ActiveMemory, scripts: ScriptSupport? = nil) {
         self.scripts = scripts
-        self.helper = helper
+        self.backend = backend
         self.transport = transport
         self.reader = reader
         self.scheduler = scheduler
@@ -334,7 +420,7 @@ public final class ConnectionManager {
     /// while the start is still pending. - done: why not (nil: go ahead).
     private func helperTakes(_ profile: Profile, done: @escaping (String?) -> Void) {
         guard !dnsDomains(profile).isEmpty else { return done(nil) }
-        helper.version { [weak self] v in
+        backend.lifecycle.version { [weak self] v in
             guard let self else { return }
             if let v { self.versionKnown(v) }
             done(ConnectionManager.isOlder(v ?? "unknown", than: ConnectionManager.dnsDomainsHelper)
@@ -377,7 +463,7 @@ public final class ConnectionManager {
         active[profile.id] = c
         onChange()
         let attach: () -> Void = { [weak self] in
-            self?.helper.list { running in
+            self?.backend.connections.list { running in
                 guard let self, self.active[profile.id] === c else { return }
                 guard let info = running.first(where: { $0.persistent && $0.name == profile.name }) else {
                     self.active[profile.id] = nil
@@ -388,10 +474,14 @@ public final class ConnectionManager {
                 self.attachPersistent(c, socket: info.managementSocket)
             }
         }
-        helper.list { [weak self] running in
+        backend.connections.list { [weak self] running in
             guard let self else { return }
             if running.contains(where: { $0.persistent && $0.name == profile.name }) { return attach() }
-            self.helper.startPersistent(profile.name) { result in
+            guard let persistent = self.backend.persistent else {
+                self.active[profile.id] = nil
+                return self.fail(profile.id, "persistent connections are not available in this version")
+            }
+            persistent.startPersistent(profile.name) { result in
                 switch result {
                 case .success: attach()
                 case .failure(let e):
@@ -404,8 +494,8 @@ public final class ConnectionManager {
 
     /// openvpn takes one management client: the helper holds it while no app does.
     private func attachPersistent(_ c: ActiveConnection, socket: String) {
-        guard let id = c.helperID else { return }
-        helper.releaseManagement(id) { [weak self, weak c] err in
+        guard let id = c.helperID, let persistent = backend.persistent else { return }
+        persistent.releaseManagement(id) { [weak self, weak c] err in
             guard let self, let c, self.active[c.profile.id] === c else { return }
             if let err {
                 self.active[c.profile.id] = nil
@@ -427,12 +517,12 @@ public final class ConnectionManager {
             self.active[profile.id] = nil
             self.fail(profile.id, "MugVPN's helper does not answer (its log: /Library/Logs/MugVPN/helper.log)")
         }
-        helper.start(bundle) { [weak self] result in
+        backend.connections.start(bundle) { [weak self] result in
             guard let self else { return }
             answered = true
             if gaveUp {
                 // Too late: given up on already; a tunnel it started anyway is stopped.
-                if case .success(let r) = result { self.helper.stop(r.id) { _ in } }
+                if case .success(let r) = result { self.backend.connections.stop(r.id) { _ in } }
                 return
             }
             switch result {
@@ -440,7 +530,7 @@ public final class ConnectionManager {
                 c.helperID = r.id
                 if c.stopRequested {
                     // Stopped before the helper answered: no socket will close for it.
-                    self.helper.stop(r.id) { _ in }
+                    self.backend.connections.stop(r.id) { _ in }
                     return self.ended(c)
                 }
                 self.open(c, socket: r.socket, attempt: 1)
@@ -511,7 +601,7 @@ public final class ConnectionManager {
     /// ones that were up when the app last quit.
     public func appStarted() {
         checkHelperVersion()
-        helper.list { [weak self] running in
+        backend.connections.list { [weak self] running in
             guard let self else { return }
             for info in running {
                 if info.persistent {
@@ -533,7 +623,7 @@ public final class ConnectionManager {
                 let named = mine.filter { $0.name.caseInsensitiveCompare(info.name) == .orderedSame }
                 let match = info.profileID.map { id in mine.first { $0.id == id } } ?? (named.count == 1 ? named.first : nil)
                 guard let p = match, self.active[p.id] == nil else {
-                    self.helper.stop(info.id) { _ in }
+                    self.backend.connections.stop(info.id) { _ in }
                     continue
                 }
                 let c = self.makeConnection(p)
@@ -603,13 +693,14 @@ public final class ConnectionManager {
         }
         controller.tunnelRequest = { [weak self, weak c] kind, message, reply in
             guard let self, let id = c?.helperID else { return reply(.failure(ProfileError("not connected"))) }
-            self.helper.tunnelRequest(id, kind: kind, message: message, reply: reply)
+            guard let requests = self.backend.tunnelRequests else { return reply(.failure(ProfileError("not used by this backend"))) }
+            requests.tunnelRequest(id, kind: kind, message: message, reply: reply)
         }
         controller.onStop = { [weak self, weak c] in
             guard let self, let c else { return }
             c.stopRequested = true
             let stop = { [weak self] in
-                if let id = c.helperID { self?.helper.stop(id) { _ in } }
+                if let id = c.helperID { self?.backend.connections.stop(id) { _ in } }
             }
             // The disconnect script runs while the tunnel is still up.
             if c.link != nil, let scripts = self.scripts, let down = scripts.plan(c.profile, .down) {
@@ -652,7 +743,7 @@ public final class ConnectionManager {
         }
         guard attempt < ConnectionManager.socketAttempts else {
             // A persistent tunnel is the Mac's: left running, only not shown here.
-            if c.profile.source != .persistent, let id = c.helperID { helper.stop(id) { _ in } }
+            if c.profile.source != .persistent, let id = c.helperID { backend.connections.stop(id) { _ in } }
             active[c.profile.id] = nil
             return fail(c.profile.id, "cannot reach openvpn's management socket")
         }

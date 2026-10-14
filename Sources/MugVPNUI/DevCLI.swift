@@ -1,7 +1,6 @@
 import Foundation
 import MugVPNAppCore
 import MugVPNCore
-import ServiceManagement
 
 #if MUGVPN_TESTING
 
@@ -10,41 +9,29 @@ import ServiceManagement
 // stand VM without the interface. `MugVPN register|status|connect|...`.
 
 /// Subcommands that select this mode.
-let devCommands: Set<String> = ["register", "unregister", "status", "connect", "disconnect", "list", "parse", "serve",
-                                 "restart-if-idle", "helper-version"]
+/// (A product adds its own: Product.devCommands.)
+let devCommands: Set<String> = ["connect", "disconnect", "list", "parse", "serve", "restart-if-idle", "helper-version"]
 
-func fail(_ s: String) -> Never {
+public func fail(_ s: String) -> Never {
     FileHandle.standardError.write(Data("mugvpn: \(s)\n".utf8))
     exit(1)
 }
 
-let daemon = SMAppService.daemon(plistName: MugVPNIDs.helperPlist)
-
-func statusText(_ s: SMAppService.Status) -> String {
-    switch s {
-    case .notRegistered: return "not registered"
-    case .enabled: return "enabled"
-    case .requiresApproval: return "requires approval (System Settings > General > Login Items)"
-    case .notFound: return "not found"
-    @unknown default: return "unknown (\(s.rawValue))"
-    }
-}
-
 func helper() -> MugVPNHelperProtocol {
-    let c = NSXPCConnection(machServiceName: MugVPNIDs.helperLabel, options: .privileged)
-    c.remoteObjectInterface = NSXPCInterface(with: MugVPNHelperProtocol.self)
-    c.resume()
-    guard let proxy = c.remoteObjectProxyWithErrorHandler({ fail("helper: \($0.localizedDescription)") })
-            as? MugVPNHelperProtocol else { fail("no helper proxy") }
-    return proxy
+    guard let h = product.devHelper else { fail("no developer helper in this product") }
+    return h()
 }
 
-/// Run an async XPC call and wait for its reply.
-func wait<T>(_ body: (@escaping (T) -> Void) -> Void) -> T {
-    let sem = DispatchSemaphore(value: 0)
+/// Run an async call to the helper and wait for its reply. The main run loop turns meanwhile: replies may come on
+/// the main queue.
+public func wait<T>(_ body: (@escaping (T) -> Void) -> Void) -> T {
     var result: T?
-    body { result = $0; sem.signal() }
-    if sem.wait(timeout: .now() + 30) == .timedOut { fail("helper did not answer") }
+    body { result = $0 }
+    let deadline = Date().addingTimeInterval(30)
+    while result == nil {
+        if Date() > deadline { fail("helper did not answer") }
+        RunLoop.main.run(until: Date().addingTimeInterval(0.02))
+    }
     return result!
 }
 
@@ -162,17 +149,6 @@ func answer(_ m: ManagementConnection, _ line: String, connectionID: String?) th
 
 func runDevCLI(_ args: [String]) -> Never {
 switch args.first {
-case "register":
-    do { try daemon.register() } catch { print("register failed: \(error)") }
-    print("helper: \(statusText(daemon.status))")
-case "unregister":
-    do { try daemon.unregister() } catch { print("unregister failed: \(error)") }
-    print("helper: \(statusText(daemon.status))")
-case "status":
-    print("helper: \(statusText(daemon.status))")
-    if daemon.status == .enabled || args.contains("--xpc") {
-        print("helper version: \(wait { helper().version(reply: $0) })")
-    }
 case "connect":
     // --no-wait: start the tunnel and return without driving it (tests).
     let noWait = args.contains("--no-wait")
@@ -232,9 +208,10 @@ case "list":
     let list = (try? JSONDecoder().decode([ConnectionInfo].self, from: data)) ?? []
     for c in list { print("\(c.id)  \(c.name)  pid \(c.pid)") }
 default:
+    if let own = args.first.flatMap({ product.devCommands[$0] }) { own(args) }
     print("""
-    usage: MugVPN register | unregister | status [--xpc]
-           MugVPN connect [--no-wait] <profile.ovpn> | disconnect <id> | list
+    usage: MugVPN connect [--no-wait] <profile.ovpn> | disconnect <id> | list
+           MugVPN \(product.devCommands.keys.sorted().joined(separator: " | "))
     """)
 }
 exit(0)

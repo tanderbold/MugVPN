@@ -170,6 +170,30 @@ final class ManagerHarness {
 }
 
 func registerManagerTests() {
+    test("MAN-45", "a backend made of the helper has every part; a packet tunnel's capabilities offer none of the helper's") {
+        let helper = FakeHelperClient()
+        let b = Backend(helper: helper)
+        expect(b.persistent != nil && b.tunnelRequests != nil, "persistent connections and tunnel requests")
+        expectEqual(b.capabilities, .helper)
+        let c = BackendCapabilities.packetTunnel
+        expect(!c.scripts && !c.persistentConnections && !c.systemHelper && !c.directDNSBlocking
+               && !c.protectionAcrossRestart && !c.adminPolicy, "nothing the helper alone does")
+    }
+    test("MAN-46", "without a persistent part: a persistent profile is refused with a reason, nothing started") {
+        let helper = FakeHelperClient()
+        let h = ManagerHarness()
+        let m = ConnectionManager(backend: Backend(connections: helper, protection: helper, lifecycle: helper, persistent: nil,
+                                                   tunnelRequests: nil, capabilities: .packetTunnel),
+                                  transport: h.transport, reader: h.reader, scheduler: h.scheduler, secrets: FakeSecrets(),
+                                  settings: { ConnectionSettings() }, ui: { [ui = h.ui] _ in ui }, memory: h.memory)
+        let site = Profile(name: "site", path: "/L/config-auto/site.ovpn", source: .persistent, folder: "")
+        m.profiles = [site]
+        m.connect(site)
+        h.scheduler.drain(limit: 500)
+        expectEqual(helper.persistentStarts, [], "not started")
+        expect(m.active[site.id] == nil, "not left as connecting")
+        expect(m.lastError[site.id]?.contains("not available") == true, "said why")
+    }
     test("MAN-23", "at start the helper's version is asked: another one than the app's is said") {
         let h = ManagerHarness()
         h.m.appStarted()

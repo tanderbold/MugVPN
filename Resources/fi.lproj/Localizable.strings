@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "käynnissä oleva apupalvelu on vanhempi ja ohittaisi palvelimen DNS:n verkkotunnukset: yhdistä uudelleen, kun se on päivittynyt";
 "username %@" = "käyttäjänimi %@";
 "write a server as: host port udp|tcp" = "kirjoita palvelin muodossa: isäntä portti udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";

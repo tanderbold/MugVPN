@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "spuštěná pomocná služba je starší a domény pro DNS serveru by ignorovala: připojte se znovu, až se aktualizuje";
 "username %@" = "uživatelské jméno %@";
 "write a server as: host port udp|tcp" = "zadejte server ve tvaru: hostitel port udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";

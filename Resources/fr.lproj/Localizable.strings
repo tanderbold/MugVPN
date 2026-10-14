@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "l’assistant en cours d’exécution est plus ancien et ignorerait les domaines pour le DNS du serveur : reconnectez-vous une fois qu’il sera mis à jour";
 "username %@" = "nom d'utilisateur %@";
 "write a server as: host port udp|tcp" = "indiquez un serveur sous la forme : hôte port udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.";

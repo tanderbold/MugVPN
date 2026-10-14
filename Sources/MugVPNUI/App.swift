@@ -41,7 +41,8 @@ protocol Services: AnyObject {
 }
 
 final class RealServices: Services {
-    let helperSetup: HelperSetup = SMHelperSetup()
+    let helperSetup: HelperSetup
+    init(helperSetup: HelperSetup) { self.helperSetup = helperSetup }
     let http: HTTPFetcher = URLSessionFetcher()
     var launchAtLogin: Bool { SMAppService.mainApp.status == .enabled }
     func setLaunchAtLogin(_ on: Bool) throws {
@@ -137,7 +138,7 @@ final class AppController: NSObject, NSMenuDelegate {
     let manager: ConnectionManager
     let secrets: SecretStore
     let logsDir: String
-    var runDir = MugVPNIDs.runDir
+    var runDir = product.runDir
     let statusItem = NSStatusBar.system.statusItem(withLength: NSStatusItem.variableLength)
     let menu = NSMenu()
     /// Status windows shown automatically while connecting (closed once up).
@@ -157,7 +158,7 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// Ask the helper which kill switches block traffic now.
     func refreshBlocks() {
-        manager.helperClient.blocks { [weak self] names in
+        manager.backend.protection.blocks { [weak self] names in
             guard let self, names != self.blockedBy else { return }
             if !names.isEmpty, self.blockedBy.isEmpty {
                 self.services.notify(title: L("MugVPN"), text: L("Internet blocked: %@ dropped. Reconnect it or unblock.", names.joined(separator: ", ")))
@@ -190,7 +191,7 @@ final class AppController: NSObject, NSMenuDelegate {
     @objc func signInToNetwork() {
         let open: () -> Void = { [weak self] in self?.services.open(CaptivePortal.probeURL.absoluteString) }
         guard !blockedBy.isEmpty else { return open() }
-        manager.helperClient.suspendBlocks(seconds: CaptivePortal.signInSeconds) { [weak self] err in
+        manager.backend.protection.suspendBlocks(seconds: CaptivePortal.signInSeconds) { [weak self] err in
             if let err { return showError(err) }
             open()
             // Lifted: now the probe can tell whether there is anything to sign in to.
@@ -220,7 +221,7 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     @objc func unblockInternet() {
-        manager.helperClient.unblock { [weak self] err in
+        manager.backend.protection.unblock { [weak self] err in
             if let err { showError(err) }
             self?.refreshBlocks()
         }
@@ -447,7 +448,7 @@ final class AppController: NSObject, NSMenuDelegate {
     /// Routes from the logs; DNS as the helper has it now (it moves "all names" on when their owner
     /// lets go: looked at again a moment after a change).
     private func checkConflicts(again: Bool = true) {
-        manager.helperClient.list { [weak self] infos in
+        manager.backend.connections.list { [weak self] infos in
             guard let self else { return }
             let up = self.manager.active.values.filter { if case .connected = $0.controller.status { return true }; return false }
                 .sorted { $0.profile.displayName < $1.profile.displayName }
@@ -923,7 +924,7 @@ final class AppController: NSObject, NSMenuDelegate {
         let appVersion = Self.appVersion
         let os = ProcessInfo.processInfo.operatingSystemVersionString
         let connected = manager.active.values.map { "\($0.profile.displayName): \($0.controller.status)" }.sorted()
-        manager.helperClient.version { [weak self] helperVersion in
+        manager.backend.lifecycle.version { [weak self] helperVersion in
             DispatchQueue.global().async {
                 /// A system tool's output; one that does not finish in 10 s is stopped (its output so far kept).
                 func run(_ tool: String, _ args: [String]) -> String {
@@ -975,7 +976,7 @@ final class AppController: NSObject, NSMenuDelegate {
                 }
                 let profiles = profileFiles.map { ($0.0, whole($0.1)) }
                 let logs = logFiles.compactMap { f in read(f.1, limit: 1 << 20, tail: true).map { (f.0, $0) } }
-                let openvpn = run(MugVPNIDs.libexecDir + "/openvpn", ["--version"]).components(separatedBy: "\n").first ?? ""
+                let openvpn = product.engineVersion(run)
                 let files = Diagnostics.files(
                     summary: ["MugVPN": appVersion, "helper": helperVersion ?? "not answering", "openvpn": openvpn, "macOS": os,
                               "connections": connected.isEmpty ? "none" : connected.joined(separator: "; ")],
@@ -1283,7 +1284,9 @@ final class AppController: NSObject, NSMenuDelegate {
 
     func confirmUninstall() {
         showForm(kind: "uninstall", profile: "", title: L("Uninstall MugVPN"),
-                 views: [Form.label(L("MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected."),
+                 views: [Form.label(manager.backend.capabilities.systemHelper
+                                        ? L("MugVPN, its helper, logs, settings and saved passwords will be removed. Tunnels are disconnected.")
+                                        : L("MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected."),
                                     id: "prompt_text"),
                          Form.checkbox("keep_profiles", L("Keep my profiles"))],
                  okTitle: L("Uninstall"), ok: { [weak self] w in
@@ -1301,6 +1304,10 @@ final class AppController: NSObject, NSMenuDelegate {
                     }
                 }
                 // The helper does not answer (a broken install): an administrator removes the system part.
+                // (Without a system helper: nothing of MugVPN's outside the user's files to remove that way.)
+                guard self?.manager.backend.capabilities.systemHelper == true else {
+                    return DispatchQueue.main.async { showError(L("Cannot uninstall: %@", err)) }
+                }
                 DispatchQueue.main.async { self?.uninstallWithoutHelper(keepProfiles: keep, helperError: err) }
             }
             return true
@@ -1328,7 +1335,7 @@ final class AppController: NSObject, NSMenuDelegate {
     /// The helper removes the system part (and stops every tunnel), then the app the user's part.
     func uninstall(keepProfiles: Bool, done: @escaping (String?) -> Void) {
         manager.disconnectAll()   // a connection still being checked does not start meanwhile
-        manager.helperClient.uninstall(keepProfiles: keepProfiles) { [weak self] err in
+        manager.backend.lifecycle.uninstall(keepProfiles: keepProfiles) { [weak self] err in
             guard let self else { return }
             if let err { return done(err) }
             self.removeUserPart(keepProfiles: keepProfiles, then: { done(nil) })
@@ -1337,7 +1344,8 @@ final class AppController: NSObject, NSMenuDelegate {
 
     /// The user's part, then the app; what stays is said before MugVPN quits (not claimed gone).
     private func removeUserPart(keepProfiles: Bool, then: (() -> Void)? = nil) {
-        var stayed = services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles))
+        var stayed = services.removeUserData(UninstallPlan.userPaths(home: NSHomeDirectory(), keepProfiles: keepProfiles)
+                                             + product.sharedDataPaths)
         // Both registrations go before the app does (a registration left with no app could not be undone here).
         var registered: [String] = []
         if !services.helperSetup.unregister() { registered.append(L("the helper's entry in Login Items")) }

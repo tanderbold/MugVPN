@@ -6,9 +6,9 @@ import MugVPNCore
 /// Library (a folder only the user can open), and the app answers only its own user:
 /// not other users, not sandboxed apps (they cannot reach the folder).
 enum CommandChannel {
-    static var path: String {
-        FileManager.default.homeDirectoryForCurrentUser.path + "/Library/Application Support/MugVPN/ipc/command.sock"
-    }
+    /// The product's (MugVPNApp.run sets it).
+    static var socketPath = FileManager.default.homeDirectoryForCurrentUser.path + "/Library/Application Support/MugVPN/ipc/command.sock"
+    static var path: String { socketPath }
 
     /// The app's end: every complete request (a JSON array of arguments) goes to `handle`, on the
     /// main queue; what it answers (once the command is carried out) goes back as one JSON line.

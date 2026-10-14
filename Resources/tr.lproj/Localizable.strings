@@ -271,3 +271,4 @@
 "the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated" = "çalışan yardımcı daha eski ve sunucunun DNS’i için alan adlarını yok sayar: güncellendikten sonra yeniden bağlanın";
 "username %@" = "kullanıcı adı %@";
 "write a server as: host port udp|tcp" = "sunucuyu şöyle yazın: ana bilgisayar port udp|tcp";
+"MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.";

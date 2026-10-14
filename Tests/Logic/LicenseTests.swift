@@ -66,7 +66,7 @@ func registerLicenseTests() {
     }
     test("LIC-04", "notices in the bundle, shown from About") {
         expect(read("tools/build.sh").contains("THIRD-PARTY-NOTICES.txt"), "build.sh bundles the notices")
-        let app = read("Sources/MugVPN/App.swift")
+        let app = read("Sources/MugVPNUI/App.swift")
         expect(app.contains("\"third_party\""), "About has a third-party notices button")
         expect(app.contains("MIT"), "About names the license")
     }

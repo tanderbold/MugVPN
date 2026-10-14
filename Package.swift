@@ -15,7 +15,10 @@ let package = Package(
         // The app's logic: management protocol, connection state machine,
         // profiles, settings. UI and system behind protocols, testable.
         .target(name: "MugVPNAppCore", dependencies: ["MugVPNCore"]),
-        .executableTarget(name: "MugVPN", dependencies: ["MugVPNCore", "MugVPNAppCore"]),
+        // The interface, whatever is under it: a product hands it its backend (Product) and runs it.
+        .target(name: "MugVPNUI", dependencies: ["MugVPNCore", "MugVPNAppCore"]),
+        // MugVPN itself: the interface over the privileged helper.
+        .executableTarget(name: "MugVPN", dependencies: ["MugVPNCore", "MugVPNAppCore", "MugVPNUI"]),
         // The few system calls Swift cannot make: start openvpn as another user, open a utun.
         .target(name: "MugVPNSys"),
         .executableTarget(name: "MugVPNHelper", dependencies: ["MugVPNCore", "MugVPNPlanner", "MugVPNHelperCore", "MugVPNSys"]),
