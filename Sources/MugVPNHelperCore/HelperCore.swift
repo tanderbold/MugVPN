@@ -1,6 +1,7 @@
 import CryptoKit
 import Foundation
 import MugVPNCore
+import MugVPNPlanner
 
 /// Everything the helper does to the system. The real implementation lives
 /// in the MugVPNHelper executable only; tests use a fake, so the logic below
@@ -322,37 +323,12 @@ public final class HelperCore {
         }
     }
 
-    /// A kill switch that fired: traffic stays blocked until its owner (or an
-    /// administrator) lifts it or connects the profile again.
-    struct Lock: Codable, Equatable {
-        var name: String
-        var owner: UInt32
-        var allowLAN: Bool = false
-        /// Armed: its tunnel is up; it fires if the helper starts again without it (a crash).
-        var armed: Bool = false
-        /// A persistent tunnel's: the whole Mac's traffic.
-        var everyone: Bool = false
-
-        init(name: String, owner: UInt32, allowLAN: Bool = false, armed: Bool = false, everyone: Bool = false) {
-            self.name = name
-            self.owner = owner
-            self.allowLAN = allowLAN
-            self.armed = armed
-            self.everyone = everyone
-        }
-        init(from d: Decoder) throws {
-            let c = try d.container(keyedBy: CodingKeys.self)
-            name = try c.decode(String.self, forKey: .name)
-            owner = try c.decode(UInt32.self, forKey: .owner)
-            allowLAN = try c.decodeIfPresent(Bool.self, forKey: .allowLAN) ?? false
-            armed = try c.decodeIfPresent(Bool.self, forKey: .armed) ?? false
-            everyone = try c.decodeIfPresent(Bool.self, forKey: .everyone) ?? false
-        }
-    }
+    /// A kill switch's block (MugVPNPlanner decides on them).
+    typealias Lock = ProtectionLock
     /// Persistent tunnels that ended unasked, by name: each start again waits longer.
     private var persistentRestarts: [String: Int] = [:]
     public static let persistentRestartMax: TimeInterval = 300
-    public static let maxLocksPerUser = 4
+    public static let maxLocksPerUser = ProtectionPlanner.maxLocksPerUser
     private var locks: [Lock] = []
     private var appliedPF = ""
     private var refreshPending = false
@@ -2160,90 +2136,41 @@ public final class HelperCore {
         return String(key[..<i])
     }
 
-    /// Armings follow the tunnels up: one per name and user taking all traffic with a kill switch,
-    /// the LAN open only if every such tunnel allows it. - Returns: whether they changed.
+    /// Armings follow the tunnels up (MugVPNPlanner). - Returns: whether they changed.
     @discardableResult
     private func syncArming() -> Bool {
-        var want: [Lock] = []
-        for c in connections.values.sorted(by: { $0.info.id < $1.info.id })
-        where !c.exited && c.protection.killSwitch && c.wasFull {
-            let name = HelperCore.lockKey(c.info)
-            if let i = want.firstIndex(where: { $0.name == name && $0.owner == c.info.ownerUID && $0.everyone == c.info.persistent }) {
-                want[i].allowLAN = want[i].allowLAN && c.protection.allowLAN
-            } else {
-                want.append(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, armed: true,
-                                 everyone: c.info.persistent))
-            }
-        }
-        func key(_ l: Lock) -> String { "\(l.owner)/\(l.allowLAN)/\(l.everyone)/\(l.name)" }
-        guard Set(locks.filter(\.armed).map(key)) != Set(want.map(key)) else { return false }
-        locks.removeAll(where: \.armed)
-        locks += want
+        guard let synced = ProtectionPlanner.syncing(locks, to: ProtectionPlanner.arming(protectionFacts())) else { return false }
+        locks = synced
         return true
     }
 
-    /// Armed and fired are kept apart: one tunnel of a name dropping leaves another's arming.
-    /// Blocks of one name merge to the stricter: the LAN stays open only if all of them allow it.
     private func addLock(_ l: Lock) {
-        var l = l
-        if let old = locks.first(where: { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed && $0.everyone == l.everyone }) {
-            l.allowLAN = l.allowLAN && old.allowLAN
-        }
-        locks.removeAll { $0.name == l.name && $0.owner == l.owner && $0.armed == l.armed && $0.everyone == l.everyone }
-        locks.append(l)
-        // A user cannot pile blocks up: the oldest fired ones go (armings are bounded by connections).
-        while locks.filter({ $0.owner == l.owner && !$0.armed }).count > HelperCore.maxLocksPerUser,
-              let i = locks.firstIndex(where: { $0.owner == l.owner && !$0.armed }) {
-            locks.remove(at: i)
-        }
+        locks = ProtectionPlanner.adding(l, to: locks)
     }
 
+    /// The connections as protection sees them.
+    private func protectionFacts() -> [ProtectionFacts] {
+        connections.values.map { c in
+            ProtectionFacts(id: c.info.id, lockKey: HelperCore.lockKey(c.info), lockNames: [HelperCore.lockKey(c.info), HelperCore.lockName(c.info.name)],
+                            owner: c.info.ownerUID, persistent: c.info.persistent, exited: c.exited, protection: c.protection,
+                            takesAllTraffic: c.tunnel.takesAllTraffic, wasFull: c.wasFull, liftsBlock: c.liftsBlock,
+                            device: c.tunnel.device, restricted: c.restricted,
+                            dnsServers: c.tunnel.dnsApplied ? c.tunnel.dnsServers : [])
+        }
+    }
 
     /// Recompute what PF must enforce from the helper's own knowledge; apply it if it
     /// changed, or if PF no longer holds it (pfctl -d, a flushed anchor).
     /// - Returns: whether PF now holds what it must (a failure is tried again later).
     @discardableResult
     public func refreshProtection() -> Bool {
-        var s = ProtectionState()
-        for c in connections.values {
-            let full = c.tunnel.takesAllTraffic
-            if let dev = c.tunnel.device {
-                s.tunnels.append(dev)
-                if c.restricted {
-                    s.ownTraffic.append(ProtectionState.OwnTunnel(device: dev, owner: c.info.ownerUID,
-                                                                  dnsServers: c.tunnel.dnsApplied ? c.tunnel.dnsServers : []))
-                }
-            }
-            // Its own profile up again with all traffic: the block its drop left goes (the arming of a
-            // tunnel of that name still up stays).
-            if full, c.liftsBlock, !c.exited {
-                c.liftsBlock = false
-                let names = [HelperCore.lockKey(c.info), HelperCore.lockName(c.info.name)], owner = c.info.ownerUID
-                if locks.contains(where: { names.contains($0.name) && $0.owner == owner && !$0.armed && !$0.everyone }) {
-                    locks.removeAll { names.contains($0.name) && $0.owner == owner && !$0.armed && !$0.everyone }
-                    saveLocks()
-                }
-            }
-            guard c.protection.any else { continue }
-            if full, !c.wasFull { c.wasFull = true }
-            // A persistent tunnel up again with all traffic: the block its drop left goes (nobody connects it by hand).
-            if full, c.info.persistent, !c.exited {
-                let name = HelperCore.lockKey(c.info)
-                if locks.contains(where: { $0.everyone && !$0.armed && $0.name == name }) {
-                    locks.removeAll { $0.everyone && !$0.armed && $0.name == name }
-                    saveLocks()
-                }
-            }
-            if full {
-                s.blockIPv6 = s.blockIPv6 || c.protection.blockIPv6
-                s.dnsOnlyTunnels = s.dnsOnlyTunnels || c.protection.dnsOnlyTunnel
-            }
-        }
-        // Armed on disk: if the helper dies with the tunnel, the next one blocks.
-        if syncArming() { saveLocks() }
-        let now = system.now()
-        suspended = suspended.filter { $0.value > now }
-        s.locks = locks.filter { !$0.armed && suspended[HelperCore.suspendKey($0)] == nil }.map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN, everyone: $0.everyone) }
+        let plan = ProtectionPlanner.plan(protectionFacts(), locks: locks, suspended: suspended, now: system.now())
+        for id in plan.nowFull { connections[id]?.wasFull = true }
+        for id in plan.liftDone { connections[id]?.liftsBlock = false }
+        locks = plan.locks
+        suspended = plan.suspended
+        if plan.locksChanged { saveLocks() }
+        let s = plan.state
         let anchor = PFRules.anchor(s)
         let broken = !anchor.isEmpty && anchor == appliedPF && !system.pfIntact(anchor)
         if anchor != appliedPF || broken {
@@ -2307,17 +2234,17 @@ public final class HelperCore {
     /// Fired blocks lifted for a while (to sign in to a network), until this time. Not on disk:
     /// a helper that starts again blocks again.
     private var suspended: [String: TimeInterval] = [:]
-    public static let maxSuspend: TimeInterval = 300
-    private static func suspendKey(_ l: Lock) -> String { "\(l.owner)/\(l.everyone)/\(l.name)" }
+    public static let maxSuspend = ProtectionPlanner.maxSuspend
+    private static func suspendKey(_ l: Lock) -> String { ProtectionPlanner.suspendKey(l) }
 
     /// Lift the caller's blocks (an administrator's: all) for at most `maxSuspend` seconds. Error text or nil.
     public func suspendBlocks(uid: UInt32, seconds: TimeInterval) -> String? {
         let admin = uid == 0 || system.isAdmin(uid: uid)
-        let mine = locks.filter { !$0.armed && (admin || $0.owner == uid) }
-        guard !mine.isEmpty || locks.allSatisfy(\.armed) else { return "only its owner or an administrator can lift the block" }
         // Every block on the caller, or none: a page behind one still in force would not load.
-        if !admin, locks.contains(where: { !$0.armed && $0.everyone }) {
-            return "a persistent connection blocks the Internet: only an administrator can lift that block"
+        let mine: [Lock]
+        switch ProtectionPlanner.suspension(locks, uid: uid, admin: admin) {
+        case .success(let m): mine = m
+        case .failure(let why): return why.description
         }
         let wait = min(max(seconds, 1), HelperCore.maxSuspend)
         let until = system.now() + wait
@@ -2330,11 +2257,10 @@ public final class HelperCore {
     /// Lift blocks: an administrator all of them, a user their own. Error text or nil.
     public func unblock(uid: UInt32) -> String? {
         let admin = uid == 0 || system.isAdmin(uid: uid)
-        let fired = locks.filter { !$0.armed }
-        guard admin || fired.contains(where: { $0.owner == uid }) || fired.isEmpty else {
-            return "only its owner or an administrator can lift the block"
+        switch ProtectionPlanner.unblocking(locks, uid: uid, admin: admin) {
+        case .success(let staying): locks = staying
+        case .failure(let why): return why.description
         }
-        locks.removeAll { !$0.armed && (admin || $0.owner == uid) }
         saveLocks()
         refreshProtection()
         return nil
