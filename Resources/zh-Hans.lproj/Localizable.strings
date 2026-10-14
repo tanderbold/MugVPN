@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 从 %3$@ 的路由中接管了 %2$@ 个网络（更具体的路由优先）";
 "%@ was changed outside MugVPN since it was opened here." = "%@ 在此处打开后已在 MugVPN 之外被修改。";
 "%@ was removed outside MugVPN since it was opened here." = "%@ 在此处打开后已在 MugVPN 之外被删除。";
+"%@'s profiles folder" = "%@ 的配置文件夹";
 "%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 仅用于其自身域名，另一个连接已接管所有名称";
 "%@: DNS not set, another connection takes all names" = "%@：未设置 DNS，另一个连接已接管所有名称";
 "%@: DNS only for %@" = "%@：DNS 仅用于 %@";
@@ -44,6 +45,7 @@
 "Certificate" = "证书";
 "Certificate:" = "证书：";
 "Choose" = "选取";
+"Choose Folder…" = "选择文件夹…";
 "Choose the certificate for %@:" = "选择 %@ 的证书：";
 "Choose the server's CA certificate." = "选择服务器的 CA 证书。";
 "Clear Saved Passwords" = "清除存储的密码";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "忽略来自服务器的消息";
 "Import" = "导入";
 "Import File…" = "导入文件…";
+"Import Profiles" = "导入配置文件";
 "Import from Access Server" = "从 Access Server 导入";
 "Import from Access Server…" = "从 Access Server 导入…";
 "Import from URL" = "从 URL 导入";
 "Import from URL…" = "从 URL 导入…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "要从 %@ 导入你的配置文件吗？请选择它的配置文件夹（会在那里打开）。";
 "Imported" = "已导入";
 "Installed by an administrator: only its MugVPN options can be changed here." = "由管理员安装：此处只能更改其 MugVPN 选项。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "互联网已阻止：%@ 已断开。请重新连接或解除阻止。";
@@ -154,6 +158,7 @@
 "New Connection" = "新建连接";
 "New Connection…" = "新建连接…";
 "No log for %@ yet." = "%@ 还没有日志。";
+"No profiles in %@." = "%@ 中没有配置文件。";
 "No profiles yet" = "尚无配置文件";
 "No proxy" = "不使用代理";
 "None" = "无";

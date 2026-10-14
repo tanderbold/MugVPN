@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ تعداد %@ شبکه را از مسیرهای %@ می‌گیرد (مسیر دقیق‌تر برنده است)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ از زمانی که اینجا باز شد، بیرون از MugVPN تغییر کرده است.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ از زمانی که اینجا باز شد، بیرون از MugVPN حذف شده است.";
+"%@'s profiles folder" = "پوشهٔ نمایه‌های %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS فقط برای دامنه‌های خودش، اتصال دیگری همهٔ نام‌ها را گرفته است";
 "%@: DNS not set, another connection takes all names" = "%@: DNS تنظیم نشد، اتصال دیگری همهٔ نام‌ها را گرفته است";
 "%@: DNS only for %@" = "%@: DNS فقط برای %@";
@@ -44,6 +45,7 @@
 "Certificate" = "گواهی";
 "Certificate:" = "گواهی:";
 "Choose" = "انتخاب";
+"Choose Folder…" = "انتخاب پوشه…";
 "Choose the certificate for %@:" = "گواهی را برای %@ انتخاب کنید:";
 "Choose the server's CA certificate." = "گواهی CA سرور را انتخاب کنید.";
 "Clear Saved Passwords" = "پاک کردن گذرواژه‌های ذخیره‌شده";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "نادیده گرفتن پیام‌های سرورها";
 "Import" = "وارد کردن";
 "Import File…" = "وارد کردن فایل…";
+"Import Profiles" = "وارد کردن نمایه‌ها";
 "Import from Access Server" = "وارد کردن از Access Server";
 "Import from Access Server…" = "وارد کردن از Access Server…";
 "Import from URL" = "وارد کردن از URL";
 "Import from URL…" = "وارد کردن از URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "نمایه‌هایتان از %@ وارد شوند؟ پوشهٔ نمایه‌های آن را انتخاب کنید (همان‌جا باز می‌شود).";
 "Imported" = "وارد شد";
 "Installed by an administrator: only its MugVPN options can be changed here." = "نصب‌شده توسط مدیر سیستم: در اینجا فقط گزینه‌های MugVPN آن قابل تغییر است.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "اینترنت مسدود شد: %@ قطع شد. دوباره وصل شوید یا مسدودی را بردارید.";
@@ -154,6 +158,7 @@
 "New Connection" = "اتصال جدید";
 "New Connection…" = "اتصال جدید…";
 "No log for %@ yet." = "هنوز گزارشی برای %@ وجود ندارد.";
+"No profiles in %@." = "در %@ نمایه‌ای نیست.";
 "No profiles yet" = "هنوز پروفایلی وجود ندارد";
 "No proxy" = "بدون پروکسی";
 "None" = "هیچ‌کدام";

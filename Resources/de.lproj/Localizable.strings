@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ übernimmt %@ Netze aus den Routen von %@ (die spezifischere Route gewinnt)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ wurde außerhalb von MugVPN geändert, seit es hier geöffnet wurde.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ wurde außerhalb von MugVPN entfernt, seit es hier geöffnet wurde.";
+"%@'s profiles folder" = "Profilordner von %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS nur für eigene Domains, eine andere Verbindung übernimmt alle Namen";
 "%@: DNS not set, another connection takes all names" = "%@: DNS nicht gesetzt, eine andere Verbindung übernimmt alle Namen";
 "%@: DNS only for %@" = "%@: DNS nur für %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Zertifikat";
 "Certificate:" = "Zertifikat:";
 "Choose" = "Auswählen";
+"Choose Folder…" = "Ordner wählen …";
 "Choose the certificate for %@:" = "Zertifikat für %@ auswählen:";
 "Choose the server's CA certificate." = "Wähle das CA-Zertifikat des Servers.";
 "Clear Saved Passwords" = "Gespeicherte Passwörter löschen";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Nachrichten von Servern ignorieren";
 "Import" = "Importieren";
 "Import File…" = "Datei importieren…";
+"Import Profiles" = "Profile importieren";
 "Import from Access Server" = "Import von Access Server";
 "Import from Access Server…" = "Von Access Server importieren…";
 "Import from URL" = "Import von URL";
 "Import from URL…" = "Von URL importieren…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Ihre Profile aus %@ importieren? Wählen Sie dessen Profilordner (er öffnet sich dort).";
 "Imported" = "Importiert";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Von einem Administrator installiert: Hier können nur die MugVPN-Optionen geändert werden.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet blockiert: %@ ist abgebrochen. Neu verbinden oder Blockierung aufheben.";
@@ -154,6 +158,7 @@
 "New Connection" = "Neue Verbindung";
 "New Connection…" = "Neue Verbindung…";
 "No log for %@ yet." = "Für %@ gibt es noch kein Protokoll.";
+"No profiles in %@." = "Keine Profile in %@.";
 "No profiles yet" = "Noch keine Profile";
 "No proxy" = "Kein Proxy";
 "None" = "Keine";

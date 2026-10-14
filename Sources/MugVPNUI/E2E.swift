@@ -197,6 +197,12 @@ final class E2EServices: Services {
         defer { nextFile = nil }
         return nextFile ?? nil
     }
+    /// Where the last folder panel opened.
+    var folderPanelStart: String?
+    func chooseFolder(startingAt start: String, message: String) -> String? {
+        folderPanelStart = start
+        return chooseFile()
+    }
 }
 
 final class E2EServer {
@@ -512,7 +518,7 @@ final class E2EServer {
         case "http_requests": return ["requests": (services.http as! FakeHTTP).requests]
         case "uninstall_log":
             return ["helper": backend.uninstallRequests, "removed": services.removed, "trashed": services.trashed]
-        case "opened_urls": return ["urls": services.urls, "panels": services.panels]
+        case "opened_urls": return ["urls": services.urls, "panels": services.panels, "folder_panel_start": services.folderPanelStart ?? ""]
         case "notifications": return ["items": services.notes]
         case "login_item": return ["enabled": services.launchAtLogin]
         case "fake_user_data_stays":

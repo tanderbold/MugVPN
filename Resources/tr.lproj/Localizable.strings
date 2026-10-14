@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@, %@ ağı %@ rotalarından alıyor (daha belirli rota kazanır)";
 "%@ was changed outside MugVPN since it was opened here." = "%@, burada açıldığından beri MugVPN dışında değiştirildi.";
 "%@ was removed outside MugVPN since it was opened here." = "%@, burada açıldığından beri MugVPN dışında silindi.";
+"%@'s profiles folder" = "%@ profil klasörü";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS yalnızca kendi alan adları için, başka bir bağlantı tüm adları alıyor";
 "%@: DNS not set, another connection takes all names" = "%@: DNS ayarlanmadı, başka bir bağlantı tüm adları alıyor";
 "%@: DNS only for %@" = "%@: DNS yalnızca %@ için";
@@ -44,6 +45,7 @@
 "Certificate" = "Sertifika";
 "Certificate:" = "Sertifika:";
 "Choose" = "Seç";
+"Choose Folder…" = "Klasör Seç…";
 "Choose the certificate for %@:" = "%@ için sertifikayı seçin:";
 "Choose the server's CA certificate." = "Sunucunun CA sertifikasını seçin.";
 "Clear Saved Passwords" = "Kayıtlı parolaları sil";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Sunuculardan gelen mesajları yok say";
 "Import" = "İçe aktar";
 "Import File…" = "Dosyadan içe aktar…";
+"Import Profiles" = "Profilleri İçe Aktar";
 "Import from Access Server" = "Erişim Sunucusundan içe aktar";
 "Import from Access Server…" = "Access Server’dan içe aktar…";
 "Import from URL" = "URL'den içe aktar";
 "Import from URL…" = "URL’den içe aktar…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Profilleriniz %@ uygulamasından içe aktarılsın mı? Profil klasörünü seçin (orada açılır).";
 "Imported" = "İçe aktarıldı";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Bir yönetici tarafından yüklendi: burada yalnızca MugVPN seçenekleri değiştirilebilir.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "İnternet engellendi: %@ koptu. Yeniden bağlanın veya engeli kaldırın.";
@@ -154,6 +158,7 @@
 "New Connection" = "Yeni bağlantı";
 "New Connection…" = "Yeni bağlantı…";
 "No log for %@ yet." = "%@ için henüz günlük yok.";
+"No profiles in %@." = "%@ içinde profil yok.";
 "No profiles yet" = "Henüz profil yok";
 "No proxy" = "Proxy yok";
 "None" = "Yok";

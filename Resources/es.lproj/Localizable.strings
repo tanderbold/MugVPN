@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ toma %@ redes de las rutas de %@ (gana la ruta más específica)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ se cambió fuera de MugVPN desde que se abrió aquí.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ se eliminó fuera de MugVPN desde que se abrió aquí.";
+"%@'s profiles folder" = "Carpeta de perfiles de %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS solo para sus dominios, otra conexión toma todos los nombres";
 "%@: DNS not set, another connection takes all names" = "%@: DNS no establecido, otra conexión toma todos los nombres";
 "%@: DNS only for %@" = "%@: DNS solo para %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certificado";
 "Certificate:" = "Certificado:";
 "Choose" = "Elegir";
+"Choose Folder…" = "Elegir carpeta…";
 "Choose the certificate for %@:" = "Elige el certificado para %@:";
 "Choose the server's CA certificate." = "Elige el certificado de CA del servidor.";
 "Clear Saved Passwords" = "Borrar contraseñas guardadas";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignorar mensajes de los servidores";
 "Import" = "Importar";
 "Import File…" = "Importar archivo…";
+"Import Profiles" = "Importar perfiles";
 "Import from Access Server" = "Importar desde Access Server";
 "Import from Access Server…" = "Importar desde Access Server…";
 "Import from URL" = "Importar desde URL";
 "Import from URL…" = "Importar desde URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "¿Importar tus perfiles de %@? Elige su carpeta de perfiles (se abre ahí).";
 "Imported" = "Importado";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Instalada por un administrador: aquí solo se pueden cambiar sus opciones de MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet bloqueado: %@ se cortó. Vuelve a conectar o desbloquea.";
@@ -154,6 +158,7 @@
 "New Connection" = "Nueva conexión";
 "New Connection…" = "Nueva conexión…";
 "No log for %@ yet." = "Todavía no hay registro de %@.";
+"No profiles in %@." = "No hay perfiles en %@.";
 "No profiles yet" = "Aún no hay perfiles";
 "No proxy" = "Sin proxy";
 "None" = "Ninguno";

@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@이(가) %3$@의 경로에서 %2$@개 네트워크를 가져갑니다(더 구체적인 경로가 우선)";
 "%@ was changed outside MugVPN since it was opened here." = "%@이(가) 여기서 연 뒤 MugVPN 밖에서 변경되었습니다.";
 "%@ was removed outside MugVPN since it was opened here." = "%@이(가) 여기서 연 뒤 MugVPN 밖에서 삭제되었습니다.";
+"%@'s profiles folder" = "%@의 프로필 폴더";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: 자체 도메인에만 DNS 적용, 다른 연결이 모든 이름을 담당";
 "%@: DNS not set, another connection takes all names" = "%@: DNS가 설정되지 않음, 다른 연결이 모든 이름을 담당";
 "%@: DNS only for %@" = "%@: %@에만 DNS 적용";
@@ -44,6 +45,7 @@
 "Certificate" = "인증서";
 "Certificate:" = "인증서:";
 "Choose" = "선택";
+"Choose Folder…" = "폴더 선택…";
 "Choose the certificate for %@:" = "%@의 인증서 선택:";
 "Choose the server's CA certificate." = "서버의 CA 인증서를 선택하십시오.";
 "Clear Saved Passwords" = "저장된 암호 지우기";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "서버 메시지 무시";
 "Import" = "불러오기";
 "Import File…" = "파일 불러오기…";
+"Import Profiles" = "프로필 가져오기";
 "Import from Access Server" = "Access Server에서 불러오기";
 "Import from Access Server…" = "Access Server에서 불러오기…";
 "Import from URL" = "URL에서 불러오기";
 "Import from URL…" = "URL에서 불러오기…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "%@의 프로필을 가져올까요? 해당 프로필 폴더를 선택하세요(그 위치에서 열립니다).";
 "Imported" = "불러오기 완료";
 "Installed by an administrator: only its MugVPN options can be changed here." = "관리자가 설치함: 여기에서는 MugVPN 옵션만 변경할 수 있습니다.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "인터넷 차단됨: %@ 연결이 끊겼습니다. 다시 연결하거나 차단을 해제하십시오.";
@@ -154,6 +158,7 @@
 "New Connection" = "새로운 연결";
 "New Connection…" = "새로운 연결…";
 "No log for %@ yet." = "%@의 로그가 아직 없습니다.";
+"No profiles in %@." = "%@에 프로필이 없습니다.";
 "No profiles yet" = "아직 프로필 없음";
 "No proxy" = "프록시 없음";
 "None" = "없음";

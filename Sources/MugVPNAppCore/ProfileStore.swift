@@ -161,6 +161,21 @@ public final class ProfileStore {
     /// Largest file a profile may name (certificates and keys are a few KB).
     public static let maxFileBytes = 1 << 20
 
+    /// The profiles in a folder the user chose to import from (another MugVPN's profiles): profiles and .tblk
+    /// configurations, in its folders too (three levels: a group, a profile's own folder), hidden ones left.
+    public func importableProfiles(inFolder dir: String, depth: Int = 3) -> [String] {
+        var out: [String] = []
+        for e in fs.contents(of: dir) where !e.name.hasPrefix(".") {
+            let path = (dir as NSString).appendingPathComponent(e.name)
+            if e.name.lowercased().hasSuffix(".tblk") || !e.isDirectory {
+                out += ProfileStore.importable([path])
+            } else if depth > 1 {
+                out += importableProfiles(inFolder: path, depth: depth - 1)
+            }
+        }
+        return out
+    }
+
     /// - secrets, options: what a gone profile under the new one's key left is cleared.
     public func importProfile(at path: String, as name: String? = nil, allowOutside: Bool = false,
                               secrets: SecretStore? = nil, options: ProfileOptionsStore? = nil) throws -> ImportResult {

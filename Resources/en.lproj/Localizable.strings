@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ takes %@ networks out of %@'s routes (the more specific route wins)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ was changed outside MugVPN since it was opened here.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ was removed outside MugVPN since it was opened here.";
+"%@'s profiles folder" = "%@'s profiles folder";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS for its own domains only, another connection takes all names";
 "%@: DNS not set, another connection takes all names" = "%@: DNS not set, another connection takes all names";
 "%@: DNS only for %@" = "%@: DNS only for %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certificate";
 "Certificate:" = "Certificate:";
 "Choose" = "Choose";
+"Choose Folder…" = "Choose Folder…";
 "Choose the certificate for %@:" = "Choose the certificate for %@:";
 "Choose the server's CA certificate." = "Choose the server's CA certificate.";
 "Clear Saved Passwords" = "Clear Saved Passwords";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignore messages from servers";
 "Import" = "Import";
 "Import File…" = "Import File…";
+"Import Profiles" = "Import Profiles";
 "Import from Access Server" = "Import from Access Server";
 "Import from Access Server…" = "Import from Access Server…";
 "Import from URL" = "Import from URL";
 "Import from URL…" = "Import from URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Import your profiles from %@? Choose its profiles folder (it opens there).";
 "Imported" = "Imported";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Installed by an administrator: only its MugVPN options can be changed here.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet blocked: %@ dropped. Reconnect it or unblock.";
@@ -154,6 +158,7 @@
 "New Connection" = "New Connection";
 "New Connection…" = "New Connection…";
 "No log for %@ yet." = "No log for %@ yet.";
+"No profiles in %@." = "No profiles in %@.";
 "No profiles yet" = "No profiles yet";
 "No proxy" = "No proxy";
 "None" = "None";

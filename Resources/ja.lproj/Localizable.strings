@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ が %3$@ のルートから %2$@ 個のネットワークを引き受けます（より具体的なルートが優先）";
 "%@ was changed outside MugVPN since it was opened here." = "%@ はここで開いた後に MugVPN の外で変更されました。";
 "%@ was removed outside MugVPN since it was opened here." = "%@ はここで開いた後に MugVPN の外で削除されました。";
+"%@'s profiles folder" = "%@ のプロファイルフォルダ";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS は自身のドメインのみ、別の接続がすべての名前を引き受けています";
 "%@: DNS not set, another connection takes all names" = "%@: DNS は未設定、別の接続がすべての名前を引き受けています";
 "%@: DNS only for %@" = "%@: DNS は %@ のみ";
@@ -44,6 +45,7 @@
 "Certificate" = "証明書";
 "Certificate:" = "証明書:";
 "Choose" = "選択";
+"Choose Folder…" = "フォルダを選択…";
 "Choose the certificate for %@:" = "%@ の証明書を選択:";
 "Choose the server's CA certificate." = "サーバーの CA 証明書を選択してください。";
 "Clear Saved Passwords" = "保存したパスワードを消去";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "サーバーからのメッセージを無視";
 "Import" = "インポート";
 "Import File…" = "ファイルのインポート…";
+"Import Profiles" = "プロファイルを読み込む";
 "Import from Access Server" = "Access Server からインポート";
 "Import from Access Server…" = "Access Server からインポート…";
 "Import from URL" = "URL からインポート";
 "Import from URL…" = "URL からインポート…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "%@ のプロファイルを読み込みますか？そのプロファイルフォルダを選んでください（そこで開きます）。";
 "Imported" = "インポート完了";
 "Installed by an administrator: only its MugVPN options can be changed here." = "管理者によってインストールされています: ここでは MugVPN のオプションのみ変更できます。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "インターネットをブロック中: %@ が切断されました。再接続するかブロックを解除してください。";
@@ -154,6 +158,7 @@
 "New Connection" = "新規接続";
 "New Connection…" = "新規接続…";
 "No log for %@ yet." = "%@ のログはまだありません。";
+"No profiles in %@." = "%@ にプロファイルはありません。";
 "No profiles yet" = "プロファイルがありません";
 "No proxy" = "プロキシなし";
 "None" = "なし";

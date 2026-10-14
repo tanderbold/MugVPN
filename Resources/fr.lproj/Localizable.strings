@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ prend %@ réseaux sur les routes de %@ (la route la plus précise l'emporte)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ a été modifié en dehors de MugVPN depuis son ouverture ici.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ a été supprimé en dehors de MugVPN depuis son ouverture ici.";
+"%@'s profiles folder" = "Dossier des profils de %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@ : DNS seulement pour ses domaines, une autre connexion prend tous les noms";
 "%@: DNS not set, another connection takes all names" = "%@ : DNS non défini, une autre connexion prend tous les noms";
 "%@: DNS only for %@" = "%@ : DNS seulement pour %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certificat";
 "Certificate:" = "Certificat :";
 "Choose" = "Choisir";
+"Choose Folder…" = "Choisir le dossier…";
 "Choose the certificate for %@:" = "Choisissez le certificat pour %@ :";
 "Choose the server's CA certificate." = "Choisissez le certificat CA du serveur.";
 "Clear Saved Passwords" = "Effacer les mots de passe enregistrés";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignorer les messages des serveurs";
 "Import" = "Importer";
 "Import File…" = "Importer un fichier…";
+"Import Profiles" = "Importer des profils";
 "Import from Access Server" = "Importer depuis le serveur d'accès";
 "Import from Access Server…" = "Importer depuis Access Server…";
 "Import from URL" = "Importer depuis une URL";
 "Import from URL…" = "Importer depuis une URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Importer vos profils depuis %@ ? Choisissez son dossier de profils (il s'ouvre dessus).";
 "Imported" = "Importé";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Installée par un administrateur : seules ses options MugVPN peuvent être modifiées ici.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet bloqué : %@ s’est interrompu. Reconnectez-vous ou débloquez.";
@@ -154,6 +158,7 @@
 "New Connection" = "Nouvelle connexion";
 "New Connection…" = "Nouvelle connexion…";
 "No log for %@ yet." = "Aucun journal pour %@ pour l’instant.";
+"No profiles in %@." = "Aucun profil dans %@.";
 "No profiles yet" = "Aucun profil pour l'instant";
 "No proxy" = "Aucun proxy";
 "None" = "Aucun";

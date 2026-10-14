@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ забирает %@ сетей из маршрутов %@ (побеждает более узкий маршрут)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ изменён вне MugVPN с тех пор, как был открыт здесь.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ удалён вне MugVPN с тех пор, как был открыт здесь.";
+"%@'s profiles folder" = "Папка профилей %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS только для своих доменов, все имена у другого подключения";
 "%@: DNS not set, another connection takes all names" = "%@: DNS не установлен, все имена у другого подключения";
 "%@: DNS only for %@" = "%@: DNS только для %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Сертификат";
 "Certificate:" = "Сертификат:";
 "Choose" = "Выбрать";
+"Choose Folder…" = "Выбрать папку…";
 "Choose the certificate for %@:" = "Выберите сертификат для %@:";
 "Choose the server's CA certificate." = "Выберите сертификат CA сервера.";
 "Clear Saved Passwords" = "Удалить сохранённые пароли";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Игнорировать сообщения серверов";
 "Import" = "Импорт";
 "Import File…" = "Импортировать файл…";
+"Import Profiles" = "Импорт профилей";
 "Import from Access Server" = "Импорт из Access Server";
 "Import from Access Server…" = "Импорт с Access Server…";
 "Import from URL" = "Импорт по ссылке";
 "Import from URL…" = "Импорт по URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Импортировать ваши профили из %@? Выберите его папку профилей (она откроется там).";
 "Imported" = "Импортировано";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Установлено администратором: здесь можно изменить только его параметры MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Интернет заблокирован: %@ оборвалось. Переподключите или снимите блокировку.";
@@ -154,6 +158,7 @@
 "New Connection" = "Новое подключение";
 "New Connection…" = "Новое подключение…";
 "No log for %@ yet." = "Журнала для %@ пока нет.";
+"No profiles in %@." = "В %@ нет профилей.";
 "No profiles yet" = "Профилей пока нет";
 "No proxy" = "Без прокси";
 "None" = "Нет";

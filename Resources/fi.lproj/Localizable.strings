@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ ottaa %@ verkkoa yhteyden %@ reiteistä (tarkempi reitti voittaa)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ on muuttunut MugVPN:n ulkopuolella sen jälkeen, kun se avattiin täällä.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ on poistettu MugVPN:n ulkopuolella sen jälkeen, kun se avattiin täällä.";
+"%@'s profiles folder" = "Kohteen %@ profiilikansio";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS vain omille verkkotunnuksille, toinen yhteys ottaa kaikki nimet";
 "%@: DNS not set, another connection takes all names" = "%@: DNS:ää ei asetettu, toinen yhteys ottaa kaikki nimet";
 "%@: DNS only for %@" = "%@: DNS vain kohteille %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Varmenne";
 "Certificate:" = "Varmenne:";
 "Choose" = "Valitse";
+"Choose Folder…" = "Valitse kansio…";
 "Choose the certificate for %@:" = "Valitse varmenne profiilille %@:";
 "Choose the server's CA certificate." = "Valitse palvelimen CA-varmenne.";
 "Clear Saved Passwords" = "Tyhjennä tallennetut salasanat";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ohita palvelimien viestit";
 "Import" = "Tuo";
 "Import File…" = "Tuo tiedosto…";
+"Import Profiles" = "Tuo profiilit";
 "Import from Access Server" = "Tuo Access Serveristä";
 "Import from Access Server…" = "Tuo Access Serveriltä…";
 "Import from URL" = "Tuo URL-osoitteesta";
 "Import from URL…" = "Tuo URL-osoitteesta…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Tuodaanko profiilisi kohteesta %@? Valitse sen profiilikansio (se avautuu siihen).";
 "Imported" = "Tuotu";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Järjestelmänvalvojan asentama: täällä voi muuttaa vain sen MugVPN-valintoja.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet estetty: %@ katkesi. Yhdistä uudelleen tai poista esto.";
@@ -154,6 +158,7 @@
 "New Connection" = "Uusi yhteys";
 "New Connection…" = "Uusi yhteys…";
 "No log for %@ yet." = "Profiililla %@ ei ole vielä lokia.";
+"No profiles in %@." = "Kohteessa %@ ei ole profiileja.";
 "No profiles yet" = "Ei vielä profiileja";
 "No proxy" = "Ei välipalvelinta";
 "None" = "Ei mitään";

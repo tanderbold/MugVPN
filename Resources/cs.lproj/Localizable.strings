@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ přebírá %@ sítí z tras %@ (vyhrává konkrétnější trasa)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ byl od otevření zde změněn mimo MugVPN.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ byl od otevření zde odstraněn mimo MugVPN.";
+"%@'s profiles folder" = "Složka profilů %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS jen pro vlastní domény, všechna jména převzalo jiné připojení";
 "%@: DNS not set, another connection takes all names" = "%@: DNS nenastaven, všechna jména převzalo jiné připojení";
 "%@: DNS only for %@" = "%@: DNS jen pro %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certifikát";
 "Certificate:" = "Certifikát:";
 "Choose" = "Vybrat";
+"Choose Folder…" = "Vybrat složku…";
 "Choose the certificate for %@:" = "Vyberte certifikát pro %@:";
 "Choose the server's CA certificate." = "Vyberte certifikát CA serveru.";
 "Clear Saved Passwords" = "Smazat uložená hesla";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignorovat zprávy ze serverů";
 "Import" = "Importovat";
 "Import File…" = "Importovat soubor…";
+"Import Profiles" = "Importovat profily";
 "Import from Access Server" = "Import z Access Serveru";
 "Import from Access Server…" = "Importovat z Access Serveru…";
 "Import from URL" = "Import z URL";
 "Import from URL…" = "Importovat z URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Importovat vaše profily z %@? Vyberte jeho složku s profily (otevře se v ní).";
 "Imported" = "Importováno";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Nainstalováno správcem: zde lze měnit jen jeho volby MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet zablokován: %@ vypadlo. Znovu se připojte nebo zrušte blokování.";
@@ -154,6 +158,7 @@
 "New Connection" = "Nové připojení";
 "New Connection…" = "Nové připojení…";
 "No log for %@ yet." = "Pro %@ zatím není žádný protokol.";
+"No profiles in %@." = "V %@ nejsou žádné profily.";
 "No profiles yet" = "Zatím žádné profily";
 "No proxy" = "Bez proxy";
 "None" = "Žádný";

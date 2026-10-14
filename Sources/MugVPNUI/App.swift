@@ -24,6 +24,8 @@ protocol Services: AnyObject {
     func reveal(_ path: String)
     /// Ask for a file to import; nil on Cancel.
     func chooseFile() -> String?
+    /// Ask for a folder, starting at `start` (one the sandbox lets the app read once chosen); nil on Cancel.
+    func chooseFolder(startingAt start: String, message: String) -> String?
     var helperSetup: HelperSetup { get }
     var http: HTTPFetcher { get }
     /// MugVPN starts at login (the system's login item for it).
@@ -51,7 +53,7 @@ final class RealServices: Services {
 
     func removeUserData(_ paths: [String]) -> [String] {
         paths.forEach { try? FileManager.default.removeItem(atPath: $0) }
-        UserDefaults.standard.removePersistentDomain(forName: MugVPNIDs.appBundleID)
+        UserDefaults.standard.removePersistentDomain(forName: ownBundleID)
         var stayed = paths.filter { FileManager.default.fileExists(atPath: $0) }
         if !KeychainStore().removeEverything() { stayed.append(L("saved passwords")) }
         return stayed
@@ -100,6 +102,16 @@ final class RealServices: Services {
     func chooseSaveLocation(suggested: String) -> String? {
         let p = NSSavePanel()
         p.nameFieldStringValue = suggested
+        NSApp.activate(ignoringOtherApps: true)
+        return p.runModal() == .OK ? p.url?.path : nil
+    }
+
+    func chooseFolder(startingAt start: String, message: String) -> String? {
+        let p = NSOpenPanel()
+        p.canChooseFiles = false
+        p.canChooseDirectories = true
+        p.directoryURL = URL(fileURLWithPath: start)
+        p.message = message
         NSApp.activate(ignoringOtherApps: true)
         return p.runModal() == .OK ? p.url?.path : nil
     }
@@ -1136,6 +1148,30 @@ final class AppController: NSObject, NSMenuDelegate {
     }
 
     // MARK: - import
+
+    /// Where flags of the app's own are kept (an offer made once).
+    var flags: SettingsBackend?
+    static let importOfferedKey = "profiles_import_offered"
+
+    /// Once, while this product has no profiles of the user's: another product's profiles offered to import (the
+    /// user picks their folder: the sandbox lets the app read only that).
+    func offerProfileImport() {
+        guard let source = product.importProfilesFrom, let flags, flags.value(AppController.importOfferedKey) == nil,
+              !manager.profiles.contains(where: { $0.source == .user }) else { return }
+        flags.set(AppController.importOfferedKey, true)
+        showForm(kind: "confirm", profile: "", title: L("Import Profiles"),
+                 views: [Form.label(L("Import your profiles from %@? Choose its profiles folder (it opens there).", source.name), id: "prompt_text")],
+                 okTitle: L("Choose Folder…"), ok: { [weak self] _ in
+            DispatchQueue.main.async {
+                guard let self, let dir = self.services.chooseFolder(startingAt: source.folder,
+                                                                     message: L("%@'s profiles folder", source.name)) else { return }
+                let found = self.store.importableProfiles(inFolder: dir)
+                guard !found.isEmpty else { return showError(L("No profiles in %@.", ProfileDownloader.visible(dir))) }
+                self.importFiles(found)
+            }
+            return true
+        })
+    }
 
     @objc func importFile() {
         guard let path = services.chooseFile() else { return }

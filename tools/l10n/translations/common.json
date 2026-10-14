@@ -103,7 +103,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Dokud VPN přenáší veškerý provoz, každý dotaz na jméno jde přes VPN.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Vlastní dotazy Macu na jména jdou přes VPN, dokud přenáší veškerý provoz. Aplikace, která se ptá přímo DNS serveru místní sítě, zastavena není.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dokud je připojeno, nic neodchází mimo VPN a žádné jiné připojení nelze spustit."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dokud je připojeno, nic neodchází mimo VPN a žádné jiné připojení nelze spustit.",
+  "Import Profiles": "Importovat profily",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importovat vaše profily z %@? Vyberte jeho složku s profily (otevře se v ní).",
+  "Choose Folder…": "Vybrat složku…",
+  "%@'s profiles folder": "Složka profilů %@",
+  "No profiles in %@.": "V %@ nejsou žádné profily."
  },
  "de": {
   "OK": "OK",
@@ -209,7 +214,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Die VPN-Konfiguration von MugVPN, Protokolle, Einstellungen und gespeicherte Passwörter werden entfernt. Tunnel werden getrennt.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Solange das VPN den gesamten Verkehr übernimmt, läuft jede Namensauflösung über das VPN.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Die Namensauflösungen des Mac laufen über das VPN, solange es den gesamten Verkehr übernimmt. Eine App, die den DNS-Server des lokalen Netzwerks direkt fragt, wird nicht gestoppt.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Solange sie besteht, verlässt nichts den Mac außerhalb des VPN, und keine andere Verbindung kann starten."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Solange sie besteht, verlässt nichts den Mac außerhalb des VPN, und keine andere Verbindung kann starten.",
+  "Import Profiles": "Profile importieren",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Ihre Profile aus %@ importieren? Wählen Sie dessen Profilordner (er öffnet sich dort).",
+  "Choose Folder…": "Ordner wählen …",
+  "%@'s profiles folder": "Profilordner von %@",
+  "No profiles in %@.": "Keine Profile in %@."
  },
  "da": {
   "OK": "OK",
@@ -315,7 +325,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Alle navneopslag går gennem VPN'en, så længe den tager al trafik.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Mac'ens egne navneopslag går gennem VPN'en, så længe den tager al trafik. En app, der spørger det lokale netværks DNS-server direkte, bliver ikke stoppet.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går intet uden om VPN'en, og ingen anden forbindelse kan starte."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går intet uden om VPN'en, og ingen anden forbindelse kan starte.",
+  "Import Profiles": "Importér profiler",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importér dine profiler fra %@? Vælg dens profilmappe (den åbner der).",
+  "Choose Folder…": "Vælg mappe…",
+  "%@'s profiles folder": "%@s profilmappe",
+  "No profiles in %@.": "Ingen profiler i %@."
  },
  "el": {
   "OK": "OK",
@@ -421,7 +436,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Κάθε αναζήτηση ονόματος περνά από το VPN όσο αυτό μεταφέρει όλη την κίνηση.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Οι αναζητήσεις ονομάτων του ίδιου του Mac περνούν από το VPN όσο αυτό μεταφέρει όλη την κίνηση. Μια εφαρμογή που ρωτά απευθείας τον διακομιστή DNS του τοπικού δικτύου δεν σταματά.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Όσο είναι συνδεδεμένη, τίποτα δεν βγαίνει εκτός VPN και καμία άλλη σύνδεση δεν μπορεί να ξεκινήσει."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Όσο είναι συνδεδεμένη, τίποτα δεν βγαίνει εκτός VPN και καμία άλλη σύνδεση δεν μπορεί να ξεκινήσει.",
+  "Import Profiles": "Εισαγωγή προφίλ",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Εισαγωγή των προφίλ σας από το %@; Επιλέξτε τον φάκελο προφίλ του (ανοίγει εκεί).",
+  "Choose Folder…": "Επιλογή φακέλου…",
+  "%@'s profiles folder": "Φάκελος προφίλ του %@",
+  "No profiles in %@.": "Δεν υπάρχουν προφίλ στο %@."
  },
  "es": {
   "OK": "Aceptar",
@@ -527,7 +547,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Todas las consultas de nombres pasan por la VPN mientras lleva todo el tráfico.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Las consultas de nombres del propio Mac pasan por la VPN mientras lleva todo el tráfico. Una app que pregunta directamente al servidor DNS de la red local no se detiene.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mientras esté activa, nada sale fuera de la VPN y no puede iniciarse ninguna otra conexión."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mientras esté activa, nada sale fuera de la VPN y no puede iniciarse ninguna otra conexión.",
+  "Import Profiles": "Importar perfiles",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "¿Importar tus perfiles de %@? Elige su carpeta de perfiles (se abre ahí).",
+  "Choose Folder…": "Elegir carpeta…",
+  "%@'s profiles folder": "Carpeta de perfiles de %@",
+  "No profiles in %@.": "No hay perfiles en %@."
  },
  "fa": {
   "OK": "تأیید",
@@ -633,7 +658,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.",
   "Every name lookup goes through the VPN while it takes all traffic.": "تا وقتی VPN همهٔ ترافیک را می‌برد، هر جست‌وجوی نام از VPN می‌گذرد.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "جست‌وجوهای نام خود مک تا وقتی VPN همهٔ ترافیک را می‌برد از VPN می‌گذرند. برنامه‌ای که مستقیم از سرور DNS شبکهٔ محلی می‌پرسد متوقف نمی‌شود.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "تا وقتی برقرار است، چیزی بیرون از VPN نمی‌رود و هیچ اتصال دیگری نمی‌تواند شروع شود."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "تا وقتی برقرار است، چیزی بیرون از VPN نمی‌رود و هیچ اتصال دیگری نمی‌تواند شروع شود.",
+  "Import Profiles": "وارد کردن نمایه‌ها",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "نمایه‌هایتان از %@ وارد شوند؟ پوشهٔ نمایه‌های آن را انتخاب کنید (همان‌جا باز می‌شود).",
+  "Choose Folder…": "انتخاب پوشه…",
+  "%@'s profiles folder": "پوشهٔ نمایه‌های %@",
+  "No profiles in %@.": "در %@ نمایه‌ای نیست."
  },
  "fi": {
   "OK": "OK",
@@ -739,7 +769,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Jokainen nimihaku kulkee VPN:n kautta, kun se kuljettaa kaiken liikenteen.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macin omat nimihaut kulkevat VPN:n kautta, kun se kuljettaa kaiken liikenteen. Sovellusta, joka kysyy suoraan paikallisen verkon DNS-palvelimelta, ei pysäytetä.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Yhteyden ollessa päällä mitään ei lähde VPN:n ohi, eikä muita yhteyksiä voi avata."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Yhteyden ollessa päällä mitään ei lähde VPN:n ohi, eikä muita yhteyksiä voi avata.",
+  "Import Profiles": "Tuo profiilit",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Tuodaanko profiilisi kohteesta %@? Valitse sen profiilikansio (se avautuu siihen).",
+  "Choose Folder…": "Valitse kansio…",
+  "%@'s profiles folder": "Kohteen %@ profiilikansio",
+  "No profiles in %@.": "Kohteessa %@ ei ole profiileja."
  },
  "fr": {
   "OK": "OK",
@@ -845,7 +880,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Chaque résolution de nom passe par le VPN tant qu'il transporte tout le trafic.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Les résolutions de noms du Mac passent par le VPN tant qu'il transporte tout le trafic. Une app qui interroge directement le serveur DNS du réseau local n'est pas bloquée.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Tant qu'elle est active, rien ne sort en dehors du VPN et aucune autre connexion ne peut démarrer."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Tant qu'elle est active, rien ne sort en dehors du VPN et aucune autre connexion ne peut démarrer.",
+  "Import Profiles": "Importer des profils",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importer vos profils depuis %@ ? Choisissez son dossier de profils (il s'ouvre dessus).",
+  "Choose Folder…": "Choisir le dossier…",
+  "%@'s profiles folder": "Dossier des profils de %@",
+  "No profiles in %@.": "Aucun profil dans %@."
  },
  "it": {
   "OK": "OK",
@@ -951,7 +991,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configurazione VPN di MugVPN, i registri, le impostazioni e le password salvate verranno rimossi. I tunnel vengono disconnessi.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Ogni risoluzione dei nomi passa per la VPN finché trasporta tutto il traffico.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Le risoluzioni dei nomi del Mac passano per la VPN finché trasporta tutto il traffico. Un'app che interroga direttamente il server DNS della rete locale non viene fermata.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Finché è attiva, niente esce fuori dalla VPN e nessun'altra connessione può avviarsi."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Finché è attiva, niente esce fuori dalla VPN e nessun'altra connessione può avviarsi.",
+  "Import Profiles": "Importa profili",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importare i tuoi profili da %@? Scegli la sua cartella dei profili (si apre lì).",
+  "Choose Folder…": "Scegli cartella…",
+  "%@'s profiles folder": "Cartella dei profili di %@",
+  "No profiles in %@.": "Nessun profilo in %@."
  },
  "ja": {
   "OK": "OK",
@@ -1057,7 +1102,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN の VPN 構成、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。",
   "Every name lookup goes through the VPN while it takes all traffic.": "VPN がすべての通信を扱っている間、名前の問い合わせはすべて VPN を通ります。",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "VPN がすべての通信を扱っている間、Mac 自身の名前の問い合わせは VPN を通ります。ローカルネットワークの DNS サーバーに直接問い合わせるアプリは止められません。",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "接続中は VPN の外に何も出ず、ほかの接続は開始できません。"
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "接続中は VPN の外に何も出ず、ほかの接続は開始できません。",
+  "Import Profiles": "プロファイルを読み込む",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "%@ のプロファイルを読み込みますか？そのプロファイルフォルダを選んでください（そこで開きます）。",
+  "Choose Folder…": "フォルダを選択…",
+  "%@'s profiles folder": "%@ のプロファイルフォルダ",
+  "No profiles in %@.": "%@ にプロファイルはありません。"
  },
  "ko": {
   "OK": "확인",
@@ -1163,7 +1213,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.",
   "Every name lookup goes through the VPN while it takes all traffic.": "VPN이 모든 트래픽을 처리하는 동안 모든 이름 조회는 VPN을 통해 갑니다.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "VPN이 모든 트래픽을 처리하는 동안 Mac 자체의 이름 조회는 VPN을 통해 갑니다. 로컬 네트워크의 DNS 서버에 직접 묻는 앱은 막지 않습니다.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "연결되어 있는 동안 VPN 밖으로 아무것도 나가지 않으며 다른 연결을 시작할 수 없습니다."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "연결되어 있는 동안 VPN 밖으로 아무것도 나가지 않으며 다른 연결을 시작할 수 없습니다.",
+  "Import Profiles": "프로필 가져오기",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "%@의 프로필을 가져올까요? 해당 프로필 폴더를 선택하세요(그 위치에서 열립니다).",
+  "Choose Folder…": "폴더 선택…",
+  "%@'s profiles folder": "%@의 프로필 폴더",
+  "No profiles in %@.": "%@에 프로필이 없습니다."
  },
  "nl": {
   "OK": "OK",
@@ -1269,7 +1324,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "De VPN-configuratie van MugVPN, logboeken, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Elke naamopzoeking gaat via de VPN zolang die al het verkeer draagt.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "De eigen naamopzoekingen van de Mac gaan via de VPN zolang die al het verkeer draagt. Een app die de DNS-server van het lokale netwerk rechtstreeks vraagt, wordt niet tegengehouden.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Zolang hij actief is, gaat er niets buiten de VPN om en kan geen andere verbinding starten."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Zolang hij actief is, gaat er niets buiten de VPN om en kan geen andere verbinding starten.",
+  "Import Profiles": "Profielen importeren",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Je profielen uit %@ importeren? Kies de profielenmap ervan (die opent daar).",
+  "Choose Folder…": "Kies map…",
+  "%@'s profiles folder": "Profielenmap van %@",
+  "No profiles in %@.": "Geen profielen in %@."
  },
  "nb": {
   "OK": "OK",
@@ -1375,7 +1435,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPNs VPN-konfigurasjon, logger, innstillinger og lagrede passord fjernes. Tunneler kobles fra.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Alle navneoppslag går gjennom VPN-en så lenge den tar all trafikk.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macens egne navneoppslag går gjennom VPN-en så lenge den tar all trafikk. En app som spør DNS-serveren i det lokale nettverket direkte, blir ikke stoppet.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går ingenting utenom VPN-en, og ingen annen tilkobling kan starte."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går ingenting utenom VPN-en, og ingen annen tilkobling kan starte.",
+  "Import Profiles": "Importer profiler",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Vil du importere profilene dine fra %@? Velg profilmappen dens (den åpnes der).",
+  "Choose Folder…": "Velg mappe…",
+  "%@'s profiles folder": "Profilmappen til %@",
+  "No profiles in %@.": "Ingen profiler i %@."
  },
  "pl": {
   "OK": "OK",
@@ -1481,7 +1546,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfiguracja VPN aplikacji MugVPN, dzienniki, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Dopóki VPN przenosi cały ruch, każde zapytanie o nazwę idzie przez VPN.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Własne zapytania Maca o nazwy idą przez VPN, dopóki przenosi on cały ruch. Aplikacja, która pyta bezpośrednio serwer DNS sieci lokalnej, nie jest zatrzymywana.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dopóki jest aktywne, nic nie wychodzi poza VPN i żadne inne połączenie nie może się rozpocząć."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dopóki jest aktywne, nic nie wychodzi poza VPN i żadne inne połączenie nie może się rozpocząć.",
+  "Import Profiles": "Importuj profile",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Zaimportować Twoje profile z %@? Wybierz jego folder profili (otworzy się w nim).",
+  "Choose Folder…": "Wybierz folder…",
+  "%@'s profiles folder": "Folder profili %@",
+  "No profiles in %@.": "Brak profili w %@."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1587,7 +1657,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "A configuração de VPN do MugVPN, os registros, os ajustes e as senhas salvas serão removidos. Os túneis são desconectados.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Toda consulta de nome passa pela VPN enquanto ela leva todo o tráfego.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "As consultas de nome do próprio Mac passam pela VPN enquanto ela leva todo o tráfego. Um app que pergunta diretamente ao servidor DNS da rede local não é impedido.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Enquanto estiver ativa, nada sai fora da VPN e nenhuma outra conexão pode começar."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Enquanto estiver ativa, nada sai fora da VPN e nenhuma outra conexão pode começar.",
+  "Import Profiles": "Importar perfis",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importar seus perfis do %@? Escolha a pasta de perfis dele (ela abre lá).",
+  "Choose Folder…": "Escolher pasta…",
+  "%@'s profiles folder": "Pasta de perfis do %@",
+  "No profiles in %@.": "Nenhum perfil em %@."
  },
  "ru": {
   "OK": "ОК",
@@ -1693,7 +1768,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфигурация VPN приложения MugVPN, журналы, настройки и сохранённые пароли будут удалены. Туннели будут отключены.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Пока VPN несёт весь трафик, каждый запрос имён идёт через VPN.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Собственные запросы имён Mac идут через VPN, пока он несёт весь трафик. Приложение, которое обращается к DNS-серверу локальной сети напрямую, не останавливается.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Пока подключение активно, ничего не уходит мимо VPN и другие подключения не запускаются."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Пока подключение активно, ничего не уходит мимо VPN и другие подключения не запускаются.",
+  "Import Profiles": "Импорт профилей",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Импортировать ваши профили из %@? Выберите его папку профилей (она откроется там).",
+  "Choose Folder…": "Выбрать папку…",
+  "%@'s profiles folder": "Папка профилей %@",
+  "No profiles in %@.": "В %@ нет профилей."
  },
  "sv": {
   "OK": "OK",
@@ -1799,7 +1879,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:s VPN-konfiguration, loggar, inställningar och sparade lösenord tas bort. Tunnlar kopplas från.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Alla namnuppslag går genom VPN:en så länge den tar all trafik.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macens egna namnuppslag går genom VPN:en så länge den tar all trafik. En app som frågar det lokala nätverkets DNS-server direkt stoppas inte.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Medan den är uppe går ingenting utanför VPN:en, och ingen annan anslutning kan starta."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Medan den är uppe går ingenting utanför VPN:en, och ingen annan anslutning kan starta.",
+  "Import Profiles": "Importera profiler",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importera dina profiler från %@? Välj dess profilmapp (den öppnas där).",
+  "Choose Folder…": "Välj mapp…",
+  "%@'s profiles folder": "%@s profilmapp",
+  "No profiles in %@.": "Inga profiler i %@."
  },
  "tr": {
   "OK": "Tamam",
@@ -1905,7 +1990,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.",
   "Every name lookup goes through the VPN while it takes all traffic.": "VPN tüm trafiği taşıdığı sürece her ad sorgusu VPN üzerinden gider.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Mac'in kendi ad sorguları, VPN tüm trafiği taşıdığı sürece VPN üzerinden gider. Yerel ağın DNS sunucusuna doğrudan soran bir uygulama durdurulmaz.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Bağlıyken VPN dışına hiçbir şey çıkmaz ve başka bir bağlantı başlatılamaz."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Bağlıyken VPN dışına hiçbir şey çıkmaz ve başka bir bağlantı başlatılamaz.",
+  "Import Profiles": "Profilleri İçe Aktar",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Profilleriniz %@ uygulamasından içe aktarılsın mı? Profil klasörünü seçin (orada açılır).",
+  "Choose Folder…": "Klasör Seç…",
+  "%@'s profiles folder": "%@ profil klasörü",
+  "No profiles in %@.": "%@ içinde profil yok."
  },
  "uk": {
   "OK": "OK",
@@ -2011,7 +2101,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано.",
   "Every name lookup goes through the VPN while it takes all traffic.": "Поки VPN несе весь трафік, кожен запит імен іде через VPN.",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Власні запити імен Mac ідуть через VPN, поки він несе весь трафік. Застосунок, що звертається до DNS-сервера локальної мережі напряму, не зупиняється.",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Поки підключення активне, ніщо не виходить повз VPN і інші підключення не запускаються."
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Поки підключення активне, ніщо не виходить повз VPN і інші підключення не запускаються.",
+  "Import Profiles": "Імпорт профілів",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "Імпортувати ваші профілі з %@? Виберіть його теку профілів (вона відкриється там).",
+  "Choose Folder…": "Вибрати теку…",
+  "%@'s profiles folder": "Тека профілів %@",
+  "No profiles in %@.": "У %@ немає профілів."
  },
  "zh-Hans": {
   "OK": "好",
@@ -2117,7 +2212,12 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。",
   "Every name lookup goes through the VPN while it takes all traffic.": "在 VPN 承载全部流量期间，所有名称查询都经由 VPN。",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "在 VPN 承载全部流量期间，Mac 自身的名称查询经由 VPN。直接向本地网络 DNS 服务器查询的应用不会被阻止。",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "连接期间，没有任何流量会绕过 VPN，也无法启动其他连接。"
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "连接期间，没有任何流量会绕过 VPN，也无法启动其他连接。",
+  "Import Profiles": "导入配置文件",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "要从 %@ 导入你的配置文件吗？请选择它的配置文件夹（会在那里打开）。",
+  "Choose Folder…": "选择文件夹…",
+  "%@'s profiles folder": "%@ 的配置文件夹",
+  "No profiles in %@.": "%@ 中没有配置文件。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -2223,6 +2323,11 @@
   "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 設定、記錄、設定值和已儲存的密碼將被移除。通道將中斷連線。",
   "Every name lookup goes through the VPN while it takes all traffic.": "在 VPN 承載全部流量期間，所有名稱查詢都經由 VPN。",
   "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "在 VPN 承載全部流量期間，Mac 本身的名稱查詢經由 VPN。直接向本地網路 DNS 伺服器查詢的 App 不會被阻擋。",
-  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "連線期間，沒有任何流量會繞過 VPN，也無法啟動其他連線。"
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "連線期間，沒有任何流量會繞過 VPN，也無法啟動其他連線。",
+  "Import Profiles": "匯入設定檔",
+  "Import your profiles from %@? Choose its profiles folder (it opens there).": "要從 %@ 匯入你的設定檔嗎？請選擇它的設定檔資料夾（會在那裡開啟）。",
+  "Choose Folder…": "選擇資料夾…",
+  "%@'s profiles folder": "%@ 的設定檔資料夾",
+  "No profiles in %@.": "%@ 中沒有設定檔。"
  }
 }

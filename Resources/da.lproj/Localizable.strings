@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ overtager %@ netværk fra %@s ruter (den mere specifikke rute vinder)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ er blevet ændret uden for MugVPN, siden den blev åbnet her.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ er blevet fjernet uden for MugVPN, siden den blev åbnet her.";
+"%@'s profiles folder" = "%@s profilmappe";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS kun for egne domæner, en anden forbindelse tager alle navne";
 "%@: DNS not set, another connection takes all names" = "%@: DNS ikke sat, en anden forbindelse tager alle navne";
 "%@: DNS only for %@" = "%@: DNS kun for %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certifikat";
 "Certificate:" = "Certifikat:";
 "Choose" = "Vælg";
+"Choose Folder…" = "Vælg mappe…";
 "Choose the certificate for %@:" = "Vælg certifikatet til %@:";
 "Choose the server's CA certificate." = "Vælg serverens CA-certifikat.";
 "Clear Saved Passwords" = "Ryd gemte adgangskoder";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignorer meddelelser fra servere";
 "Import" = "Importér";
 "Import File…" = "Importer fil…";
+"Import Profiles" = "Importér profiler";
 "Import from Access Server" = "Importer fra Access Server";
 "Import from Access Server…" = "Importér fra Access Server…";
 "Import from URL" = "Importer fra URL";
 "Import from URL…" = "Importér fra URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Importér dine profiler fra %@? Vælg dens profilmappe (den åbner der).";
 "Imported" = "Importeret";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Installeret af en administrator: Kun MugVPN-indstillingerne kan ændres her.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet blokeret: %@ blev afbrudt. Opret forbindelse igen, eller ophæv blokeringen.";
@@ -154,6 +158,7 @@
 "New Connection" = "Ny forbindelse";
 "New Connection…" = "Ny forbindelse…";
 "No log for %@ yet." = "Der er endnu ingen log for %@.";
+"No profiles in %@." = "Ingen profiler i %@.";
 "No profiles yet" = "Ingen profiler endnu";
 "No proxy" = "Ingen proxy";
 "None" = "Ingen";

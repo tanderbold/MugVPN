@@ -24,11 +24,15 @@ public struct Product {
     /// The test build's developer command line: the helper's calls, and subcommands of the product's own.
     public var devHelper: (() -> MugVPNHelperProtocol)?
     public var devCommands: [String: ([String]) -> Never]
+    /// Another product's profiles, offered once to import (its name, its profiles' folder) while this one has none.
+    public var importProfilesFrom: (name: String, folder: String)?
 
     public init(capabilities: BackendCapabilities, makeBackend: @escaping () -> (backend: Backend, transport: ManagementTransport),
                 makeHelperSetup: @escaping () -> HelperSetup, runDir: String, logsDir: String, sharedDataPaths: [String],
                 systemParts: @escaping (Bool) -> [String], commandSocketPath: String, engineVersion: @escaping (_ run: (String, [String]) -> String) -> String,
-                devHelper: (() -> MugVPNHelperProtocol)? = nil, devCommands: [String: ([String]) -> Never] = [:]) {
+                devHelper: (() -> MugVPNHelperProtocol)? = nil, devCommands: [String: ([String]) -> Never] = [:],
+                importProfilesFrom: (name: String, folder: String)? = nil) {
+        self.importProfilesFrom = importProfilesFrom
         self.capabilities = capabilities
         self.makeBackend = makeBackend
         self.makeHelperSetup = makeHelperSetup
@@ -45,3 +49,6 @@ public struct Product {
 
 /// The product this app is (set once, before anything else runs).
 var product: Product!
+
+/// This app's bundle id (each product has its own; MugVPN's when run outside a bundle).
+let ownBundleID = Bundle.main.bundleIdentifier ?? MugVPNIDs.appBundleID

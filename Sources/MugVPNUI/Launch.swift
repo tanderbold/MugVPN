@@ -64,7 +64,7 @@ public enum MugVPNApp {
                       + "\nRun it again with --yes to go ahead" + (keep ? "." : ", or add --keep-profiles to keep your profiles."))
                 exit(1)
             }
-            let others = NSRunningApplication.runningApplications(withBundleIdentifier: MugVPNIDs.appBundleID)
+            let others = NSRunningApplication.runningApplications(withBundleIdentifier: ownBundleID)
                 .filter { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }
             if !others.isEmpty { _ = CommandChannel.send(["exit"], answerWithin: 30) }
             let services = RealServices(helperSetup: product.makeHelperSetup())
@@ -110,7 +110,7 @@ public enum MugVPNApp {
             print("MugVPN is uninstalled.")
             exit(0)
         case .command(let c, let wait):
-            let others = NSRunningApplication.runningApplications(withBundleIdentifier: MugVPNIDs.appBundleID)
+            let others = NSRunningApplication.runningApplications(withBundleIdentifier: ownBundleID)
                 .filter { $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }
             if others.isEmpty {
                 switch CommandLineRequest.withoutInstance(c) {
@@ -137,7 +137,7 @@ public enum MugVPNApp {
             // Already running (one app per user: a second would take the command socket over): hand it on.
             // (Not the test mode's app: tests run it beside a real one.)
             if !e2e, let forward = CommandLineRequest.forwardedToRunning(startRequest),
-               !NSRunningApplication.runningApplications(withBundleIdentifier: MugVPNIDs.appBundleID)
+               !NSRunningApplication.runningApplications(withBundleIdentifier: ownBundleID)
                    .filter({ $0.processIdentifier != ProcessInfo.processInfo.processIdentifier }).isEmpty {
                 if forward.isEmpty { exit(0) }
                 exit(sendCommand(forward, answerWithin: forward.first == "import" ? 600 : 30))
@@ -213,6 +213,8 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
                 forced = d
             }
             let e2eHome = env["MUGVPN_E2E_HOME"] ?? NSTemporaryDirectory()
+            // Another product's profiles to offer (the App Store build's import from MugVPN).
+            if let from = env["MUGVPN_E2E_IMPORT_FROM"] { product.importProfilesFrom = ("MugVPN", from) }
             userDir = e2eHome + "/config"
             systemDir = e2eHome + "/system-config"
             autoDir = e2eHome + "/config-auto"
@@ -260,6 +262,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         manager.persistentMode = { backendParts.capabilities.persistentConnections ? settingsStore.settings.persistentConnections : .disable }
         controller.logText = logText
         controller.options = ProfileOptionsStore(backend: DefaultsBackend(defaults: defaults))
+        controller.flags = DefaultsBackend(defaults: defaults)
         #if MUGVPN_TESTING
         if e2e, env["MUGVPN_E2E_BACKEND"] != "real", let h = env["MUGVPN_E2E_HOME"] {
             controller.runDir = h + "/run"
@@ -280,6 +283,7 @@ final class AppDelegate: NSObject, NSApplicationDelegate {
         commandServer?.start()
         if !e2e { watchSystem() }
         manager.appStarted()
+        controller.offerProfileImport()
         handle(startRequest)
     }
 

@@ -382,6 +382,19 @@ func registerProfileTests() {
         fs.failMovesTo = ["\(userDir)/office"]
         expectThrows("delete", matching: ".deleting-") { try store(fs).delete(p, active: []) }
     }
+    test("PRF-38", "profiles in a folder chosen to import (another MugVPN's): in its folders too, a .tblk as one, nothing else, hidden ones left") {
+        let fs = MemFS()
+        let src = "/Users/u/Library/Application Support/MugVPN/config"
+        fs.add("\(src)/office/office.ovpn", minimal)
+        fs.add("\(src)/office/office.key", "k")
+        fs.add("\(src)/Clients/acme/acme.conf", minimal)
+        fs.add("\(src)/lab.tblk/Contents/Resources/config.ovpn", minimal)
+        fs.add("\(src)/notes.txt", "x")
+        fs.add("\(src)/.old/old.ovpn", minimal)
+        fs.add("\(src)/a/b/c/d/deep.ovpn", minimal)
+        expectEqual(store(fs).importableProfiles(inFolder: src).sorted(),
+                    ["\(src)/Clients/acme/acme.conf", "\(src)/lab.tblk", "\(src)/office/office.ovpn"])
+    }
     test("PRF-24", "files dropped on MugVPN: profiles (.ovpn, .conf) and Tunnelblick configurations (.tblk) only") {
         expectEqual(ProfileStore.importable(["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk", "/a/notes.txt", "/a/key.pem", "/a/ovpn"]),
                     ["/a/office.ovpn", "/a/LAB.OVPN", "/a/x.conf", "/a/y.tblk"])

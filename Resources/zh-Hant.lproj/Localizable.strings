@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%1$@ 從 %3$@ 的路由中接手了 %2$@ 個網路（更具體的路由優先）";
 "%@ was changed outside MugVPN since it was opened here." = "%@ 在此處開啟後已在 MugVPN 之外被修改。";
 "%@ was removed outside MugVPN since it was opened here." = "%@ 在此處開啟後已在 MugVPN 之外被刪除。";
+"%@'s profiles folder" = "%@ 的設定檔資料夾";
 "%@: DNS for its own domains only, another connection takes all names" = "%@：DNS 僅用於其自身網域，另一個連線已接手所有名稱";
 "%@: DNS not set, another connection takes all names" = "%@：未設定 DNS，另一個連線已接手所有名稱";
 "%@: DNS only for %@" = "%@：DNS 僅用於 %@";
@@ -44,6 +45,7 @@
 "Certificate" = "憑證";
 "Certificate:" = "憑證：";
 "Choose" = "選擇";
+"Choose Folder…" = "選擇資料夾…";
 "Choose the certificate for %@:" = "選擇 %@ 的憑證：";
 "Choose the server's CA certificate." = "選擇伺服器的 CA 憑證。";
 "Clear Saved Passwords" = "清除儲存的密碼";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "忽略來自伺服器的訊息";
 "Import" = "匯入";
 "Import File…" = "匯入檔案…";
+"Import Profiles" = "匯入設定檔";
 "Import from Access Server" = "從 Access Server 匯入";
 "Import from Access Server…" = "從 Access Server 匯入…";
 "Import from URL" = "從 URL 匯入";
 "Import from URL…" = "從 URL 匯入…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "要從 %@ 匯入你的設定檔嗎？請選擇它的設定檔資料夾（會在那裡開啟）。";
 "Imported" = "已匯入";
 "Installed by an administrator: only its MugVPN options can be changed here." = "由管理員安裝：此處僅能更改其 MugVPN 選項。";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "網際網路已阻擋：%@ 已中斷。請重新連線或解除阻擋。";
@@ -154,6 +158,7 @@
 "New Connection" = "新增連線";
 "New Connection…" = "新增連線…";
 "No log for %@ yet." = "%@ 尚無紀錄。";
+"No profiles in %@." = "%@ 中沒有設定檔。";
 "No profiles yet" = "尚無設定檔";
 "No proxy" = "不使用代理伺服器";
 "None" = "無";

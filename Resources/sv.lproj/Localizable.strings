@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ tar över %@ nätverk från %@s rutter (den mer specifika rutten vinner)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ har ändrats utanför MugVPN sedan den öppnades här.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ har tagits bort utanför MugVPN sedan den öppnades här.";
+"%@'s profiles folder" = "%@s profilmapp";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS bara för egna domäner, en annan anslutning tar alla namn";
 "%@: DNS not set, another connection takes all names" = "%@: DNS inte inställd, en annan anslutning tar alla namn";
 "%@: DNS only for %@" = "%@: DNS bara för %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certifikat";
 "Certificate:" = "Certifikat:";
 "Choose" = "Välj";
+"Choose Folder…" = "Välj mapp…";
 "Choose the certificate for %@:" = "Välj certifikat för %@:";
 "Choose the server's CA certificate." = "Välj serverns CA-certifikat.";
 "Clear Saved Passwords" = "Rensa sparade lösenord";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ignorera meddelanden från servrar";
 "Import" = "Importera";
 "Import File…" = "Importera fil…";
+"Import Profiles" = "Importera profiler";
 "Import from Access Server" = "Importera från Access Server";
 "Import from Access Server…" = "Importera från Access Server…";
 "Import from URL" = "Importera från URL";
 "Import from URL…" = "Importera från URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Importera dina profiler från %@? Välj dess profilmapp (den öppnas där).";
 "Imported" = "Importerat";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Installerad av en administratör: endast dess MugVPN-alternativ kan ändras här.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet blockerat: %@ bröts. Anslut igen eller häv blockeringen.";
@@ -154,6 +158,7 @@
 "New Connection" = "Ny anslutning";
 "New Connection…" = "Ny anslutning…";
 "No log for %@ yet." = "Det finns ingen logg för %@ ännu.";
+"No profiles in %@." = "Inga profiler i %@.";
 "No profiles yet" = "Inga profiler ännu";
 "No proxy" = "Ingen proxy";
 "None" = "Ingen";

@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "Το %@ παίρνει %@ δίκτυα από τις διαδρομές του %@ (κερδίζει η πιο συγκεκριμένη διαδρομή)";
 "%@ was changed outside MugVPN since it was opened here." = "Το %@ άλλαξε εκτός MugVPN από τότε που ανοίχτηκε εδώ.";
 "%@ was removed outside MugVPN since it was opened here." = "Το %@ αφαιρέθηκε εκτός MugVPN από τότε που ανοίχτηκε εδώ.";
+"%@'s profiles folder" = "Φάκελος προφίλ του %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS μόνο για τους δικούς του τομείς, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "%@: DNS not set, another connection takes all names" = "%@: Το DNS δεν ορίστηκε, άλλη σύνδεση παίρνει όλα τα ονόματα";
 "%@: DNS only for %@" = "%@: DNS μόνο για %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Πιστοποιητικό";
 "Certificate:" = "Πιστοποιητικό:";
 "Choose" = "Επιλογή";
+"Choose Folder…" = "Επιλογή φακέλου…";
 "Choose the certificate for %@:" = "Επιλέξτε το πιστοποιητικό για το %@:";
 "Choose the server's CA certificate." = "Επιλέξτε το πιστοποιητικό CA του διακομιστή.";
 "Clear Saved Passwords" = "Διαγραφή αποθηκευμένων συνθημάτων";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Αγνόηση μηνυμάτων από διακομιστές";
 "Import" = "Εισαγωγή";
 "Import File…" = "Εισαγωγή αρχείου…";
+"Import Profiles" = "Εισαγωγή προφίλ";
 "Import from Access Server" = "Εισαγωγή από Access Server";
 "Import from Access Server…" = "Εισαγωγή από Access Server…";
 "Import from URL" = "Εισαγωγή από URL";
 "Import from URL…" = "Εισαγωγή από URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Εισαγωγή των προφίλ σας από το %@; Επιλέξτε τον φάκελο προφίλ του (ανοίγει εκεί).";
 "Imported" = "Η εισαγωγή ολοκληρώθηκε";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Εγκαταστάθηκε από διαχειριστή: εδώ μπορούν να αλλάξουν μόνο οι επιλογές MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Το Διαδίκτυο αποκλείστηκε: η %@ διακόπηκε. Συνδεθείτε ξανά ή άρση αποκλεισμού.";
@@ -154,6 +158,7 @@
 "New Connection" = "Νέα σύνδεση";
 "New Connection…" = "Νέα σύνδεση…";
 "No log for %@ yet." = "Δεν υπάρχει ακόμη αρχείο καταγραφής για το %@.";
+"No profiles in %@." = "Δεν υπάρχουν προφίλ στο %@.";
 "No profiles yet" = "Δεν υπάρχουν ακόμη προφίλ";
 "No proxy" = "Χωρίς proxy";
 "None" = "Κανένα";

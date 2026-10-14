@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ забирає %@ мереж з маршрутів %@ (перемагає вужчий маршрут)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ змінено поза MugVPN відтоді, як його відкрито тут.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ видалено поза MugVPN відтоді, як його відкрито тут.";
+"%@'s profiles folder" = "Тека профілів %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS лише для своїх доменів, усі імена в іншого підключення";
 "%@: DNS not set, another connection takes all names" = "%@: DNS не встановлено, усі імена в іншого підключення";
 "%@: DNS only for %@" = "%@: DNS лише для %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Сертифікат";
 "Certificate:" = "Сертифікат:";
 "Choose" = "Вибрати";
+"Choose Folder…" = "Вибрати теку…";
 "Choose the certificate for %@:" = "Виберіть сертифікат для %@:";
 "Choose the server's CA certificate." = "Виберіть сертифікат CA сервера.";
 "Clear Saved Passwords" = "Видалити збережені паролі";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Ігнорувати повідомлення від серверів";
 "Import" = "Імпорт";
 "Import File…" = "Імпортувати файл…";
+"Import Profiles" = "Імпорт профілів";
 "Import from Access Server" = "Імпорт з Access Server";
 "Import from Access Server…" = "Імпорт з Access Server…";
 "Import from URL" = "Імпорт за URL";
 "Import from URL…" = "Імпорт за URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Імпортувати ваші профілі з %@? Виберіть його теку профілів (вона відкриється там).";
 "Imported" = "Імпортовано";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Встановлено адміністратором: тут можна змінити лише його параметри MugVPN.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Інтернет заблоковано: %@ обірвалося. Перепідключіть або зніміть блокування.";
@@ -154,6 +158,7 @@
 "New Connection" = "Нове підключення";
 "New Connection…" = "Нове підключення…";
 "No log for %@ yet." = "Журналу для %@ поки немає.";
+"No profiles in %@." = "У %@ немає профілів.";
 "No profiles yet" = "Профілів ще немає";
 "No proxy" = "Без проксі";
 "None" = "Немає";

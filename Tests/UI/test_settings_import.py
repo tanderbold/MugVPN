@@ -346,3 +346,28 @@ def test_ui89_uninstall_says_what_stayed(home):
         assert "could not be removed" in str(m["controls"]) and "saved passwords" in str(m["controls"]), m
         a.press(m, "ok")
         a.proc.wait(timeout=10)
+
+
+def test_ui70_profiles_of_another_product_offered_once(home):
+    """With no profiles of its own and another product's to offer: asked once, the folder panel opens at that
+    product's profiles, every profile found in the chosen folder is imported; not asked again."""
+    for n in ("stand-a", "stand-b"):
+        os.remove(os.path.join(home, "config", f"{n}.ovpn"))
+    src = os.path.join(home, "other-config")
+    os.makedirs(os.path.join(src, "office"))
+    with open(os.path.join(src, "office", "office.ovpn"), "w") as f:
+        f.write("client\ndev tun\nremote vpn.example.com 1194\n")
+    os.makedirs(os.path.join(src, "Clients", "acme"))
+    with open(os.path.join(src, "Clients", "acme", "acme.ovpn"), "w") as f:
+        f.write("client\ndev tun\nremote acme.example.com 1194\n")
+    env = {"MUGVPN_E2E_IMPORT_FROM": src}
+    with launched(home, env_extra=env) as a:
+        w = a.window("confirm")
+        assert "MugVPN" in a.control(w, "prompt_text")["value"]
+        a.call("answer_open_panel", path=src)
+        a.press(w, "ok")
+        wait_for(lambda: {"office", "acme"} <= {i["title"] for i in a.menu()}, 5, "both imported")
+        assert a.call("opened_urls")["folder_panel_start"] == src
+    with launched(home, env_extra=env, reset_defaults=False) as b:
+        b.call("ping")
+        assert not b.windows("confirm"), "not asked again"

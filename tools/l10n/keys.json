@@ -33,6 +33,9 @@
   "key": "%@ was removed outside MugVPN since it was opened here."
  },
  {
+  "key": "%@'s profiles folder"
+ },
+ {
   "key": "%@: DNS for its own domains only, another connection takes all names"
  },
  {
@@ -133,6 +136,9 @@
  },
  {
   "key": "Choose"
+ },
+ {
+  "key": "Choose Folder…"
  },
  {
   "key": "Choose the certificate for %@:"
@@ -345,6 +351,9 @@
   "key": "Import File…"
  },
  {
+  "key": "Import Profiles"
+ },
+ {
   "key": "Import from Access Server"
  },
  {
@@ -355,6 +364,9 @@
  },
  {
   "key": "Import from URL…"
+ },
+ {
+  "key": "Import your profiles from %@? Choose its profiles folder (it opens there)."
  },
  {
   "key": "Imported"
@@ -463,6 +475,9 @@
  },
  {
   "key": "No log for %@ yet."
+ },
+ {
+  "key": "No profiles in %@."
  },
  {
   "key": "No profiles yet"

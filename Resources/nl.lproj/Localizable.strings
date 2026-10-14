@@ -10,6 +10,7 @@
 "%@ takes %@ networks out of %@'s routes (the more specific route wins)" = "%@ neemt %@ netwerken over uit de routes van %@ (de specifiekere route wint)";
 "%@ was changed outside MugVPN since it was opened here." = "%@ is buiten MugVPN gewijzigd sinds het hier werd geopend.";
 "%@ was removed outside MugVPN since it was opened here." = "%@ is buiten MugVPN verwijderd sinds het hier werd geopend.";
+"%@'s profiles folder" = "Profielenmap van %@";
 "%@: DNS for its own domains only, another connection takes all names" = "%@: DNS alleen voor eigen domeinen, een andere verbinding neemt alle namen";
 "%@: DNS not set, another connection takes all names" = "%@: DNS niet ingesteld, een andere verbinding neemt alle namen";
 "%@: DNS only for %@" = "%@: DNS alleen voor %@";
@@ -44,6 +45,7 @@
 "Certificate" = "Certificaat";
 "Certificate:" = "Certificaat:";
 "Choose" = "Kies";
+"Choose Folder…" = "Kies map…";
 "Choose the certificate for %@:" = "Kies het certificaat voor %@:";
 "Choose the server's CA certificate." = "Kies het CA-certificaat van de server.";
 "Clear Saved Passwords" = "Bewaarde wachtwoorden wissen";
@@ -114,10 +116,12 @@
 "Ignore messages from servers" = "Berichten van servers negeren";
 "Import" = "Importeer";
 "Import File…" = "Bestand importeren…";
+"Import Profiles" = "Profielen importeren";
 "Import from Access Server" = "Importeren van Access Server";
 "Import from Access Server…" = "Importeer van Access Server…";
 "Import from URL" = "Importeren van URL";
 "Import from URL…" = "Importeer van URL…";
+"Import your profiles from %@? Choose its profiles folder (it opens there)." = "Je profielen uit %@ importeren? Kies de profielenmap ervan (die opent daar).";
 "Imported" = "Geïmporteerd";
 "Installed by an administrator: only its MugVPN options can be changed here." = "Geïnstalleerd door een beheerder: alleen de MugVPN-opties kunnen hier worden gewijzigd.";
 "Internet blocked: %@ dropped. Reconnect it or unblock." = "Internet geblokkeerd: %@ is weggevallen. Verbind opnieuw of hef de blokkering op.";
@@ -154,6 +158,7 @@
 "New Connection" = "Nieuwe verbinding";
 "New Connection…" = "Nieuwe verbinding…";
 "No log for %@ yet." = "Er is nog geen logboek voor %@.";
+"No profiles in %@." = "Geen profielen in %@.";
 "No profiles yet" = "Nog geen profielen";
 "No proxy" = "Geen proxy";
 "None" = "Geen";
