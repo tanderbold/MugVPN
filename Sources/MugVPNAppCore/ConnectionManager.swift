@@ -43,6 +43,14 @@ public protocol InstallationLifecycle: AnyObject {
     func reachable(reply: @escaping (Bool) -> Void)
     /// Remove MugVPN's system part; replies when done (nil) or with an error.
     func uninstall(keepProfiles: Bool, reply: @escaping (String?) -> Void)
+    /// The app is about to quit, its connections ended: what the backend leaves behind settled (bounded by the
+    /// backend); `done` then.
+    func prepareToQuit(done: @escaping () -> Void)
+}
+
+public extension InstallationLifecycle {
+    /// (A helper has nothing to settle: it stays.)
+    func prepareToQuit(done: @escaping () -> Void) { done() }
 }
 
 /// Persistent connections (started by the helper from config-auto, the Mac's).
@@ -661,8 +669,12 @@ public final class ConnectionManager {
             c.stopRequested = true
             active[c.profile.id] = nil
         }
-        guard !active.isEmpty else { return done() }
-        quitDone = done
+        let settled = { [weak self] in
+            guard let self else { return done() }
+            self.backend.lifecycle.prepareToQuit(done: done)
+        }
+        guard !active.isEmpty else { return settled() }
+        quitDone = settled
         disconnectAll()
         // Not for ever: an openvpn that does not end is the helper's to stop.
         scheduler.after(ConnectionManager.quitDeadline) { [weak self] in self?.quitIfDone(force: true) }

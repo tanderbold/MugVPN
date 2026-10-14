@@ -3,6 +3,14 @@ import MugVPNAppCore
 import MugVPNCore
 
 final class FakeHelperClient: HelperClient {
+    /// Asked to settle before the app quits (held until `settle` when `holdQuit`).
+    var prepared = 0
+    var holdQuit = false
+    var settle: (() -> Void)?
+    func prepareToQuit(done: @escaping () -> Void) {
+        prepared += 1
+        if holdQuit { settle = done } else { done() }
+    }
     var version: String? = MugVPNIDs.helperVersion
     /// Version answers held back (answered later with `answerVersions`).
     var holdVersion = false
@@ -357,6 +365,26 @@ func registerManagerTests() {
         h.helper.answerStarts()               // a late answer: stopped, nothing left
         expect(h.m.active[h.a.id] == nil)
         expectEqual(h.helper.stops.count, 1, "the late tunnel is stopped")
+    }
+    test("MAN-47", "quitting: the backend settles what it leaves once the connections ended, before the app goes; at once with none") {
+        let h = ManagerHarness()
+        h.helper.holdQuit = true
+        var quit = false
+        h.m.appQuitting { quit = true }
+        expectEqual(h.helper.prepared, 1, "asked with no connection")
+        expect(!quit, "the app waits for it")
+        h.helper.settle?()
+        expect(quit)
+        let g = ManagerHarness()
+        g.m.connect(g.a)
+        g.scheduler.drain(limit: 20)
+        guard g.link("H1") != nil else { return expect(false, "connected") }
+        var gone = false
+        g.m.appQuitting { gone = true }
+        expectEqual(g.helper.prepared, 0, "not before its connection ended")
+        g.link("H1")?.onClose()
+        expectEqual(g.helper.prepared, 1)
+        expect(gone)
     }
     test("MAN-36", "quitting is not held up by a start the helper has not answered (found in 0.2.2)") {
         let h = ManagerHarness()
