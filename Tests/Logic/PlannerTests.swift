@@ -127,4 +127,47 @@ func registerPlannerTests() {
         expect(NetworkPolicy.allNamesHeld(by: [OtherConnection(owner: 1, exited: false, tunnel: all)]))
         expect(!NetworkPolicy.allNamesHeld(by: [OtherConnection(owner: 1, exited: true, tunnel: all)]))
     }
+    test("PLAN-09", "a session's typed network: private address and network, hosts outside one each, none in another's tunnel, IPv6 not the Mac's") {
+        func ip(_ s: String) -> UInt32 { TunnelState.ipv4(Substring(s))! }
+        var a = SessionNetwork()
+        a.local4 = ip("10.81.0.2"); a.prefix4 = 24
+        a.routes4 = SessionNetwork.halves
+        a.outside4 = [ip("198.51.100.7")]
+        try NetworkPolicy.checkSession(a, others: [], lan4: [], lan6: [])
+        expect(a.takesAllTraffic)
+        var pub = a; pub.local4 = ip("8.8.8.8")
+        expectThrows("public address", matching: "private") { try NetworkPolicy.checkSession(pub, others: [], lan4: [], lan6: []) }
+        expectThrows("in the LAN", matching: "the Mac's own") {
+            try NetworkPolicy.checkSession(a, others: [], lan4: [IPv4Net(address: ip("10.81.0.0"), prefix: 16)], lan6: [])
+        }
+        var loop = a; loop.outside4 = [ip("127.0.0.1")]
+        expectThrows("loopback outside", matching: "single host") { try NetworkPolicy.checkSession(loop, others: [], lan4: [], lan6: []) }
+        var b = SessionNetwork()
+        b.local4 = ip("10.82.0.2"); b.prefix4 = 24
+        b.routes4 = [IPv4Net(address: ip("198.51.100.0"), prefix: 24)]
+        expectThrows("a's server inside b's network", matching: "another connection's") {
+            try NetworkPolicy.checkSession(a, others: [b], lan4: [], lan6: [])
+        }
+        expectThrows("b's network takes a's server", matching: "another connection's host route") {
+            try NetworkPolicy.checkSession(b, others: [a], lan4: [], lan6: [])
+        }
+        var six = a; six.outside4 = []; six.local6 = "fd00:85::1000"; six.prefix6 = 64
+        try NetworkPolicy.checkSession(six, others: [], lan4: [], lan6: [])
+        expectThrows("the Mac's own IPv6", matching: "the Mac's own") { try NetworkPolicy.checkSession(six, others: [], lan4: [], lan6: ["fd00:85::/48"]) }
+    }
+    test("PLAN-10", "DNS assignment: all names to the one without domains of its own, the other limited to its own, whatever the order") {
+        let a = DNSAssignment.Want(id: "a", servers: ["10.81.0.1"], domains: [], searchDomains: ["corp.example"], order: 1)
+        let b = DNSAssignment.Want(id: "b", servers: ["10.82.0.1"], domains: [], searchDomains: [], order: 2)
+        let split = DNSAssignment.Want(id: "s", servers: ["10.83.0.1"], domains: ["c.test"], searchDomains: [], order: 3)
+        for wants in [[a, b, split], [split, b, a]] {
+            let r = DNSAssignment.assign(wants)
+            expectEqual(r.states, ["a": .limited, "b": .all, "s": .split])
+            expectEqual(r.domains["a"], ["corp.example"])
+            expectEqual(r.domains["b"], [])
+        }
+        var b2 = b; b2.id = "b2"; b2.order = 0
+        let r = DNSAssignment.assign([b, b2])
+        expectEqual(r.states, ["b2": .all, "b": .waiting], "two without domains: who asked first, the other waits")
+        expectEqual(r.domains["b"], nil)
+    }
 }

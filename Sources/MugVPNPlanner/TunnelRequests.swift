@@ -250,7 +250,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
                                 IPv4Net(address: 0xC0A8_0000, prefix: 16), IPv4Net(address: 0x6440_0000, prefix: 10)]
 
     /// Private (RFC 1918) or shared (CGNAT) space: a tunnel's own addresses.
-    static func isPrivate(_ a: UInt32) -> Bool { privateBlocks.contains { $0.contains(a) } }
+    public static func isPrivate(_ a: UInt32) -> Bool { privateBlocks.contains { $0.contains(a) } }
 
     /// The private block a whole network lies in, if it does.
     public static func privateBlock(of n: IPv4Net) -> IPv4Net? {
