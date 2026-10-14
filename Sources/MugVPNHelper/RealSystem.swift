@@ -2,6 +2,7 @@ import Darwin
 import Foundation
 import MugVPNCore
 import MugVPNHelperCore
+import MugVPNPlanner
 import MugVPNSys
 import SystemConfiguration
 

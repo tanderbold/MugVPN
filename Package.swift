@@ -18,7 +18,7 @@ let package = Package(
         .executableTarget(name: "MugVPN", dependencies: ["MugVPNCore", "MugVPNAppCore"]),
         // The few system calls Swift cannot make: start openvpn as another user, open a utun.
         .target(name: "MugVPNSys"),
-        .executableTarget(name: "MugVPNHelper", dependencies: ["MugVPNCore", "MugVPNHelperCore", "MugVPNSys"]),
+        .executableTarget(name: "MugVPNHelper", dependencies: ["MugVPNCore", "MugVPNPlanner", "MugVPNHelperCore", "MugVPNSys"]),
         // Logic tests (layer L of the test plan). A plain executable: the Command
         // Line Tools ship without XCTest.
         .executableTarget(name: "MugVPNTests", dependencies: ["MugVPNCore", "MugVPNPlanner", "MugVPNHelperCore", "MugVPNAppCore", "MugVPNSys"],
