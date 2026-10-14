@@ -9,8 +9,8 @@ import MugVPNCore
 // stand VM without the interface. `MugVPN register|status|connect|...`.
 
 /// Subcommands that select this mode.
-/// (A product adds its own: Product.devCommands.)
-let devCommands: Set<String> = ["connect", "disconnect", "list", "parse", "serve", "restart-if-idle", "helper-version"]
+/// (A product adds its own, or replaces one: Product.devCommands.)
+let devCommands: Set<String> = ["status", "connect", "disconnect", "list", "parse", "serve", "restart-if-idle", "helper-version"]
 
 public func fail(_ s: String) -> Never {
     FileHandle.standardError.write(Data("mugvpn: \(s)\n".utf8))
@@ -148,7 +148,10 @@ func answer(_ m: ManagementConnection, _ line: String, connectionID: String?) th
 }
 
 func runDevCLI(_ args: [String]) -> Never {
+if let own = args.first.flatMap({ product.devCommands[$0] }) { own(args) }
 switch args.first {
+case "status":
+    print("helper version: \(wait { helper().version(reply: $0) })")
 case "connect":
     // --no-wait: start the tunnel and return without driving it (tests).
     let noWait = args.contains("--no-wait")
@@ -208,9 +211,8 @@ case "list":
     let list = (try? JSONDecoder().decode([ConnectionInfo].self, from: data)) ?? []
     for c in list { print("\(c.id)  \(c.name)  pid \(c.pid)") }
 default:
-    if let own = args.first.flatMap({ product.devCommands[$0] }) { own(args) }
     print("""
-    usage: MugVPN connect [--no-wait] <profile.ovpn> | disconnect <id> | list
+    usage: MugVPN status | connect [--no-wait] <profile.ovpn> | disconnect <id> | list
            MugVPN \(product.devCommands.keys.sorted().joined(separator: " | "))
     """)
 }
