@@ -97,6 +97,8 @@ server() { # name proto port subnet-octet extra...
     local n=$1 proto=$2 port=$3 o=$4; shift 4
     local behind="10.9${o}.0.1"
     # The network behind the server and its DNS come up at every boot.
+    # big.$n.test: a TXT answer of about 3 KB (bigger than dnsmasq answers over UDP: DNS over TCP, fragments).
+    BIG=$(for _ in $(seq 14); do printf ',%s' "$(printf 'a%.0s' $(seq 200))"; done)
     cat > /etc/systemd/system/stand-net@$n.service <<UNIT
 [Unit]
 Description=MugVPN stand: network and DNS behind server $n
@@ -108,7 +110,7 @@ ExecStartPre=-/sbin/ip link add dummy-$n type dummy
 ExecStartPre=/sbin/ip addr replace $behind/24 dev dummy-$n
 ExecStartPre=/sbin/ip link set dummy-$n up
 ExecStartPre=-/sbin/ip -6 addr replace fd00:9${o}::1/64 dev dummy-$n
-ExecStart=/usr/sbin/dnsmasq --conf-file=/dev/null --pid-file=/run/dnsmasq-stand-$n.pid --bind-dynamic --listen-address=10.8${o}.0.1 --no-resolv --no-hosts --address=/host.$n.test/$behind --address=/stand-$n/127.0.0.1
+ExecStart=/usr/sbin/dnsmasq --conf-file=/dev/null --pid-file=/run/dnsmasq-stand-$n.pid --bind-dynamic --listen-address=10.8${o}.0.1 --no-resolv --no-hosts --address=/host.$n.test/$behind --address=/stand-$n/127.0.0.1 --txt-record=big.$n.test$BIG --edns-packet-max=4096
 PIDFile=/run/dnsmasq-stand-$n.pid
 
 [Install]
