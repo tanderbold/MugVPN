@@ -1,6 +1,7 @@
 import Foundation
 import MugVPNCore
 import MugVPNHelperCore
+import MugVPNPlanner
 
 /// The dynamic store as a dictionary; writes to keys in `failSet`/`failRemove` are refused.
 final class FakeDNSStore: DNSStore {

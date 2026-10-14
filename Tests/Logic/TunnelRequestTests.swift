@@ -1,6 +1,7 @@
 import Foundation
 import MugVPNCore
 import MugVPNHelperCore
+import MugVPNPlanner
 
 // Privilege separation: openvpn runs unprivileged and asks (through the app)
 // for what needs root. The helper checks every request against the connection

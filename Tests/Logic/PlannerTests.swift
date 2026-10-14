@@ -61,4 +61,70 @@ func registerPlannerTests() {
         if case .failure = ProtectionPlanner.suspension([mine, everyone], uid: 501, admin: false) {} else { expect(false, "a persistent block stays") }
         if case .success(let lift) = ProtectionPlanner.suspension([mine, everyone], uid: 0, admin: true) { expectEqual(lift.count, 2) } else { expect(false) }
     }
+    test("PLAN-06", "routes: a standard user only private and listed networks, nothing narrower than the LAN; between connections no taking another's") {
+        func net(_ n: String) -> IPv4Net { let p = n.split(separator: "/"); return IPv4Net(address: TunnelState.ipv4(p[0])!, prefix: Int(p[1])!) }
+        let r = { (n: String, m: String) in TunnelRoute(kind: .tunnel, net: n, mask: m, via: "utun4") }
+        var std = ConnectionLimits(restricted: true, mayRouteAll: false, mayChangeDNS: false)
+        expectThrows("public, not listed", matching: "administrator") {
+            try NetworkPolicy.checkRoutes([r("8.8.8.0", "255.255.255.0")], tunnel: TunnelState(), owner: 501, limits: std, others: [], lan4: [], message: "")
+        }
+        std.allowed.networks4 = [net("8.8.8.0/24")]
+        try NetworkPolicy.checkRoutes([r("8.8.8.0", "255.255.255.0")], tunnel: TunnelState(), owner: 501, limits: std, others: [], lan4: [], message: "")
+        expectThrows("narrower than the LAN", matching: "the Mac's own") {
+            try NetworkPolicy.checkRoutes([r("192.168.1.0", "255.255.255.128")], tunnel: TunnelState(), owner: 501, limits: std,
+                                          others: [], lan4: [net("192.168.1.0/24")], message: "")
+        }
+        var theirs = TunnelState()
+        theirs.device = "utun4"
+        _ = try theirs.ifconfig("10.9.0.2 255.255.255.0 1500 subnet")
+        _ = try theirs.route("10.50.0.0 255.255.0.0 10.9.0.1", gateway: nil)
+        let other = OtherConnection(owner: 502, exited: false, tunnel: theirs)
+        expectThrows("inside another user's", matching: "another user's tunnel") {
+            try NetworkPolicy.checkRoutes([r("10.50.1.0", "255.255.255.0")], tunnel: TunnelState(), owner: 501, limits: ConnectionLimits(),
+                                          others: [other], lan4: [], message: "")
+        }
+        // The same user's own networks may nest (two of one's own tunnels).
+        try NetworkPolicy.checkRoutes([r("10.50.1.0", "255.255.255.0")], tunnel: TunnelState(), owner: 501, limits: ConnectionLimits(),
+                                      others: [OtherConnection(owner: 501, exited: false, tunnel: theirs)], lan4: [], message: "")
+    }
+    test("PLAN-07", "DNS: a standard user's servers inside its own tunnel, not the Mac's resolvers; all names only when allowed") {
+        var t = TunnelState()
+        t.device = "utun4"
+        _ = try t.ifconfig("10.8.0.2 255.255.255.0 1500 subnet")
+        t.subnetRoute = TunnelRoute(kind: .tunnel, net: "10.8.0.0", mask: "255.255.255.0", via: "utun4")   // its network's route in
+        var std = ConnectionLimits(restricted: true, mayRouteAll: false, mayChangeDNS: false)
+        std.allowed.domains = ["corp.lan"]
+        let inside = DNSPlan(device: "utun4", servers: ["10.8.0.1"], matchDomains: ["corp.lan"], searchDomains: [], split: true)
+        try NetworkPolicy.checkDNS(inside, tunnel: t, limits: std, lan4: [], systemResolvers: { ["192.168.1.1"] })
+        expectThrows("a domain not listed", matching: "DNS for other.lan") {
+            try NetworkPolicy.checkDNS(DNSPlan(device: "utun4", servers: ["10.8.0.1"], matchDomains: ["other.lan"], searchDomains: [], split: true),
+                                       tunnel: t, limits: std, lan4: [], systemResolvers: { [] })
+        }
+        expectThrows("all names", matching: "DNS for all names") {
+            try NetworkPolicy.checkDNS(DNSPlan(device: "utun4", servers: ["10.8.0.1"], matchDomains: [], searchDomains: [], split: false),
+                                       tunnel: t, limits: std, lan4: [], systemResolvers: { [] })
+        }
+        expectThrows("outside its tunnel", matching: "not inside this tunnel") {
+            try NetworkPolicy.checkDNS(DNSPlan(device: "utun4", servers: ["1.1.1.1"], matchDomains: ["corp.lan"], searchDomains: [], split: true),
+                                       tunnel: t, limits: std, lan4: [], systemResolvers: { [] })
+        }
+        expectThrows("resolvers unknown", matching: "not known") {
+            try NetworkPolicy.checkDNS(inside, tunnel: t, limits: std, lan4: [], systemResolvers: { nil })
+        }
+    }
+    test("PLAN-08", "DNS between connections: another user's domain refused (a part of it too); all names to who has none, then who asked first") {
+        var theirs = TunnelState()
+        theirs.dnsApplied = true
+        theirs.dnsDomains = ["corp.example"]
+        let other = OtherConnection(owner: 502, exited: false, tunnel: theirs)
+        expectEqual(NetworkPolicy.domainAnsweredByAnotherUser(["a.corp.example."], owner: 501, others: [other]), "a.corp.example.")
+        expectEqual(NetworkPolicy.domainAnsweredByAnotherUser(["corp.example"], owner: 502, others: [other]), nil, "one's own")
+        let p = { (s: [String]) in DNSPlan(device: "utun4", servers: ["10.8.0.1"], matchDomains: [], searchDomains: s, split: false) }
+        expectEqual(NetworkPolicy.allNamesOrder([(item: "b", plan: p(["b.lan"]), order: 1), (item: "c", plan: p([]), order: 3),
+                                                 (item: "a", plan: p([]), order: 2)]), ["a", "c", "b"])
+        var all = TunnelState()
+        all.dnsApplied = true
+        expect(NetworkPolicy.allNamesHeld(by: [OtherConnection(owner: 1, exited: false, tunnel: all)]))
+        expect(!NetworkPolicy.allNamesHeld(by: [OtherConnection(owner: 1, exited: true, tunnel: all)]))
+    }
 }

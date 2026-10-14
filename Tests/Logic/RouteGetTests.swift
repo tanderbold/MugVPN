@@ -1,5 +1,6 @@
 import Foundation
 import MugVPNHelperCore
+import MugVPNPlanner
 
 // What `route -n get` printed on the stand (macOS 14, 2026-10-08): the helper deletes
 // a route only if this says it is there exactly as added.

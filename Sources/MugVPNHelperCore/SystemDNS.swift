@@ -1,4 +1,5 @@
 import Foundation
+import MugVPNPlanner
 
 /// As much of the SystemConfiguration dynamic store as DNS needs (a fake in tests).
 public protocol DNSStore {

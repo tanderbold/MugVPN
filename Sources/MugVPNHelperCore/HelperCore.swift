@@ -314,6 +314,10 @@ public final class HelperCore {
         var mayChangeDNS = true
         /// Public networks and DNS domains an administrator allows its (standard) user.
         var allowed = Allowances()
+        /// The planner's view of its limits.
+        var limits: ConnectionLimits {
+            ConnectionLimits(restricted: restricted, mayRouteAll: mayRouteAll, mayChangeDNS: mayChangeDNS, allowed: allowed)
+        }
         /// What the helper set up for it: what it undoes.
         var tunnel = TunnelState()
         init(info: ConnectionInfo, process: HelperProcess, dir: String) {
@@ -819,31 +823,6 @@ public final class HelperCore {
     }
 
     /// What a standard user may route and resolve beyond private networks and names.
-    struct Allowances {
-        var networks4: [IPv4Net] = []
-        var networks6: [String] = []
-        var domains: [String] = []
-
-        func allows(_ n: IPv4Net) -> Bool {
-            TunnelState.privateBlock(of: n) != nil || networks4.contains { $0.prefix <= n.prefix && $0.contains(n.address) }
-        }
-        func allows6(_ net: String, bits: Int) -> Bool {
-            if TunnelState.isULA(net), bits >= 7 { return true }
-            return networks6.contains { a in
-                guard let b = a.split(separator: "/").last.flatMap({ Int($0) }) else { return false }
-                return b <= bits && TunnelState.overlap6(a, "\(net)/\(bits)")
-            }
-        }
-        /// A domain an administrator listed (or under one). Private names too: one mDNSResponder
-        /// asks for every user, so a resolver cannot be kept to its owner.
-        func allows(domain: String) -> Bool {
-            let d = domain.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
-            return domains.contains { a in
-                let a = a.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: "."))
-                return d == a || d.hasSuffix("." + a)
-            }
-        }
-    }
 
     private func userPolicy() -> UserPolicy {
         let path = paths.supportDir + "/policy.json"
@@ -1354,102 +1333,28 @@ public final class HelperCore {
             reply.fd = fd
         case "IFCONFIG":
             let cmds = try c.tunnel.ifconfig(message)
-            let theirs = otherNetworks(than: c, otherOwnersOnly: true).nets
-            // Its own addresses (the Mac delivers traffic to them locally, routes to the peer):
-            // never in the Mac's own networks, nor where another user's tunnel sends traffic
-            // (its routes, its peer, gateways and DNS servers). The same 10.8.0.x on both ends of
-            // two servers is common and harmless: both are local.
-            let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
-            let otherUsers = connections.values.filter { $0 !== c && $0.info.ownerUID != c.info.ownerUID }
-            let used = Set(otherUsers.flatMap { $0.tunnel.serverAddresses + $0.tunnel.outsideHosts })
-            let routed = otherUsers.flatMap(\.tunnel.routedNetworks)
-            for a in [c.tunnel.local, c.tunnel.peer].compactMap({ $0 }) {
-                if lan.contains(where: { $0.contains(a) }) {
-                    throw HelperCoreError.message("\(TunnelState.text(a)) is in a network of the Mac's own")
-                }
-                if used.contains(a) || routed.contains(where: { $0.contains(a) }) {
-                    throw HelperCoreError.message("\(TunnelState.text(a)) is in another user's network")
-                }
-            }
+            try checked { try NetworkPolicy.checkAddresses(c.tunnel, owner: c.info.ownerUID, others: otherConnections(than: c), lan4: lan4) }
             // Its DNS server may not be inside the new network: off before the change.
             try dropDNSNoLongerAllowed(c)
             guard let first = cmds.first, system.runNetwork(first) else { throw HelperCoreError.message("ifconfig failed") }
             // The route to its own network: not essential (it may exist already, as a LAN of the same range).
             // Not when it lies in another user's networks (as narrow or narrower, it would take their traffic).
             if cmds.count > 1, let dev = c.tunnel.device, let net = c.tunnel.subnet,
-               !theirs.contains(where: { $0.contains(net.address) && $0.prefix <= net.prefix }), system.runNetwork(cmds[1]) {
+               NetworkPolicy.subnetRouteAllowed(net, owner: c.info.ownerUID, others: otherConnections(than: c)), system.runNetwork(cmds[1]) {
                 c.tunnel.subnetRoute = TunnelRoute(kind: .tunnel, net: TunnelState.text(net.address),
                                                    mask: TunnelState.text(net.mask), via: dev)
             }
         case "IFCONFIG6":
             let cmds = try c.tunnel.ifconfig6(message)
-            if let mine = c.tunnel.net6, !c.mayRouteAll {
-                let p = mine.split(separator: "/")
-                if p.count == 2, !c.allowed.allows6(String(p[0]), bits: Int(p[1]) ?? 0) {
-                    throw HelperCoreError.message("IFCONFIG6 \(message): \(policy)")
-                }
-            }
             if let mine = c.tunnel.net6 {
-                if system.localIPv6Networks().contains(where: { TunnelState.overlap6($0, mine) }) {
-                    throw HelperCoreError.message("\(mine) is a network of the Mac's own")
-                }
-                let others = connections.values.filter { $0 !== c }.compactMap(\.tunnel.net6)
-                if others.contains(where: { TunnelState.overlap6($0, mine) }) {
-                    throw HelperCoreError.message("\(mine) is another tunnel's network")
-                }
+                try checked { try NetworkPolicy.checkNetwork6(mine, limits: c.limits, others: otherConnections(than: c),
+                                                             lan6: system.localIPv6Networks(), message: message) }
             }
             try runAll(cmds)
         case "ROUTE":
             let added = try c.tunnel.route(message, gateway: system.defaultGateway())
-            // A standard user: private networks, and public ones an administrator lists; no host
-            // around the tunnels (via the Mac's gateway, it would leave another user's tunnel).
-            if !c.mayRouteAll, added.contains(where: { !$0.intoTunnel }) {
-                throw HelperCoreError.message("\(kind) \(message): \(policy)")
-            }
-            if !c.mayRouteAll {
-                for r in added {
-                    guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
-                          let p = TunnelState.prefix(ofMask: m), c.allowed.allows(IPv4Net(address: a, prefix: p)) else {
-                        throw HelperCoreError.message("\(kind) \(message): \(policy)")
-                    }
-                }
-            }
-            if c.restricted {
-                // Nothing into the Mac's own networks (its LAN, its router, its DNS).
-                let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
-                for r in added {
-                    guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
-                          let p = TunnelState.prefix(ofMask: m) else { continue }
-                    // As narrow as a network of the Mac's or narrower would win over it (wider does not).
-                    if lan.contains(where: { $0.contains(a) && $0.prefix <= p }) {
-                        throw HelperCoreError.message("\(r.net)/\(p) is a network of the Mac's own")
-                    }
-                }
-            }
-            // Between connections, whichever comes first: a host route via the Mac's gateway
-            // must not cut into another's network, nor a network take another's host route.
-            let (theirNets, theirHosts) = otherNetworks(than: c, otherOwnersOnly: false)
-            let otherUsers = otherNetworks(than: c, otherOwnersOnly: true).nets
-            for r in added {
-                guard let a = TunnelState.ipv4(Substring(r.net)), let m = TunnelState.ipv4(Substring(r.mask)),
-                      let p = TunnelState.prefix(ofMask: m) else { continue }
-                if !r.intoTunnel, theirNets.contains(where: { $0.contains(a) }) {
-                    throw HelperCoreError.message("\(r.net) is in another connection's tunnel")
-                }
-                if r.intoTunnel, p >= 8, theirHosts.contains(where: { IPv4Net(address: a, prefix: p).contains($0) }) {
-                    throw HelperCoreError.message("\(r.net)/\(p) takes another connection's host route")
-                }
-                // As narrow as another user's network or narrower: the more specific route wins, and
-                // their traffic would come here. (Wider takes only what their routes do not.)
-                if r.intoTunnel, otherUsers.contains(where: { $0.contains(a) && $0.prefix <= p }) {
-                    throw HelperCoreError.message("\(r.net)/\(p) is inside another user's tunnel")
-                }
-            }
-            // While another user's tunnel takes all traffic, a hole or two (its server), no more.
-            let fullElsewhere = connections.values.contains { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.tunnel.takesAllTraffic }
-            if fullElsewhere, c.tunnel.outsideHosts.count > HelperCore.hostsBesideFullTunnel {
-                throw HelperCoreError.message("another user's tunnel takes all traffic: no more host routes around it")
-            }
+            try checked { try NetworkPolicy.checkRoutes(added, tunnel: c.tunnel, owner: c.info.ownerUID, limits: c.limits,
+                                                       others: otherConnections(than: c), lan4: lan4, message: message) }
             // A host route around the tunnel may take its DNS server with it: off before the change.
             try dropDNSNoLongerAllowed(c)
             // On disk before the change: after a crash the helper knows what it may have done.
@@ -1464,18 +1369,8 @@ public final class HelperCore {
             }
         case "ROUTE6":
             let r = try c.tunnel.route6(message)
-            // As narrow as another user's IPv6 network, or the Mac's own, or narrower: theirs would come here.
-            let bits = Int(r.mask) ?? 0
-            let theirs6 = connections.values.filter { $0 !== c && $0.info.ownerUID != c.info.ownerUID }
-                .flatMap { o in (o.tunnel.net6.map { [$0] } ?? []) + o.tunnel.routes.filter { $0.kind == .tunnel6 }.map { "\($0.net)/\($0.mask)" } }
-            for n in system.localIPv6Networks() + theirs6 {
-                guard let b = n.split(separator: "/").last.flatMap({ Int($0) }), b <= bits,
-                      TunnelState.overlap6(n, "\(r.net)/\(bits)") else { continue }
-                throw HelperCoreError.message("\(r.net)/\(bits) is inside another network (\(n))")
-            }
-            if !c.mayRouteAll, !c.allowed.allows6(r.net, bits: Int(r.mask) ?? 0) {
-                throw HelperCoreError.message("\(kind) \(message): \(policy)")
-            }
+            try checked { try NetworkPolicy.checkRoute6(r, owner: c.info.ownerUID, limits: c.limits, others: otherConnections(than: c),
+                                                       lan6: system.localIPv6Networks(), message: message) }
             try record(c)
             if !system.runNetwork(r.add) { throw HelperCoreError.message("route failed") }
         case "ROUTEDEL":
@@ -1526,10 +1421,7 @@ public final class HelperCore {
                                searchDomains: plan.searchDomains, split: true)
             }
             // A domain another user's tunnel answers for, or a part of it: the more specific one wins.
-            let theirDomains = connections.values.filter { $0 !== c && $0.info.ownerUID != c.info.ownerUID && $0.tunnel.dnsApplied }
-                .flatMap(\.tunnel.dnsDomains)
-            func norm(_ d: String) -> String { d.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) }
-            if let d = plan.matchDomains.first(where: { m in theirDomains.contains { norm(m) == norm($0) || norm(m).hasSuffix("." + norm($0)) } }) {
+            if let d = NetworkPolicy.domainAnsweredByAnotherUser(plan.matchDomains, owner: c.info.ownerUID, others: otherConnections(than: c)) {
                 throw HelperCoreError.message("DNS for \(d): another user's tunnel answers for it")
             }
             c.tunnel.dnsApplied = true
@@ -1620,38 +1512,10 @@ public final class HelperCore {
 
     /// May `c` have `plan` set now (asked for, or its turn come): the policy, and a standard user's
     /// servers inside its own tunnel as it is now.
-    private func checkDNS(_ c: Connection, _ plan: DNSPlan, policy: String, on topology: TunnelState? = nil) throws {
-        let t = topology ?? c.tunnel
-        // Its own domains are its business; all names are everyone's on the Mac.
-        if !c.mayChangeDNS {
-            // Its own private names, or the domains an administrator lists: a resolver is the whole Mac's.
-            if !plan.split { throw HelperCoreError.message("DNS for all names: \(policy)") }
-            if let d = plan.matchDomains.first(where: { !c.allowed.allows(domain: $0) }) {
-                throw HelperCoreError.message("DNS for \(d): \(policy)")
-            }
-        }
-        // A standard user's DNS servers: inside its own tunnel, never the Mac's own resolvers or
-        // networks (the system resolver would send everyone's queries there, whatever the name).
-        if c.restricted {
-            let lan = system.localIPv4Networks().compactMap(HelperCore.ipv4Net)
-            let mine = t.networks
-            // (An administrator who lets users change the Mac's DNS lets them replace its resolvers too;
-            // their own, set for all names, is then the Mac's.)
-            var system = Set<UInt32>()
-            if !c.mayChangeDNS {
-                guard let known = self.system.systemDNSServers(excluding: plan.device) else {
-                    throw HelperCoreError.message("DNS not set: the Mac's own DNS servers are not known")
-                }
-                // As numbers: one address has more than one spelling.
-                system = Set(known.compactMap { TunnelState.ipv4(Substring($0)) })
-            }
-            for srv in plan.servers {
-                guard let a = TunnelState.ipv4(Substring(srv)), TunnelState.text(a) == srv, !system.contains(a),
-                      !lan.contains(where: { $0.contains(a) }), !t.outsideHosts.contains(a),
-                      mine.contains(where: { $0.contains(a) }) || t.peer == a else {
-                    throw HelperCoreError.message("DNS server \(srv): not inside this tunnel")
-                }
-            }
+    private func checkDNS(_ c: Connection, _ plan: DNSPlan, policy _: String, on topology: TunnelState? = nil) throws {
+        try checked {
+            try NetworkPolicy.checkDNS(plan, tunnel: topology ?? c.tunnel, limits: c.limits, lan4: lan4,
+                                       systemResolvers: { self.system.systemDNSServers(excluding: plan.device) })
         }
     }
 
@@ -1711,9 +1575,7 @@ public final class HelperCore {
 
     /// One of `domains`, or a part of one, another user's tunnel answers for (the more specific one wins).
     private func answeredByAnotherUser(_ c: Connection, _ domains: [String]) -> Bool {
-        func norm(_ d: String) -> String { d.lowercased().trimmingCharacters(in: CharacterSet(charactersIn: ".")) }
-        let theirs = connections.values.filter { $0.info.ownerUID != c.info.ownerUID && $0.tunnel.dnsApplied }.flatMap(\.tunnel.dnsDomains)
-        return domains.contains { m in theirs.contains { norm(m) == norm($0) || norm(m).hasSuffix("." + norm($0)) } }
+        NetworkPolicy.domainAnsweredByAnotherUser(domains, owner: c.info.ownerUID, others: otherConnections(than: c)) != nil
     }
 
     private var reassignPending = false
@@ -1739,11 +1601,8 @@ public final class HelperCore {
               !dnsLeftHoldsAllNames, !connections.values.contains(where: { $0.tunnel.dnsBackupLeft != nil }) else { return }
         // Those with nothing (no domains of their own) before those that have their domains meanwhile; then who
         // asked first.
-        let next = connections.values.filter { !$0.exited && $0.dnsWantsAll != nil && $0.tunnel.device != nil }
-            .sorted { a, b in
-                let (na, nb) = (a.dnsWantsAll?.searchDomains.isEmpty ?? false, b.dnsWantsAll?.searchDomains.isEmpty ?? false)
-                return na != nb ? na : a.dnsAskOrder < b.dnsAskOrder
-            }
+        let next = NetworkPolicy.allNamesOrder(connections.values.filter { !$0.exited && $0.tunnel.device != nil }
+            .compactMap { c in c.dnsWantsAll.map { (item: c, plan: $0, order: c.dnsAskOrder) } })
         for c in next {
             guard let plan = c.dnsWantsAll, plan.device == c.tunnel.device else { continue }
             // Asked a while ago: the checks again, on its tunnel as it is now.
@@ -1827,15 +1686,17 @@ public final class HelperCore {
 
     /// The other connections' networks and outside host routes, persistent tunnels (root
     /// openvpn, their logs are root's) included.
-    private func otherNetworks(than c: Connection, otherOwnersOnly: Bool) -> (nets: [IPv4Net], hosts: [UInt32]) {
-        var nets: [IPv4Net] = [], hosts: [UInt32] = []
-        for o in connections.values where o !== c {
-            if otherOwnersOnly, o.info.ownerUID == c.info.ownerUID { continue }
-            nets += o.tunnel.networks
-            hosts += o.tunnel.outsideHosts
-        }
-        return (nets, hosts)
+    /// The other connections, as the planner's rules see them.
+    private func otherConnections(than c: Connection) -> [OtherConnection] {
+        connections.values.filter { $0 !== c }.map { OtherConnection(owner: $0.info.ownerUID, exited: $0.exited, tunnel: $0.tunnel) }
     }
+
+    /// A planner rule's refusal, as the helper's.
+    private func checked(_ check: () throws -> Void) throws {
+        do { try check() } catch let r as PolicyRefusal { throw HelperCoreError.message(r.description) }
+    }
+
+    private var lan4: [IPv4Net] { system.localIPv4Networks().compactMap(HelperCore.ipv4Net) }
 
     private func runAll(_ cmds: [[String]]) throws {
         for cmd in cmds where !system.runNetwork(cmd) { throw HelperCoreError.message("\(cmd.first ?? "") failed") }

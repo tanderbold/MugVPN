@@ -1,6 +1,7 @@
 import Foundation
 import MugVPNCore
 import MugVPNHelperCore
+import MugVPNPlanner
 
 // MARK: - Fake system: records what the helper asks for, does nothing real.
 

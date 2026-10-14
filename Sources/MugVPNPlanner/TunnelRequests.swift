@@ -20,7 +20,7 @@ public struct IPv4Net: Equatable, Sendable, Codable {
         self.address = address
         self.prefix = prefix
     }
-    var mask: UInt32 { prefix == 0 ? 0 : UInt32.max << UInt32(32 - prefix) }
+    public var mask: UInt32 { prefix == 0 ? 0 : UInt32.max << UInt32(32 - prefix) }
     public func contains(_ a: UInt32) -> Bool { a & mask == address & mask }
     /// Share any address: one contains the other's start.
     public func overlaps(_ o: IPv4Net) -> Bool { contains(o.address) || o.contains(address) }
@@ -228,45 +228,45 @@ public struct TunnelState: Equatable, Sendable, Codable {
 
     // MARK: - parsing
 
-    static func ipv4(_ s: Substring) -> UInt32? {
+    public static func ipv4(_ s: Substring) -> UInt32? {
         var a = in_addr()
         guard s.count <= 15, inet_pton(AF_INET, String(s), &a) == 1 else { return nil }
         return UInt32(bigEndian: a.s_addr)
     }
 
-    static func ipv6(_ s: Substring) -> Bool {
+    public static func ipv6(_ s: Substring) -> Bool {
         var a = in6_addr()
         return s.count <= 45 && inet_pton(AF_INET6, String(s), &a) == 1
     }
 
-    static func prefix(ofMask m: UInt32) -> Int? {
+    public static func prefix(ofMask m: UInt32) -> Int? {
         let p = m.nonzeroBitCount
         return (p == 0 ? 0 : UInt32.max << UInt32(32 - p)) == m ? p : nil
     }
 
     public static func text(_ a: UInt32) -> String { "\(a >> 24).\((a >> 16) & 255).\((a >> 8) & 255).\(a & 255)" }
 
-    static let privateBlocks = [IPv4Net(address: 0x0A00_0000, prefix: 8), IPv4Net(address: 0xAC10_0000, prefix: 12),
+    public static let privateBlocks = [IPv4Net(address: 0x0A00_0000, prefix: 8), IPv4Net(address: 0xAC10_0000, prefix: 12),
                                 IPv4Net(address: 0xC0A8_0000, prefix: 16), IPv4Net(address: 0x6440_0000, prefix: 10)]
 
     /// Private (RFC 1918) or shared (CGNAT) space: a tunnel's own addresses.
     static func isPrivate(_ a: UInt32) -> Bool { privateBlocks.contains { $0.contains(a) } }
 
     /// The private block a whole network lies in, if it does.
-    static func privateBlock(of n: IPv4Net) -> IPv4Net? {
+    public static func privateBlock(of n: IPv4Net) -> IPv4Net? {
         privateBlocks.first { $0.prefix <= n.prefix && $0.contains(n.address) }
     }
 
     /// A host a route via the Mac's gateway may name: not loopback, link-local, multicast or
     /// reserved. (A VPN server may well be on a private network; another connection's
     /// networks are the helper's check.)
-    static func isUnicastHost(_ a: UInt32) -> Bool {
+    public static func isUnicastHost(_ a: UInt32) -> Bool {
         let special = [IPv4Net(address: 0, prefix: 8), IPv4Net(address: 0x7F00_0000, prefix: 8),
                        IPv4Net(address: 0xA9FE_0000, prefix: 16), IPv4Net(address: 0xE000_0000, prefix: 3)]
         return !special.contains { $0.contains(a) }
     }
 
-    static func isULA(_ s: String) -> Bool {
+    public static func isULA(_ s: String) -> Bool {
         var a = in6_addr()
         guard inet_pton(AF_INET6, s, &a) == 1 else { return false }
         return withUnsafeBytes(of: &a) { $0[0] & 0xFE == 0xFC }
@@ -311,7 +311,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
     }
 
     /// The route a ROUTE or ROUTEDEL message names, checked.
-    func parseRoute(_ msg: String, gateway sys: DefaultGateway?) throws -> [TunnelRoute] {
+    public func parseRoute(_ msg: String, gateway sys: DefaultGateway?) throws -> [TunnelRoute] {
         let dev = try requireDevice()
         let f = msg.split(separator: " ")
         guard f.count == 3 || (f.count == 5 && f[3] == "dev"), let net = TunnelState.ipv4(f[0]), let mask = TunnelState.ipv4(f[1]),
@@ -422,7 +422,7 @@ public struct TunnelState: Equatable, Sendable, Codable {
     }
 
     /// ROUTE6 "network/bits device": on this tunnel only.
-    func parseRoute6(_ msg: String) throws -> TunnelRoute {
+    public func parseRoute6(_ msg: String) throws -> TunnelRoute {
         let dev = try requireDevice()
         let f = msg.split(separator: " ")
         let a = f.first?.split(separator: "/") ?? []
@@ -449,9 +449,9 @@ public struct TunnelState: Equatable, Sendable, Codable {
 
     /// One-label names for private networks (RFC 6762, ICANN's .internal, common practice).
     /// (Not "local": that is multicast DNS, every user's.)
-    static let privateSingleLabels: Set<String> = ["internal", "lan", "home", "corp", "intranet", "private", "localdomain"]
+    public static let privateSingleLabels: Set<String> = ["internal", "lan", "home", "corp", "intranet", "private", "localdomain"]
 
-    static func isDomain(_ s: String) -> Bool {
+    public static func isDomain(_ s: String) -> Bool {
         let name = s.hasSuffix(".") ? String(s.dropLast()) : s
         guard !name.isEmpty, name.count <= 253 else { return false }
         return name.split(separator: ".", omittingEmptySubsequences: false).allSatisfy { l in
