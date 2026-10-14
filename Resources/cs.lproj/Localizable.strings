@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Zadejte alespoň jeden DNS server.";
 "Enter at most 8 DNS servers." = "Zadejte nejvýše 8 DNS serverů.";
 "Enter the proxy's address and a port from 1 to 65535." = "Zadejte adresu proxy a port od 1 do 65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Dokud VPN přenáší veškerý provoz, každý dotaz na jméno jde přes VPN.";
 "Every time" = "Pokaždé";
 "Export Diagnostics" = "Exportovat diagnostiku";
 "Export Diagnostics…" = "Exportovat diagnostiku…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Zůstat připojeno";
 "TLS auth key:" = "Klíč TLS auth:";
 "TLS crypt key:" = "Klíč TLS crypt:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Vlastní dotazy Macu na jména jdou přes VPN, dokud přenáší veškerý provoz. Aplikace, která se ptá přímo DNS serveru místní sítě, zastavena není.";
 "The client certificate needs its private key." = "Klientský certifikát potřebuje svůj soukromý klíč.";
 "The configuration cannot be read: %@" = "Konfiguraci nelze přečíst: %@";
 "The first time" = "Poprvé";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Při uspání Macu:";
 "While MugVPN blocks the Internet, allow the local network" = "Dokud MugVPN blokuje internet, povolit místní síť";
 "While connecting:" = "Během připojování:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Dokud je připojeno, nic neodchází mimo VPN a žádné jiné připojení nelze spustit.";
 "Wrong password" = "Nesprávné heslo";
 "cannot reach openvpn's management socket" = "nelze se spojit se socketem správy openvpn";
 "connected" = "připojeno";

@@ -100,7 +100,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nemohl použít svůj DNS: jiné připojení také potřebuje DNS pro všechna jména a tento server neposlal žádné domény. Pro jeho vlastní domény je uveďte v Připojení > Volby (DNS servery, Jen pro domény).",
   "%@: DNS only for %@": "%@: DNS jen pro %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS jen pro %@; ostatní jména má %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Dokud VPN přenáší veškerý provoz, každý dotaz na jméno jde přes VPN.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Vlastní dotazy Macu na jména jdou přes VPN, dokud přenáší veškerý provoz. Aplikace, která se ptá přímo DNS serveru místní sítě, zastavena není.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dokud je připojeno, nic neodchází mimo VPN a žádné jiné připojení nelze spustit."
  },
  "de": {
   "OK": "OK",
@@ -203,7 +206,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ konnte sein DNS nicht verwenden: Eine andere Verbindung braucht ebenfalls DNS für alle Namen, und dieser Server hat keine Domains gesendet. Für seine eigenen Domains tragen Sie sie unter Verbindungen > Optionen ein (DNS-Server, Nur für Domains).",
   "%@: DNS only for %@": "%@: DNS nur für %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS nur für %@; %@ hat die übrigen Namen",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Die VPN-Konfiguration von MugVPN, Protokolle, Einstellungen und gespeicherte Passwörter werden entfernt. Tunnel werden getrennt."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Die VPN-Konfiguration von MugVPN, Protokolle, Einstellungen und gespeicherte Passwörter werden entfernt. Tunnel werden getrennt.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Solange das VPN den gesamten Verkehr übernimmt, läuft jede Namensauflösung über das VPN.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Die Namensauflösungen des Mac laufen über das VPN, solange es den gesamten Verkehr übernimmt. Eine App, die den DNS-Server des lokalen Netzwerks direkt fragt, wird nicht gestoppt.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Solange sie besteht, verlässt nichts den Mac außerhalb des VPN, und keine andere Verbindung kann starten."
  },
  "da": {
   "OK": "OK",
@@ -306,7 +312,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruge sin DNS: en anden forbindelse har også brug for DNS til alle navne, og denne server sendte ingen domæner. Til dens egne domæner skal du angive dem under Forbindelser > Indstillinger (DNS-servere, Kun for domæner).",
   "%@: DNS only for %@": "%@: DNS kun for %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS kun for %@; %@ har de andre navne",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN's VPN-konfiguration, logfiler, indstillinger og gemte adgangskoder fjernes. Tunneler afbrydes.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Alle navneopslag går gennem VPN'en, så længe den tager al trafik.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Mac'ens egne navneopslag går gennem VPN'en, så længe den tager al trafik. En app, der spørger det lokale netværks DNS-server direkte, bliver ikke stoppet.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går intet uden om VPN'en, og ingen anden forbindelse kan starte."
  },
  "el": {
   "OK": "OK",
@@ -409,7 +418,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "Το %@ δεν μπόρεσε να χρησιμοποιήσει το DNS του: άλλη σύνδεση χρειάζεται επίσης DNS για όλα τα ονόματα και αυτός ο διακομιστής δεν έδωσε τομείς. Για τους δικούς του τομείς, καταχωρίστε τους στις Συνδέσεις > Επιλογές (Διακομιστές DNS, Μόνο για τομείς).",
   "%@: DNS only for %@": "%@: DNS μόνο για %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Κάθε αναζήτηση ονόματος περνά από το VPN όσο αυτό μεταφέρει όλη την κίνηση.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Οι αναζητήσεις ονομάτων του ίδιου του Mac περνούν από το VPN όσο αυτό μεταφέρει όλη την κίνηση. Μια εφαρμογή που ρωτά απευθείας τον διακομιστή DNS του τοπικού δικτύου δεν σταματά.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Όσο είναι συνδεδεμένη, τίποτα δεν βγαίνει εκτός VPN και καμία άλλη σύνδεση δεν μπορεί να ξεκινήσει."
  },
  "es": {
   "OK": "Aceptar",
@@ -512,7 +524,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ no pudo usar su DNS: otra conexión también necesita DNS para todos los nombres y este servidor no envió dominios. Para sus propios dominios, indíquelos en Conexiones > Opciones (Servidores DNS, Solo para dominios).",
   "%@: DNS only for %@": "%@: DNS solo para %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS solo para %@; %@ tiene los demás nombres",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Todas las consultas de nombres pasan por la VPN mientras lleva todo el tráfico.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Las consultas de nombres del propio Mac pasan por la VPN mientras lleva todo el tráfico. Una app que pregunta directamente al servidor DNS de la red local no se detiene.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mientras esté activa, nada sale fuera de la VPN y no puede iniciarse ninguna otra conexión."
  },
  "fa": {
   "OK": "تأیید",
@@ -615,7 +630,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ نتوانست از DNS خود استفاده کند: اتصال دیگری هم برای همهٔ نام‌ها DNS لازم دارد و این سرور دامنه‌ای نفرستاد. برای دامنه‌های خودش، آن‌ها را در اتصال‌ها > گزینه‌ها وارد کنید (سرورهای DNS، فقط برای دامنه‌ها).",
   "%@: DNS only for %@": "%@: DNS فقط برای %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "تا وقتی VPN همهٔ ترافیک را می‌برد، هر جست‌وجوی نام از VPN می‌گذرد.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "جست‌وجوهای نام خود مک تا وقتی VPN همهٔ ترافیک را می‌برد از VPN می‌گذرند. برنامه‌ای که مستقیم از سرور DNS شبکهٔ محلی می‌پرسد متوقف نمی‌شود.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "تا وقتی برقرار است، چیزی بیرون از VPN نمی‌رود و هیچ اتصال دیگری نمی‌تواند شروع شود."
  },
  "fi": {
   "OK": "OK",
@@ -718,7 +736,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ ei voinut käyttää DNS:äänsä: toinenkin yhteys tarvitsee DNS:n kaikille nimille, eikä tämä palvelin antanut verkkotunnuksia. Sen omille verkkotunnuksille luettele ne kohdassa Yhteydet > Valinnat (DNS-palvelimet, Vain verkkotunnuksille).",
   "%@: DNS only for %@": "%@: DNS vain kohteille %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS vain kohteille %@; muut nimet ovat yhteydellä %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Jokainen nimihaku kulkee VPN:n kautta, kun se kuljettaa kaiken liikenteen.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macin omat nimihaut kulkevat VPN:n kautta, kun se kuljettaa kaiken liikenteen. Sovellusta, joka kysyy suoraan paikallisen verkon DNS-palvelimelta, ei pysäytetä.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Yhteyden ollessa päällä mitään ei lähde VPN:n ohi, eikä muita yhteyksiä voi avata."
  },
  "fr": {
   "OK": "OK",
@@ -821,7 +842,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ n'a pas pu utiliser son DNS : une autre connexion a aussi besoin du DNS pour tous les noms, et ce serveur n'a donné aucun domaine. Pour ses propres domaines, indiquez-les dans Connexions > Options (Serveurs DNS, Seulement pour les domaines).",
   "%@: DNS only for %@": "%@ : DNS seulement pour %@",
   "%@: DNS only for %@; %@ has the other names": "%@ : DNS seulement pour %@ ; %@ a les autres noms",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Chaque résolution de nom passe par le VPN tant qu'il transporte tout le trafic.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Les résolutions de noms du Mac passent par le VPN tant qu'il transporte tout le trafic. Une app qui interroge directement le serveur DNS du réseau local n'est pas bloquée.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Tant qu'elle est active, rien ne sort en dehors du VPN et aucune autre connexion ne peut démarrer."
  },
  "it": {
   "OK": "OK",
@@ -924,7 +948,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ non ha potuto usare il suo DNS: anche un'altra connessione richiede il DNS per tutti i nomi e questo server non ha fornito domini. Per i suoi domini, elencali in Connessioni > Opzioni (Server DNS, Solo per i domini).",
   "%@: DNS only for %@": "%@: DNS solo per %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS solo per %@; %@ ha gli altri nomi",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configurazione VPN di MugVPN, i registri, le impostazioni e le password salvate verranno rimossi. I tunnel vengono disconnessi."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "La configurazione VPN di MugVPN, i registri, le impostazioni e le password salvate verranno rimossi. I tunnel vengono disconnessi.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Ogni risoluzione dei nomi passa per la VPN finché trasporta tutto il traffico.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Le risoluzioni dei nomi del Mac passano per la VPN finché trasporta tutto il traffico. Un'app che interroga direttamente il server DNS della rete locale non viene fermata.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Finché è attiva, niente esce fuori dalla VPN e nessun'altra connessione può avviarsi."
  },
  "ja": {
   "OK": "OK",
@@ -1027,7 +1054,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ の DNS を使用できませんでした: 別の接続もすべての名前の DNS を必要としており、このサーバはドメインを送っていません。自身のドメインについては「接続 > オプション」（DNS サーバ、対象ドメイン）に入力してください。",
   "%@: DNS only for %@": "%@: DNS は %@ のみ",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS は %@ のみ。その他の名前は %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN の VPN 構成、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。"
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN の VPN 構成、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。",
+  "Every name lookup goes through the VPN while it takes all traffic.": "VPN がすべての通信を扱っている間、名前の問い合わせはすべて VPN を通ります。",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "VPN がすべての通信を扱っている間、Mac 自身の名前の問い合わせは VPN を通ります。ローカルネットワークの DNS サーバーに直接問い合わせるアプリは止められません。",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "接続中は VPN の外に何も出ず、ほかの接続は開始できません。"
  },
  "ko": {
   "OK": "확인",
@@ -1130,7 +1160,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@의 DNS를 사용할 수 없습니다: 다른 연결도 모든 이름에 DNS가 필요하며 이 서버는 도메인을 보내지 않았습니다. 자체 도메인은 연결 > 옵션(DNS 서버, 다음 도메인에만)에 입력하세요.",
   "%@: DNS only for %@": "%@: %@에만 DNS 적용",
   "%@: DNS only for %@; %@ has the other names": "%@: %@에만 DNS 적용, 나머지 이름은 %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "VPN이 모든 트래픽을 처리하는 동안 모든 이름 조회는 VPN을 통해 갑니다.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "VPN이 모든 트래픽을 처리하는 동안 Mac 자체의 이름 조회는 VPN을 통해 갑니다. 로컬 네트워크의 DNS 서버에 직접 묻는 앱은 막지 않습니다.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "연결되어 있는 동안 VPN 밖으로 아무것도 나가지 않으며 다른 연결을 시작할 수 없습니다."
  },
  "nl": {
   "OK": "OK",
@@ -1233,7 +1266,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kon zijn DNS niet gebruiken: een andere verbinding heeft ook DNS voor alle namen nodig en deze server gaf geen domeinen. Geef voor zijn eigen domeinen ze op onder Verbindingen > Opties (DNS-servers, Alleen voor domeinen).",
   "%@: DNS only for %@": "%@: DNS alleen voor %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS alleen voor %@; %@ heeft de overige namen",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "De VPN-configuratie van MugVPN, logboeken, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "De VPN-configuratie van MugVPN, logboeken, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Elke naamopzoeking gaat via de VPN zolang die al het verkeer draagt.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "De eigen naamopzoekingen van de Mac gaan via de VPN zolang die al het verkeer draagt. Een app die de DNS-server van het lokale netwerk rechtstreeks vraagt, wordt niet tegengehouden.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Zolang hij actief is, gaat er niets buiten de VPN om en kan geen andere verbinding starten."
  },
  "nb": {
   "OK": "OK",
@@ -1336,7 +1372,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunne ikke bruke sin DNS: en annen tilkobling trenger også DNS for alle navn, og denne serveren sendte ingen domener. For egne domener, oppgi dem under Tilkoblinger > Valg (DNS-servere, Bare for domener).",
   "%@: DNS only for %@": "%@: DNS bare for %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS bare for %@; %@ har de andre navnene",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPNs VPN-konfigurasjon, logger, innstillinger og lagrede passord fjernes. Tunneler kobles fra."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPNs VPN-konfigurasjon, logger, innstillinger og lagrede passord fjernes. Tunneler kobles fra.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Alle navneoppslag går gjennom VPN-en så lenge den tar all trafikk.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macens egne navneoppslag går gjennom VPN-en så lenge den tar all trafikk. En app som spør DNS-serveren i det lokale nettverket direkte, blir ikke stoppet.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Mens den er oppe, går ingenting utenom VPN-en, og ingen annen tilkobling kan starte."
  },
  "pl": {
   "OK": "OK",
@@ -1439,7 +1478,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ nie mógł użyć swojego DNS: inne połączenie też potrzebuje DNS dla wszystkich nazw, a ten serwer nie podał domen. Dla jego własnych domen wpisz je w Połączenia > Opcje (Serwery DNS, Tylko dla domen).",
   "%@: DNS only for %@": "%@: DNS tylko dla %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS tylko dla %@; pozostałe nazwy ma %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfiguracja VPN aplikacji MugVPN, dzienniki, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Konfiguracja VPN aplikacji MugVPN, dzienniki, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Dopóki VPN przenosi cały ruch, każde zapytanie o nazwę idzie przez VPN.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Własne zapytania Maca o nazwy idą przez VPN, dopóki przenosi on cały ruch. Aplikacja, która pyta bezpośrednio serwer DNS sieci lokalnej, nie jest zatrzymywana.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Dopóki jest aktywne, nic nie wychodzi poza VPN i żadne inne połączenie nie może się rozpocząć."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1542,7 +1584,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ não pôde usar seu DNS: outra conexão também precisa de DNS para todos os nomes e este servidor não enviou domínios. Para os domínios dela, informe-os em Conexões > Opções (Servidores DNS, Só para domínios).",
   "%@: DNS only for %@": "%@: DNS só para %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS só para %@; %@ tem os demais nomes",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "A configuração de VPN do MugVPN, os registros, os ajustes e as senhas salvas serão removidos. Os túneis são desconectados."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "A configuração de VPN do MugVPN, os registros, os ajustes e as senhas salvas serão removidos. Os túneis são desconectados.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Toda consulta de nome passa pela VPN enquanto ela leva todo o tráfego.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "As consultas de nome do próprio Mac passam pela VPN enquanto ela leva todo o tráfego. Um app que pergunta diretamente ao servidor DNS da rede local não é impedido.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Enquanto estiver ativa, nada sai fora da VPN e nenhuma outra conexão pode começar."
  },
  "ru": {
   "OK": "ОК",
@@ -1645,7 +1690,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не смог использовать свой DNS: другому подключению тоже нужен DNS для всех имён, а этот сервер не передал доменов. Для его собственных доменов укажите их в «Подключения > Параметры» (DNS-серверы, Только для доменов).",
   "%@: DNS only for %@": "%@: DNS только для %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS только для %@; остальные имена у %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфигурация VPN приложения MugVPN, журналы, настройки и сохранённые пароли будут удалены. Туннели будут отключены."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфигурация VPN приложения MugVPN, журналы, настройки и сохранённые пароли будут удалены. Туннели будут отключены.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Пока VPN несёт весь трафик, каждый запрос имён идёт через VPN.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Собственные запросы имён Mac идут через VPN, пока он несёт весь трафик. Приложение, которое обращается к DNS-серверу локальной сети напрямую, не останавливается.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Пока подключение активно, ничего не уходит мимо VPN и другие подключения не запускаются."
  },
  "sv": {
   "OK": "OK",
@@ -1748,7 +1796,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ kunde inte använda sin DNS: en annan anslutning behöver också DNS för alla namn, och den här servern gav inga domäner. För dess egna domäner, ange dem under Anslutningar > Alternativ (DNS-servrar, Endast för domäner).",
   "%@: DNS only for %@": "%@: DNS bara för %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS bara för %@; %@ har övriga namn",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:s VPN-konfiguration, loggar, inställningar och sparade lösenord tas bort. Tunnlar kopplas från."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN:s VPN-konfiguration, loggar, inställningar och sparade lösenord tas bort. Tunnlar kopplas från.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Alla namnuppslag går genom VPN:en så länge den tar all trafik.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Macens egna namnuppslag går genom VPN:en så länge den tar all trafik. En app som frågar det lokala nätverkets DNS-server direkt stoppas inte.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Medan den är uppe går ingenting utanför VPN:en, och ingen annan anslutning kan starta."
  },
  "tr": {
   "OK": "Tamam",
@@ -1851,7 +1902,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ DNS'ini kullanamadı: başka bir bağlantı da tüm adlar için DNS gerektiriyor ve bu sunucu alan adı vermedi. Kendi alan adları için bunları Bağlantılar > Seçenekler'e (DNS sunucuları, Yalnızca alan adları için) girin.",
   "%@: DNS only for %@": "%@: DNS yalnızca %@ için",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "VPN tüm trafiği taşıdığı sürece her ad sorgusu VPN üzerinden gider.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Mac'in kendi ad sorguları, VPN tüm trafiği taşıdığı sürece VPN üzerinden gider. Yerel ağın DNS sunucusuna doğrudan soran bir uygulama durdurulmaz.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Bağlıyken VPN dışına hiçbir şey çıkmaz ve başka bir bağlantı başlatılamaz."
  },
  "uk": {
   "OK": "OK",
@@ -1954,7 +2008,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ не зміг використати свій DNS: іншому підключенню теж потрібен DNS для всіх імен, а цей сервер не передав доменів. Для його власних доменів вкажіть їх у «Підключення > Параметри» (DNS-сервери, Лише для доменів).",
   "%@: DNS only for %@": "%@: DNS лише для %@",
   "%@: DNS only for %@; %@ has the other names": "%@: DNS лише для %@; решта імен у %@",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано."
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "Конфігурацію VPN програми MugVPN, журнали, налаштування та збережені паролі буде видалено. Тунелі буде від'єднано.",
+  "Every name lookup goes through the VPN while it takes all traffic.": "Поки VPN несе весь трафік, кожен запит імен іде через VPN.",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "Власні запити імен Mac ідуть через VPN, поки він несе весь трафік. Застосунок, що звертається до DNS-сервера локальної мережі напряму, не зупиняється.",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "Поки підключення активне, ніщо не виходить повз VPN і інші підключення не запускаються."
  },
  "zh-Hans": {
   "OK": "好",
@@ -2057,7 +2114,10 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 无法使用其 DNS：另一个连接也需要用于所有名称的 DNS，而此服务器未提供域名。如需用于它自己的域名，请在“连接 > 选项”（DNS 服务器、仅用于域名）中填写。",
   "%@: DNS only for %@": "%@：DNS 仅用于 %@",
   "%@: DNS only for %@; %@ has the other names": "%@：DNS 仅用于 %@；其他名称由 %@ 使用",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。"
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。",
+  "Every name lookup goes through the VPN while it takes all traffic.": "在 VPN 承载全部流量期间，所有名称查询都经由 VPN。",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "在 VPN 承载全部流量期间，Mac 自身的名称查询经由 VPN。直接向本地网络 DNS 服务器查询的应用不会被阻止。",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "连接期间，没有任何流量会绕过 VPN，也无法启动其他连接。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -2160,6 +2220,9 @@
   "%@ could not use its DNS: another connection also needs DNS for all names, and this server gave no domains. For its own domains, list them under Connections > Options (DNS servers, Only for domains).": "%@ 無法使用其 DNS：另一個連線也需要用於所有名稱的 DNS，而此伺服器未提供網域。如需用於它自己的網域，請在「連線 > 選項」（DNS 伺服器、僅用於網域）中填寫。",
   "%@: DNS only for %@": "%@：DNS 僅用於 %@",
   "%@: DNS only for %@; %@ has the other names": "%@：DNS 僅用於 %@；其他名稱由 %@ 使用",
-  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 設定、記錄、設定值和已儲存的密碼將被移除。通道將中斷連線。"
+  "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.": "MugVPN 的 VPN 設定、記錄、設定值和已儲存的密碼將被移除。通道將中斷連線。",
+  "Every name lookup goes through the VPN while it takes all traffic.": "在 VPN 承載全部流量期間，所有名稱查詢都經由 VPN。",
+  "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.": "在 VPN 承載全部流量期間，Mac 本身的名稱查詢經由 VPN。直接向本地網路 DNS 伺服器查詢的 App 不會被阻擋。",
+  "While it is up, nothing leaves outside the VPN, and no other connection can start.": "連線期間，沒有任何流量會繞過 VPN，也無法啟動其他連線。"
  }
 }

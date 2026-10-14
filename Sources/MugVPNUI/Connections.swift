@@ -200,7 +200,14 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         dnsServers.delegate = self
         dnsDomains.delegate = self
         // What it does not block, said where it is switched on.
-        killSwitch.toolTip = L("Name lookups through the Mac's resolver still go out, so the VPN can find its server again.")
+        // What each promises, as the product's backend keeps it.
+        let can = product.capabilities
+        killSwitch.toolTip = can.killSwitchRunsAlone
+            ? L("While it is up, nothing leaves outside the VPN, and no other connection can start.")
+            : L("Name lookups through the Mac's resolver still go out, so the VPN can find its server again.")
+        dnsOnly.toolTip = can.directDNSBlocking
+            ? L("Every name lookup goes through the VPN while it takes all traffic.")
+            : L("The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.")
         for p in [silent, sleep, proxy, dnsMode] {
             p.target = self
             p.action = #selector(changed)

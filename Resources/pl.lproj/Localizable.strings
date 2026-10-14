@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Podaj co najmniej jeden serwer DNS.";
 "Enter at most 8 DNS servers." = "Podaj najwyżej 8 serwerów DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Wprowadź adres proxy i port od 1 do 65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Dopóki VPN przenosi cały ruch, każde zapytanie o nazwę idzie przez VPN.";
 "Every time" = "Za każdym razem";
 "Export Diagnostics" = "Eksportuj diagnostykę";
 "Export Diagnostics…" = "Eksportuj diagnostykę…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Pozostań połączony";
 "TLS auth key:" = "Klucz TLS auth:";
 "TLS crypt key:" = "Klucz TLS crypt:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Własne zapytania Maca o nazwy idą przez VPN, dopóki przenosi on cały ruch. Aplikacja, która pyta bezpośrednio serwer DNS sieci lokalnej, nie jest zatrzymywana.";
 "The client certificate needs its private key." = "Certyfikat klienta wymaga klucza prywatnego.";
 "The configuration cannot be read: %@" = "Nie można odczytać konfiguracji: %@";
 "The first time" = "Za pierwszym razem";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Podczas uśpienia Maca:";
 "While MugVPN blocks the Internet, allow the local network" = "Gdy MugVPN blokuje internet, zezwalaj na sieć lokalną";
 "While connecting:" = "Podczas łączenia:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Dopóki jest aktywne, nic nie wychodzi poza VPN i żadne inne połączenie nie może się rozpocząć.";
 "Wrong password" = "Nieprawidłowe hasło";
 "cannot reach openvpn's management socket" = "nie można połączyć się z gniazdem zarządzania openvpn";
 "connected" = "połączony";

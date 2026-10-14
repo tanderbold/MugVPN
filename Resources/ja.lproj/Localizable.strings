@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "DNSサーバを1つ以上入力してください。";
 "Enter at most 8 DNS servers." = "DNSサーバは8つまで入力できます。";
 "Enter the proxy's address and a port from 1 to 65535." = "プロキシのアドレスと 1〜65535 のポートを入力してください。";
+"Every name lookup goes through the VPN while it takes all traffic." = "VPN がすべての通信を扱っている間、名前の問い合わせはすべて VPN を通ります。";
 "Every time" = "毎回";
 "Export Diagnostics" = "診断情報を書き出す";
 "Export Diagnostics…" = "診断情報を書き出す…";
@@ -218,6 +219,7 @@
 "Stay connected" = "接続を維持";
 "TLS auth key:" = "TLS auth 鍵:";
 "TLS crypt key:" = "TLS crypt 鍵:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "VPN がすべての通信を扱っている間、Mac 自身の名前の問い合わせは VPN を通ります。ローカルネットワークの DNS サーバーに直接問い合わせるアプリは止められません。";
 "The client certificate needs its private key." = "クライアント証明書には秘密鍵が必要です。";
 "The configuration cannot be read: %@" = "設定ファイルを読み込めません: %@";
 "The first time" = "初回のみ";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Mac のスリープ時:";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPNがインターネットをブロック中もローカルネットワークを許可";
 "While connecting:" = "接続中:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "接続中は VPN の外に何も出ず、ほかの接続は開始できません。";
 "Wrong password" = "パスワードが正しくありません";
 "cannot reach openvpn's management socket" = "openvpn の管理ソケットに接続できません";
 "connected" = "接続済み";

@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Anna vähintään yksi DNS-palvelin.";
 "Enter at most 8 DNS servers." = "Anna enintään 8 DNS-palvelinta.";
 "Enter the proxy's address and a port from 1 to 65535." = "Anna välipalvelimen osoite ja portti väliltä 1–65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Jokainen nimihaku kulkee VPN:n kautta, kun se kuljettaa kaiken liikenteen.";
 "Every time" = "Joka kerta";
 "Export Diagnostics" = "Vie diagnostiikka";
 "Export Diagnostics…" = "Vie vianmääritystiedot…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Pysy yhdistettynä";
 "TLS auth key:" = "TLS auth -avain:";
 "TLS crypt key:" = "TLS crypt -avain:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Macin omat nimihaut kulkevat VPN:n kautta, kun se kuljettaa kaiken liikenteen. Sovellusta, joka kysyy suoraan paikallisen verkon DNS-palvelimelta, ei pysäytetä.";
 "The client certificate needs its private key." = "Asiakasvarmenne tarvitsee yksityisen avaimensa.";
 "The configuration cannot be read: %@" = "Määrityksiä ei voi lukea: %@";
 "The first time" = "Ensimmäisellä kerralla";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Kun Mac siirtyy nukkumaan:";
 "While MugVPN blocks the Internet, allow the local network" = "Kun MugVPN estää internetin, salli lähiverkko";
 "While connecting:" = "Yhdistettäessä:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Yhteyden ollessa päällä mitään ei lähde VPN:n ohi, eikä muita yhteyksiä voi avata.";
 "Wrong password" = "Väärä salasana";
 "cannot reach openvpn's management socket" = "openvpn:n hallintasocketiin ei saada yhteyttä";
 "connected" = "yhdistetty";

@@ -297,6 +297,9 @@
   "key": "Enter the proxy's address and a port from 1 to 65535."
  },
  {
+  "key": "Every name lookup goes through the VPN while it takes all traffic."
+ },
+ {
   "key": "Every time"
  },
  {
@@ -657,6 +660,9 @@
   "key": "TLS crypt key:"
  },
  {
+  "key": "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped."
+ },
+ {
   "key": "The client certificate needs its private key."
  },
  {
@@ -760,6 +766,9 @@
  },
  {
   "key": "While connecting:"
+ },
+ {
+  "key": "While it is up, nothing leaves outside the VPN, and no other connection can start."
  },
  {
   "key": "Wrong password"

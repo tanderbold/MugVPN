@@ -295,6 +295,15 @@ def test_ui42_dns_block(app):
     assert cfg(app, "stand-a") == MINIMAL, "back to as it was"
 
 
+def test_ui45c_protection_options_say_what_they_keep(app):
+    """The DNS option's and the kill switch's help say what this build keeps (the backend's capabilities)."""
+    open_window(app, "stand-a")
+    w = tab(app, "options")
+    dns = app.control(w, "dns_only")["label"].lower()
+    assert "name lookup" in dns and "through the vpn" in dns, dns
+    assert "(" in app.control(w, "kill_switch")["label"], "the kill switch has its help"
+
+
 def test_ui45_protection_options_and_unblock(app):
     """PF protection: per-connection switches go to the helper; a block a kill
     switch left shows in the menu with a way to lift it."""

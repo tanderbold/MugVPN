@@ -178,6 +178,7 @@ func registerManagerTests() {
         let c = BackendCapabilities.packetTunnel
         expect(!c.scripts && !c.persistentConnections && !c.systemHelper && !c.directDNSBlocking
                && !c.protectionAcrossRestart && !c.adminPolicy, "nothing the helper alone does")
+        expect(c.killSwitchRunsAlone && !BackendCapabilities.helper.killSwitchRunsAlone, "its kill switch runs alone")
     }
     test("MAN-46", "without a persistent part: a persistent profile is refused with a reason, nothing started") {
         let helper = FakeHelperClient()

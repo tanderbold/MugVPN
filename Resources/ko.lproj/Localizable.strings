@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "DNS 서버를 하나 이상 입력하십시오.";
 "Enter at most 8 DNS servers." = "DNS 서버는 최대 8개까지 입력하십시오.";
 "Enter the proxy's address and a port from 1 to 65535." = "프록시 주소와 1~65535 사이의 포트를 입력하십시오.";
+"Every name lookup goes through the VPN while it takes all traffic." = "VPN이 모든 트래픽을 처리하는 동안 모든 이름 조회는 VPN을 통해 갑니다.";
 "Every time" = "매번";
 "Export Diagnostics" = "진단 정보 내보내기";
 "Export Diagnostics…" = "진단 정보 내보내기…";
@@ -218,6 +219,7 @@
 "Stay connected" = "연결 유지";
 "TLS auth key:" = "TLS auth 키:";
 "TLS crypt key:" = "TLS crypt 키:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "VPN이 모든 트래픽을 처리하는 동안 Mac 자체의 이름 조회는 VPN을 통해 갑니다. 로컬 네트워크의 DNS 서버에 직접 묻는 앱은 막지 않습니다.";
 "The client certificate needs its private key." = "클라이언트 인증서에는 개인 키가 필요합니다.";
 "The configuration cannot be read: %@" = "구성을 읽을 수 없습니다: %@";
 "The first time" = "처음 한 번만";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Mac이 잠자기 상태일 때:";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPN이 인터넷을 차단하는 동안 로컬 네트워크 허용";
 "While connecting:" = "연결 중:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "연결되어 있는 동안 VPN 밖으로 아무것도 나가지 않으며 다른 연결을 시작할 수 없습니다.";
 "Wrong password" = "잘못된 암호";
 "cannot reach openvpn's management socket" = "openvpn 관리 소켓에 연결할 수 없음";
 "connected" = "연결됨";

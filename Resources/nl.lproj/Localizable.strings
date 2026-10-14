@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Voer minstens één DNS-server in.";
 "Enter at most 8 DNS servers." = "Voer maximaal 8 DNS-servers in.";
 "Enter the proxy's address and a port from 1 to 65535." = "Voer het adres van de proxy en een poort van 1 tot 65535 in.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Elke naamopzoeking gaat via de VPN zolang die al het verkeer draagt.";
 "Every time" = "Elke keer";
 "Export Diagnostics" = "Diagnose exporteren";
 "Export Diagnostics…" = "Diagnose exporteren…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Blijf verbonden";
 "TLS auth key:" = "TLS auth-sleutel:";
 "TLS crypt key:" = "TLS crypt-sleutel:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "De eigen naamopzoekingen van de Mac gaan via de VPN zolang die al het verkeer draagt. Een app die de DNS-server van het lokale netwerk rechtstreeks vraagt, wordt niet tegengehouden.";
 "The client certificate needs its private key." = "Het clientcertificaat heeft de bijbehorende privésleutel nodig.";
 "The configuration cannot be read: %@" = "De configuratie kan niet worden gelezen: %@";
 "The first time" = "De eerste keer";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Wanneer de Mac sluimert:";
 "While MugVPN blocks the Internet, allow the local network" = "Terwijl MugVPN internet blokkeert, het lokale netwerk toestaan";
 "While connecting:" = "Tijdens verbinden:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Zolang hij actief is, gaat er niets buiten de VPN om en kan geen andere verbinding starten.";
 "Wrong password" = "Onjuist wachtwoord";
 "cannot reach openvpn's management socket" = "kan de beheersocket van openvpn niet bereiken";
 "connected" = "verbonden";

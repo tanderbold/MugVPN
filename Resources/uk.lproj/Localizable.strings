@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Вкажіть хоча б один DNS-сервер.";
 "Enter at most 8 DNS servers." = "Вкажіть не більше 8 DNS-серверів.";
 "Enter the proxy's address and a port from 1 to 65535." = "Введіть адресу проксі-сервера та порт від 1 до 65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Поки VPN несе весь трафік, кожен запит імен іде через VPN.";
 "Every time" = "Щоразу";
 "Export Diagnostics" = "Експорт діагностики";
 "Export Diagnostics…" = "Експорт діагностики…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Не відключатися";
 "TLS auth key:" = "Ключ TLS auth:";
 "TLS crypt key:" = "Ключ TLS crypt:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Власні запити імен Mac ідуть через VPN, поки він несе весь трафік. Застосунок, що звертається до DNS-сервера локальної мережі напряму, не зупиняється.";
 "The client certificate needs its private key." = "Сертифікату клієнта потрібен його закритий ключ.";
 "The configuration cannot be read: %@" = "Не вдалося прочитати конфігурацію: %@";
 "The first time" = "Лише вперше";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Коли Mac засинає:";
 "While MugVPN blocks the Internet, allow the local network" = "Поки MugVPN блокує інтернет, дозволяти локальну мережу";
 "While connecting:" = "Під час підключення:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Поки підключення активне, ніщо не виходить повз VPN і інші підключення не запускаються.";
 "Wrong password" = "Невірний пароль";
 "cannot reach openvpn's management socket" = "не вдається під'єднатися до сокета керування openvpn";
 "connected" = "підключено";

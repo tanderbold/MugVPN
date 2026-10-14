@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "En az bir DNS sunucusu girin.";
 "Enter at most 8 DNS servers." = "En fazla 8 DNS sunucusu girin.";
 "Enter the proxy's address and a port from 1 to 65535." = "Proxy adresini ve 1 ile 65535 arasında bir port girin.";
+"Every name lookup goes through the VPN while it takes all traffic." = "VPN tüm trafiği taşıdığı sürece her ad sorgusu VPN üzerinden gider.";
 "Every time" = "Her seferinde";
 "Export Diagnostics" = "Tanılamayı dışa aktar";
 "Export Diagnostics…" = "Tanılamayı dışa aktar…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Bağlı kal";
 "TLS auth key:" = "TLS auth anahtarı:";
 "TLS crypt key:" = "TLS crypt anahtarı:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Mac'in kendi ad sorguları, VPN tüm trafiği taşıdığı sürece VPN üzerinden gider. Yerel ağın DNS sunucusuna doğrudan soran bir uygulama durdurulmaz.";
 "The client certificate needs its private key." = "İstemci sertifikası için özel anahtarı gerekir.";
 "The configuration cannot be read: %@" = "Yapılandırma okunamıyor: %@";
 "The first time" = "İlk seferde";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Mac uyku moduna geçince:";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPN interneti engellerken yerel ağa izin ver";
 "While connecting:" = "Bağlanırken:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Bağlıyken VPN dışına hiçbir şey çıkmaz ve başka bir bağlantı başlatılamaz.";
 "Wrong password" = "Yanlış şifre";
 "cannot reach openvpn's management socket" = "openvpn yönetim soketine ulaşılamıyor";
 "connected" = "bağlı";

@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Ange minst en DNS-server.";
 "Enter at most 8 DNS servers." = "Ange högst 8 DNS-servrar.";
 "Enter the proxy's address and a port from 1 to 65535." = "Ange proxyns adress och en port mellan 1 och 65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Alla namnuppslag går genom VPN:en så länge den tar all trafik.";
 "Every time" = "Varje gång";
 "Export Diagnostics" = "Exportera diagnostik";
 "Export Diagnostics…" = "Exportera diagnostik…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Förbli ansluten";
 "TLS auth key:" = "TLS auth-nyckel:";
 "TLS crypt key:" = "TLS crypt-nyckel:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Macens egna namnuppslag går genom VPN:en så länge den tar all trafik. En app som frågar det lokala nätverkets DNS-server direkt stoppas inte.";
 "The client certificate needs its private key." = "Klientcertifikatet kräver sin privata nyckel.";
 "The configuration cannot be read: %@" = "Det går inte att läsa konfigurationen: %@";
 "The first time" = "Första gången";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "När datorn går i vila:";
 "While MugVPN blocks the Internet, allow the local network" = "Medan MugVPN blockerar internet, tillåt det lokala nätverket";
 "While connecting:" = "Under anslutning:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Medan den är uppe går ingenting utanför VPN:en, och ingen annan anslutning kan starta.";
 "Wrong password" = "Fel lösenord";
 "cannot reach openvpn's management socket" = "kan inte nå openvpns hanteringssocket";
 "connected" = "ansluten";

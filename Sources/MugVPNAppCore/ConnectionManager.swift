@@ -77,9 +77,12 @@ public struct BackendCapabilities: Equatable, Sendable {
     public var protectionAcrossRestart: Bool
     /// An administrator's policy for standard users.
     public var adminPolicy: Bool
+    /// A connection with a kill switch runs alone, nothing outside the VPN while it is up (the system's strict mode).
+    public var killSwitchRunsAlone: Bool
 
     public init(scripts: Bool, persistentConnections: Bool, systemHelper: Bool, directDNSBlocking: Bool,
-                protectionAcrossRestart: Bool, adminPolicy: Bool) {
+                protectionAcrossRestart: Bool, adminPolicy: Bool, killSwitchRunsAlone: Bool = false) {
+        self.killSwitchRunsAlone = killSwitchRunsAlone
         self.scripts = scripts
         self.persistentConnections = persistentConnections
         self.systemHelper = systemHelper
@@ -93,7 +96,8 @@ public struct BackendCapabilities: Equatable, Sendable {
                                                    directDNSBlocking: true, protectionAcrossRestart: true, adminPolicy: true)
     /// A packet tunnel provider (Network Extension).
     public static let packetTunnel = BackendCapabilities(scripts: false, persistentConnections: false, systemHelper: false,
-                                                         directDNSBlocking: false, protectionAcrossRestart: false, adminPolicy: false)
+                                                         directDNSBlocking: false, protectionAcrossRestart: false, adminPolicy: false,
+                                                         killSwitchRunsAlone: true)
 }
 
 /// A product's backend: its parts (the optional ones only where it has them) and what it does.

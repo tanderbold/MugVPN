@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "请至少输入一个 DNS 服务器。";
 "Enter at most 8 DNS servers." = "最多输入 8 个 DNS 服务器。";
 "Enter the proxy's address and a port from 1 to 65535." = "请输入代理地址和 1 到 65535 之间的端口。";
+"Every name lookup goes through the VPN while it takes all traffic." = "在 VPN 承载全部流量期间，所有名称查询都经由 VPN。";
 "Every time" = "每次";
 "Export Diagnostics" = "导出诊断信息";
 "Export Diagnostics…" = "导出诊断信息…";
@@ -218,6 +219,7 @@
 "Stay connected" = "保持连接";
 "TLS auth key:" = "TLS auth 密钥：";
 "TLS crypt key:" = "TLS crypt 密钥：";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "在 VPN 承载全部流量期间，Mac 自身的名称查询经由 VPN。直接向本地网络 DNS 服务器查询的应用不会被阻止。";
 "The client certificate needs its private key." = "客户端证书需要其私钥。";
 "The configuration cannot be read: %@" = "无法读取配置：%@";
 "The first time" = "仅第一次";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Mac 睡眠时：";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPN 阻止互联网时允许本地网络";
 "While connecting:" = "连接时：";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "连接期间，没有任何流量会绕过 VPN，也无法启动其他连接。";
 "Wrong password" = "密码错误";
 "cannot reach openvpn's management socket" = "无法访问 openvpn 的管理套接字";
 "connected" = "已连接";

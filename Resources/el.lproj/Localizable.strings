@@ -98,6 +98,7 @@
 "Enter at least one DNS server." = "Εισαγάγετε τουλάχιστον έναν διακομιστή DNS.";
 "Enter at most 8 DNS servers." = "Εισαγάγετε έως 8 διακομιστές DNS.";
 "Enter the proxy's address and a port from 1 to 65535." = "Εισαγάγετε τη διεύθυνση του proxy και μια θύρα από 1 έως 65535.";
+"Every name lookup goes through the VPN while it takes all traffic." = "Κάθε αναζήτηση ονόματος περνά από το VPN όσο αυτό μεταφέρει όλη την κίνηση.";
 "Every time" = "Κάθε φορά";
 "Export Diagnostics" = "Εξαγωγή διαγνωστικών";
 "Export Diagnostics…" = "Εξαγωγή διαγνωστικών…";
@@ -218,6 +219,7 @@
 "Stay connected" = "Παραμονή σε σύνδεση";
 "TLS auth key:" = "Κλειδί TLS auth:";
 "TLS crypt key:" = "Κλειδί TLS crypt:";
+"The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Οι αναζητήσεις ονομάτων του ίδιου του Mac περνούν από το VPN όσο αυτό μεταφέρει όλη την κίνηση. Μια εφαρμογή που ρωτά απευθείας τον διακομιστή DNS του τοπικού δικτύου δεν σταματά.";
 "The client certificate needs its private key." = "Το πιστοποιητικό πελάτη χρειάζεται το ιδιωτικό κλειδί του.";
 "The configuration cannot be read: %@" = "Δεν είναι δυνατή η ανάγνωση της διαμόρφωσης: %@";
 "The first time" = "Την πρώτη φορά";
@@ -253,6 +255,7 @@
 "When the Mac sleeps:" = "Όταν το Mac μεταβαίνει σε ύπνο:";
 "While MugVPN blocks the Internet, allow the local network" = "Όσο το MugVPN αποκλείει το Διαδίκτυο, να επιτρέπεται το τοπικό δίκτυο";
 "While connecting:" = "Κατά τη σύνδεση:";
+"While it is up, nothing leaves outside the VPN, and no other connection can start." = "Όσο είναι συνδεδεμένη, τίποτα δεν βγαίνει εκτός VPN και καμία άλλη σύνδεση δεν μπορεί να ξεκινήσει.";
 "Wrong password" = "Λάθος σύνθημα";
 "cannot reach openvpn's management socket" = "αδυναμία πρόσβασης στο socket διαχείρισης του openvpn";
 "connected" = "συνδεδεμένο";
