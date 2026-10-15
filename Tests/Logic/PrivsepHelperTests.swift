@@ -2661,4 +2661,17 @@ func registerPrivsepHelperTests() {
         expectEqual(sys.launched[0].process.signals, [SIGKILL], "stopped")
         expect(!sys.routeTable.contains { $0.contains("10.20.0.0") }, "and undone")
     }
+    test("PS-151", "an IPv6 route asked again (openvpn after a reconnect of its own): taken as it is, not added twice, the connection kept") {
+        let sys = FakeSystem()
+        let h = makeHelper(sys)
+        let (id, _) = try h.start(bundle: psBundle(), uid: 501)
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "OPENTUN", message: "tun")
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE6", message: "fd00:20::/64 utun7")
+        let adds = sys.commands.filter { $0.contains("fd00:20::") && $0.contains("add") }.count
+        // The system refuses a route that is there already (EEXIST): a second add would fail the connection.
+        sys.commandFails = true
+        _ = try h.tunnelRequest(id: id, uid: 501, kind: "ROUTE6", message: "fd00:20::/64 utun7")
+        sys.commandFails = false
+        expectEqual(sys.commands.filter { $0.contains("fd00:20::") && $0.contains("add") }.count, adds, "not added again")
+    }
 }

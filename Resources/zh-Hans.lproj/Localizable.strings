@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@：DNS 仅用于 %@";
 "%@: DNS only for %@; %@ has the other names" = "%@：DNS 仅用于 %@；其他名称由 %@ 使用";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "可同时保持多个连接的 OpenVPN 配置文件客户端。MIT 许可证。";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "断开时会阻止流量的连接只能单独运行：请先断开其他连接。";
 "A program asked MugVPN to import %@. Import it?" = "某个程序请求 MugVPN 导入 %@。要导入吗？";
 "A summary (versions, which connections are up) always goes in. Also:" = "始终包含摘要（版本、已连接的连接）。另外：";
 "About MugVPN" = "关于 MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "保持连接";
 "TLS auth key:" = "TLS auth 密钥：";
 "TLS crypt key:" = "TLS crypt 密钥：";
+"The Internet is blocked since a connection dropped: unblock it first." = "由于连接已断开，互联网已被阻止：请先解除阻止。";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "在 VPN 承载全部流量期间，Mac 自身的名称查询经由 VPN。直接向本地网络 DNS 服务器查询的应用不会被阻止。";
 "The client certificate needs its private key." = "客户端证书需要其私钥。";
 "The configuration cannot be read: %@" = "无法读取配置：%@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "当所有流量都经过它时：";
 "When the Mac sleeps:" = "Mac 睡眠时：";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPN 阻止互联网时允许本地网络";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "断开时会阻止流量的连接处于活动状态时，无法启动其他连接。";
 "While connecting:" = "连接时：";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "连接期间，没有任何流量会绕过 VPN，也无法启动其他连接。";
 "Wrong password" = "密码错误";

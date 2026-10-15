@@ -1,4 +1,5 @@
 import Foundation
+import MugVPNCore
 
 // L-LOC: the app's string catalogs, checked against the source code.
 
@@ -43,6 +44,13 @@ func placeholders(_ s: String) -> [String] {
 }
 
 func registerLocalizationTests() {
+    test("LOC-08", "a backend's refusals: stable codes, each said in every language (its English text a catalog key)") {
+        expectEqual(BackendRefusal.allCases.map(\.rawValue), ["killSwitchRunsAlone", "killSwitchConnectionUp", "blockedByKillSwitch"])
+        for lang in languages {
+            guard let c = catalog(lang) else { expect(false, lang); continue }
+            for r in BackendRefusal.allCases { expect(c[r.description] != nil, "\(lang): \(r.rawValue)") }
+        }
+    }
     test("LOC-01", "every key in every catalog, nothing stale") {
         let keys = usedKeys()
         expect(keys.count > 50, "found \(keys.count) keys in the app")

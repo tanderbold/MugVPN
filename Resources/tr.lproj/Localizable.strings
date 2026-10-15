@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS yalnızca %@ için";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS yalnızca %@ için; diğer adlar %@ bağlantısında";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Birden çok bağlantıyı aynı anda açık tutan, OpenVPN profilleri için bir istemci. MIT Lisansı.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Koptuğunda trafiği engelleyen bir bağlantı tek başına çalışır: önce diğerlerinin bağlantısını kesin.";
 "A program asked MugVPN to import %@. Import it?" = "Bir program MugVPN’den %@ dosyasını içe aktarmasını istedi. İçe aktarılsın mı?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Özet (sürümler, hangi bağlantıların açık olduğu) her zaman eklenir. Ayrıca:";
 "About MugVPN" = "MugVPN Hakkında";
@@ -224,6 +225,7 @@
 "Stay connected" = "Bağlı kal";
 "TLS auth key:" = "TLS auth anahtarı:";
 "TLS crypt key:" = "TLS crypt anahtarı:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Bir bağlantı koptuğu için İnternet engellendi: önce engeli kaldırın.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Mac'in kendi ad sorguları, VPN tüm trafiği taşıdığı sürece VPN üzerinden gider. Yerel ağın DNS sunucusuna doğrudan soran bir uygulama durdurulmaz.";
 "The client certificate needs its private key." = "İstemci sertifikası için özel anahtarı gerekir.";
 "The configuration cannot be read: %@" = "Yapılandırma okunamıyor: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Tüm trafik onun üzerinden geçtiğinde:";
 "When the Mac sleeps:" = "Mac uyku moduna geçince:";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPN interneti engellerken yerel ağa izin ver";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Koptuğunda trafiği engelleyen bir bağlantı açıkken başka bir bağlantı başlatılamaz.";
 "While connecting:" = "Bağlanırken:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Bağlıyken VPN dışına hiçbir şey çıkmaz ve başka bir bağlantı başlatılamaz.";
 "Wrong password" = "Yanlış şifre";

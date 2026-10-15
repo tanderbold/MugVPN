@@ -431,10 +431,12 @@ public struct TunnelState: Equatable, Sendable, Codable {
         return TunnelRoute(kind: .tunnel6, net: String(a[0]), mask: String(bits), via: dev)
     }
 
-    public mutating func route6(_ msg: String) throws -> TunnelRoute {
+    /// ROUTE6: the route to add; nil when this connection has it already (asked again: nothing to do, as for IPv4).
+    public mutating func route6(_ msg: String) throws -> TunnelRoute? {
         let r = try parseRoute6(msg)
+        guard !routes.contains(r) else { return nil }
         guard routes.count < TunnelState.maxRoutes else { throw TunnelRequestError("more than \(TunnelState.maxRoutes) routes") }
-        if !routes.contains(r) { routes.append(r) }
+        routes.append(r)
         return r
     }
 

@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS μόνο για %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS μόνο για %@· τα υπόλοιπα ονόματα τα έχει το %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Πρόγραμμα για προφίλ OpenVPN που διατηρεί πολλές συνδέσεις ταυτόχρονα. Άδεια MIT.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Μια σύνδεση που μπλοκάρει την κίνηση αν πέσει λειτουργεί μόνη της: αποσυνδέστε πρώτα τις άλλες.";
 "A program asked MugVPN to import %@. Import it?" = "Ένα πρόγραμμα ζήτησε από το MugVPN να εισαγάγει το %@. Εισαγωγή;";
 "A summary (versions, which connections are up) always goes in. Also:" = "Μια σύνοψη (εκδόσεις, ποιες συνδέσεις είναι ενεργές) περιλαμβάνεται πάντα. Επίσης:";
 "About MugVPN" = "Σχετικά με το MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Παραμονή σε σύνδεση";
 "TLS auth key:" = "Κλειδί TLS auth:";
 "TLS crypt key:" = "Κλειδί TLS crypt:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Το Διαδίκτυο είναι αποκλεισμένο επειδή έπεσε μια σύνδεση: άρετε πρώτα τον αποκλεισμό.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Οι αναζητήσεις ονομάτων του ίδιου του Mac περνούν από το VPN όσο αυτό μεταφέρει όλη την κίνηση. Μια εφαρμογή που ρωτά απευθείας τον διακομιστή DNS του τοπικού δικτύου δεν σταματά.";
 "The client certificate needs its private key." = "Το πιστοποιητικό πελάτη χρειάζεται το ιδιωτικό κλειδί του.";
 "The configuration cannot be read: %@" = "Δεν είναι δυνατή η ανάγνωση της διαμόρφωσης: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Όταν όλη η κίνηση περνά από αυτήν:";
 "When the Mac sleeps:" = "Όταν το Mac μεταβαίνει σε ύπνο:";
 "While MugVPN blocks the Internet, allow the local network" = "Όσο το MugVPN αποκλείει το Διαδίκτυο, να επιτρέπεται το τοπικό δίκτυο";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Όσο είναι ενεργή μια σύνδεση που μπλοκάρει την κίνηση αν πέσει, καμία άλλη δεν μπορεί να ξεκινήσει.";
 "While connecting:" = "Κατά τη σύνδεση:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Όσο είναι συνδεδεμένη, τίποτα δεν βγαίνει εκτός VPN και καμία άλλη σύνδεση δεν μπορεί να ξεκινήσει.";
 "Wrong password" = "Λάθος σύνθημα";

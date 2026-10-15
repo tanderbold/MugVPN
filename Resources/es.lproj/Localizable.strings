@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS solo para %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS solo para %@; %@ tiene los demás nombres";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Un cliente para perfiles de OpenVPN que mantiene varias conexiones a la vez. Licencia MIT.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Una conexión que bloquea el tráfico si se cae funciona sola: desconecte primero las demás.";
 "A program asked MugVPN to import %@. Import it?" = "Un programa pidió a MugVPN importar %@. ¿Importarlo?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Siempre se incluye un resumen (versiones, qué conexiones están activas). Además:";
 "About MugVPN" = "Acerca de MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Seguir conectado";
 "TLS auth key:" = "Clave TLS auth:";
 "TLS crypt key:" = "Clave TLS crypt:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Internet está bloqueado porque una conexión se cayó: desbloquéelo primero.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Las consultas de nombres del propio Mac pasan por la VPN mientras lleva todo el tráfico. Una app que pregunta directamente al servidor DNS de la red local no se detiene.";
 "The client certificate needs its private key." = "El certificado de cliente necesita su clave privada.";
 "The configuration cannot be read: %@" = "No se puede leer la configuración: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Cuando todo el tráfico pasa por ella:";
 "When the Mac sleeps:" = "Cuando el Mac entra en reposo:";
 "While MugVPN blocks the Internet, allow the local network" = "Mientras MugVPN bloquea Internet, permitir la red local";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Mientras esté activa una conexión que bloquea el tráfico si se cae, no puede iniciarse ninguna otra.";
 "While connecting:" = "Al conectar:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Mientras esté activa, nada sale fuera de la VPN y no puede iniciarse ninguna otra conexión.";
 "Wrong password" = "Clave incorrecta";

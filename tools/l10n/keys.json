@@ -51,6 +51,9 @@
   "key": "A client for OpenVPN profiles that keeps several connections up at once. MIT License."
  },
  {
+  "key": "A connection that blocks traffic if it drops runs alone: disconnect the others first."
+ },
+ {
   "key": "A program asked MugVPN to import %@. Import it?"
  },
  {
@@ -675,6 +678,9 @@
   "key": "TLS crypt key:"
  },
  {
+  "key": "The Internet is blocked since a connection dropped: unblock it first."
+ },
+ {
   "key": "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped."
  },
  {
@@ -778,6 +784,9 @@
  },
  {
   "key": "While MugVPN blocks the Internet, allow the local network"
+ },
+ {
+  "key": "While a connection that blocks traffic if it drops is up, no other connection can start."
  },
  {
   "key": "While connecting:"

@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS only for %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS only for %@; %@ has the other names";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "A client for OpenVPN profiles that keeps several connections up at once. MIT License.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "A connection that blocks traffic if it drops runs alone: disconnect the others first.";
 "A program asked MugVPN to import %@. Import it?" = "A program asked MugVPN to import %@. Import it?";
 "A summary (versions, which connections are up) always goes in. Also:" = "A summary (versions, which connections are up) always goes in. Also:";
 "About MugVPN" = "About MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Stay connected";
 "TLS auth key:" = "TLS auth key:";
 "TLS crypt key:" = "TLS crypt key:";
+"The Internet is blocked since a connection dropped: unblock it first." = "The Internet is blocked since a connection dropped: unblock it first.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped.";
 "The client certificate needs its private key." = "The client certificate needs its private key.";
 "The configuration cannot be read: %@" = "The configuration cannot be read: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "When all traffic goes through it:";
 "When the Mac sleeps:" = "When the Mac sleeps:";
 "While MugVPN blocks the Internet, allow the local network" = "While MugVPN blocks the Internet, allow the local network";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "While a connection that blocks traffic if it drops is up, no other connection can start.";
 "While connecting:" = "While connecting:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "While it is up, nothing leaves outside the VPN, and no other connection can start.";
 "Wrong password" = "Wrong password";

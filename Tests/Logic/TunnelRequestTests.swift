@@ -67,7 +67,7 @@ func registerTunnelRequestTests() {
         expectEqual(try t.deleteRoute("10.20.0.0 255.255.0.0 10.8.0.1").map(\.delete),
                     [["route", "-n", "delete", "-net", "10.20.0.0", "-netmask", "255.255.0.0", "-interface", "utun7"]])
         expectEqual(t.routes.map(\.net), ["10.30.0.0"])
-        expectEqual(try t.route6("fd00:20::/64 utun7").add, ["route", "-n", "add", "-inet6", "fd00:20::", "-prefixlen", "64", "-iface", "utun7"])
+        expectEqual(try t.route6("fd00:20::/64 utun7")?.add, ["route", "-n", "add", "-inet6", "fd00:20::", "-prefixlen", "64", "-iface", "utun7"])
         expectThrows("not added 6", matching: "not") { _ = try t.deleteRoute6("fd00:30::/64 utun7") }
         expectEqual(try t.deleteRoute6("fd00:20::/64 utun7").delete, ["route", "-n", "delete", "-inet6", "fd00:20::", "-prefixlen", "64", "-iface", "utun7"])
     }
@@ -136,7 +136,7 @@ func registerTunnelRequestTests() {
     test("TUN-04", "IPv6: address and routes on its own device only") {
         var t = tunnel()
         expectEqual(try t.ifconfig6("fd00:8::2/64 1500"), [["ifconfig", "utun7", "inet6", "fd00:8::2/64", "mtu", "1500", "up"]])
-        expectEqual(try t.route6("2000::/3 utun7").add, ["route", "-n", "add", "-inet6", "2000::", "-prefixlen", "3", "-iface", "utun7"])
+        expectEqual(try t.route6("2000::/3 utun7")?.add, ["route", "-n", "add", "-inet6", "2000::", "-prefixlen", "3", "-iface", "utun7"])
         for bad in ["2000::/3 en0", "2000::/3 utun9", "zz::/3 utun7", "2000::/200 utun7"] {
             expectThrows(bad) { _ = try t.route6(bad) }
         }

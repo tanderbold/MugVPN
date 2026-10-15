@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS vain kohteille %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS vain kohteille %@; muut nimet ovat yhteydellä %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "OpenVPN-profiilien asiakasohjelma, joka pitää useita yhteyksiä yllä yhtä aikaa. MIT-lisenssi.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Yhteys, joka estää liikenteen katketessaan, toimii yksin: katkaise ensin muut.";
 "A program asked MugVPN to import %@. Import it?" = "Ohjelma pyysi MugVPN:ää tuomaan kohteen %@. Tuodaanko?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Yhteenveto (versiot, mitkä yhteydet ovat päällä) on aina mukana. Lisäksi:";
 "About MugVPN" = "Tietoja MugVPN:stä";
@@ -224,6 +225,7 @@
 "Stay connected" = "Pysy yhdistettynä";
 "TLS auth key:" = "TLS auth -avain:";
 "TLS crypt key:" = "TLS crypt -avain:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Internet on estetty, koska yhteys katkesi: poista esto ensin.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Macin omat nimihaut kulkevat VPN:n kautta, kun se kuljettaa kaiken liikenteen. Sovellusta, joka kysyy suoraan paikallisen verkon DNS-palvelimelta, ei pysäytetä.";
 "The client certificate needs its private key." = "Asiakasvarmenne tarvitsee yksityisen avaimensa.";
 "The configuration cannot be read: %@" = "Määrityksiä ei voi lukea: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Kun kaikki liikenne kulkee sen kautta:";
 "When the Mac sleeps:" = "Kun Mac siirtyy nukkumaan:";
 "While MugVPN blocks the Internet, allow the local network" = "Kun MugVPN estää internetin, salli lähiverkko";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Kun yhteys, joka estää liikenteen katketessaan, on päällä, muuta yhteyttä ei voi käynnistää.";
 "While connecting:" = "Yhdistettäessä:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Yhteyden ollessa päällä mitään ei lähde VPN:n ohi, eikä muita yhteyksiä voi avata.";
 "Wrong password" = "Väärä salasana";

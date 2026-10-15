@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS は %@ のみ";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS は %@ のみ。その他の名前は %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "複数の接続を同時に維持できる OpenVPN プロファイル用クライアント。MIT ライセンス。";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "切断時に通信をブロックする接続は単独で動作します。先にほかの接続を切断してください。";
 "A program asked MugVPN to import %@. Import it?" = "あるプログラムが MugVPN に %@ の読み込みを求めています。読み込みますか？";
 "A summary (versions, which connections are up) always goes in. Also:" = "概要（バージョン、接続中の接続）は常に含まれます。そのほか:";
 "About MugVPN" = "MugVPNについて";
@@ -224,6 +225,7 @@
 "Stay connected" = "接続を維持";
 "TLS auth key:" = "TLS auth 鍵:";
 "TLS crypt key:" = "TLS crypt 鍵:";
+"The Internet is blocked since a connection dropped: unblock it first." = "接続が切断されたためインターネットがブロックされています。先にブロックを解除してください。";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "VPN がすべての通信を扱っている間、Mac 自身の名前の問い合わせは VPN を通ります。ローカルネットワークの DNS サーバーに直接問い合わせるアプリは止められません。";
 "The client certificate needs its private key." = "クライアント証明書には秘密鍵が必要です。";
 "The configuration cannot be read: %@" = "設定ファイルを読み込めません: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "すべての通信がこれを通るとき:";
 "When the Mac sleeps:" = "Mac のスリープ時:";
 "While MugVPN blocks the Internet, allow the local network" = "MugVPNがインターネットをブロック中もローカルネットワークを許可";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "切断時に通信をブロックする接続が有効な間は、ほかの接続を開始できません。";
 "While connecting:" = "接続中:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "接続中は VPN の外に何も出ず、ほかの接続は開始できません。";
 "Wrong password" = "パスワードが正しくありません";

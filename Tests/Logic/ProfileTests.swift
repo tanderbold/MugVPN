@@ -493,4 +493,20 @@ func registerProfileTests() {
         for n in ["a10", "a2", "B1", "a1"] { fs.add("\(userDir)/\(n).ovpn", minimal) }
         expectEqual(store(fs).scan().map(\.name), ["a1", "a2", "a10", "B1"])
     }
+    test("PRF-39", "a profile read from disk: one open, checked on its descriptor: a regular file only (a link, a FIFO or a directory not read, never waited on), at most the limit") {
+        let dir = NSTemporaryDirectory() + "prf39-\(UUID().uuidString.prefix(6))"
+        try FileManager.default.createDirectory(atPath: dir, withIntermediateDirectories: true)
+        defer { try? FileManager.default.removeItem(atPath: dir) }
+        FileManager.default.createFile(atPath: dir + "/a.ovpn", contents: Data("client\n".utf8))
+        expectEqual(SafeFile.read(dir + "/a.ovpn", limit: 100), Data("client\n".utf8))
+        expect(SafeFile.read(dir + "/a.ovpn", limit: 3) == nil, "larger than the limit")
+        expectEqual(SafeFile.read(dir + "/a.ovpn", limit: 3, tail: true), Data("nt\n".utf8))
+        try FileManager.default.createSymbolicLink(atPath: dir + "/l.ovpn", withDestinationPath: dir + "/a.ovpn")
+        expect(SafeFile.read(dir + "/l.ovpn", limit: 100) == nil, "a link")
+        expectEqual(mkfifo(dir + "/f.ovpn", 0o600), 0)
+        let t0 = Date()
+        expect(SafeFile.read(dir + "/f.ovpn", limit: 100) == nil, "a FIFO")
+        expect(Date().timeIntervalSince(t0) < 1, "not waited on")
+        expect(SafeFile.read(dir, limit: 100) == nil, "a directory")
+    }
 }

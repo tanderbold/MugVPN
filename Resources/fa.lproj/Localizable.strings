@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS فقط برای %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS فقط برای %@؛ نام‌های دیگر با %@ است";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "کارخواهی برای نمایه‌های OpenVPN که چند اتصال را هم‌زمان برقرار نگه می‌دارد. پروانهٔ MIT.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "اتصالی که در صورت قطع شدن ترافیک را مسدود می‌کند به‌تنهایی اجرا می‌شود: ابتدا اتصال‌های دیگر را قطع کنید.";
 "A program asked MugVPN to import %@. Import it?" = "برنامه‌ای از MugVPN خواست %@ را وارد کند. وارد شود؟";
 "A summary (versions, which connections are up) always goes in. Also:" = "یک خلاصه (نسخه‌ها، کدام اتصال‌ها برقرارند) همیشه گنجانده می‌شود. همچنین:";
 "About MugVPN" = "دربارهٔ MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "متصل ماندن";
 "TLS auth key:" = "کلید TLS auth:";
 "TLS crypt key:" = "کلید TLS crypt:";
+"The Internet is blocked since a connection dropped: unblock it first." = "اینترنت مسدود است چون یک اتصال قطع شد: ابتدا آن را رفع انسداد کنید.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "جست‌وجوهای نام خود مک تا وقتی VPN همهٔ ترافیک را می‌برد از VPN می‌گذرند. برنامه‌ای که مستقیم از سرور DNS شبکهٔ محلی می‌پرسد متوقف نمی‌شود.";
 "The client certificate needs its private key." = "گواهی کلاینت به کلید خصوصی خود نیاز دارد.";
 "The configuration cannot be read: %@" = "پیکربندی خوانده نمی‌شود: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "وقتی همهٔ ترافیک از آن می‌گذرد:";
 "When the Mac sleeps:" = "هنگام خواب Mac:";
 "While MugVPN blocks the Internet, allow the local network" = "تا وقتی MugVPN اینترنت را مسدود کرده، شبکهٔ محلی مجاز باشد";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "تا وقتی اتصالی برقرار است که در صورت قطع شدن ترافیک را مسدود می‌کند، هیچ اتصال دیگری نمی‌تواند شروع شود.";
 "While connecting:" = "هنگام اتصال:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "تا وقتی برقرار است، چیزی بیرون از VPN نمی‌رود و هیچ اتصال دیگری نمی‌تواند شروع شود.";
 "Wrong password" = "رمز عبور اشتباه است";

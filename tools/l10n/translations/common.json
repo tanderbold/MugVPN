@@ -108,7 +108,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importovat vaše profily z %@? Vyberte jeho složku s profily (otevře se v ní).",
   "Choose Folder…": "Vybrat složku…",
   "%@'s profiles folder": "Složka profilů %@",
-  "No profiles in %@.": "V %@ nejsou žádné profily."
+  "No profiles in %@.": "V %@ nejsou žádné profily.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Připojení, které při výpadku blokuje provoz, běží samo: nejdřív odpojte ostatní.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Dokud je aktivní připojení, které při výpadku blokuje provoz, nelze spustit žádné jiné.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet je zablokován, protože připojení vypadlo: nejdřív ho odblokujte."
  },
  "de": {
   "OK": "OK",
@@ -219,7 +222,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Ihre Profile aus %@ importieren? Wählen Sie dessen Profilordner (er öffnet sich dort).",
   "Choose Folder…": "Ordner wählen …",
   "%@'s profiles folder": "Profilordner von %@",
-  "No profiles in %@.": "Keine Profile in %@."
+  "No profiles in %@.": "Keine Profile in %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Eine Verbindung, die bei Abbruch den Verkehr blockiert, läuft allein: Trennen Sie zuerst die anderen.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Solange eine Verbindung besteht, die bei Abbruch den Verkehr blockiert, kann keine andere starten.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Das Internet ist blockiert, weil eine Verbindung abgebrochen ist: Geben Sie es zuerst frei."
  },
  "da": {
   "OK": "OK",
@@ -330,7 +336,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importér dine profiler fra %@? Vælg dens profilmappe (den åbner der).",
   "Choose Folder…": "Vælg mappe…",
   "%@'s profiles folder": "%@s profilmappe",
-  "No profiles in %@.": "Ingen profiler i %@."
+  "No profiles in %@.": "Ingen profiler i %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "En forbindelse, der blokerer trafik, hvis den falder ud, kører alene: afbryd de andre først.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mens en forbindelse, der blokerer trafik, hvis den falder ud, er oppe, kan ingen anden starte.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internettet er blokeret, fordi en forbindelse faldt ud: fjern blokeringen først."
  },
  "el": {
   "OK": "OK",
@@ -441,7 +450,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Εισαγωγή των προφίλ σας από το %@; Επιλέξτε τον φάκελο προφίλ του (ανοίγει εκεί).",
   "Choose Folder…": "Επιλογή φακέλου…",
   "%@'s profiles folder": "Φάκελος προφίλ του %@",
-  "No profiles in %@.": "Δεν υπάρχουν προφίλ στο %@."
+  "No profiles in %@.": "Δεν υπάρχουν προφίλ στο %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Μια σύνδεση που μπλοκάρει την κίνηση αν πέσει λειτουργεί μόνη της: αποσυνδέστε πρώτα τις άλλες.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Όσο είναι ενεργή μια σύνδεση που μπλοκάρει την κίνηση αν πέσει, καμία άλλη δεν μπορεί να ξεκινήσει.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Το Διαδίκτυο είναι αποκλεισμένο επειδή έπεσε μια σύνδεση: άρετε πρώτα τον αποκλεισμό."
  },
  "es": {
   "OK": "Aceptar",
@@ -552,7 +564,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "¿Importar tus perfiles de %@? Elige su carpeta de perfiles (se abre ahí).",
   "Choose Folder…": "Elegir carpeta…",
   "%@'s profiles folder": "Carpeta de perfiles de %@",
-  "No profiles in %@.": "No hay perfiles en %@."
+  "No profiles in %@.": "No hay perfiles en %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Una conexión que bloquea el tráfico si se cae funciona sola: desconecte primero las demás.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mientras esté activa una conexión que bloquea el tráfico si se cae, no puede iniciarse ninguna otra.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet está bloqueado porque una conexión se cayó: desbloquéelo primero."
  },
  "fa": {
   "OK": "تأیید",
@@ -663,7 +678,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "نمایه‌هایتان از %@ وارد شوند؟ پوشهٔ نمایه‌های آن را انتخاب کنید (همان‌جا باز می‌شود).",
   "Choose Folder…": "انتخاب پوشه…",
   "%@'s profiles folder": "پوشهٔ نمایه‌های %@",
-  "No profiles in %@.": "در %@ نمایه‌ای نیست."
+  "No profiles in %@.": "در %@ نمایه‌ای نیست.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "اتصالی که در صورت قطع شدن ترافیک را مسدود می‌کند به‌تنهایی اجرا می‌شود: ابتدا اتصال‌های دیگر را قطع کنید.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "تا وقتی اتصالی برقرار است که در صورت قطع شدن ترافیک را مسدود می‌کند، هیچ اتصال دیگری نمی‌تواند شروع شود.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "اینترنت مسدود است چون یک اتصال قطع شد: ابتدا آن را رفع انسداد کنید."
  },
  "fi": {
   "OK": "OK",
@@ -774,7 +792,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Tuodaanko profiilisi kohteesta %@? Valitse sen profiilikansio (se avautuu siihen).",
   "Choose Folder…": "Valitse kansio…",
   "%@'s profiles folder": "Kohteen %@ profiilikansio",
-  "No profiles in %@.": "Kohteessa %@ ei ole profiileja."
+  "No profiles in %@.": "Kohteessa %@ ei ole profiileja.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Yhteys, joka estää liikenteen katketessaan, toimii yksin: katkaise ensin muut.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Kun yhteys, joka estää liikenteen katketessaan, on päällä, muuta yhteyttä ei voi käynnistää.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet on estetty, koska yhteys katkesi: poista esto ensin."
  },
  "fr": {
   "OK": "OK",
@@ -885,7 +906,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importer vos profils depuis %@ ? Choisissez son dossier de profils (il s'ouvre dessus).",
   "Choose Folder…": "Choisir le dossier…",
   "%@'s profiles folder": "Dossier des profils de %@",
-  "No profiles in %@.": "Aucun profil dans %@."
+  "No profiles in %@.": "Aucun profil dans %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Une connexion qui bloque le trafic si elle tombe fonctionne seule : déconnectez d’abord les autres.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Tant qu’une connexion qui bloque le trafic si elle tombe est active, aucune autre ne peut démarrer.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet est bloqué car une connexion est tombée : débloquez-le d’abord."
  },
  "it": {
   "OK": "OK",
@@ -996,7 +1020,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importare i tuoi profili da %@? Scegli la sua cartella dei profili (si apre lì).",
   "Choose Folder…": "Scegli cartella…",
   "%@'s profiles folder": "Cartella dei profili di %@",
-  "No profiles in %@.": "Nessun profilo in %@."
+  "No profiles in %@.": "Nessun profilo in %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Una connessione che blocca il traffico se cade funziona da sola: disconnetti prima le altre.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Finché è attiva una connessione che blocca il traffico se cade, nessun’altra può avviarsi.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet è bloccato perché una connessione è caduta: sbloccalo prima."
  },
  "ja": {
   "OK": "OK",
@@ -1107,7 +1134,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "%@ のプロファイルを読み込みますか？そのプロファイルフォルダを選んでください（そこで開きます）。",
   "Choose Folder…": "フォルダを選択…",
   "%@'s profiles folder": "%@ のプロファイルフォルダ",
-  "No profiles in %@.": "%@ にプロファイルはありません。"
+  "No profiles in %@.": "%@ にプロファイルはありません。",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "切断時に通信をブロックする接続は単独で動作します。先にほかの接続を切断してください。",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "切断時に通信をブロックする接続が有効な間は、ほかの接続を開始できません。",
+  "The Internet is blocked since a connection dropped: unblock it first.": "接続が切断されたためインターネットがブロックされています。先にブロックを解除してください。"
  },
  "ko": {
   "OK": "확인",
@@ -1218,7 +1248,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "%@의 프로필을 가져올까요? 해당 프로필 폴더를 선택하세요(그 위치에서 열립니다).",
   "Choose Folder…": "폴더 선택…",
   "%@'s profiles folder": "%@의 프로필 폴더",
-  "No profiles in %@.": "%@에 프로필이 없습니다."
+  "No profiles in %@.": "%@에 프로필이 없습니다.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "끊기면 트래픽을 차단하는 연결은 단독으로 실행됩니다. 먼저 다른 연결을 끊으세요.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "끊기면 트래픽을 차단하는 연결이 켜져 있는 동안에는 다른 연결을 시작할 수 없습니다.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "연결이 끊겨 인터넷이 차단되었습니다. 먼저 차단을 해제하세요."
  },
  "nl": {
   "OK": "OK",
@@ -1329,7 +1362,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Je profielen uit %@ importeren? Kies de profielenmap ervan (die opent daar).",
   "Choose Folder…": "Kies map…",
   "%@'s profiles folder": "Profielenmap van %@",
-  "No profiles in %@.": "Geen profielen in %@."
+  "No profiles in %@.": "Geen profielen in %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Een verbinding die verkeer blokkeert als ze wegvalt, draait alleen: verbreek eerst de andere.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Zolang een verbinding actief is die verkeer blokkeert als ze wegvalt, kan geen andere starten.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet is geblokkeerd omdat een verbinding wegviel: hef de blokkering eerst op."
  },
  "nb": {
   "OK": "OK",
@@ -1440,7 +1476,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Vil du importere profilene dine fra %@? Velg profilmappen dens (den åpnes der).",
   "Choose Folder…": "Velg mappe…",
   "%@'s profiles folder": "Profilmappen til %@",
-  "No profiles in %@.": "Ingen profiler i %@."
+  "No profiles in %@.": "Ingen profiler i %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "En tilkobling som blokkerer trafikk hvis den faller ut, kjører alene: koble fra de andre først.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mens en tilkobling som blokkerer trafikk hvis den faller ut, er oppe, kan ingen annen starte.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internett er blokkert fordi en tilkobling falt ut: opphev blokkeringen først."
  },
  "pl": {
   "OK": "OK",
@@ -1551,7 +1590,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Zaimportować Twoje profile z %@? Wybierz jego folder profili (otworzy się w nim).",
   "Choose Folder…": "Wybierz folder…",
   "%@'s profiles folder": "Folder profili %@",
-  "No profiles in %@.": "Brak profili w %@."
+  "No profiles in %@.": "Brak profili w %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Połączenie, które blokuje ruch po zerwaniu, działa samo: najpierw rozłącz pozostałe.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Dopóki aktywne jest połączenie, które blokuje ruch po zerwaniu, żadne inne nie może się rozpocząć.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet jest zablokowany, bo połączenie zostało zerwane: najpierw go odblokuj."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1662,7 +1704,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importar seus perfis do %@? Escolha a pasta de perfis dele (ela abre lá).",
   "Choose Folder…": "Escolher pasta…",
   "%@'s profiles folder": "Pasta de perfis do %@",
-  "No profiles in %@.": "Nenhum perfil em %@."
+  "No profiles in %@.": "Nenhum perfil em %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Uma conexão que bloqueia o tráfego se cair funciona sozinha: desconecte as outras primeiro.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Enquanto uma conexão que bloqueia o tráfego se cair estiver ativa, nenhuma outra pode iniciar.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "A Internet está bloqueada porque uma conexão caiu: desbloqueie primeiro."
  },
  "ru": {
   "OK": "ОК",
@@ -1773,7 +1818,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Импортировать ваши профили из %@? Выберите его папку профилей (она откроется там).",
   "Choose Folder…": "Выбрать папку…",
   "%@'s profiles folder": "Папка профилей %@",
-  "No profiles in %@.": "В %@ нет профилей."
+  "No profiles in %@.": "В %@ нет профилей.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Подключение, которое блокирует трафик при обрыве, работает одно: сначала отключите остальные.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Пока активно подключение, которое блокирует трафик при обрыве, другие запустить нельзя.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Интернет заблокирован, потому что подключение оборвалось: сначала разблокируйте его."
  },
  "sv": {
   "OK": "OK",
@@ -1884,7 +1932,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Importera dina profiler från %@? Välj dess profilmapp (den öppnas där).",
   "Choose Folder…": "Välj mapp…",
   "%@'s profiles folder": "%@s profilmapp",
-  "No profiles in %@.": "Inga profiler i %@."
+  "No profiles in %@.": "Inga profiler i %@.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "En anslutning som blockerar trafik om den bryts körs ensam: koppla från de andra först.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Medan en anslutning som blockerar trafik om den bryts är uppe kan ingen annan starta.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Internet är blockerat eftersom en anslutning bröts: häv blockeringen först."
  },
  "tr": {
   "OK": "Tamam",
@@ -1995,7 +2046,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Profilleriniz %@ uygulamasından içe aktarılsın mı? Profil klasörünü seçin (orada açılır).",
   "Choose Folder…": "Klasör Seç…",
   "%@'s profiles folder": "%@ profil klasörü",
-  "No profiles in %@.": "%@ içinde profil yok."
+  "No profiles in %@.": "%@ içinde profil yok.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Koptuğunda trafiği engelleyen bir bağlantı tek başına çalışır: önce diğerlerinin bağlantısını kesin.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Koptuğunda trafiği engelleyen bir bağlantı açıkken başka bir bağlantı başlatılamaz.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Bir bağlantı koptuğu için İnternet engellendi: önce engeli kaldırın."
  },
  "uk": {
   "OK": "OK",
@@ -2106,7 +2160,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "Імпортувати ваші профілі з %@? Виберіть його теку профілів (вона відкриється там).",
   "Choose Folder…": "Вибрати теку…",
   "%@'s profiles folder": "Тека профілів %@",
-  "No profiles in %@.": "У %@ немає профілів."
+  "No profiles in %@.": "У %@ немає профілів.",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Підключення, яке блокує трафік у разі обриву, працює одне: спершу від’єднайте інші.",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "Поки активне підключення, яке блокує трафік у разі обриву, інші запустити не можна.",
+  "The Internet is blocked since a connection dropped: unblock it first.": "Інтернет заблоковано, бо підключення обірвалося: спершу розблокуйте його."
  },
  "zh-Hans": {
   "OK": "好",
@@ -2217,7 +2274,10 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "要从 %@ 导入你的配置文件吗？请选择它的配置文件夹（会在那里打开）。",
   "Choose Folder…": "选择文件夹…",
   "%@'s profiles folder": "%@ 的配置文件夹",
-  "No profiles in %@.": "%@ 中没有配置文件。"
+  "No profiles in %@.": "%@ 中没有配置文件。",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "断开时会阻止流量的连接只能单独运行：请先断开其他连接。",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "断开时会阻止流量的连接处于活动状态时，无法启动其他连接。",
+  "The Internet is blocked since a connection dropped: unblock it first.": "由于连接已断开，互联网已被阻止：请先解除阻止。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -2328,6 +2388,9 @@
   "Import your profiles from %@? Choose its profiles folder (it opens there).": "要從 %@ 匯入你的設定檔嗎？請選擇它的設定檔資料夾（會在那裡開啟）。",
   "Choose Folder…": "選擇資料夾…",
   "%@'s profiles folder": "%@ 的設定檔資料夾",
-  "No profiles in %@.": "%@ 中沒有設定檔。"
+  "No profiles in %@.": "%@ 中沒有設定檔。",
+  "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "中斷時會封鎖流量的連線只能單獨執行：請先中斷其他連線。",
+  "While a connection that blocks traffic if it drops is up, no other connection can start.": "中斷時會封鎖流量的連線啟用期間，無法啟動其他連線。",
+  "The Internet is blocked since a connection dropped: unblock it first.": "由於連線已中斷，網際網路已被封鎖：請先解除封鎖。"
  }
 }

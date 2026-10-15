@@ -1,5 +1,6 @@
 import AppKit
 import MugVPNAppCore
+import MugVPNCore
 
 /// A localized string: the key is the English text (Resources/<lang>.lproj/Localizable.strings).
 func L(_ key: String, _ args: CVarArg...) -> String {
@@ -19,6 +20,9 @@ func localizedCore(_ s: String) -> String {
     case "the pre-connect script failed": return L("the pre-connect script failed")
     case ConnectionController.keychainSaveFailed: return L("The keychain did not save it: it is used for this connection only.")
     case ConnectionController.keychainRemoveFailed: return L("The keychain kept a saved password MugVPN was to forget: remove it in Keychain Access.")
+    case BackendRefusal.killSwitchRunsAlone.description: return L("A connection that blocks traffic if it drops runs alone: disconnect the others first.")
+    case BackendRefusal.killSwitchConnectionUp.description: return L("While a connection that blocks traffic if it drops is up, no other connection can start.")
+    case BackendRefusal.blockedByKillSwitch.description: return L("The Internet is blocked since a connection dropped: unblock it first.")
     case ConnectionManager.helperTooOldForDNSDomains: return L("the running helper is older and would ignore the domains for the server's DNS: connect again once it has updated")
     default: return s
     }

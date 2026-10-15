@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS jen pro %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS jen pro %@; ostatní jména má %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Klient pro profily OpenVPN, který udrží několik připojení najednou. Licence MIT.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Připojení, které při výpadku blokuje provoz, běží samo: nejdřív odpojte ostatní.";
 "A program asked MugVPN to import %@. Import it?" = "Program požádal MugVPN o import %@. Importovat?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Souhrn (verze, která připojení běží) je vždy uvnitř. Dále:";
 "About MugVPN" = "O aplikaci MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Zůstat připojeno";
 "TLS auth key:" = "Klíč TLS auth:";
 "TLS crypt key:" = "Klíč TLS crypt:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Internet je zablokován, protože připojení vypadlo: nejdřív ho odblokujte.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Vlastní dotazy Macu na jména jdou přes VPN, dokud přenáší veškerý provoz. Aplikace, která se ptá přímo DNS serveru místní sítě, zastavena není.";
 "The client certificate needs its private key." = "Klientský certifikát potřebuje svůj soukromý klíč.";
 "The configuration cannot be read: %@" = "Konfiguraci nelze přečíst: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Když přes něj jde veškerý provoz:";
 "When the Mac sleeps:" = "Při uspání Macu:";
 "While MugVPN blocks the Internet, allow the local network" = "Dokud MugVPN blokuje internet, povolit místní síť";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Dokud je aktivní připojení, které při výpadku blokuje provoz, nelze spustit žádné jiné.";
 "While connecting:" = "Během připojování:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Dokud je připojeno, nic neodchází mimo VPN a žádné jiné připojení nelze spustit.";
 "Wrong password" = "Nesprávné heslo";

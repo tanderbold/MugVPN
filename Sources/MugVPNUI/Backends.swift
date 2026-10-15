@@ -99,12 +99,9 @@ final class DiskFileSystem: ProfileFileSystem {
             return (name, isDir.boolValue)
         }
     }
-    /// A regular file of at most 8 MB (a device or FIFO would hang the app).
-    func read(_ path: String) -> Data? {
-        guard let a = try? fm.attributesOfItem(atPath: path), a[.type] as? FileAttributeType == .typeRegular,
-              (a[.size] as? NSNumber)?.intValue ?? .max <= 8 << 20 else { return nil }
-        return fm.contents(atPath: path)
-    }
+    /// A regular file of at most 8 MB (a device or FIFO would hang the app), checked on the descriptor it is read
+    /// from.
+    func read(_ path: String) -> Data? { SafeFile.read(path, limit: 8 << 20) }
     func exists(_ path: String) -> Bool { fm.fileExists(atPath: path) }
     func realPath(_ path: String) -> String {
         guard let r = Darwin.realpath(path, nil) else { return path }

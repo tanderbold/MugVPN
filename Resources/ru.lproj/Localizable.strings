@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS только для %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS только для %@; остальные имена у %@";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "Клиент для профилей OpenVPN, который держит несколько подключений одновременно. Лицензия MIT.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "Подключение, которое блокирует трафик при обрыве, работает одно: сначала отключите остальные.";
 "A program asked MugVPN to import %@. Import it?" = "Программа попросила MugVPN импортировать %@. Импортировать?";
 "A summary (versions, which connections are up) always goes in. Also:" = "Сводка (версии, какие подключения активны) входит всегда. Также:";
 "About MugVPN" = "О программе MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Не отключаться";
 "TLS auth key:" = "Ключ TLS auth:";
 "TLS crypt key:" = "Ключ TLS crypt:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Интернет заблокирован, потому что подключение оборвалось: сначала разблокируйте его.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Собственные запросы имён Mac идут через VPN, пока он несёт весь трафик. Приложение, которое обращается к DNS-серверу локальной сети напрямую, не останавливается.";
 "The client certificate needs its private key." = "Для сертификата клиента нужен его закрытый ключ.";
 "The configuration cannot be read: %@" = "Не удалось прочитать конфигурацию: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Когда весь трафик идёт через него:";
 "When the Mac sleeps:" = "Когда Mac засыпает:";
 "While MugVPN blocks the Internet, allow the local network" = "Пока MugVPN блокирует интернет, разрешать локальную сеть";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Пока активно подключение, которое блокирует трафик при обрыве, другие запустить нельзя.";
 "While connecting:" = "При подключении:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Пока подключение активно, ничего не уходит мимо VPN и другие подключения не запускаются.";
 "Wrong password" = "Неправильный пароль";

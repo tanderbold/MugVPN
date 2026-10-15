@@ -1368,7 +1368,7 @@ public final class HelperCore {
                 throw HelperCoreError.message("route failed")
             }
         case "ROUTE6":
-            let r = try c.tunnel.route6(message)
+            guard let r = try c.tunnel.route6(message) else { break }
             try checked { try NetworkPolicy.checkRoute6(r, owner: c.info.ownerUID, limits: c.limits, others: otherConnections(than: c),
                                                        lan6: system.localIPv6Networks(), message: message) }
             try record(c)

@@ -16,6 +16,7 @@
 "%@: DNS only for %@" = "%@: DNS bare for %@";
 "%@: DNS only for %@; %@ has the other names" = "%@: DNS bare for %@; %@ har de andre navnene";
 "A client for OpenVPN profiles that keeps several connections up at once. MIT License." = "En klient for OpenVPN-profiler som holder flere tilkoblinger oppe samtidig. MIT-lisens.";
+"A connection that blocks traffic if it drops runs alone: disconnect the others first." = "En tilkobling som blokkerer trafikk hvis den faller ut, kjører alene: koble fra de andre først.";
 "A program asked MugVPN to import %@. Import it?" = "Et program ba MugVPN importere %@. Importere?";
 "A summary (versions, which connections are up) always goes in. Also:" = "En oversikt (versjoner, hvilke tilkoblinger som er oppe) er alltid med. I tillegg:";
 "About MugVPN" = "Om MugVPN";
@@ -224,6 +225,7 @@
 "Stay connected" = "Forbli tilkoblet";
 "TLS auth key:" = "TLS auth-nøkkel:";
 "TLS crypt key:" = "TLS crypt-nøkkel:";
+"The Internet is blocked since a connection dropped: unblock it first." = "Internett er blokkert fordi en tilkobling falt ut: opphev blokkeringen først.";
 "The Mac's own name lookups go through the VPN while it takes all traffic. An app that asks the local network's DNS server directly is not stopped." = "Macens egne navneoppslag går gjennom VPN-en så lenge den tar all trafikk. En app som spør DNS-serveren i det lokale nettverket direkte, blir ikke stoppet.";
 "The client certificate needs its private key." = "Klientsertifikatet trenger den tilhørende private nøkkelen.";
 "The configuration cannot be read: %@" = "Kan ikke lese konfigurasjonen: %@";
@@ -259,6 +261,7 @@
 "When all traffic goes through it:" = "Når all trafikk går gjennom den:";
 "When the Mac sleeps:" = "Når Macen går i dvale:";
 "While MugVPN blocks the Internet, allow the local network" = "Mens MugVPN blokkerer internett, tillat det lokale nettverket";
+"While a connection that blocks traffic if it drops is up, no other connection can start." = "Mens en tilkobling som blokkerer trafikk hvis den faller ut, er oppe, kan ingen annen starte.";
 "While connecting:" = "Under tilkobling:";
 "While it is up, nothing leaves outside the VPN, and no other connection can start." = "Mens den er oppe, går ingenting utenom VPN-en, og ingen annen tilkobling kan starte.";
 "Wrong password" = "Feil passord";

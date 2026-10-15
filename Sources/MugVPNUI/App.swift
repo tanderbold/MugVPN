@@ -961,28 +961,8 @@ final class AppController: NSObject, NSMenuDelegate {
                     killer.cancel()
                     return String(decoding: d, as: UTF8.self)
                 }
-                /// One open, then checked on that descriptor (not the path: it could be swapped between): a regular
-                /// file only (never follows a link, never waits on a FIFO or device), at most `limit` bytes — its last
-                /// ones (`tail`), or none when it is larger (nil).
                 func read(_ path: String, limit: Int, tail: Bool) -> String? {
-                    let fd = open(path, O_RDONLY | O_NOFOLLOW | O_NONBLOCK | O_CLOEXEC)
-                    guard fd >= 0 else { return nil }
-                    defer { close(fd) }
-                    var st = stat()
-                    guard fstat(fd, &st) == 0, (st.st_mode & S_IFMT) == S_IFREG else { return nil }
-                    let size = Int(st.st_size)
-                    if size > limit {
-                        guard tail else { return nil }
-                        lseek(fd, off_t(size - limit), SEEK_SET)
-                    }
-                    var data = Data()
-                    var buf = [UInt8](repeating: 0, count: 65536)
-                    while data.count < limit {
-                        let n = Darwin.read(fd, &buf, min(buf.count, limit - data.count))
-                        guard n > 0 else { break }
-                        data.append(contentsOf: buf[0..<n])
-                    }
-                    return String(decoding: data, as: UTF8.self)
+                    SafeFile.read(path, limit: limit, tail: tail).map { String(decoding: $0, as: UTF8.self) }
                 }
                 // A profile whole (sanitized as a whole: a piece of one could start inside a secret), or left out.
                 func whole(_ path: String) -> String {
