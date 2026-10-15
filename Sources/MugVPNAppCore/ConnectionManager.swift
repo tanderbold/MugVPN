@@ -81,7 +81,8 @@ public struct BackendCapabilities: Equatable, Sendable {
     public var systemHelper: Bool
     /// DNS outside the tunnels blocked even when sent straight to a server (not only the system's resolver).
     public var directDNSBlocking: Bool
-    /// A kill switch's block kept across a restart of the Mac.
+    /// A kill switch's block kept across a restart of the Mac (from the user's login on, for a packet tunnel the system
+    /// starts on demand).
     public var protectionAcrossRestart: Bool
     /// An administrator's policy for standard users.
     public var adminPolicy: Bool
@@ -104,7 +105,7 @@ public struct BackendCapabilities: Equatable, Sendable {
                                                    directDNSBlocking: true, protectionAcrossRestart: true, adminPolicy: true)
     /// A packet tunnel provider (Network Extension).
     public static let packetTunnel = BackendCapabilities(scripts: false, persistentConnections: false, systemHelper: false,
-                                                         directDNSBlocking: false, protectionAcrossRestart: false, adminPolicy: false,
+                                                         directDNSBlocking: false, protectionAcrossRestart: true, adminPolicy: false,
                                                          killSwitchRunsAlone: true)
 }
 

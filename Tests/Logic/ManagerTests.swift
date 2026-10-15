@@ -184,8 +184,9 @@ func registerManagerTests() {
         expect(b.persistent != nil && b.tunnelRequests != nil, "persistent connections and tunnel requests")
         expectEqual(b.capabilities, .helper)
         let c = BackendCapabilities.packetTunnel
-        expect(!c.scripts && !c.persistentConnections && !c.systemHelper && !c.directDNSBlocking
-               && !c.protectionAcrossRestart && !c.adminPolicy, "nothing the helper alone does")
+        expect(!c.scripts && !c.persistentConnections && !c.systemHelper && !c.directDNSBlocking && !c.adminPolicy,
+               "nothing the helper alone does")
+        expect(c.protectionAcrossRestart, "a block kept across a restart (the system starts the provider on demand)")
         expect(c.killSwitchRunsAlone && !BackendCapabilities.helper.killSwitchRunsAlone, "its kill switch runs alone")
     }
     test("MAN-46", "without a persistent part: a persistent profile is refused with a reason, nothing started") {
