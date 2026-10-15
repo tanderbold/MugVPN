@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Autopåloggingsprofil (uten passord ved tilkobling)";
 "Automatic" = "Automatisk";
 "Block IPv6 outside the VPN" = "Blokker IPv6 utenfor VPN";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blokker all trafikk utenfor VPN mens den er oppe, og etter et brudd til jeg kobler til igjen eller opphever blokkeringen";
 "By folder" = "Etter mappe";
 "CA certificate:" = "CA-sertifikat:";
 "Cancel" = "Avbryt";
@@ -187,6 +188,7 @@
 "Private key:" = "Privat nøkkel:";
 "Profile menu:" = "Profilmeny:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profiler uten passord eller nøkler (servere, sertifikater, valg)";
+"Protection:" = "Beskyttelse:";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Avslutt MugVPN";

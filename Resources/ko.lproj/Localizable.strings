@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "자동 로그인 프로필(연결 시 암호 없음)";
 "Automatic" = "자동";
 "Block IPv6 outside the VPN" = "VPN 밖의 IPv6 차단";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "연결된 동안 VPN 밖의 모든 트래픽을 차단하고, 끊긴 뒤에도 다시 연결하거나 차단을 해제할 때까지 차단";
 "By folder" = "폴더별";
 "CA certificate:" = "CA 인증서:";
 "Cancel" = "취소";
@@ -187,6 +188,7 @@
 "Private key:" = "개인 키:";
 "Profile menu:" = "프로필 메뉴:";
 "Profiles without passwords or keys (servers, certificates, options)" = "암호나 키를 뺀 프로필(서버, 인증서, 옵션)";
+"Protection:" = "보호:";
 "Proxy" = "프록시";
 "Proxy:" = "프록시:";
 "Quit MugVPN" = "MugVPN 종료";

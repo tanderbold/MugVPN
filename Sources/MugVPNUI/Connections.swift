@@ -202,6 +202,10 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
         // What it does not block, said where it is switched on.
         // What each promises, as the product's backend keeps it.
         let can = product.capabilities
+        // (The system's strict mode: everything outside the VPN blocked while it is up, split or not, and after a drop.)
+        if can.killSwitchRunsAlone {
+            killSwitch.title = L("Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock")
+        }
         killSwitch.toolTip = can.killSwitchRunsAlone
             ? L("While it is up, nothing leaves outside the VPN, and no other connection can start.")
             : L("Name lookups through the Mac's resolver still go out, so the VPN can find its server again.")
@@ -254,8 +258,9 @@ final class ConnectionsWindow: NSObject, NSTableViewDataSource, NSTableViewDeleg
             Form.row(L("DNS servers:"), dnsServers),
             Form.row(L("Only for domains:"), dnsDomains),
             Form.row("", dnsHint),
-            Form.row(L("When all traffic goes through it:"), killSwitch),
-            Form.row("", blockIPv6),
+        ] + (product.capabilities.killSwitchRunsAlone
+            ? [Form.row(L("Protection:"), killSwitch), Form.row(L("When all traffic goes through it:"), blockIPv6)]
+            : [Form.row(L("When all traffic goes through it:"), killSwitch), Form.row("", blockIPv6)]) + [
             Form.row("", dnsOnly),
             Form.row(L("While connecting:"), silent),
             Form.row(L("When the Mac sleeps:"), sleep),

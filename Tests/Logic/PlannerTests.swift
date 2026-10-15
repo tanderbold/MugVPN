@@ -170,4 +170,17 @@ func registerPlannerTests() {
         expectEqual(r.states, ["b2": .all, "b": .waiting], "two without domains: who asked first, the other waits")
         expectEqual(r.domains["b"], nil)
     }
+    test("PLAN-11", "a split connection with everything outside it blocked while it is up (the App Store build's strict kill switch): armed once up, its block goes when it is up again; without that, a split one does neither (as before)") {
+        let fired = ProtectionLock(name: "office", owner: 501)
+        var f = facts("1", key: "office", kill: true, lifts: true, device: "utun4")
+        f.blocksAllOutside = true
+        let p = ProtectionPlanner.plan([f], locks: [fired], suspended: [:], now: 100)
+        expectEqual(p.liftDone, ["1"])
+        expectEqual(p.nowFull, ["1"], "armed from now on")
+        expectEqual(p.locks, [ProtectionLock(name: "office", owner: 501, armed: true)], "the fired block gone, the arming there")
+        expect(!p.state.blockIPv6 && !p.state.dnsOnlyTunnels, "IPv6 and DNS rules stay those of tunnels taking all traffic")
+        let q = ProtectionPlanner.plan([facts("1", key: "office", kill: true, lifts: true, device: "utun4")], locks: [fired], suspended: [:], now: 100)
+        expect(q.liftDone.isEmpty && q.nowFull.isEmpty)
+        expectEqual(q.locks, [fired], "a split one without it: the block stays")
+    }
 }

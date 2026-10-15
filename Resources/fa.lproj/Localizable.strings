@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "پروفایل ورود خودکار (بدون رمز عبور هنگام اتصال)";
 "Automatic" = "خودکار";
 "Block IPv6 outside the VPN" = "مسدود کردن IPv6 بیرون از VPN";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "مسدود کردن همهٔ ترافیک بیرون از VPN تا وقتی برقرار است، و پس از قطع شدن تا وقتی دوباره وصل شوم یا رفع انسداد کنم";
 "By folder" = "بر اساس پوشه";
 "CA certificate:" = "گواهی CA:";
 "Cancel" = "لغو";
@@ -187,6 +188,7 @@
 "Private key:" = "کلید خصوصی:";
 "Profile menu:" = "منوی پروفایل‌ها:";
 "Profiles without passwords or keys (servers, certificates, options)" = "پروفایل‌ها بدون گذرواژه یا کلید (سرورها، گواهی‌ها، گزینه‌ها)";
+"Protection:" = "محافظت:";
 "Proxy" = "پروکسی";
 "Proxy:" = "پروکسی:";
 "Quit MugVPN" = "خروج از MugVPN";

@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Automaattisen kirjautumisen profiili (ei salasanaa yhdistettäessä)";
 "Automatic" = "Automaattinen";
 "Block IPv6 outside the VPN" = "Estä IPv6 VPN:n ulkopuolella";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Estä kaikki VPN:n ulkopuolinen liikenne, kun se on päällä, ja katkoksen jälkeen, kunnes yhdistän uudelleen tai poistan eston";
 "By folder" = "Kansioittain";
 "CA certificate:" = "CA-varmenne:";
 "Cancel" = "Kumoa";
@@ -187,6 +188,7 @@
 "Private key:" = "Yksityinen avain:";
 "Profile menu:" = "Profiilivalikko:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profiilit ilman salasanoja tai avaimia (palvelimet, varmenteet, asetukset)";
+"Protection:" = "Suojaus:";
 "Proxy" = "Välipalvelin";
 "Proxy:" = "Välipalvelin:";
 "Quit MugVPN" = "Lopeta MugVPN";

@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Profil s automatickým přihlášením (bez hesla při připojení)";
 "Automatic" = "Automaticky";
 "Block IPv6 outside the VPN" = "Blokovat IPv6 mimo VPN";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blokovat veškerý provoz mimo VPN, dokud je aktivní, a po výpadku, dokud se znovu nepřipojím nebo neodblokuji";
 "By folder" = "Podle složek";
 "CA certificate:" = "Certifikát CA:";
 "Cancel" = "Zrušit";
@@ -187,6 +188,7 @@
 "Private key:" = "Soukromý klíč:";
 "Profile menu:" = "Nabídka profilů:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profily bez hesel a klíčů (servery, certifikáty, volby)";
+"Protection:" = "Ochrana:";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Ukončit MugVPN";

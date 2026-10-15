@@ -105,6 +105,9 @@
   "key": "Block IPv6 outside the VPN"
  },
  {
+  "key": "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock"
+ },
+ {
   "key": "By folder"
  },
  {
@@ -562,6 +565,9 @@
  },
  {
   "key": "Profiles without passwords or keys (servers, certificates, options)"
+ },
+ {
+  "key": "Protection:"
  },
  {
   "key": "Proxy"

@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "自動登入設定檔（連線時無需密碼）";
 "Automatic" = "自動";
 "Block IPv6 outside the VPN" = "阻擋 VPN 之外的 IPv6";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "連線期間封鎖 VPN 以外的所有流量；中斷後繼續封鎖，直到我重新連線或解除封鎖";
 "By folder" = "依資料夾";
 "CA certificate:" = "CA 憑證：";
 "Cancel" = "取消";
@@ -187,6 +188,7 @@
 "Private key:" = "私密金鑰：";
 "Profile menu:" = "設定檔選單：";
 "Profiles without passwords or keys (servers, certificates, options)" = "不含密碼或金鑰的設定檔（伺服器、憑證、選項）";
+"Protection:" = "保護：";
 "Proxy" = "代理伺服器";
 "Proxy:" = "代理伺服器：";
 "Quit MugVPN" = "結束 MugVPN";

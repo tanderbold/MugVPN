@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Профіль з автовходом (без пароля під час підключення)";
 "Automatic" = "Автоматично";
 "Block IPv6 outside the VPN" = "Блокувати IPv6 повз VPN";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Блокувати весь трафік поза VPN, поки воно активне, і після обриву, доки я не перепідключуся або не розблокую";
 "By folder" = "За папками";
 "CA certificate:" = "Сертифікат CA:";
 "Cancel" = "Скасувати";
@@ -187,6 +188,7 @@
 "Private key:" = "Закритий ключ:";
 "Profile menu:" = "Меню профілів:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Профілі без паролів і ключів (сервери, сертифікати, параметри)";
+"Protection:" = "Захист:";
 "Proxy" = "Проксі-сервер";
 "Proxy:" = "Проксі-сервер:";
 "Quit MugVPN" = "Вийти з MugVPN";

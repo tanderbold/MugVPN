@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Otomatik oturum açma profili (bağlanırken şifre sorulmaz)";
 "Automatic" = "Otomatik";
 "Block IPv6 outside the VPN" = "VPN dışında IPv6’yı engelle";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Açıkken VPN dışındaki tüm trafiği engelle; koptuktan sonra yeniden bağlanana veya engeli kaldırana kadar engelle";
 "By folder" = "Klasöre göre";
 "CA certificate:" = "CA sertifikası:";
 "Cancel" = "Vazgeç";
@@ -187,6 +188,7 @@
 "Private key:" = "Özel anahtar:";
 "Profile menu:" = "Profil menüsü:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Parola ve anahtar olmadan profiller (sunucular, sertifikalar, seçenekler)";
+"Protection:" = "Koruma:";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "MugVPN'den çık";

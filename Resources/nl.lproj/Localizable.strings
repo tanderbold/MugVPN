@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Autologin-profiel (geen wachtwoord bij verbinden)";
 "Automatic" = "Automatisch";
 "Block IPv6 outside the VPN" = "IPv6 buiten de VPN blokkeren";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Al het verkeer buiten de VPN blokkeren zolang die actief is, en na een onderbreking tot ik opnieuw verbind of deblokkeer";
 "By folder" = "Per map";
 "CA certificate:" = "CA-certificaat:";
 "Cancel" = "Annuleer";
@@ -187,6 +188,7 @@
 "Private key:" = "Privésleutel:";
 "Profile menu:" = "Profielmenu:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profielen zonder wachtwoorden of sleutels (servers, certificaten, opties)";
+"Protection:" = "Bescherming:";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Stop MugVPN";

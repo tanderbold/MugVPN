@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "Προφίλ αυτόματης σύνδεσης (χωρίς σύνθημα κατά τη σύνδεση)";
 "Automatic" = "Αυτόματα";
 "Block IPv6 outside the VPN" = "Αποκλεισμός IPv6 εκτός VPN";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Αποκλεισμός όλης της κίνησης εκτός VPN όσο είναι ενεργό, και μετά από πτώση μέχρι να επανασυνδεθώ ή να άρω τον αποκλεισμό";
 "By folder" = "Ανά φάκελο";
 "CA certificate:" = "Πιστοποιητικό CA:";
 "Cancel" = "Ακύρωση";
@@ -187,6 +188,7 @@
 "Private key:" = "Ιδιωτικό κλειδί:";
 "Profile menu:" = "Μενού προφίλ:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Προφίλ χωρίς κωδικούς ή κλειδιά (διακομιστές, πιστοποιητικά, επιλογές)";
+"Protection:" = "Προστασία:";
 "Proxy" = "Proxy";
 "Proxy:" = "Proxy:";
 "Quit MugVPN" = "Έξοδος από το MugVPN";

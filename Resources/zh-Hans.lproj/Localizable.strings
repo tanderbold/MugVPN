@@ -34,6 +34,7 @@
 "Autologin profile (no password when connecting)" = "自动登录配置文件（连接时无需密码）";
 "Automatic" = "自动";
 "Block IPv6 outside the VPN" = "阻止 VPN 之外的 IPv6";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "连接期间阻止 VPN 之外的所有流量；断开后继续阻止，直到我重新连接或解除阻止";
 "By folder" = "按文件夹";
 "CA certificate:" = "CA 证书：";
 "Cancel" = "取消";
@@ -187,6 +188,7 @@
 "Private key:" = "私钥：";
 "Profile menu:" = "配置文件菜单：";
 "Profiles without passwords or keys (servers, certificates, options)" = "不含密码或密钥的配置文件（服务器、证书、选项）";
+"Protection:" = "保护：";
 "Proxy" = "代理";
 "Proxy:" = "代理：";
 "Quit MugVPN" = "退出 MugVPN";

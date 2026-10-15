@@ -44,6 +44,10 @@ public struct ProtectionFacts: Sendable {
     public var wasFull: Bool
     /// Started again by its owner after its block: the block goes once it takes all traffic.
     public var liftsBlock: Bool
+    /// Up with everything outside it blocked meanwhile (the App Store build's strict kill switch), split or not: its
+    /// kill switch is armed, and its own block goes when it is up again, as for one taking all traffic. (Its IPv6 and
+    /// DNS rules stay those of its routes.)
+    public var blocksAllOutside: Bool
     public var device: String?
     /// A standard user's tunnel: only its owner's traffic may enter it.
     public var restricted: Bool
@@ -52,7 +56,7 @@ public struct ProtectionFacts: Sendable {
 
     public init(id: String, lockKey: String, lockNames: [String], owner: UInt32, persistent: Bool, exited: Bool,
                 protection: ProtectionOptions, takesAllTraffic: Bool, wasFull: Bool, liftsBlock: Bool, device: String?,
-                restricted: Bool, dnsServers: [String]) {
+                restricted: Bool, dnsServers: [String], blocksAllOutside: Bool = false) {
         self.id = id
         self.lockKey = lockKey
         self.lockNames = lockNames
@@ -66,6 +70,7 @@ public struct ProtectionFacts: Sendable {
         self.device = device
         self.restricted = restricted
         self.dnsServers = dnsServers
+        self.blocksAllOutside = blocksAllOutside
     }
 }
 
@@ -136,6 +141,8 @@ public enum ProtectionPlanner {
         for i in facts.indices {
             let c = facts[i]
             let full = c.takesAllTraffic
+            // (What its kill switch guards: everything, through it or blocked.)
+            let guarded = full || c.blocksAllOutside
             if let dev = c.device {
                 s.tunnels.append(dev)
                 if c.restricted {
@@ -144,7 +151,7 @@ public enum ProtectionPlanner {
             }
             // Its own profile up again with all traffic: the block its drop left goes (the arming of a tunnel of that
             // name still up stays).
-            if full, c.liftsBlock, !c.exited {
+            if guarded, c.liftsBlock, !c.exited {
                 liftDone.insert(c.id)
                 facts[i].liftsBlock = false
                 let fired = { (l: ProtectionLock) in c.lockNames.contains(l.name) && l.owner == c.owner && !l.armed && !l.everyone }
@@ -154,7 +161,7 @@ public enum ProtectionPlanner {
                 }
             }
             guard c.protection.any else { continue }
-            if full, !c.wasFull {
+            if guarded, !c.wasFull {
                 facts[i].wasFull = true
                 nowFull.insert(c.id)
             }
