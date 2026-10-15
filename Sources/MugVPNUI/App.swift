@@ -206,7 +206,9 @@ final class AppController: NSObject, NSMenuDelegate {
         manager.backend.protection.suspendBlocks(seconds: CaptivePortal.signInSeconds) { [weak self] err in
             if let err { return showError(err) }
             open()
-            // Lifted: now the probe can tell whether there is anything to sign in to.
+            // The blocks as they are now (still shown: lifted for a while only), then the probe can tell whether there
+            // is anything to sign in to.
+            self?.refreshBlocks()
             DispatchQueue.main.asyncAfter(deadline: .now() + 2) { self?.probeCaptivePortal() }
         }
     }
