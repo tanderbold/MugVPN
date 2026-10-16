@@ -76,9 +76,12 @@ def test_ui20c_a_checkbox_beside_a_row_label_is_read_with_both(app):
     from test_connections import open_window, tab
     open_window(app, "stand-a")
     w = tab(app, "options")
+    # (Each with its own words; the kill switch's row has a label in both products, the IPv6 one's in some.)
     for cid in ("kill_switch", "block_ipv6"):
         c = app.control(w, cid)
-        assert c["spoken"].endswith(c["title"]) and len(c["spoken"]) > len(c["title"]) + 2, (cid, c["spoken"])
+        assert c["spoken"].endswith(c["title"]), (cid, c["spoken"])
+    c = app.control(w, "kill_switch")
+    assert len(c["spoken"]) > len(c["title"]) + 2, ("the row's label too", c["spoken"])
 
 
 def test_ui20d_a_popup_in_a_labelled_row_is_read_with_the_row_label_alone(app):

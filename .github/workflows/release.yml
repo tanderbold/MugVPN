@@ -73,7 +73,10 @@ jobs:
             echo "release $GITHUB_REF_NAME already exists; not touching its assets"
             echo "created=false" >> "$GITHUB_OUTPUT"
           else
-            gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 build/MugVPN-*-source.tar.gz --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+            # The release's own notes where written (release-notes/<tag>.md), else GitHub's.
+            notes=(--generate-notes)
+            [ -f "release-notes/$GITHUB_REF_NAME.md" ] && notes=(--notes-file "release-notes/$GITHUB_REF_NAME.md")
+            gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 build/MugVPN-*-source.tar.gz --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" "${notes[@]}"
             echo "created=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Point the Homebrew cask at this release
