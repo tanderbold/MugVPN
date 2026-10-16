@@ -1,0 +1,42 @@
+OpenVPN's linking exceptions, extended to MugVPN's changes to OpenVPN
+====================================================================
+
+MugVPN's changes to OpenVPN (tools/patch-openvpn-privsep.py and the openvpn source files it changes) are
+distributed under the GNU General Public License version 2, as OpenVPN is. OpenVPN's COPYING says that whoever
+modifies its files may extend its two linking exceptions to their version. The MugVPN authors do: both exceptions
+below, as OpenVPN Inc gives them in OpenVPN's COPYING, apply to MugVPN's changes too, with "MugVPN's changes"
+read for "this program" and "this file" where they concern those changes.
+
+The rest of MugVPN is under the MIT License (LICENSE); these exceptions concern only the GPL-2.0 parts named above.
+
+  Special exception for linking OpenVPN with OpenSSL:
+
+  In addition, as a special exception, OpenVPN Inc gives
+  permission to link the code of this program with the OpenSSL
+  library (or with modified versions of OpenSSL that use the same
+  license as OpenSSL), and distribute linked combinations including
+  the two.  You must obey the GNU General Public License in all
+  respects for all of the code used other than OpenSSL.  If you modify
+  this file, you may extend this exception to your version of the
+  file, but you are not obligated to do so.  If you do not wish to
+  do so, delete this exception statement from your version.
+
+Apache2 linking exception:
+---------------------------
+  In addition, as a special exception, OpenVPN Inc and the
+  contributors give permission to link the code of this program to
+  libraries (the "Libraries") licensed under the Apache License
+  version 2.0 (this work and any linked library the "Combined Work")
+  and copy and distribute the Combined Work without an obligation to
+  license the Libraries under the GNU General Public License v2
+  (GPL-2.0) as required by Section 2 of the GPL-2.0, and without an
+  obligation to refrain from imposing any additional restrictions in
+  the Apache License version 2 that are not in the GPL-2.0, as
+  required by Section 6 of the GPL-2.0.  You must comply with the
+  GPL-2.0 in all other respects for the Combined Work, including
+  the obligation to provide source code.  If you modify this file, you
+  may extend this exception to your version of the file, but you are
+  not obligated to do so.  If you do not wish to do so, delete this
+  exception statement from your version.
+
+(Quoted from OpenVPN 2.7.8's COPYING, Copyright (C) 2002-2026 OpenVPN Inc.)

@@ -1,4 +1,11 @@
 #!/usr/bin/env python3
+# Copyright (C) 2026 The MugVPN authors.
+# SPDX-License-Identifier: GPL-2.0-only
+#
+# This file holds parts of OpenVPN and MugVPN's changes to it. Unlike the rest of MugVPN (MIT, see LICENSE) it is
+# under OpenVPN's license, the GNU General Public License version 2, with OpenVPN's OpenSSL and Apache-2.0 linking
+# exceptions extended to MugVPN's changes (LICENSES/OpenVPN-exceptions.txt). So are the openvpn files it changes:
+# each gets a notice saying so, with the date of this version of the change (MODIFIED below).
 """MugVPN's change to openvpn 2.7 for running it without root (privilege separation).
 
   tools/patch-openvpn-privsep.py <openvpn source dir>
@@ -25,6 +32,18 @@ import sys
 
 src = pathlib.Path(sys.argv[1]) / "src" / "openvpn"
 
+#: The date of this version of MugVPN's change (GPL-2.0 section 2(a)): moved on whenever the change does.
+MODIFIED = "2026-10-16"
+NOTICE = f"""/*
+ * Modified by the MugVPN authors, {MODIFIED}: privilege separation (openvpn asks MugVPN's helper, through its
+ * management client, for its tunnel, addresses, routes and DNS instead of doing it as root); see
+ * tools/patch-openvpn-privsep.py in MugVPN's source. Distributed under the GNU General Public License version 2,
+ * with OpenVPN's OpenSSL and Apache-2.0 linking exceptions extended to these changes
+ * (LICENSES/OpenVPN-exceptions.txt in MugVPN's source).
+ */
+"""
+changed = set()
+
 
 def patch(name, old, new, count=1):
     p = src / name
@@ -33,6 +52,7 @@ def patch(name, old, new, count=1):
     if n != count:
         sys.exit(f"{name}: expected {count} of {old[:60]!r}, found {n}: review MugVPN's privsep patch")
     p.write_text(text.replace(old, new))
+    changed.add(name)
 
 
 ANDROID_OR_US = "#if defined(TARGET_ANDROID) || defined(MUGVPN_MGMT_TUN)"
@@ -255,4 +275,10 @@ run_up_down_command(bool up, struct options *o, const struct tuntap *tt,
     }
 #endif
     struct dns_options *dns = &o->dns_options;""")
-print("==> privsep patch applied to", src)
+# Each file changed says so, at its top.
+for name in sorted(changed):
+    p = src / name
+    text = p.read_text()
+    if "Modified by the MugVPN authors" not in text:
+        p.write_text(NOTICE + text)
+print("==> privsep patch applied to", src, "(" + ", ".join(sorted(changed)) + ")")

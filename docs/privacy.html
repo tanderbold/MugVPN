@@ -1,0 +1,70 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>MugVPN privacy policy</title>
+<meta name="description" content="What MugVPN does with your data: nothing is collected or sent to its authors; profiles and passwords stay on your Mac and go only to the VPN servers you set up.">
+<meta name="robots" content="index, follow">
+<meta name="theme-color" content="#17110d">
+<link rel="icon" type="image/png" sizes="32x32" href="favicon-32.png">
+<link rel="apple-touch-icon" sizes="180x180" href="apple-touch-icon.png">
+<link rel="canonical" href="https://tanderbold.github.io/MugVPN/privacy.html">
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+<main>
+  <p><a href="./">← MugVPN</a></p>
+  <h1>Privacy policy</h1>
+  <p>Effective 16 October 2026. It covers MugVPN in both of its editions: the one downloaded from this site or
+  Homebrew, and the one from the Mac App Store.</p>
+
+  <h2>In short</h2>
+  <p>MugVPN's authors collect no data about you. MugVPN has no servers of its own, no analytics, no advertising and
+  no account. Nothing you do in MugVPN is sent to its authors, sold or shared with anyone.</p>
+
+  <h2>What stays on your Mac</h2>
+  <ul>
+    <li><strong>Connection profiles</strong> you import or create (the server's address, certificates and keys in
+    them, your settings for each connection) are files on your Mac.</li>
+    <li><strong>Passwords</strong> you choose to save are kept in your login Keychain.</li>
+    <li><strong>Logs</strong> of your connections (as OpenVPN writes them: times, servers, addresses, routes) are
+    kept on your Mac, bounded in size, for you to read in MugVPN. Diagnostics are put together only when you ask for
+    them, with keys and passwords removed, and saved where you choose; MugVPN sends them nowhere.</li>
+    <li><strong>Settings</strong> of the app.</li>
+  </ul>
+  <p>Uninstalling MugVPN removes them (profiles too, unless you choose to keep them).</p>
+
+  <h2>What goes over the network, and to whom</h2>
+  <ul>
+    <li><strong>Your VPN servers.</strong> MugVPN connects to the servers named in your profiles. Your traffic for
+    them goes through the VPN to the server and its network, which is run by whoever runs that VPN (your company, a
+    provider you chose, yourself), not by MugVPN's authors. Usernames and passwords go to the VPN server (or to the
+    HTTP proxy you set up) that asks for them as you connect, over that VPN's protocol.</li>
+    <li><strong>A profile's address</strong>, when you import a profile from a URL or an OpenVPN Access Server: MugVPN
+    downloads it from there, over HTTPS, with the username and password you give for it.</li>
+    <li><strong>Apple's captive-portal page</strong> (<code>http://captive.apple.com</code>): after a network change
+    or a wake, MugVPN asks for it, as macOS itself does, to tell whether the network wants a sign-in first (hotel,
+    airport Wi-Fi). Apple and the network see that request as any web request, your IP address among it; it carries
+    nothing about you or your connections.</li>
+    <li><strong>A sign-in page</strong> a VPN server asks you to open (web sign-in) opens in your browser.</li>
+  </ul>
+  <p>Nothing else: no update checks of MugVPN's own, no crash reporting of its own, no telemetry. The Mac App Store
+  edition is updated through the App Store; Apple's own handling of App Store data is Apple's.</p>
+
+  <h2>What MugVPN's authors receive</h2>
+  <p>Nothing, unless you write to them: an issue or a message you send through GitHub is seen by them (and, for an
+  issue, by anyone), under GitHub's terms.</p>
+
+  <h2>Contact</h2>
+  <p>Questions about privacy, or a request about your data: open an issue at
+  <a href="https://github.com/tanderbold/MugVPN/issues">github.com/tanderbold/MugVPN/issues</a>, or, privately,
+  through <a href="https://github.com/tanderbold/MugVPN/security/advisories/new">GitHub's private reporting</a>.</p>
+
+  <h2>Changes</h2>
+  <p>A change to this policy is published here, with its date, before the version of MugVPN it concerns.</p>
+
+  <footer><p>“OpenVPN” is a trademark of OpenVPN Inc.; MugVPN is not affiliated with or endorsed by OpenVPN Inc. · <a href="https://github.com/tanderbold/MugVPN">GitHub</a></p></footer>
+</main>
+</body>
+</html>

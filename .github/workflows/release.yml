@@ -62,6 +62,8 @@ jobs:
           echo "$NOTARY" | base64 --decode > "$MUGVPN_NOTARY_KEY"
           tools/notarize.sh
           rm -f "$MUGVPN_NOTARY_KEY"
+      - name: Corresponding source (GPL-2.0 section 3)
+        run: tools/make-source.sh "$GITHUB_REF_NAME"
       - name: Publish release
         id: publish
         env:
@@ -71,7 +73,7 @@ jobs:
             echo "release $GITHUB_REF_NAME already exists; not touching its assets"
             echo "created=false" >> "$GITHUB_OUTPUT"
           else
-            gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
+            gh release create "$GITHUB_REF_NAME" build/MugVPN-*.dmg build/MugVPN-*.dmg.sha256 build/MugVPN-*-source.tar.gz --verify-tag --title "MugVPN ${GITHUB_REF_NAME#v}" --generate-notes
             echo "created=true" >> "$GITHUB_OUTPUT"
           fi
       - name: Point the Homebrew cask at this release

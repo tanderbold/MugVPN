@@ -37,9 +37,13 @@ Changes made by MugVPN: besides that patch, openvpn is configured so that its de
 DNS script is "/Library/Application Support/MugVPN/libexec/dns-updown" (a build setting,
 no source change). MugVPN's patches and build
 scripts are published at https://github.com/tanderbold/MugVPN, the archives at the
-official addresses above (their SHA-256 pinned in tools/build-openvpn.sh). On request
-(open an issue there) the complete corresponding source of the GPL components is also
-available from the MugVPN authors for three years from the date of distribution.
+official addresses above (their SHA-256 pinned in tools/build-openvpn.sh). Each release
+of MugVPN carries the complete corresponding source of the version it is, as
+MugVPN-<version>-source.tar.gz among the release's files (MugVPN's source at the
+release's tag, these archives, the patch and build scripts), and its tag
+(https://github.com/tanderbold/MugVPN/tree/v<version>) stays. On request (open an issue
+there) the same source is also available from the MugVPN authors for three years from
+the date of distribution.
 
 "OpenVPN" is a trademark of OpenVPN Inc. MugVPN is not affiliated with or endorsed
 by OpenVPN Inc.
@@ -52,6 +56,12 @@ rule "OpenSSL $OPENSSL — Apache License 2.0 (LICENSE.txt)"
 from "openssl-$OPENSSL" LICENSE.txt
 rule "LZ4 $LZ4 — library license (BSD 2-Clause, lib/LICENSE)"
 from "lz4-$LZ4" lib/LICENSE
+# Each source liblz4.a is built from has a notice of its own (lz4file.c another copyright holder's): each one, as
+# its file's first comment. (make liblz4.a builds every lib/*.c.)
+for c in $(tar -tzf "$SRC/lz4-$LZ4.tar.gz" | grep -E "^lz4-$LZ4/lib/[^/]+\.c$" | sort); do
+    rule "LZ4 $LZ4 — ${c#lz4-$LZ4/} (in liblz4.a, linked into openvpn)"
+    tar -xzOf "$SRC/lz4-$LZ4.tar.gz" "$c" | awk '!done && /\/\*/ { on = 1 } on && !done { print } on && /\*\// { on = 0; done = 1 }'
+done
 rule "LZO $LZO — COPYING (GNU General Public License version 2)"
 from "lzo-$LZO" COPYING
 } > "$ROOT/THIRD-PARTY-NOTICES.txt"

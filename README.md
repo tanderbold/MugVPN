@@ -97,7 +97,7 @@ As documented by each product on 2026-10-10: [Tunnelblick](https://tunnelblick.n
   as you connect, over its own protocol. Besides your VPN servers (and a profile's URL when you import one),
   MugVPN asks Apple's captive-portal page (`captive.apple.com`) after a network change or a wake, as
   macOS does, to tell whether the network wants a sign-in first; Apple and the network see that
-  request as any web request (your IP address among it).
+  request as any web request (your IP address among it). See the [privacy policy](https://tanderbold.github.io/MugVPN/privacy.html).
 - Built test-first, with integration tests in virtual machines against real OpenVPN servers.
 
 Found a security problem? Please report it privately through
@@ -255,12 +255,15 @@ Nothing in the integration or interface tests touches the Mac you run them from.
 
 ## License
 
-MugVPN is under the [MIT License](LICENSE).
+MugVPN is under the [MIT License](LICENSE), but for its change to openvpn
+(`tools/patch-openvpn-privsep.py`), which is under openvpn's GPLv2 with its linking exceptions
+extended to it ([LICENSES/OpenVPN-exceptions.txt](LICENSES/OpenVPN-exceptions.txt)).
 
-The app bundle also contains openvpn (GPLv2, with MugVPN's patch in `tools/`), OpenSSL (Apache 2.0),
+The app bundle also contains openvpn (GPLv2, changed by that patch), OpenSSL (Apache 2.0),
 LZ4 (BSD 2-Clause) and LZO (GPLv2), each under its own license, built from the official releases
 listed with their full license texts in [THIRD-PARTY-NOTICES.txt](THIRD-PARTY-NOTICES.txt).
-MugVPN runs openvpn as a separate program.
+MugVPN runs openvpn as a separate program. Each release carries its complete corresponding
+source (`MugVPN-<version>-source.tar.gz`).
 
 "OpenVPN" is a trademark of OpenVPN Inc. MugVPN is not affiliated with or endorsed by OpenVPN Inc.;
 the name is used only to say which profiles MugVPN works with.
