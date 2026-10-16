@@ -241,7 +241,8 @@ enum Form {
     static func row(_ label: String, _ view: NSView) -> NSStackView {
         // VoiceOver reads the row's label for the control beside it; a checkbox keeps its own words after it.
         let spoken = label.trimmingCharacters(in: CharacterSet(charactersIn: ":： "))
-        if let b = view as? NSButton, !b.title.isEmpty {
+        // (A checkbox only: a popup is a button too, but its title is its current choice, read as it changes.)
+        if let b = view as? Checkbox, !b.title.isEmpty {
             if !spoken.isEmpty { b.setAccessibilityLabel(spoken + ": " + b.title) }
         } else if !spoken.isEmpty {
             view.setAccessibilityLabel(spoken)

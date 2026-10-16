@@ -79,3 +79,15 @@ def test_ui20c_a_checkbox_beside_a_row_label_is_read_with_both(app):
     for cid in ("kill_switch", "block_ipv6"):
         c = app.control(w, cid)
         assert c["spoken"].endswith(c["title"]) and len(c["spoken"]) > len(c["title"]) + 2, (cid, c["spoken"])
+
+
+def test_ui20d_a_popup_in_a_labelled_row_is_read_with_the_row_label_alone(app):
+    """A popup beside a row label: VoiceOver reads the row's label, and the popup's current choice by itself (a
+    label naming the choice it had when built would contradict it once another is chosen)."""
+    from test_connections import open_window, tab
+    open_window(app, "stand-a")
+    w = tab(app, "options")
+    assert app.control(w, "dns_mode")["label"] == "DNS", app.control(w, "dns_mode")["label"]
+    app.set(w, "dns_mode", "none")
+    w = app.window("connections")
+    assert app.control(w, "dns_mode")["label"] == "DNS", app.control(w, "dns_mode")["label"]
