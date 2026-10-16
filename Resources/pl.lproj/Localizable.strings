@@ -33,6 +33,7 @@
 "Authentication failed" = "Uwierzytelnienie nie powiodło się";
 "Autologin profile (no password when connecting)" = "Profil z automatycznym logowaniem (bez hasła przy łączeniu)";
 "Automatic" = "Automatycznie";
+"Before you connect" = "Zanim się połączysz";
 "Block IPv6 outside the VPN" = "Blokuj IPv6 poza VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blokuj cały ruch poza VPN, gdy jest aktywny, a po zerwaniu – dopóki nie połączę się ponownie lub nie odblokuję";
 "By folder" = "Według folderów";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Połączenie: %@";
 "Connections" = "Połączenia";
 "Connections…" = "Połączenia…";
+"Continue" = "Kontynuuj";
 "Copy" = "Kopiuj";
 "Copy Details" = "Kopiuj szczegóły";
 "Copy and Import" = "Kopiuj i importuj";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Przenieś MugVPN do folderu Aplikacje, otwórz go stamtąd i połącz się ponownie.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ustawienia MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN nie zbiera danych i nic nie wysyła swoim autorom: bez analityki, bez konta. Profile, zapisane hasła i dzienniki zostają na Macu; hasło trafia tylko do serwera VPN, dla którego jest, gdy ten o nie poprosi.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN nie mógł dokończyć dezinstalacji (%@). Pozostaje zainstalowany: spróbuj ponownie za minutę.";
 "MugVPN in Login Items" = "MugVPN w Rzeczach otwieranych podczas logowania";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN wciąż usuwa DNS lub trasy ustawione przez VPN i do tego czasu pozostanie zainstalowany. Spróbuj ponownie za minutę.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN został odinstalowany, ale tego nie udało się usunąć: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potrzebuje programu pomocniczego, aby uruchamiać tunele.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN konfiguruje VPN na Twoim Macu. Gdy połączenie jest aktywne, jego ruch idzie przez VPN do serwera z Twojego profilu, prowadzonego przez tego, kto prowadzi ten VPN, a nie przez autorów MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Konfiguracja VPN aplikacji MugVPN, dzienniki, ustawienia i zapisane hasła zostaną usunięte. Tunele zostaną rozłączone.";
+"MugVPN's authors never sell, use or share any data about you." = "Autorzy MugVPN nigdy nie sprzedają, nie wykorzystują ani nie udostępniają żadnych danych o Tobie.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Pomocnik MugVPN nie odpowiedział (%@). Usunąć część systemową MugVPN hasłem administratora?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Pomocnik MugVPN ma wersję %@, nowszą niż ta aplikacja (%@): zaktualizuj MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocnik MugVPN ma wersję %@, nie %@ tej aplikacji: zaktualizuje się, gdy nie będzie go używać żadne połączenie (lub po ponownym uruchomieniu).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Połączenia stałe:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Skrypt przed połączeniem (s):";
+"Privacy Policy" = "Polityka prywatności";
 "Private key:" = "Klucz prywatny:";
 "Profile menu:" = "Menu profili:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profile bez haseł i kluczy (serwery, certyfikaty, opcje)";

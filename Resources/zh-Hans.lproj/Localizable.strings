@@ -33,6 +33,7 @@
 "Authentication failed" = "认证失败";
 "Autologin profile (no password when connecting)" = "自动登录配置文件（连接时无需密码）";
 "Automatic" = "自动";
+"Before you connect" = "连接之前";
 "Block IPv6 outside the VPN" = "阻止 VPN 之外的 IPv6";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "连接期间阻止 VPN 之外的所有流量；断开后继续阻止，直到我重新连接或解除阻止";
 "By folder" = "按文件夹";
@@ -71,6 +72,7 @@
 "Connection: %@" = "连接：%@";
 "Connections" = "连接";
 "Connections…" = "连接…";
+"Continue" = "继续";
 "Copy" = "拷贝";
 "Copy Details" = "拷贝详细信息";
 "Copy and Import" = "复制并导入";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "请将 MugVPN 移到“应用程序”文件夹，从那里打开后再次连接。";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 设置";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN 不收集任何数据，也不向其作者发送任何内容：没有分析，没有账户。你的配置文件、已存储的密码和日志都留在你的 Mac 上；密码只会在对应的 VPN 服务器要求时发送给该服务器。";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN 无法完成卸载（%@）。它会保持安装：请一分钟后再试。";
 "MugVPN in Login Items" = "登录项中的 MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN 仍在移除 VPN 设置的 DNS 或路由，在此之前会保持安装。请一分钟后再试。";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN 已卸载，但以下内容无法移除：%@";
 "MugVPN needs its helper to start tunnels." = "MugVPN 需要其辅助程序来启动隧道。";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN 会在你的 Mac 上设置 VPN。连接期间，其流量经由 VPN 发送到你的配置文件中的服务器；该服务器由运营该 VPN 的人运营，而不是 MugVPN 的作者。";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN 的 VPN 配置、日志、设置和已存储的密码将被移除。隧道将断开。";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPN 的作者绝不出售、使用或共享任何关于你的数据。";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 助手没有响应（%@）。改用管理员密码移除 MugVPN 的系统部分？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 助手版本为 %@，比此应用（%@）新：请更新 MugVPN。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 的助手版本为 %@，而不是此应用的 %@：当没有连接使用它时（或重新启动后）会更新。";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "持久连接：";
 "Port:" = "端口：";
 "Pre-connect script (s):" = "预连接脚本（秒）：";
+"Privacy Policy" = "隐私政策";
 "Private key:" = "私钥：";
 "Profile menu:" = "配置文件菜单：";
 "Profiles without passwords or keys (servers, certificates, options)" = "不含密码或密钥的配置文件（服务器、证书、选项）";

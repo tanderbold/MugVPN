@@ -102,6 +102,9 @@
   "key": "Automatic"
  },
  {
+  "key": "Before you connect"
+ },
+ {
   "key": "Block IPv6 outside the VPN"
  },
  {
@@ -214,6 +217,9 @@
  },
  {
   "key": "Connections…"
+ },
+ {
+  "key": "Continue"
  },
  {
   "key": "Copy"
@@ -423,6 +429,9 @@
   "key": "MugVPN Settings"
  },
  {
+  "key": "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks."
+ },
+ {
   "key": "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute."
  },
  {
@@ -438,7 +447,13 @@
   "key": "MugVPN needs its helper to start tunnels."
  },
  {
+  "key": "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors."
+ },
+ {
   "key": "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected."
+ },
+ {
+  "key": "MugVPN's authors never sell, use or share any data about you."
  },
  {
   "key": "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?"
@@ -556,6 +571,9 @@
  },
  {
   "key": "Pre-connect script (s):"
+ },
+ {
+  "key": "Privacy Policy"
  },
  {
   "key": "Private key:"

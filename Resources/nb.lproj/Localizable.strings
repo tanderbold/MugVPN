@@ -33,6 +33,7 @@
 "Authentication failed" = "Autentisering mislyktes";
 "Autologin profile (no password when connecting)" = "Autopåloggingsprofil (uten passord ved tilkobling)";
 "Automatic" = "Automatisk";
+"Before you connect" = "Før du kobler til";
 "Block IPv6 outside the VPN" = "Blokker IPv6 utenfor VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blokker all trafikk utenfor VPN mens den er oppe, og etter et brudd til jeg kobler til igjen eller opphever blokkeringen";
 "By folder" = "Etter mappe";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Tilkobling: %@";
 "Connections" = "Tilkoblinger";
 "Connections…" = "Tilkoblinger…";
+"Continue" = "Fortsett";
 "Copy" = "Kopier";
 "Copy Details" = "Kopier detaljer";
 "Copy and Import" = "Kopier og importer";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Flytt MugVPN til Programmer-mappen, åpne det derfra og koble til igjen.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-innstillinger";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN samler ingen data og sender ingenting til forfatterne: ingen analyse, ingen konto. Profilene, de lagrede passordene og loggene blir på Macen; et passord går bare til VPN-serveren det er for, når den ber om det.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kunne ikke fullføre avinstalleringen (%@). Det forblir installert: prøv igjen om et minutt.";
 "MugVPN in Login Items" = "MugVPN i påloggingsobjekter";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN fjerner fortsatt DNS-en eller rutene et VPN satte, og forblir installert til da. Prøv igjen om et minutt.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN er avinstallert, men disse kunne ikke fjernes: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN trenger hjelpeprogrammet sitt for å starte tunneler.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN setter opp et VPN på Macen din. Mens en tilkobling er oppe, går trafikken gjennom VPN-et til serveren i profilen din, drevet av den som driver det VPN-et, ikke av MugVPNs forfattere.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPNs VPN-konfigurasjon, logger, innstillinger og lagrede passord fjernes. Tunneler kobles fra.";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPNs forfattere selger, bruker eller deler aldri data om deg.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPNs hjelper svarte ikke (%@). Fjerne MugVPNs systemdel med et administratorpassord i stedet?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPNs hjelper er versjon %@, nyere enn denne appen (%@): oppdater MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPNs hjelper er versjon %@, ikke denne appens %@: den oppdateres når ingen tilkobling bruker den (eller etter en omstart).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Vedvarende tilkoblinger:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Skript før tilkobling (s):";
+"Privacy Policy" = "Personvernerklæring";
 "Private key:" = "Privat nøkkel:";
 "Profile menu:" = "Profilmeny:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profiler uten passord eller nøkler (servere, sertifikater, valg)";

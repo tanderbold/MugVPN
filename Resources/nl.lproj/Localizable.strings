@@ -33,6 +33,7 @@
 "Authentication failed" = "Authenticatie mislukt";
 "Autologin profile (no password when connecting)" = "Autologin-profiel (geen wachtwoord bij verbinden)";
 "Automatic" = "Automatisch";
+"Before you connect" = "Voordat je verbinding maakt";
 "Block IPv6 outside the VPN" = "IPv6 buiten de VPN blokkeren";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Al het verkeer buiten de VPN blokkeren zolang die actief is, en na een onderbreking tot ik opnieuw verbind of deblokkeer";
 "By folder" = "Per map";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Verbinding: %@";
 "Connections" = "Verbindingen";
 "Connections…" = "Verbindingen…";
+"Continue" = "Ga door";
 "Copy" = "Kopieer";
 "Copy Details" = "Kopieer details";
 "Copy and Import" = "Kopieer en importeer";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Verplaats MugVPN naar de map Apps, open het daarvandaan en maak opnieuw verbinding.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-instellingen";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN verzamelt geen gegevens en stuurt niets naar de makers: geen analyse, geen account. Je profielen, bewaarde wachtwoorden en logboeken blijven op je Mac; een wachtwoord gaat alleen naar de VPN-server waarvoor het is, als die erom vraagt.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kon het verwijderen niet voltooien (%@). Het blijft geïnstalleerd: probeer het over een minuut opnieuw.";
 "MugVPN in Login Items" = "MugVPN in Inlogonderdelen";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN verwijdert de DNS of routes die een VPN instelde nog en blijft tot dan geïnstalleerd. Probeer het over een minuut opnieuw.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN is verwijderd, maar dit kon niet worden verwijderd: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN heeft zijn hulpcomponent nodig om tunnels te starten.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN stelt een VPN in op je Mac. Zolang een verbinding actief is, gaat het verkeer via de VPN naar de server in je profiel, beheerd door wie die VPN beheert, niet door de makers van MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "De VPN-configuratie van MugVPN, logboeken, instellingen en bewaarde wachtwoorden worden verwijderd. Tunnels worden verbroken.";
+"MugVPN's authors never sell, use or share any data about you." = "De makers van MugVPN verkopen, gebruiken of delen nooit gegevens over jou.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "De helper van MugVPN reageerde niet (%@). Het systeemdeel van MugVPN in plaats daarvan met een beheerderswachtwoord verwijderen?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "De helper van MugVPN is versie %@, nieuwer dan deze app (%@): werk MugVPN bij.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "De helper van MugVPN is versie %@, niet die van deze app (%@): hij wordt bijgewerkt zodra geen verbinding hem gebruikt (of na een herstart).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Permanente verbindingen:";
 "Port:" = "Poort:";
 "Pre-connect script (s):" = "Script vóór verbinden (s):";
+"Privacy Policy" = "Privacybeleid";
 "Private key:" = "Privésleutel:";
 "Profile menu:" = "Profielmenu:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profielen zonder wachtwoorden of sleutels (servers, certificaten, opties)";

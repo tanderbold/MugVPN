@@ -33,6 +33,7 @@
 "Authentication failed" = "인증 실패";
 "Autologin profile (no password when connecting)" = "자동 로그인 프로필(연결 시 암호 없음)";
 "Automatic" = "자동";
+"Before you connect" = "연결하기 전에";
 "Block IPv6 outside the VPN" = "VPN 밖의 IPv6 차단";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "연결된 동안 VPN 밖의 모든 트래픽을 차단하고, 끊긴 뒤에도 다시 연결하거나 차단을 해제할 때까지 차단";
 "By folder" = "폴더별";
@@ -71,6 +72,7 @@
 "Connection: %@" = "연결: %@";
 "Connections" = "연결 목록";
 "Connections…" = "연결 목록…";
+"Continue" = "계속";
 "Copy" = "복사하기";
 "Copy Details" = "세부사항 복사";
 "Copy and Import" = "복사 후 가져오기";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN을 응용 프로그램 폴더로 옮기고 그곳에서 연 다음 다시 연결하십시오.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 설정";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN은 데이터를 수집하지 않으며 작성자에게 아무것도 보내지 않습니다. 분석도 계정도 없습니다. 프로필, 저장된 암호, 로그는 Mac에 남고, 암호는 해당 VPN 서버가 요청할 때 그 서버에만 전송됩니다.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN이 제거를 마치지 못했습니다(%@). 설치된 상태로 남습니다. 1분 후에 다시 시도하세요.";
 "MugVPN in Login Items" = "로그인 항목의 MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN이 아직 VPN이 설정한 DNS나 경로를 제거하는 중이며 그때까지 설치된 상태로 유지됩니다. 1분 후에 다시 시도하세요.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN이 제거되었지만 다음 항목은 삭제하지 못했습니다: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN이 터널을 시작하려면 도우미가 필요합니다.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN은 Mac에 VPN을 설정합니다. 연결된 동안 그 트래픽은 VPN을 통해 프로필의 서버로 가며, 그 서버는 MugVPN 작성자가 아니라 해당 VPN의 운영자가 운영합니다.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN의 VPN 구성, 로그, 설정 및 저장된 암호가 제거됩니다. 터널 연결이 끊어집니다.";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPN 작성자는 사용자에 관한 데이터를 절대 판매, 사용 또는 공유하지 않습니다.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN 도우미가 응답하지 않았습니다(%@). 대신 관리자 암호로 MugVPN의 시스템 부분을 제거하시겠습니까?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN 도우미는 버전 %@로, 이 앱(%@)보다 최신입니다. MugVPN을 업데이트하세요.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN 도우미는 버전 %@로, 이 앱의 %@가 아닙니다. 사용하는 연결이 없을 때(또는 재시동 후) 업데이트됩니다.";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "영구 연결:";
 "Port:" = "포트:";
 "Pre-connect script (s):" = "연결 전 스크립트(초):";
+"Privacy Policy" = "개인정보 처리방침";
 "Private key:" = "개인 키:";
 "Profile menu:" = "프로필 메뉴:";
 "Profiles without passwords or keys (servers, certificates, options)" = "암호나 키를 뺀 프로필(서버, 인증서, 옵션)";

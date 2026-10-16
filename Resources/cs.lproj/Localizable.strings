@@ -33,6 +33,7 @@
 "Authentication failed" = "Ověření selhalo";
 "Autologin profile (no password when connecting)" = "Profil s automatickým přihlášením (bez hesla při připojení)";
 "Automatic" = "Automaticky";
+"Before you connect" = "Před připojením";
 "Block IPv6 outside the VPN" = "Blokovat IPv6 mimo VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blokovat veškerý provoz mimo VPN, dokud je aktivní, a po výpadku, dokud se znovu nepřipojím nebo neodblokuji";
 "By folder" = "Podle složek";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Připojení: %@";
 "Connections" = "Připojení";
 "Connections…" = "Připojení…";
+"Continue" = "Pokračovat";
 "Copy" = "Kopírovat";
 "Copy Details" = "Kopírovat podrobnosti";
 "Copy and Import" = "Zkopírovat a importovat";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Přesuňte MugVPN do složky Aplikace, otevřete ho odtamtud a připojte se znovu.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Nastavení MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN nesbírá žádná data a autorům nic neposílá: žádná analytika, žádný účet. Vaše profily, uložená hesla a protokoly zůstávají na Macu; heslo jde jen na VPN server, pro který je, když si o něj řekne.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN nemohl dokončit odinstalaci (%@). Zůstane nainstalován: zkuste to znovu za minutu.";
 "MugVPN in Login Items" = "MugVPN v Položkách při přihlášení";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN ještě odstraňuje DNS nebo trasy, které nastavila VPN, a do té doby zůstane nainstalován. Zkuste to znovu za minutu.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN je odinstalován, ale tyto položky nešlo odstranit: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN potřebuje ke spouštění tunelů svou pomocnou službu.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN na vašem Macu nastaví VPN. Dokud je připojení aktivní, jeho provoz jde přes VPN na server z vašeho profilu, který provozuje ten, kdo tu VPN spravuje, ne autoři MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Konfigurace VPN aplikace MugVPN, protokoly, nastavení a uložená hesla budou odstraněny. Tunely budou odpojeny.";
+"MugVPN's authors never sell, use or share any data about you." = "Autoři MugVPN nikdy neprodávají, nepoužívají ani nesdílejí žádná data o vás.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Pomocník MugVPN neodpověděl (%@). Odstranit systémovou část MugVPN pomocí hesla správce?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Pomocník MugVPN má verzi %@, novější než tato aplikace (%@): aktualizujte MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Pomocník MugVPN má verzi %@, ne verzi této aplikace %@: aktualizuje se, až ho nebude používat žádné připojení (nebo po restartu).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Trvalá spojení:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Skript před připojením (s):";
+"Privacy Policy" = "Zásady ochrany soukromí";
 "Private key:" = "Soukromý klíč:";
 "Profile menu:" = "Nabídka profilů:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profily bez hesel a klíčů (servery, certifikáty, volby)";

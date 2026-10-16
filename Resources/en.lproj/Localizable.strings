@@ -33,6 +33,7 @@
 "Authentication failed" = "Authentication failed";
 "Autologin profile (no password when connecting)" = "Autologin profile (no password when connecting)";
 "Automatic" = "Automatic";
+"Before you connect" = "Before you connect";
 "Block IPv6 outside the VPN" = "Block IPv6 outside the VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock";
 "By folder" = "By folder";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Connection: %@";
 "Connections" = "Connections";
 "Connections…" = "Connections…";
+"Continue" = "Continue";
 "Copy" = "Copy";
 "Copy Details" = "Copy Details";
 "Copy and Import" = "Copy and Import";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Move MugVPN to the Applications folder, open it from there and connect again.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN Settings";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute.";
 "MugVPN in Login Items" = "MugVPN in Login Items";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN is uninstalled, but these could not be removed: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN needs its helper to start tunnels.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected.";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPN's authors never sell, use or share any data about you.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN's helper is version %@, newer than this app (%@): update MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Persistent connections:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Pre-connect script (s):";
+"Privacy Policy" = "Privacy Policy";
 "Private key:" = "Private key:";
 "Profile menu:" = "Profile menu:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profiles without passwords or keys (servers, certificates, options)";

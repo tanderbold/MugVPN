@@ -4,6 +4,8 @@ import Foundation
 /// Names shared by the app and the privileged helper.
 public enum MugVPNIDs {
     public static let appBundleID = "com.mugvpn.app"
+    /// The privacy policy (both products).
+    public static let privacyPolicyURL = "https://tanderbold.github.io/MugVPN/privacy.html"
     public static let helperLabel = "com.mugvpn.helper"
     /// The boot cleanup kept while the app is in the Trash.
     public static let cleanupLabel = "com.mugvpn.cleanup"

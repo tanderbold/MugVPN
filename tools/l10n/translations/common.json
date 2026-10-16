@@ -113,7 +113,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Dokud je aktivní připojení, které při výpadku blokuje provoz, nelze spustit žádné jiné.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet je zablokován, protože připojení vypadlo: nejdřív ho odblokujte.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Blokovat veškerý provoz mimo VPN, dokud je aktivní, a po výpadku, dokud se znovu nepřipojím nebo neodblokuji",
-  "Protection:": "Ochrana:"
+  "Protection:": "Ochrana:",
+  "Before you connect": "Před připojením",
+  "Continue": "Pokračovat",
+  "Privacy Policy": "Zásady ochrany soukromí",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN na vašem Macu nastaví VPN. Dokud je připojení aktivní, jeho provoz jde přes VPN na server z vašeho profilu, který provozuje ten, kdo tu VPN spravuje, ne autoři MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN nesbírá žádná data a autorům nic neposílá: žádná analytika, žádný účet. Vaše profily, uložená hesla a protokoly zůstávají na Macu; heslo jde jen na VPN server, pro který je, když si o něj řekne.",
+  "MugVPN's authors never sell, use or share any data about you.": "Autoři MugVPN nikdy neprodávají, nepoužívají ani nesdílejí žádná data o vás."
  },
  "de": {
   "OK": "OK",
@@ -229,7 +235,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Solange eine Verbindung besteht, die bei Abbruch den Verkehr blockiert, kann keine andere starten.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Das Internet ist blockiert, weil eine Verbindung abgebrochen ist: Geben Sie es zuerst frei.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Allen Verkehr außerhalb des VPN blockieren, solange es besteht, und nach einem Abbruch, bis ich neu verbinde oder freigebe",
-  "Protection:": "Schutz:"
+  "Protection:": "Schutz:",
+  "Before you connect": "Vor dem Verbinden",
+  "Continue": "Fortfahren",
+  "Privacy Policy": "Datenschutzerklärung",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN richtet auf Ihrem Mac ein VPN ein. Solange eine Verbindung besteht, geht ihr Verkehr durch das VPN zum Server in Ihrem Profil, betrieben von dem, der dieses VPN betreibt, nicht von den Autoren von MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN sammelt keine Daten und sendet seinen Autoren nichts: keine Analyse, kein Konto. Ihre Profile, gesicherten Passwörter und Protokolle bleiben auf Ihrem Mac; ein Passwort geht nur an den VPN-Server, für den es ist, wenn er danach fragt.",
+  "MugVPN's authors never sell, use or share any data about you.": "Die Autoren von MugVPN verkaufen, nutzen oder teilen niemals Daten über Sie."
  },
  "da": {
   "OK": "OK",
@@ -345,7 +357,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mens en forbindelse, der blokerer trafik, hvis den falder ud, er oppe, kan ingen anden starte.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internettet er blokeret, fordi en forbindelse faldt ud: fjern blokeringen først.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Bloker al trafik uden for VPN, mens den er oppe, og efter et udfald, indtil jeg genopretter forbindelsen eller fjerner blokeringen",
-  "Protection:": "Beskyttelse:"
+  "Protection:": "Beskyttelse:",
+  "Before you connect": "Før du forbinder",
+  "Continue": "Fortsæt",
+  "Privacy Policy": "Privatlivspolitik",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN opsætter et VPN på din Mac. Mens en forbindelse er oppe, går dens trafik gennem VPN'et til serveren i din profil, drevet af den, der driver det VPN, ikke af MugVPN's forfattere.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN indsamler ingen data og sender intet til sine forfattere: ingen analyse, ingen konto. Dine profiler, gemte adgangskoder og logge bliver på din Mac; en adgangskode går kun til den VPN-server, den er til, når den beder om den.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN's forfattere sælger, bruger eller deler aldrig data om dig."
  },
  "el": {
   "OK": "OK",
@@ -461,7 +479,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Όσο είναι ενεργή μια σύνδεση που μπλοκάρει την κίνηση αν πέσει, καμία άλλη δεν μπορεί να ξεκινήσει.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Το Διαδίκτυο είναι αποκλεισμένο επειδή έπεσε μια σύνδεση: άρετε πρώτα τον αποκλεισμό.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Αποκλεισμός όλης της κίνησης εκτός VPN όσο είναι ενεργό, και μετά από πτώση μέχρι να επανασυνδεθώ ή να άρω τον αποκλεισμό",
-  "Protection:": "Προστασία:"
+  "Protection:": "Προστασία:",
+  "Before you connect": "Πριν συνδεθείτε",
+  "Continue": "Συνέχεια",
+  "Privacy Policy": "Πολιτική απορρήτου",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "Το MugVPN ρυθμίζει ένα VPN στο Mac σας. Όσο μια σύνδεση είναι ενεργή, η κίνησή της περνά μέσω του VPN στον διακομιστή του προφίλ σας, που τον λειτουργεί όποιος λειτουργεί αυτό το VPN, όχι οι δημιουργοί του MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "Το MugVPN δεν συλλέγει δεδομένα και δεν στέλνει τίποτα στους δημιουργούς του: καμία ανάλυση, κανένας λογαριασμός. Τα προφίλ, οι αποθηκευμένοι κωδικοί και τα αρχεία καταγραφής μένουν στο Mac σας· ένας κωδικός πηγαίνει μόνο στον διακομιστή VPN για τον οποίο είναι, όταν τον ζητήσει.",
+  "MugVPN's authors never sell, use or share any data about you.": "Οι δημιουργοί του MugVPN δεν πωλούν, δεν χρησιμοποιούν και δεν μοιράζονται ποτέ δεδομένα για εσάς."
  },
  "es": {
   "OK": "Aceptar",
@@ -577,7 +601,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mientras esté activa una conexión que bloquea el tráfico si se cae, no puede iniciarse ninguna otra.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet está bloqueado porque una conexión se cayó: desbloquéelo primero.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Bloquear todo el tráfico fuera de la VPN mientras esté activa, y tras una caída hasta que vuelva a conectar o desbloquee",
-  "Protection:": "Protección:"
+  "Protection:": "Protección:",
+  "Before you connect": "Antes de conectar",
+  "Continue": "Continuar",
+  "Privacy Policy": "Política de privacidad",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN configura una VPN en tu Mac. Mientras una conexión está activa, su tráfico pasa por la VPN hasta el servidor de tu perfil, gestionado por quien gestiona esa VPN, no por los autores de MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN no recopila datos ni envía nada a sus autores: sin analítica, sin cuenta. Tus perfiles, contraseñas guardadas y registros se quedan en tu Mac; una contraseña solo va al servidor VPN para el que es, cuando la pide.",
+  "MugVPN's authors never sell, use or share any data about you.": "Los autores de MugVPN nunca venden, usan ni comparten ningún dato sobre ti."
  },
  "fa": {
   "OK": "تأیید",
@@ -693,7 +723,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "تا وقتی اتصالی برقرار است که در صورت قطع شدن ترافیک را مسدود می‌کند، هیچ اتصال دیگری نمی‌تواند شروع شود.",
   "The Internet is blocked since a connection dropped: unblock it first.": "اینترنت مسدود است چون یک اتصال قطع شد: ابتدا آن را رفع انسداد کنید.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "مسدود کردن همهٔ ترافیک بیرون از VPN تا وقتی برقرار است، و پس از قطع شدن تا وقتی دوباره وصل شوم یا رفع انسداد کنم",
-  "Protection:": "محافظت:"
+  "Protection:": "محافظت:",
+  "Before you connect": "پیش از اتصال",
+  "Continue": "ادامه",
+  "Privacy Policy": "سیاست حریم خصوصی",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN یک VPN روی Mac شما راه‌اندازی می‌کند. تا وقتی اتصالی برقرار است، ترافیک آن از راه VPN به سرور پروفایل شما می‌رود که گردانندهٔ همان VPN آن را اداره می‌کند، نه نویسندگان MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN هیچ داده‌ای جمع نمی‌کند و چیزی برای نویسندگانش نمی‌فرستد: نه تحلیل، نه حساب کاربری. پروفایل‌ها، گذرواژه‌های ذخیره‌شده و گزارش‌ها روی Mac شما می‌مانند؛ هر گذرواژه فقط وقتی سرور VPN مربوط به آن بخواهد، برای همان سرور فرستاده می‌شود.",
+  "MugVPN's authors never sell, use or share any data about you.": "نویسندگان MugVPN هرگز هیچ داده‌ای دربارهٔ شما را نمی‌فروشند، به کار نمی‌برند یا با کسی به اشتراک نمی‌گذارند."
  },
  "fi": {
   "OK": "OK",
@@ -809,7 +845,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Kun yhteys, joka estää liikenteen katketessaan, on päällä, muuta yhteyttä ei voi käynnistää.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet on estetty, koska yhteys katkesi: poista esto ensin.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Estä kaikki VPN:n ulkopuolinen liikenne, kun se on päällä, ja katkoksen jälkeen, kunnes yhdistän uudelleen tai poistan eston",
-  "Protection:": "Suojaus:"
+  "Protection:": "Suojaus:",
+  "Before you connect": "Ennen yhdistämistä",
+  "Continue": "Jatka",
+  "Privacy Policy": "Tietosuojakäytäntö",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN määrittää Maciisi VPN:n. Kun yhteys on päällä, sen liikenne kulkee VPN:n kautta profiilisi palvelimelle, jota ylläpitää kyseisen VPN:n ylläpitäjä, ei MugVPN:n tekijät.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN ei kerää tietoja eikä lähetä mitään tekijöilleen: ei analytiikkaa, ei tiliä. Profiilisi, tallennetut salasanat ja lokit pysyvät Macissasi; salasana menee vain sille VPN-palvelimelle, jota varten se on, kun se pyytää sitä.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN:n tekijät eivät koskaan myy, käytä tai jaa sinua koskevia tietoja."
  },
  "fr": {
   "OK": "OK",
@@ -925,7 +967,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Tant qu’une connexion qui bloque le trafic si elle tombe est active, aucune autre ne peut démarrer.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet est bloqué car une connexion est tombée : débloquez-le d’abord.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Bloquer tout le trafic hors du VPN tant qu’il est actif, et après une coupure jusqu’à ce que je me reconnecte ou débloque",
-  "Protection:": "Protection :"
+  "Protection:": "Protection :",
+  "Before you connect": "Avant de vous connecter",
+  "Continue": "Continuer",
+  "Privacy Policy": "Politique de confidentialité",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN configure un VPN sur votre Mac. Tant qu’une connexion est active, son trafic passe par le VPN jusqu’au serveur de votre profil, géré par celui qui gère ce VPN, et non par les auteurs de MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN ne collecte aucune donnée et n’envoie rien à ses auteurs : pas d’analyse, pas de compte. Vos profils, mots de passe enregistrés et journaux restent sur votre Mac ; un mot de passe ne va qu’au serveur VPN auquel il est destiné, quand il le demande.",
+  "MugVPN's authors never sell, use or share any data about you.": "Les auteurs de MugVPN ne vendent, n’utilisent ni ne partagent jamais aucune donnée vous concernant."
  },
  "it": {
   "OK": "OK",
@@ -1041,7 +1089,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Finché è attiva una connessione che blocca il traffico se cade, nessun’altra può avviarsi.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet è bloccato perché una connessione è caduta: sbloccalo prima.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Blocca tutto il traffico fuori dalla VPN finché è attiva, e dopo una caduta finché non mi ricollego o sblocco",
-  "Protection:": "Protezione:"
+  "Protection:": "Protezione:",
+  "Before you connect": "Prima di connetterti",
+  "Continue": "Continua",
+  "Privacy Policy": "Informativa sulla privacy",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN configura una VPN sul tuo Mac. Finché una connessione è attiva, il suo traffico passa attraverso la VPN fino al server del tuo profilo, gestito da chi gestisce quella VPN, non dagli autori di MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN non raccoglie dati e non invia nulla ai suoi autori: niente analisi, nessun account. I tuoi profili, le password salvate e i registri restano sul Mac; una password va solo al server VPN a cui è destinata, quando la chiede.",
+  "MugVPN's authors never sell, use or share any data about you.": "Gli autori di MugVPN non vendono, usano o condividono mai alcun dato su di te."
  },
  "ja": {
   "OK": "OK",
@@ -1157,7 +1211,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "切断時に通信をブロックする接続が有効な間は、ほかの接続を開始できません。",
   "The Internet is blocked since a connection dropped: unblock it first.": "接続が切断されたためインターネットがブロックされています。先にブロックを解除してください。",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "接続中はVPN外のすべての通信をブロックし、切断後も再接続するかブロックを解除するまでブロック",
-  "Protection:": "保護:"
+  "Protection:": "保護:",
+  "Before you connect": "接続する前に",
+  "Continue": "続ける",
+  "Privacy Policy": "プライバシーポリシー",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPNはこのMacにVPNを設定します。接続中は、その通信がVPNを通ってプロファイルのサーバに送られます。サーバを運営するのはそのVPNの運営者であり、MugVPNの作者ではありません。",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPNはデータを収集せず、作者に何も送りません。分析もアカウントもありません。プロファイル、保存したパスワード、ログはMacに残ります。パスワードは、それを使うVPNサーバが求めたときにだけ、そのサーバに送られます。",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPNの作者は、あなたに関するデータを販売、利用、共有することはありません。"
  },
  "ko": {
   "OK": "확인",
@@ -1273,7 +1333,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "끊기면 트래픽을 차단하는 연결이 켜져 있는 동안에는 다른 연결을 시작할 수 없습니다.",
   "The Internet is blocked since a connection dropped: unblock it first.": "연결이 끊겨 인터넷이 차단되었습니다. 먼저 차단을 해제하세요.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "연결된 동안 VPN 밖의 모든 트래픽을 차단하고, 끊긴 뒤에도 다시 연결하거나 차단을 해제할 때까지 차단",
-  "Protection:": "보호:"
+  "Protection:": "보호:",
+  "Before you connect": "연결하기 전에",
+  "Continue": "계속",
+  "Privacy Policy": "개인정보 처리방침",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN은 Mac에 VPN을 설정합니다. 연결된 동안 그 트래픽은 VPN을 통해 프로필의 서버로 가며, 그 서버는 MugVPN 작성자가 아니라 해당 VPN의 운영자가 운영합니다.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN은 데이터를 수집하지 않으며 작성자에게 아무것도 보내지 않습니다. 분석도 계정도 없습니다. 프로필, 저장된 암호, 로그는 Mac에 남고, 암호는 해당 VPN 서버가 요청할 때 그 서버에만 전송됩니다.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN 작성자는 사용자에 관한 데이터를 절대 판매, 사용 또는 공유하지 않습니다."
  },
  "nl": {
   "OK": "OK",
@@ -1389,7 +1455,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Zolang een verbinding actief is die verkeer blokkeert als ze wegvalt, kan geen andere starten.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet is geblokkeerd omdat een verbinding wegviel: hef de blokkering eerst op.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Al het verkeer buiten de VPN blokkeren zolang die actief is, en na een onderbreking tot ik opnieuw verbind of deblokkeer",
-  "Protection:": "Bescherming:"
+  "Protection:": "Bescherming:",
+  "Before you connect": "Voordat je verbinding maakt",
+  "Continue": "Ga door",
+  "Privacy Policy": "Privacybeleid",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN stelt een VPN in op je Mac. Zolang een verbinding actief is, gaat het verkeer via de VPN naar de server in je profiel, beheerd door wie die VPN beheert, niet door de makers van MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN verzamelt geen gegevens en stuurt niets naar de makers: geen analyse, geen account. Je profielen, bewaarde wachtwoorden en logboeken blijven op je Mac; een wachtwoord gaat alleen naar de VPN-server waarvoor het is, als die erom vraagt.",
+  "MugVPN's authors never sell, use or share any data about you.": "De makers van MugVPN verkopen, gebruiken of delen nooit gegevens over jou."
  },
  "nb": {
   "OK": "OK",
@@ -1505,7 +1577,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Mens en tilkobling som blokkerer trafikk hvis den faller ut, er oppe, kan ingen annen starte.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internett er blokkert fordi en tilkobling falt ut: opphev blokkeringen først.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Blokker all trafikk utenfor VPN mens den er oppe, og etter et brudd til jeg kobler til igjen eller opphever blokkeringen",
-  "Protection:": "Beskyttelse:"
+  "Protection:": "Beskyttelse:",
+  "Before you connect": "Før du kobler til",
+  "Continue": "Fortsett",
+  "Privacy Policy": "Personvernerklæring",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN setter opp et VPN på Macen din. Mens en tilkobling er oppe, går trafikken gjennom VPN-et til serveren i profilen din, drevet av den som driver det VPN-et, ikke av MugVPNs forfattere.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN samler ingen data og sender ingenting til forfatterne: ingen analyse, ingen konto. Profilene, de lagrede passordene og loggene blir på Macen; et passord går bare til VPN-serveren det er for, når den ber om det.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPNs forfattere selger, bruker eller deler aldri data om deg."
  },
  "pl": {
   "OK": "OK",
@@ -1621,7 +1699,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Dopóki aktywne jest połączenie, które blokuje ruch po zerwaniu, żadne inne nie może się rozpocząć.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet jest zablokowany, bo połączenie zostało zerwane: najpierw go odblokuj.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Blokuj cały ruch poza VPN, gdy jest aktywny, a po zerwaniu – dopóki nie połączę się ponownie lub nie odblokuję",
-  "Protection:": "Ochrona:"
+  "Protection:": "Ochrona:",
+  "Before you connect": "Zanim się połączysz",
+  "Continue": "Kontynuuj",
+  "Privacy Policy": "Polityka prywatności",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN konfiguruje VPN na Twoim Macu. Gdy połączenie jest aktywne, jego ruch idzie przez VPN do serwera z Twojego profilu, prowadzonego przez tego, kto prowadzi ten VPN, a nie przez autorów MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN nie zbiera danych i nic nie wysyła swoim autorom: bez analityki, bez konta. Profile, zapisane hasła i dzienniki zostają na Macu; hasło trafia tylko do serwera VPN, dla którego jest, gdy ten o nie poprosi.",
+  "MugVPN's authors never sell, use or share any data about you.": "Autorzy MugVPN nigdy nie sprzedają, nie wykorzystują ani nie udostępniają żadnych danych o Tobie."
  },
  "pt-BR": {
   "OK": "OK",
@@ -1737,7 +1821,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Enquanto uma conexão que bloqueia o tráfego se cair estiver ativa, nenhuma outra pode iniciar.",
   "The Internet is blocked since a connection dropped: unblock it first.": "A Internet está bloqueada porque uma conexão caiu: desbloqueie primeiro.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Bloquear todo o tráfego fora da VPN enquanto ela estiver ativa, e após uma queda até eu reconectar ou desbloquear",
-  "Protection:": "Proteção:"
+  "Protection:": "Proteção:",
+  "Before you connect": "Antes de conectar",
+  "Continue": "Continuar",
+  "Privacy Policy": "Política de privacidade",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "O MugVPN configura uma VPN no seu Mac. Enquanto uma conexão está ativa, o tráfego dela passa pela VPN até o servidor do seu perfil, operado por quem opera essa VPN, não pelos autores do MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "O MugVPN não coleta dados e não envia nada aos seus autores: sem análise, sem conta. Seus perfis, senhas salvas e registros ficam no seu Mac; uma senha só vai para o servidor VPN a que se destina, quando ele a pede.",
+  "MugVPN's authors never sell, use or share any data about you.": "Os autores do MugVPN nunca vendem, usam ou compartilham dados sobre você."
  },
  "ru": {
   "OK": "ОК",
@@ -1853,7 +1943,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Пока активно подключение, которое блокирует трафик при обрыве, другие запустить нельзя.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Интернет заблокирован, потому что подключение оборвалось: сначала разблокируйте его.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокировать весь трафик вне VPN, пока соединение активно, а после разрыва — до переподключения или снятия блокировки",
-  "Protection:": "Защита:"
+  "Protection:": "Защита:",
+  "Before you connect": "Перед подключением",
+  "Continue": "Продолжить",
+  "Privacy Policy": "Политика конфиденциальности",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN настраивает VPN на вашем Mac. Пока подключение активно, его трафик идёт через VPN на сервер из вашего профиля; этим сервером управляет тот, кто управляет этим VPN, а не авторы MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN не собирает данных и ничего не отправляет своим авторам: ни аналитики, ни учётной записи. Ваши профили, сохранённые пароли и журналы остаются на Mac; пароль уходит только тому VPN-серверу, для которого он предназначен, когда сервер его запрашивает.",
+  "MugVPN's authors never sell, use or share any data about you.": "Авторы MugVPN никогда не продают, не используют и не передают никакие данные о вас."
  },
  "sv": {
   "OK": "OK",
@@ -1969,7 +2065,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Medan en anslutning som blockerar trafik om den bryts är uppe kan ingen annan starta.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Internet är blockerat eftersom en anslutning bröts: häv blockeringen först.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Blockera all trafik utanför VPN medan den är uppe, och efter ett avbrott tills jag ansluter igen eller häver blockeringen",
-  "Protection:": "Skydd:"
+  "Protection:": "Skydd:",
+  "Before you connect": "Innan du ansluter",
+  "Continue": "Fortsätt",
+  "Privacy Policy": "Integritetspolicy",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN ställer in ett VPN på din Mac. Medan en anslutning är uppe går dess trafik genom VPN:et till servern i din profil, som drivs av den som driver det VPN:et, inte av MugVPN:s upphovspersoner.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN samlar inga data och skickar inget till sina upphovspersoner: ingen analys, inget konto. Dina profiler, sparade lösenord och loggar stannar på din Mac; ett lösenord går bara till den VPN-server det är till för, när den ber om det.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN:s upphovspersoner säljer, använder eller delar aldrig några data om dig."
  },
  "tr": {
   "OK": "Tamam",
@@ -2085,7 +2187,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Koptuğunda trafiği engelleyen bir bağlantı açıkken başka bir bağlantı başlatılamaz.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Bir bağlantı koptuğu için İnternet engellendi: önce engeli kaldırın.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Açıkken VPN dışındaki tüm trafiği engelle; koptuktan sonra yeniden bağlanana veya engeli kaldırana kadar engelle",
-  "Protection:": "Koruma:"
+  "Protection:": "Koruma:",
+  "Before you connect": "Bağlanmadan önce",
+  "Continue": "Devam",
+  "Privacy Policy": "Gizlilik Politikası",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN, Mac’inizde bir VPN kurar. Bir bağlantı açıkken trafiği VPN üzerinden profilinizdeki sunucuya gider; o sunucuyu MugVPN’in yazarları değil, o VPN’i işleten kişi işletir.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN veri toplamaz ve yazarlarına hiçbir şey göndermez: analiz yok, hesap yok. Profilleriniz, kaydedilmiş parolalarınız ve günlükleriniz Mac’inizde kalır; bir parola yalnızca ait olduğu VPN sunucusu istediğinde ona gider.",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN’in yazarları sizinle ilgili hiçbir veriyi asla satmaz, kullanmaz veya paylaşmaz."
  },
  "uk": {
   "OK": "OK",
@@ -2201,7 +2309,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Поки активне підключення, яке блокує трафік у разі обриву, інші запустити не можна.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Інтернет заблоковано, бо підключення обірвалося: спершу розблокуйте його.",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокувати весь трафік поза VPN, поки з’єднання активне, а після обриву — до перепідключення або зняття блокування",
-  "Protection:": "Захист:"
+  "Protection:": "Захист:",
+  "Before you connect": "Перед підключенням",
+  "Continue": "Продовжити",
+  "Privacy Policy": "Політика конфіденційності",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN налаштовує VPN на вашому Mac. Поки з’єднання активне, його трафік іде через VPN до сервера з вашого профілю; цим сервером керує той, хто керує цим VPN, а не автори MugVPN.",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN не збирає даних і нічого не надсилає своїм авторам: ні аналітики, ні облікового запису. Ваші профілі, збережені паролі та журнали залишаються на Mac; пароль надходить лише тому VPN-серверу, для якого він призначений, коли сервер його запитує.",
+  "MugVPN's authors never sell, use or share any data about you.": "Автори MugVPN ніколи не продають, не використовують і не передають жодних даних про вас."
  },
  "zh-Hans": {
   "OK": "好",
@@ -2317,7 +2431,13 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "断开时会阻止流量的连接处于活动状态时，无法启动其他连接。",
   "The Internet is blocked since a connection dropped: unblock it first.": "由于连接已断开，互联网已被阻止：请先解除阻止。",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "连接期间阻止 VPN 之外的所有流量；断开后继续阻止，直到我重新连接或解除阻止",
-  "Protection:": "保护："
+  "Protection:": "保护：",
+  "Before you connect": "连接之前",
+  "Continue": "继续",
+  "Privacy Policy": "隐私政策",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN 会在你的 Mac 上设置 VPN。连接期间，其流量经由 VPN 发送到你的配置文件中的服务器；该服务器由运营该 VPN 的人运营，而不是 MugVPN 的作者。",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN 不收集任何数据，也不向其作者发送任何内容：没有分析，没有账户。你的配置文件、已存储的密码和日志都留在你的 Mac 上；密码只会在对应的 VPN 服务器要求时发送给该服务器。",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN 的作者绝不出售、使用或共享任何关于你的数据。"
  },
  "zh-Hant": {
   "OK": "好",
@@ -2433,6 +2553,12 @@
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "中斷時會封鎖流量的連線啟用期間，無法啟動其他連線。",
   "The Internet is blocked since a connection dropped: unblock it first.": "由於連線已中斷，網際網路已被封鎖：請先解除封鎖。",
   "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "連線期間封鎖 VPN 以外的所有流量；中斷後繼續封鎖，直到我重新連線或解除封鎖",
-  "Protection:": "保護："
+  "Protection:": "保護：",
+  "Before you connect": "連線之前",
+  "Continue": "繼續",
+  "Privacy Policy": "隱私權政策",
+  "MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors.": "MugVPN 會在你的 Mac 上設定 VPN。連線期間，其流量經由 VPN 傳送到你描述檔中的伺服器；該伺服器由營運該 VPN 的人營運，而非 MugVPN 的作者。",
+  "MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks.": "MugVPN 不收集任何資料，也不向其作者傳送任何內容：沒有分析，沒有帳號。你的描述檔、已儲存的密碼與記錄都留在你的 Mac 上；密碼只會在對應的 VPN 伺服器要求時傳送給該伺服器。",
+  "MugVPN's authors never sell, use or share any data about you.": "MugVPN 的作者絕不出售、使用或分享任何關於你的資料。"
  }
 }

@@ -33,6 +33,7 @@
 "Authentication failed" = "احراز هویت ناموفق بود";
 "Autologin profile (no password when connecting)" = "پروفایل ورود خودکار (بدون رمز عبور هنگام اتصال)";
 "Automatic" = "خودکار";
+"Before you connect" = "پیش از اتصال";
 "Block IPv6 outside the VPN" = "مسدود کردن IPv6 بیرون از VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "مسدود کردن همهٔ ترافیک بیرون از VPN تا وقتی برقرار است، و پس از قطع شدن تا وقتی دوباره وصل شوم یا رفع انسداد کنم";
 "By folder" = "بر اساس پوشه";
@@ -71,6 +72,7 @@
 "Connection: %@" = "اتصال: %@";
 "Connections" = "اتصال‌ها";
 "Connections…" = "اتصال‌ها…";
+"Continue" = "ادامه";
 "Copy" = "کپی";
 "Copy Details" = "کپی جزئیات";
 "Copy and Import" = "کپی و وارد کردن";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN را به پوشهٔ Applications منتقل کنید، آن را از همان‌جا باز کنید و دوباره وصل شوید.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "تنظیمات MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN هیچ داده‌ای جمع نمی‌کند و چیزی برای نویسندگانش نمی‌فرستد: نه تحلیل، نه حساب کاربری. پروفایل‌ها، گذرواژه‌های ذخیره‌شده و گزارش‌ها روی Mac شما می‌مانند؛ هر گذرواژه فقط وقتی سرور VPN مربوط به آن بخواهد، برای همان سرور فرستاده می‌شود.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN نتوانست حذف را کامل کند (%@). نصب می‌ماند: یک دقیقه دیگر دوباره امتحان کنید.";
 "MugVPN in Login Items" = "MugVPN در موارد ورود";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN هنوز در حال برداشتن DNS یا مسیرهایی است که یک VPN تنظیم کرده و تا آن زمان نصب می‌ماند. یک دقیقه دیگر دوباره امتحان کنید.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN حذف شد، اما این‌ها حذف نشدند: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN برای راه‌اندازی تونل‌ها به سرویس کمکی خود نیاز دارد.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN یک VPN روی Mac شما راه‌اندازی می‌کند. تا وقتی اتصالی برقرار است، ترافیک آن از راه VPN به سرور پروفایل شما می‌رود که گردانندهٔ همان VPN آن را اداره می‌کند، نه نویسندگان MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "پیکربندی VPN برنامهٔ MugVPN، گزارش‌ها، تنظیمات و گذرواژه‌های ذخیره‌شده حذف می‌شوند. تونل‌ها قطع می‌شوند.";
+"MugVPN's authors never sell, use or share any data about you." = "نویسندگان MugVPN هرگز هیچ داده‌ای دربارهٔ شما را نمی‌فروشند، به کار نمی‌برند یا با کسی به اشتراک نمی‌گذارند.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "دستیار MugVPN پاسخ نداد (%@). بخش سیستمی MugVPN با رمز مدیر حذف شود؟";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "نسخهٔ دستیار MugVPN %@ است، جدیدتر از این برنامه (%@): MugVPN را به‌روز کنید.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "نسخهٔ دستیار MugVPN %@ است، نه %@ این برنامه: وقتی هیچ اتصالی از آن استفاده نکند (یا پس از راه‌اندازی دوباره) به‌روز می‌شود.";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "اتصال‌های دائمی:";
 "Port:" = "پورت:";
 "Pre-connect script (s):" = "اسکریپت پیش از اتصال (ثانیه):";
+"Privacy Policy" = "سیاست حریم خصوصی";
 "Private key:" = "کلید خصوصی:";
 "Profile menu:" = "منوی پروفایل‌ها:";
 "Profiles without passwords or keys (servers, certificates, options)" = "پروفایل‌ها بدون گذرواژه یا کلید (سرورها، گواهی‌ها، گزینه‌ها)";

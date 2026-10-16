@@ -88,10 +88,13 @@ public struct BackendCapabilities: Equatable, Sendable {
     public var adminPolicy: Bool
     /// A connection with a kill switch runs alone, nothing outside the VPN while it is up (the system's strict mode).
     public var killSwitchRunsAlone: Bool
+    /// What MugVPN does with data is said, and taken, before the first connection (the App Store's VPN apps).
+    public var vpnDisclosure: Bool
 
     public init(scripts: Bool, persistentConnections: Bool, systemHelper: Bool, directDNSBlocking: Bool,
-                protectionAcrossRestart: Bool, adminPolicy: Bool, killSwitchRunsAlone: Bool = false) {
+                protectionAcrossRestart: Bool, adminPolicy: Bool, killSwitchRunsAlone: Bool = false, vpnDisclosure: Bool = false) {
         self.killSwitchRunsAlone = killSwitchRunsAlone
+        self.vpnDisclosure = vpnDisclosure
         self.scripts = scripts
         self.persistentConnections = persistentConnections
         self.systemHelper = systemHelper
@@ -106,7 +109,7 @@ public struct BackendCapabilities: Equatable, Sendable {
     /// A packet tunnel provider (Network Extension).
     public static let packetTunnel = BackendCapabilities(scripts: false, persistentConnections: false, systemHelper: false,
                                                          directDNSBlocking: false, protectionAcrossRestart: true, adminPolicy: false,
-                                                         killSwitchRunsAlone: true)
+                                                         killSwitchRunsAlone: true, vpnDisclosure: true)
 }
 
 /// A product's backend: its parts (the optional ones only where it has them) and what it does.

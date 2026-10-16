@@ -33,6 +33,7 @@
 "Authentication failed" = "Todennus epäonnistui";
 "Autologin profile (no password when connecting)" = "Automaattisen kirjautumisen profiili (ei salasanaa yhdistettäessä)";
 "Automatic" = "Automaattinen";
+"Before you connect" = "Ennen yhdistämistä";
 "Block IPv6 outside the VPN" = "Estä IPv6 VPN:n ulkopuolella";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Estä kaikki VPN:n ulkopuolinen liikenne, kun se on päällä, ja katkoksen jälkeen, kunnes yhdistän uudelleen tai poistan eston";
 "By folder" = "Kansioittain";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Yhteys: %@";
 "Connections" = "Yhteydet";
 "Connections…" = "Yhteydet…";
+"Continue" = "Jatka";
 "Copy" = "Kopioi";
 "Copy Details" = "Kopioi tiedot";
 "Copy and Import" = "Kopioi ja tuo";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Siirrä MugVPN Ohjelmat-kansioon, avaa se sieltä ja yhdistä uudelleen.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN-asetukset";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN ei kerää tietoja eikä lähetä mitään tekijöilleen: ei analytiikkaa, ei tiliä. Profiilisi, tallennetut salasanat ja lokit pysyvät Macissasi; salasana menee vain sille VPN-palvelimelle, jota varten se on, kun se pyytää sitä.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN ei voinut viedä poistoa loppuun (%@). Se pysyy asennettuna: yritä uudelleen minuutin kuluttua.";
 "MugVPN in Login Items" = "MugVPN kirjautumiskohteissa";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN poistaa vielä VPN:n asettamaa DNS:ää tai reittejä ja pysyy asennettuna siihen asti. Yritä uudelleen minuutin kuluttua.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN on poistettu, mutta näitä ei voitu poistaa: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN tarvitsee apuohjelmansa tunneleiden käynnistämiseen.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN määrittää Maciisi VPN:n. Kun yhteys on päällä, sen liikenne kulkee VPN:n kautta profiilisi palvelimelle, jota ylläpitää kyseisen VPN:n ylläpitäjä, ei MugVPN:n tekijät.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN:n VPN-määritys, lokit, asetukset ja tallennetut salasanat poistetaan. Tunnelit katkaistaan.";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPN:n tekijät eivät koskaan myy, käytä tai jaa sinua koskevia tietoja.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN:n apuohjelma ei vastannut (%@). Poistetaanko MugVPN:n järjestelmäosa ylläpitäjän salasanalla?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN:n apuohjelma on versio %@, uudempi kuin tämä sovellus (%@): päivitä MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN:n apuohjelma on versio %@, ei tämän sovelluksen %@: se päivittyy, kun mikään yhteys ei käytä sitä (tai uudelleenkäynnistyksen jälkeen).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Pysyvät yhteydet:";
 "Port:" = "Portti:";
 "Pre-connect script (s):" = "Yhdistämistä edeltävä komentosarja (s):";
+"Privacy Policy" = "Tietosuojakäytäntö";
 "Private key:" = "Yksityinen avain:";
 "Profile menu:" = "Profiilivalikko:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profiilit ilman salasanoja tai avaimia (palvelimet, varmenteet, asetukset)";

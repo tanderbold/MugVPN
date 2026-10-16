@@ -33,6 +33,7 @@
 "Authentication failed" = "Autenticazione non riuscita";
 "Autologin profile (no password when connecting)" = "Profilo con accesso automatico (nessuna password alla connessione)";
 "Automatic" = "Automatico";
+"Before you connect" = "Prima di connetterti";
 "Block IPv6 outside the VPN" = "Blocca IPv6 fuori dalla VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Blocca tutto il traffico fuori dalla VPN finché è attiva, e dopo una caduta finché non mi ricollego o sblocco";
 "By folder" = "Per cartella";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Connessione: %@";
 "Connections" = "Connessioni";
 "Connections…" = "Connessioni…";
+"Continue" = "Continua";
 "Copy" = "Copia";
 "Copy Details" = "Copia dettagli";
 "Copy and Import" = "Copia e importa";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Sposta MugVPN nella cartella Applicazioni, aprilo da lì e connettiti di nuovo.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Impostazioni di MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN non raccoglie dati e non invia nulla ai suoi autori: niente analisi, nessun account. I tuoi profili, le password salvate e i registri restano sul Mac; una password va solo al server VPN a cui è destinata, quando la chiede.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN non ha potuto completare la disinstallazione (%@). Resta installato: riprova tra un minuto.";
 "MugVPN in Login Items" = "MugVPN negli elementi di login";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN sta ancora rimuovendo il DNS o gli instradamenti impostati da una VPN e resterà installato fino ad allora. Riprova tra un minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN è disinstallato, ma questi elementi non sono stati rimossi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necessita del suo componente di supporto per avviare i tunnel.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN configura una VPN sul tuo Mac. Finché una connessione è attiva, il suo traffico passa attraverso la VPN fino al server del tuo profilo, gestito da chi gestisce quella VPN, non dagli autori di MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "La configurazione VPN di MugVPN, i registri, le impostazioni e le password salvate verranno rimossi. I tunnel vengono disconnessi.";
+"MugVPN's authors never sell, use or share any data about you." = "Gli autori di MugVPN non vendono, usano o condividono mai alcun dato su di te.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "L'helper di MugVPN non ha risposto (%@). Rimuovere la parte di sistema di MugVPN con una password di amministratore?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "L'helper di MugVPN è alla versione %@, più recente di questa app (%@): aggiorna MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "L'helper di MugVPN è alla versione %@, non %@ di questa app: si aggiorna quando nessuna connessione lo usa (o dopo un riavvio).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Connessioni persistenti:";
 "Port:" = "Porta:";
 "Pre-connect script (s):" = "Script di preconnessione (s):";
+"Privacy Policy" = "Informativa sulla privacy";
 "Private key:" = "Chiave privata:";
 "Profile menu:" = "Menu profili:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profili senza password né chiavi (server, certificati, opzioni)";

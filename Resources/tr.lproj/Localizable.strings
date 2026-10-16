@@ -33,6 +33,7 @@
 "Authentication failed" = "Kimlik doğrulama başarısız";
 "Autologin profile (no password when connecting)" = "Otomatik oturum açma profili (bağlanırken şifre sorulmaz)";
 "Automatic" = "Otomatik";
+"Before you connect" = "Bağlanmadan önce";
 "Block IPv6 outside the VPN" = "VPN dışında IPv6’yı engelle";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Açıkken VPN dışındaki tüm trafiği engelle; koptuktan sonra yeniden bağlanana veya engeli kaldırana kadar engelle";
 "By folder" = "Klasöre göre";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Bağlantı: %@";
 "Connections" = "Bağlantılar";
 "Connections…" = "Bağlantılar…";
+"Continue" = "Devam";
 "Copy" = "Kopyala";
 "Copy Details" = "Ayrıntıları Kopyala";
 "Copy and Import" = "Kopyala ve İçe Aktar";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPN’i Uygulamalar klasörüne taşıyın, oradan açın ve yeniden bağlanın.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN Ayarları";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN veri toplamaz ve yazarlarına hiçbir şey göndermez: analiz yok, hesap yok. Profilleriniz, kaydedilmiş parolalarınız ve günlükleriniz Mac’inizde kalır; bir parola yalnızca ait olduğu VPN sunucusu istediğinde ona gider.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN kaldırmayı tamamlayamadı (%@). Yüklü kalıyor: bir dakika sonra yeniden deneyin.";
 "MugVPN in Login Items" = "Giriş Öğeleri’ndeki MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN bir VPN’in ayarladığı DNS’i veya yönlendirmeleri hâlâ kaldırıyor ve o zamana kadar yüklü kalacak. Bir dakika sonra yeniden deneyin.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN kaldırıldı ancak şunlar silinemedi: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN'in tünelleri başlatmak için yardımcı bileşenine ihtiyacı var.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN, Mac’inizde bir VPN kurar. Bir bağlantı açıkken trafiği VPN üzerinden profilinizdeki sunucuya gider; o sunucuyu MugVPN’in yazarları değil, o VPN’i işleten kişi işletir.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN'in VPN yapılandırması, günlükleri, ayarları ve kaydedilmiş parolaları kaldırılacak. Tüneller kesilir.";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPN’in yazarları sizinle ilgili hiçbir veriyi asla satmaz, kullanmaz veya paylaşmaz.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN yardımcısı yanıt vermedi (%@). MugVPN'in sistem bölümü bunun yerine yönetici parolasıyla kaldırılsın mı?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN yardımcısı %@ sürümünde, bu uygulamadan (%@) daha yeni: MugVPN'i güncelleyin.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN yardımcısı %@ sürümünde, bu uygulamanın %@ sürümünde değil: hiçbir bağlantı onu kullanmadığında (veya yeniden başlatmadan sonra) güncellenir.";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Kalıcı bağlantılar:";
 "Port:" = "Port:";
 "Pre-connect script (s):" = "Bağlantı öncesi betik (sn):";
+"Privacy Policy" = "Gizlilik Politikası";
 "Private key:" = "Özel anahtar:";
 "Profile menu:" = "Profil menüsü:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Parola ve anahtar olmadan profiller (sunucular, sertifikalar, seçenekler)";

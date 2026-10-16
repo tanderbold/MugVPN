@@ -33,6 +33,7 @@
 "Authentication failed" = "Error de autenticación";
 "Autologin profile (no password when connecting)" = "Perfil de inicio de sesión automático (sin clave al conectar)";
 "Automatic" = "Automático";
+"Before you connect" = "Antes de conectar";
 "Block IPv6 outside the VPN" = "Bloquear IPv6 fuera de la VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Bloquear todo el tráfico fuera de la VPN mientras esté activa, y tras una caída hasta que vuelva a conectar o desbloquee";
 "By folder" = "Por carpeta";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Conexión: %@";
 "Connections" = "Conexiones";
 "Connections…" = "Conexiones…";
+"Continue" = "Continuar";
 "Copy" = "Copiar";
 "Copy Details" = "Copiar detalles";
 "Copy and Import" = "Copiar e importar";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Mueve MugVPN a la carpeta Aplicaciones, ábrelo desde allí y vuelve a conectarte.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Opciones de MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN no recopila datos ni envía nada a sus autores: sin analítica, sin cuenta. Tus perfiles, contraseñas guardadas y registros se quedan en tu Mac; una contraseña solo va al servidor VPN para el que es, cuando la pide.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN no pudo terminar la desinstalación (%@). Sigue instalado: inténtelo de nuevo en un minuto.";
 "MugVPN in Login Items" = "MugVPN en Ítems de inicio";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN todavía está quitando el DNS o las rutas que estableció una VPN y seguirá instalado hasta entonces. Inténtelo de nuevo en un minuto.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN está desinstalado, pero no se pudo quitar esto: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN necesita su asistente para iniciar túneles.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN configura una VPN en tu Mac. Mientras una conexión está activa, su tráfico pasa por la VPN hasta el servidor de tu perfil, gestionado por quien gestiona esa VPN, no por los autores de MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Se eliminarán la configuración VPN de MugVPN, los registros, los ajustes y las contraseñas guardadas. Los túneles se desconectan.";
+"MugVPN's authors never sell, use or share any data about you." = "Los autores de MugVPN nunca venden, usan ni comparten ningún dato sobre ti.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "El asistente de MugVPN no respondió (%@). ¿Eliminar la parte del sistema de MugVPN con una contraseña de administrador?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "El asistente de MugVPN es la versión %@, más reciente que esta app (%@): actualice MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "El asistente de MugVPN es la versión %@, no la %@ de esta app: se actualiza cuando ninguna conexión lo usa (o tras reiniciar).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Conexiones persistentes:";
 "Port:" = "Puerto:";
 "Pre-connect script (s):" = "Script previo a la conexión (s):";
+"Privacy Policy" = "Política de privacidad";
 "Private key:" = "Clave privada:";
 "Profile menu:" = "Menú de perfiles:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Perfiles sin contraseñas ni claves (servidores, certificados, opciones)";

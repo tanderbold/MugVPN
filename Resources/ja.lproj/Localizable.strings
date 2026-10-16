@@ -33,6 +33,7 @@
 "Authentication failed" = "認証に失敗しました";
 "Autologin profile (no password when connecting)" = "自動ログインプロファイル（接続時にパスワード不要）";
 "Automatic" = "自動";
+"Before you connect" = "接続する前に";
 "Block IPv6 outside the VPN" = "VPN外のIPv6をブロック";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "接続中はVPN外のすべての通信をブロックし、切断後も再接続するかブロックを解除するまでブロック";
 "By folder" = "フォルダ別";
@@ -71,6 +72,7 @@
 "Connection: %@" = "接続: %@";
 "Connections" = "接続一覧";
 "Connections…" = "接続一覧…";
+"Continue" = "続ける";
 "Copy" = "コピー";
 "Copy Details" = "詳細をコピー";
 "Copy and Import" = "コピーして読み込む";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "MugVPNを「アプリケーション」フォルダに移動し、そこから開いてもう一度接続してください。";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "MugVPN 設定";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPNはデータを収集せず、作者に何も送りません。分析もアカウントもありません。プロファイル、保存したパスワード、ログはMacに残ります。パスワードは、それを使うVPNサーバが求めたときにだけ、そのサーバに送られます。";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN はアンインストールを完了できませんでした（%@）。インストールされたままです。1 分後にもう一度お試しください。";
 "MugVPN in Login Items" = "ログイン項目の MugVPN";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN は VPN が設定した DNS や経路をまだ取り除いています。それが終わるまでインストールされたままです。1 分後にもう一度お試しください。";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN はアンインストールされましたが、次のものを削除できませんでした: %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN がトンネルを開始するにはヘルパーが必要です。";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPNはこのMacにVPNを設定します。接続中は、その通信がVPNを通ってプロファイルのサーバに送られます。サーバを運営するのはそのVPNの運営者であり、MugVPNの作者ではありません。";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "MugVPN の VPN 構成、ログ、設定、保存されたパスワードが削除されます。トンネルは切断されます。";
+"MugVPN's authors never sell, use or share any data about you." = "MugVPNの作者は、あなたに関するデータを販売、利用、共有することはありません。";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "MugVPN のヘルパーが応答しませんでした（%@）。代わりに管理者パスワードで MugVPN のシステム部分を削除しますか？";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "MugVPN のヘルパーはバージョン %@ で、このアプリ（%@）より新しいです。MugVPN をアップデートしてください。";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "MugVPN のヘルパーはバージョン %@ で、このアプリの %@ ではありません。どの接続も使っていないとき（または再起動後）に更新されます。";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "永続的な接続:";
 "Port:" = "ポート:";
 "Pre-connect script (s):" = "接続前スクリプト (秒):";
+"Privacy Policy" = "プライバシーポリシー";
 "Private key:" = "秘密鍵:";
 "Profile menu:" = "プロファイルメニュー:";
 "Profiles without passwords or keys (servers, certificates, options)" = "パスワードや鍵を除いたプロファイル（サーバ、証明書、オプション）";

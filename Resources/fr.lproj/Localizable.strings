@@ -33,6 +33,7 @@
 "Authentication failed" = "Échec de l'authentification";
 "Autologin profile (no password when connecting)" = "Profil à connexion automatique (sans mot de passe à la connexion)";
 "Automatic" = "Automatique";
+"Before you connect" = "Avant de vous connecter";
 "Block IPv6 outside the VPN" = "Bloquer l’IPv6 hors du VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Bloquer tout le trafic hors du VPN tant qu’il est actif, et après une coupure jusqu’à ce que je me reconnecte ou débloque";
 "By folder" = "Par dossier";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Connexion : %@";
 "Connections" = "Connexions";
 "Connections…" = "Connexions…";
+"Continue" = "Continuer";
 "Copy" = "Copier";
 "Copy Details" = "Copier les détails";
 "Copy and Import" = "Copier et importer";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Placez MugVPN dans le dossier Applications, ouvrez-le depuis cet emplacement et reconnectez-vous.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Réglages de MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "MugVPN ne collecte aucune donnée et n’envoie rien à ses auteurs : pas d’analyse, pas de compte. Vos profils, mots de passe enregistrés et journaux restent sur votre Mac ; un mot de passe ne va qu’au serveur VPN auquel il est destiné, quand il le demande.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "MugVPN n’a pas pu terminer la désinstallation (%@). Il reste installé : réessayez dans une minute.";
 "MugVPN in Login Items" = "MugVPN dans les éléments de connexion";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "MugVPN retire encore le DNS ou les routes définis par un VPN et reste installé jusque-là. Réessayez dans une minute.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "MugVPN est désinstallé, mais ces éléments n’ont pas pu être supprimés : %@";
 "MugVPN needs its helper to start tunnels." = "MugVPN a besoin de son outil d'assistance pour démarrer les tunnels.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "MugVPN configure un VPN sur votre Mac. Tant qu’une connexion est active, son trafic passe par le VPN jusqu’au serveur de votre profil, géré par celui qui gère ce VPN, et non par les auteurs de MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "La configuration VPN de MugVPN, les journaux, les réglages et les mots de passe enregistrés seront supprimés. Les tunnels sont déconnectés.";
+"MugVPN's authors never sell, use or share any data about you." = "Les auteurs de MugVPN ne vendent, n’utilisent ni ne partagent jamais aucune donnée vous concernant.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "L'assistant de MugVPN n'a pas répondu (%@). Supprimer la partie système de MugVPN avec un mot de passe administrateur ?";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "L'assistant de MugVPN est en version %@, plus récente que cette app (%@) : mettez MugVPN à jour.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "L'assistant de MugVPN est en version %@, pas celle de cette app (%@) : il est mis à jour dès qu'aucune connexion ne l'utilise (ou après un redémarrage).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Connexions persistantes :";
 "Port:" = "Port :";
 "Pre-connect script (s):" = "Script de préconnexion (s) :";
+"Privacy Policy" = "Politique de confidentialité";
 "Private key:" = "Clé privée :";
 "Profile menu:" = "Menu des profils :";
 "Profiles without passwords or keys (servers, certificates, options)" = "Profils sans mots de passe ni clés (serveurs, certificats, options)";

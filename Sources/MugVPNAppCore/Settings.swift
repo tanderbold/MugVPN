@@ -89,6 +89,12 @@ public final class SettingsStore {
 
     /// Apply a change: refused as a whole if it touches a locked setting or
     /// leaves a value out of range.
+    /// The user took the disclosure of what MugVPN does with data (BackendCapabilities.vpnDisclosure), once.
+    public var vpnDisclosureAccepted: Bool {
+        get { backend.value("vpn_disclosure_accepted") as? Bool ?? false }
+        set { backend.set("vpn_disclosure_accepted", newValue) }
+    }
+
     public func update(_ change: (inout Settings) -> Void) throws {
         let new = try prepared(change)
         SettingsStore.store(new, old: settings, backend)

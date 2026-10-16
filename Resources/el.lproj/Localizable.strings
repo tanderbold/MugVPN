@@ -33,6 +33,7 @@
 "Authentication failed" = "Η ταυτοποίηση απέτυχε";
 "Autologin profile (no password when connecting)" = "Προφίλ αυτόματης σύνδεσης (χωρίς σύνθημα κατά τη σύνδεση)";
 "Automatic" = "Αυτόματα";
+"Before you connect" = "Πριν συνδεθείτε";
 "Block IPv6 outside the VPN" = "Αποκλεισμός IPv6 εκτός VPN";
 "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Αποκλεισμός όλης της κίνησης εκτός VPN όσο είναι ενεργό, και μετά από πτώση μέχρι να επανασυνδεθώ ή να άρω τον αποκλεισμό";
 "By folder" = "Ανά φάκελο";
@@ -71,6 +72,7 @@
 "Connection: %@" = "Σύνδεση: %@";
 "Connections" = "Συνδέσεις";
 "Connections…" = "Συνδέσεις…";
+"Continue" = "Συνέχεια";
 "Copy" = "Αντιγραφή";
 "Copy Details" = "Αντιγραφή λεπτομερειών";
 "Copy and Import" = "Αντιγραφή και εισαγωγή";
@@ -140,12 +142,15 @@
 "Move MugVPN to the Applications folder, open it from there and connect again." = "Μετακινήστε το MugVPN στον φάκελο Εφαρμογές, ανοίξτε το από εκεί και συνδεθείτε ξανά.";
 "MugVPN" = "MugVPN";
 "MugVPN Settings" = "Ρυθμίσεις MugVPN";
+"MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks." = "Το MugVPN δεν συλλέγει δεδομένα και δεν στέλνει τίποτα στους δημιουργούς του: καμία ανάλυση, κανένας λογαριασμός. Τα προφίλ, οι αποθηκευμένοι κωδικοί και τα αρχεία καταγραφής μένουν στο Mac σας· ένας κωδικός πηγαίνει μόνο στον διακομιστή VPN για τον οποίο είναι, όταν τον ζητήσει.";
 "MugVPN could not finish uninstalling (%@). It stays installed: try again in a minute." = "Το MugVPN δεν μπόρεσε να ολοκληρώσει την απεγκατάσταση (%@). Παραμένει εγκατεστημένο: δοκιμάστε ξανά σε ένα λεπτό.";
 "MugVPN in Login Items" = "Το MugVPN στα Στοιχεία σύνδεσης";
 "MugVPN is still taking off the DNS or routes a VPN set, and stays installed until it has. Try again in a minute." = "Το MugVPN αφαιρεί ακόμη το DNS ή τις διαδρομές που όρισε ένα VPN και θα παραμείνει εγκατεστημένο μέχρι τότε. Δοκιμάστε ξανά σε ένα λεπτό.";
 "MugVPN is uninstalled, but these could not be removed: %@" = "Το MugVPN απεγκαταστάθηκε, αλλά αυτά δεν αφαιρέθηκαν: %@";
 "MugVPN needs its helper to start tunnels." = "Το MugVPN χρειάζεται τη βοηθητική του υπηρεσία για να ξεκινήσει τούνελ.";
+"MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors." = "Το MugVPN ρυθμίζει ένα VPN στο Mac σας. Όσο μια σύνδεση είναι ενεργή, η κίνησή της περνά μέσω του VPN στον διακομιστή του προφίλ σας, που τον λειτουργεί όποιος λειτουργεί αυτό το VPN, όχι οι δημιουργοί του MugVPN.";
 "MugVPN's VPN configuration, logs, settings and saved passwords will be removed. Tunnels are disconnected." = "Η διαμόρφωση VPN του MugVPN, τα αρχεία καταγραφής, οι ρυθμίσεις και οι αποθηκευμένοι κωδικοί πρόσβασης θα αφαιρεθούν. Οι σήραγγες αποσυνδέονται.";
+"MugVPN's authors never sell, use or share any data about you." = "Οι δημιουργοί του MugVPN δεν πωλούν, δεν χρησιμοποιούν και δεν μοιράζονται ποτέ δεδομένα για εσάς.";
 "MugVPN's helper did not answer (%@). Remove MugVPN's system part with an administrator's password instead?" = "Ο βοηθός του MugVPN δεν απάντησε (%@). Αφαίρεση του τμήματος συστήματος του MugVPN με κωδικό διαχειριστή;";
 "MugVPN's helper is version %@, newer than this app (%@): update MugVPN." = "Ο βοηθός του MugVPN είναι έκδοση %@, νεότερη από αυτή την εφαρμογή (%@): ενημερώστε το MugVPN.";
 "MugVPN's helper is version %@, not this app's %@: it is updated once no connection uses it (or after a restart)." = "Ο βοηθός του MugVPN είναι έκδοση %@, όχι %@ αυτής της εφαρμογής: ενημερώνεται μόλις δεν τον χρησιμοποιεί καμία σύνδεση (ή μετά από επανεκκίνηση).";
@@ -185,6 +190,7 @@
 "Persistent connections:" = "Μόνιμες συνδέσεις:";
 "Port:" = "Θύρα:";
 "Pre-connect script (s):" = "Σενάριο πριν τη σύνδεση (s):";
+"Privacy Policy" = "Πολιτική απορρήτου";
 "Private key:" = "Ιδιωτικό κλειδί:";
 "Profile menu:" = "Μενού προφίλ:";
 "Profiles without passwords or keys (servers, certificates, options)" = "Προφίλ χωρίς κωδικούς ή κλειδιά (διακομιστές, πιστοποιητικά, επιλογές)";

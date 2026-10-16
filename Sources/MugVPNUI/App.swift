@@ -871,6 +871,14 @@ final class AppController: NSObject, NSMenuDelegate {
             showHelperSetup()
             return then()
         }
+        // What MugVPN does with data, taken once before the first connection (where the backend asks for it).
+        if manager.backend.capabilities.vpnDisclosure, !settingsStore.vpnDisclosureAccepted, !(e2e && env["MUGVPN_E2E_DISCLOSURE"] != "ask") {
+            return showVPNDisclosure { [weak self] accepted in
+                guard let self, accepted else { return then() }
+                self.settingsStore.vpnDisclosureAccepted = true
+                self.connect(p, then: then)
+            }
+        }
         manager.connect(p) { [weak self] in
             guard let self else { return then() }
             if self.manager.active[p.id] != nil, !EffectiveSettings.silent(self.settingsStore.settings, self.options.options(p.id)) {
@@ -1296,8 +1304,30 @@ final class AppController: NSObject, NSMenuDelegate {
                              objc_setAssociatedObject(b, "actions", actions, .OBJC_ASSOCIATION_RETAIN)
                              return b
                          }(),
+                         {
+                             let actions = FormActions()
+                             actions.ok = { [weak self] in self?.services.open(MugVPNIDs.privacyPolicyURL) }
+                             let b = Form.button("privacy_policy", L("Privacy Policy"), target: actions, action: #selector(FormActions.okPressed))
+                             objc_setAssociatedObject(b, "actions", actions, .OBJC_ASSOCIATION_RETAIN)
+                             return b
+                         }(),
                          Form.label(L("OpenVPN is a registered trademark of OpenVPN Inc."))],
                  cancelTitle: nil, ok: { _ in true })
+    }
+
+    /// Before the first connection: what MugVPN sets up, where the traffic goes, that it collects nothing; the
+    /// privacy policy one click away. - done: whether the user went on.
+    func showVPNDisclosure(_ done: @escaping (Bool) -> Void) {
+        let policy = FormActions()
+        policy.ok = { [weak self] in self?.services.open(MugVPNIDs.privacyPolicyURL) }
+        let link = Form.button("privacy_policy", L("Privacy Policy"), target: policy, action: #selector(FormActions.okPressed))
+        objc_setAssociatedObject(link, "actions", policy, .OBJC_ASSOCIATION_RETAIN)
+        showForm(kind: "vpn_disclosure", profile: "", title: L("Before you connect"),
+                 views: [Form.label(L("MugVPN sets up a VPN on your Mac. While a connection is up, its traffic goes through the VPN to the server in your profile, run by whoever runs that VPN, not by MugVPN's authors."), id: "disclosure_vpn"),
+                         Form.label(L("MugVPN collects no data and sends nothing to its authors: no analytics, no account. Your profiles, saved passwords and logs stay on your Mac; a password goes only to the VPN server it is for, when it asks."), id: "disclosure_data"),
+                         Form.label(L("MugVPN's authors never sell, use or share any data about you."), id: "disclosure_promise"),
+                         link],
+                 okTitle: L("Continue"), cancelTitle: L("Cancel"), ok: { _ in done(true); return true }, cancel: { done(false) })
     }
 
     func confirmUninstall() {

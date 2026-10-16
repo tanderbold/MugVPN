@@ -94,6 +94,14 @@ func registerAppLogicTests() {
         expectEqual(b.values["log_append"] as? Bool, true)
         expect(SettingsStore(backend: b).settings.logAppend, "persisted")
     }
+    test("SET-05", "the disclosure before the first connection: asked for by the packet tunnel's backend only; taken once, remembered") {
+        expect(BackendCapabilities.packetTunnel.vpnDisclosure && !BackendCapabilities.helper.vpnDisclosure)
+        let b = FakeSettingsBackend()
+        let st = SettingsStore(backend: b)
+        expect(!st.vpnDisclosureAccepted, "not taken yet")
+        st.vpnDisclosureAccepted = true
+        expect(SettingsStore(backend: b).vpnDisclosureAccepted, "remembered")
+    }
     test("SET-04", "settings checked without saving: what update would refuse, refused, nothing changed") {
         let b = FakeSettingsBackend()
         let st = SettingsStore(backend: b)
