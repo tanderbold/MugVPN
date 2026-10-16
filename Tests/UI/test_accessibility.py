@@ -78,4 +78,4 @@ def test_ui20c_a_checkbox_beside_a_row_label_is_read_with_both(app):
     w = tab(app, "options")
     for cid in ("kill_switch", "block_ipv6"):
         c = app.control(w, cid)
-        assert c["spoken"].endswith(c["value"]) and len(c["spoken"]) > len(c["value"]) + 2, (cid, c["spoken"])
+        assert c["spoken"].endswith(c["title"]) and len(c["spoken"]) > len(c["title"]) + 2, (cid, c["spoken"])
