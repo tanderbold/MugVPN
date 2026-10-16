@@ -610,6 +610,7 @@ final class E2EServer {
                     c["label"] = (b.title) + (b.toolTip.map { " (\($0))" } ?? "")
                 case let b as NSButton:
                     c["type"] = "button"; c["value"] = b.title; c["enabled"] = b.isEnabled; c["label"] = b.title
+                    c["spoken"] = b.accessibilityLabel() ?? b.title
                 case let f as NSSecureTextField:
                     c["type"] = "secure"; c["value"] = f.stringValue; c["enabled"] = f.isEnabled; c["label"] = f.accessibilityLabel() ?? ""
                 case let f as NSTextField:

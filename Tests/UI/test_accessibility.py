@@ -68,3 +68,14 @@ def test_ui20b_dark_appearance(home):
     with launched(home, appearance="Dark") as a:
         a.click("Settings…")
         assert a.window("settings")["appearance"] == "darkAqua"
+
+
+def test_ui20c_a_checkbox_beside_a_row_label_is_read_with_both(app):
+    """VoiceOver reads a checkbox in a labelled row as the row's label and the checkbox's own words (not the row's
+    label alone)."""
+    from test_connections import open_window, tab
+    open_window(app, "stand-a")
+    w = tab(app, "options")
+    for cid in ("kill_switch", "block_ipv6"):
+        c = app.control(w, cid)
+        assert c["spoken"].endswith(c["value"]) and len(c["spoken"]) > len(c["value"]) + 2, (cid, c["spoken"])

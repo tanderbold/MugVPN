@@ -34,7 +34,7 @@
 "Autologin profile (no password when connecting)" = "Профиль с автовходом (без пароля при подключении)";
 "Automatic" = "Автоматически";
 "Block IPv6 outside the VPN" = "Блокировать IPv6 мимо VPN";
-"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Блокировать весь трафик мимо VPN, пока оно активно, и после обрыва, пока я не переподключусь или не разблокирую";
+"Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock" = "Блокировать весь трафик вне VPN, пока соединение активно, а после разрыва — до переподключения или снятия блокировки";
 "By folder" = "По папкам";
 "CA certificate:" = "Сертификат CA:";
 "Cancel" = "Отменить";

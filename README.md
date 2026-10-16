@@ -92,8 +92,9 @@ As documented by each product on 2026-10-10: [Tunnelblick](https://tunnelblick.n
 - **Profiles are checked** before they run: options that would run programs or load code are
   refused, with the line that caused it.
 - **Passwords** stay in your login Keychain, per connection.
-- **Nothing is collected.** No analytics, no servers of MugVPN's own; profiles, passwords and
-  identifiers never leave the Mac. Besides your VPN servers (and a profile's URL when you import one),
+- **Nothing is collected.** No analytics, no servers of MugVPN's own: nothing is sent to MugVPN. Saved
+  passwords stay in your Keychain and go only to the VPN (or proxy) server they are for, when it asks
+  as you connect, over its own protocol. Besides your VPN servers (and a profile's URL when you import one),
   MugVPN asks Apple's captive-portal page (`captive.apple.com`) after a network change or a wake, as
   macOS does, to tell whether the network wants a sign-in first; Apple and the network see that
   request as any web request (your IP address among it).

@@ -239,9 +239,13 @@ enum Form {
     }
 
     static func row(_ label: String, _ view: NSView) -> NSStackView {
-        // VoiceOver reads the row's label for the control beside it.
+        // VoiceOver reads the row's label for the control beside it; a checkbox keeps its own words after it.
         let spoken = label.trimmingCharacters(in: CharacterSet(charactersIn: ":： "))
-        if !spoken.isEmpty { view.setAccessibilityLabel(spoken) }
+        if let b = view as? NSButton, !b.title.isEmpty {
+            if !spoken.isEmpty { b.setAccessibilityLabel(spoken + ": " + b.title) }
+        } else if !spoken.isEmpty {
+            view.setAccessibilityLabel(spoken)
+        }
         let l = NSTextField(labelWithString: label)
         l.alignment = .right
         l.setContentCompressionResistancePriority(.required, for: .horizontal)

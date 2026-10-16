@@ -1852,7 +1852,7 @@
   "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Подключение, которое блокирует трафик при обрыве, работает одно: сначала отключите остальные.",
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Пока активно подключение, которое блокирует трафик при обрыве, другие запустить нельзя.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Интернет заблокирован, потому что подключение оборвалось: сначала разблокируйте его.",
-  "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокировать весь трафик мимо VPN, пока оно активно, и после обрыва, пока я не переподключусь или не разблокирую",
+  "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокировать весь трафик вне VPN, пока соединение активно, а после разрыва — до переподключения или снятия блокировки",
   "Protection:": "Защита:"
  },
  "sv": {
@@ -2200,7 +2200,7 @@
   "A connection that blocks traffic if it drops runs alone: disconnect the others first.": "Підключення, яке блокує трафік у разі обриву, працює одне: спершу від’єднайте інші.",
   "While a connection that blocks traffic if it drops is up, no other connection can start.": "Поки активне підключення, яке блокує трафік у разі обриву, інші запустити не можна.",
   "The Internet is blocked since a connection dropped: unblock it first.": "Інтернет заблоковано, бо підключення обірвалося: спершу розблокуйте його.",
-  "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокувати весь трафік поза VPN, поки воно активне, і після обриву, доки я не перепідключуся або не розблокую",
+  "Block all traffic outside the VPN while it is up, and after it drops until I reconnect or unblock": "Блокувати весь трафік поза VPN, поки з’єднання активне, а після обриву — до перепідключення або зняття блокування",
   "Protection:": "Захист:"
  },
  "zh-Hans": {

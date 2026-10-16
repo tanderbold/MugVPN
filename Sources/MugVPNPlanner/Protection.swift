@@ -40,9 +40,10 @@ public struct ProtectionFacts: Sendable {
     public var exited: Bool
     public var protection: ProtectionOptions
     public var takesAllTraffic: Bool
-    /// It took all traffic at some point (its kill switch is armed from then on).
-    public var wasFull: Bool
-    /// Started again by its owner after its block: the block goes once it takes all traffic.
+    /// Its kill switch guarded everything at some point (it took all traffic, or everything outside it was blocked):
+    /// armed from then on.
+    public var wasGuarded: Bool
+    /// Started again by its owner after its block: the block goes once it guards everything again.
     public var liftsBlock: Bool
     /// Up with everything outside it blocked meanwhile (the App Store build's strict kill switch), split or not: its
     /// kill switch is armed, and its own block goes when it is up again, as for one taking all traffic. (Its IPv6 and
@@ -55,7 +56,7 @@ public struct ProtectionFacts: Sendable {
     public var dnsServers: [String]
 
     public init(id: String, lockKey: String, lockNames: [String], owner: UInt32, persistent: Bool, exited: Bool,
-                protection: ProtectionOptions, takesAllTraffic: Bool, wasFull: Bool, liftsBlock: Bool, device: String?,
+                protection: ProtectionOptions, takesAllTraffic: Bool, wasGuarded: Bool, liftsBlock: Bool, device: String?,
                 restricted: Bool, dnsServers: [String], blocksAllOutside: Bool = false) {
         self.id = id
         self.lockKey = lockKey
@@ -65,7 +66,7 @@ public struct ProtectionFacts: Sendable {
         self.exited = exited
         self.protection = protection
         self.takesAllTraffic = takesAllTraffic
-        self.wasFull = wasFull
+        self.wasGuarded = wasGuarded
         self.liftsBlock = liftsBlock
         self.device = device
         self.restricted = restricted
@@ -82,11 +83,11 @@ public enum ProtectionPlanner {
 
     public static func suspendKey(_ l: ProtectionLock) -> String { "\(l.owner)/\(l.everyone)/\(l.name)" }
 
-    /// Armings follow the tunnels up: one per name and user taking all traffic with a kill switch, the LAN open only
-    /// if every such tunnel allows it.
+    /// Armings follow the tunnels up: one per name and user guarding everything with a kill switch, the LAN open
+    /// only if every such tunnel allows it.
     public static func arming(_ connections: [ProtectionFacts]) -> [ProtectionLock] {
         var want: [ProtectionLock] = []
-        for c in connections.sorted(by: { $0.id < $1.id }) where !c.exited && c.protection.killSwitch && c.wasFull {
+        for c in connections.sorted(by: { $0.id < $1.id }) where !c.exited && c.protection.killSwitch && c.wasGuarded {
             if let i = want.firstIndex(where: { $0.name == c.lockKey && $0.owner == c.owner && $0.everyone == c.persistent }) {
                 want[i].allowLAN = want[i].allowLAN && c.protection.allowLAN
             } else {
@@ -126,8 +127,9 @@ public enum ProtectionPlanner {
         /// The blocks changed (to be saved).
         public var locksChanged: Bool
         public var suspended: [String: TimeInterval]
-        /// Connections that now took all traffic, and those whose block-lifting is done.
-        public var nowFull: Set<String>
+        /// Connections whose kill switch now guards everything (armed from now on), and those whose block-lifting is
+        /// done.
+        public var nowGuarded: Set<String>
         public var liftDone: Set<String>
     }
 
@@ -136,7 +138,7 @@ public enum ProtectionPlanner {
                             now: TimeInterval) -> Plan {
         var s = ProtectionState()
         var locks = locks, changed = false
-        var nowFull = Set<String>(), liftDone = Set<String>()
+        var nowGuarded = Set<String>(), liftDone = Set<String>()
         var facts = connections
         for i in facts.indices {
             let c = facts[i]
@@ -161,9 +163,9 @@ public enum ProtectionPlanner {
                 }
             }
             guard c.protection.any else { continue }
-            if guarded, !c.wasFull {
-                facts[i].wasFull = true
-                nowFull.insert(c.id)
+            if guarded, !c.wasGuarded {
+                facts[i].wasGuarded = true
+                nowGuarded.insert(c.id)
             }
             // A persistent tunnel up again with all traffic: the block its drop left goes (nobody connects it by hand).
             if full, c.persistent, !c.exited {
@@ -186,7 +188,7 @@ public enum ProtectionPlanner {
         let live = suspended.filter { $0.value > now }
         s.locks = locks.filter { !$0.armed && live[suspendKey($0)] == nil }
             .map { ProtectionState.Lock(owner: $0.owner, allowLAN: $0.allowLAN, everyone: $0.everyone) }
-        return Plan(state: s, locks: locks, locksChanged: changed, suspended: live, nowFull: nowFull, liftDone: liftDone)
+        return Plan(state: s, locks: locks, locksChanged: changed, suspended: live, nowGuarded: nowGuarded, liftDone: liftDone)
     }
 
     /// Who may lift blocks for a while (to sign in to a network): an administrator all, a user their own, and only

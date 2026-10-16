@@ -275,8 +275,8 @@ public final class HelperCore {
         var stopping = false
         var exited = false
         var protection = ProtectionOptions()
-        /// It has taken all traffic (the kill switch applies to it).
-        var wasFull = false
+        /// Its kill switch has guarded everything (it took all traffic): armed from then on.
+        var wasGuarded = false
         var splitDNS = false
         /// The server's DNS only for these domains (the profile's options).
         var dnsDomains: [String] = []
@@ -1074,7 +1074,7 @@ public final class HelperCore {
             recorded = undo(c.tunnel, others: others)
             release(c.tunnel, others: others)
         }
-        if c.protection.killSwitch, !c.stopping, c.wasFull || tookAll {
+        if c.protection.killSwitch, !c.stopping, c.wasGuarded || tookAll {
             // Dropped without being asked to: keep its owner's traffic from going around the tunnel.
             addLock(Lock(name: name, owner: c.info.ownerUID, allowLAN: c.protection.allowLAN, everyone: c.info.persistent))
         }
@@ -1173,7 +1173,7 @@ public final class HelperCore {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
         // All or nothing: a refused or failed request leaves the records as they were.
         var before = c.tunnel
-        let wasFullBefore = c.wasFull
+        let wasGuardedBefore = c.wasGuarded
         let dnsBefore = c.appliedDNS
         let queueBefore = (c.dnsWantsAll, c.dnsAskOrder)
         /// Its DNS on the Mac as before the request (the new one off, the old one back); the record
@@ -1273,8 +1273,8 @@ public final class HelperCore {
             throw HelperCoreError.message("the tunnel cannot be isolated to its user (PF): not set")
         }
         // All traffic with a kill switch only once its arming is on disk (it must outlive a helper crash).
-        if c.protection.killSwitch, c.wasFull, !wasFullBefore, locksDirty {
-            c.wasFull = false
+        if c.protection.killSwitch, c.wasGuarded, !wasGuardedBefore, locksDirty {
+            c.wasGuarded = false
             syncArming()
             undoRequest()
             refreshProtection()
@@ -1645,7 +1645,7 @@ public final class HelperCore {
     /// Not asked for by its owner: a kill switch it armed fires (and stays on disk).
     private func failClosed(_ c: Connection) {
         let others = connections.values.filter { $0 !== c }.map(\.tunnel)
-        if c.protection.killSwitch, c.wasFull || c.tunnel.takesAllTraffic {
+        if c.protection.killSwitch, c.wasGuarded || c.tunnel.takesAllTraffic {
             addLock(Lock(name: HelperCore.lockKey(c.info), owner: c.info.ownerUID, allowLAN: c.protection.allowLAN,
                          everyone: c.info.persistent))
             saveLocks()
@@ -2014,7 +2014,7 @@ public final class HelperCore {
         connections.values.map { c in
             ProtectionFacts(id: c.info.id, lockKey: HelperCore.lockKey(c.info), lockNames: [HelperCore.lockKey(c.info), HelperCore.lockName(c.info.name)],
                             owner: c.info.ownerUID, persistent: c.info.persistent, exited: c.exited, protection: c.protection,
-                            takesAllTraffic: c.tunnel.takesAllTraffic, wasFull: c.wasFull, liftsBlock: c.liftsBlock,
+                            takesAllTraffic: c.tunnel.takesAllTraffic, wasGuarded: c.wasGuarded, liftsBlock: c.liftsBlock,
                             device: c.tunnel.device, restricted: c.restricted,
                             dnsServers: c.tunnel.dnsApplied ? c.tunnel.dnsServers : [])
         }
@@ -2026,7 +2026,7 @@ public final class HelperCore {
     @discardableResult
     public func refreshProtection() -> Bool {
         let plan = ProtectionPlanner.plan(protectionFacts(), locks: locks, suspended: suspended, now: system.now())
-        for id in plan.nowFull { connections[id]?.wasFull = true }
+        for id in plan.nowGuarded { connections[id]?.wasGuarded = true }
         for id in plan.liftDone { connections[id]?.liftsBlock = false }
         locks = plan.locks
         suspended = plan.suspended
